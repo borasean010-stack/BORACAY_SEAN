@@ -7,27 +7,35 @@
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
-        body { background: #fcfcfc; padding-bottom: 80px; }
+        body { background: #fcfcfc; padding-bottom: 100px; }
         .tour-detail-container { max-width: 1200px; margin: 120px auto 50px; display: grid; grid-template-columns: 1fr 380px; gap: 40px; padding: 0 20px; }
         .tour-content { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.02); }
         .section-title { font-size: 22px; font-weight: 800; margin: 40px 0 20px; border-bottom: 2px solid #f5f5f5; padding-bottom: 10px; color: #ff6a00; }
-        
-        /* 🖼️ 모바일 이미지 최적화 (크고 선명하게) */
         .itinerary-img { width: 100%; margin: 15px 0 40px; }
         .itinerary-img img { width: 100%; border-radius: 15px; display: block; }
 
+        /* 💻 PC 예약 박스 버튼 디자인 */
         .reservation-box { background: white; border-radius: 24px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.08); position: sticky; top: 110px; border: 1px solid #f0f0f0; }
-        .calendar-wrap { margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 15px; }
+        .calendar-wrap { margin-bottom: 20px; border: 1px solid #eee; border-radius: 12px; padding: 15px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
         .day { padding: 10px 0; cursor: pointer; border-radius: 8px; font-size: 13px; font-weight: 600; }
         .day.selected { background: #ff6a00; color: white; }
-        .day.sun { color: #ff4d4d; }
-        .day.sat { color: #4d7cff; }
+        
+        .btn-group-pc { display: flex; flex-direction: column; gap: 12px; margin-top: 25px; }
+        .btn-cart { width: 100%; padding: 18px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 15px; font-size: 17px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-buy { width: 100%; padding: 18px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 17px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-cart:hover { background: #fff1e6; }
+        .btn-buy:hover { background: #e65f00; transform: translateY(-2px); }
 
+        /* 📱 모바일 하단 바 버튼 디자인 */
         .mobile-bottom-bar { display: none; }
         .option-sheet-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10004; display: none; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
-        .option-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-radius: 25px 25px 0 0; z-index: 10005; padding: 30px 20px 40px; transform: translateY(100%); transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .option-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-radius: 25px 25px 0 0; z-index: 10005; padding: 30px 20px 40px; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .option-sheet.active { transform: translateY(0); }
+        
+        .btn-group-mobile { display: flex; gap: 10px; width: 100%; }
+        .m-btn-cart { flex: 1; height: 55px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 12px; font-size: 16px; font-weight: 800; }
+        .m-btn-buy { flex: 2; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 800; }
 
         @media (max-width: 1024px) {
             .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; padding: 0; }
@@ -35,9 +43,11 @@
             .itinerary-img { margin-left: -15px; margin-right: -15px; width: calc(100% + 30px); }
             .itinerary-img img { border-radius: 0; }
             .reservation-box { display: none; }
-            .mobile-bottom-bar { display: flex; position: fixed; bottom: 0; left: 0; width: 100%; background: white; padding: 15px 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); z-index: 9000; align-items: center; gap: 12px; }
-            .m-cart-btn { width: 55px; height: 55px; border: 1.5px solid #eee; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: white; font-size: 20px; }
-            .m-book-btn { flex: 1; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 800; }
+            .mobile-bottom-bar { 
+                display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
+                background: white; padding: 15px 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); 
+                z-index: 9000; align-items: center; gap: 10px;
+            }
         }
     </style>
 </head>
@@ -50,7 +60,7 @@
     <a href="hopping-tour.html">블랙펄 요트호핑투어</a>
     <a href="#">시크릿가든 말룸파티</a>
     <a href="#">한눈에 요금표</a>
-    <a href="cart.html">장바구니</a>
+    <a href="cart.html">장바구니 확인</a>
 </div>
 
 <div class="top-bar">
@@ -86,45 +96,61 @@
         <img src="refund.png" style="width:100%; border-radius:15px;">
     </div>
 
+    <!-- 💻 PC 예약 박스 -->
     <div class="reservation-box">
         <div style="font-size:30px; font-weight:900; color:#ff6a00; margin-bottom:20px;">₩ 65,000</div>
         <div class="calendar-wrap">
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&lt;</button>
+                <button onclick="changeMonth(-1)" class="cal-btn">&lt;</button>
                 <strong id="pc-month">2026년 3월</strong>
-                <button onclick="changeMonth(1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&gt;</button>
+                <button onclick="changeMonth(1)" class="cal-btn">&gt;</button>
             </div>
             <div class="calendar-grid" id="pc-days"></div>
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding:15px; background:#f8f9fa; border-radius:12px;">
-            <span>성인</span>
-            <div style="display:flex; align-items:center; gap:10px;"><button onclick="updateCount(-1)">-</button><strong id="pc-count">1</strong><button onclick="updateCount(1)">+</button></div>
+        <div class="selector-wrap">
+            <span style="font-weight:700;">인원 (성인)</span>
+            <div class="counter">
+                <button class="count-btn" onclick="updateCount(-1)">-</button>
+                <strong id="pc-count">1</strong>
+                <button class="count-btn" onclick="updateCount(1)">+</button>
+            </div>
         </div>
-        <button class="book-btn" onclick="location.href='login.html'">예약하기</button>
+        <div class="btn-group-pc">
+            <button class="btn-buy" onclick="location.href='login.html'">구매하기</button>
+            <button class="btn-cart" onclick="addToCart()">장바구니 담기</button>
+        </div>
     </div>
 </div>
 
+<!-- 📱 모바일 하단 바 -->
 <div class="mobile-bottom-bar">
-    <div class="m-cart-btn" onclick="addToCart()">🛒</div>
-    <button class="m-book-btn" onclick="openOptionSheet()">예약하기</button>
+    <button class="m-btn-cart" onclick="addToCart()">장바구니</button>
+    <button class="m-btn-buy" onclick="openOptionSheet()">구매하기</button>
 </div>
 
+<!-- 📱 모바일 옵션 선택창 -->
 <div class="option-sheet-overlay" id="sheetOverlay" onclick="closeOptionSheet()"></div>
 <div class="option-sheet" id="optionSheet">
     <h3 style="font-weight:800; margin-bottom:20px;">예약 옵션 선택</h3>
     <div class="calendar-wrap">
         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-            <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800;">&lt;</button>
+            <button onclick="changeMonth(-1)" class="cal-btn">&lt;</button>
             <strong id="m-month">2026년 3월</strong>
-            <button onclick="changeMonth(1)" style="border:none; background:none; color:#ff6a00; font-weight:800;">&gt;</button>
+            <button onclick="changeMonth(1)" class="cal-btn">&gt;</button>
         </div>
         <div class="calendar-grid" id="m-days"></div>
     </div>
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:#f8f9fa; border-radius:12px; margin-bottom:20px;">
-        <span>인원 (성인)</span>
-        <div style="display:flex; align-items:center; gap:10px;"><button onclick="updateCount(-1)">-</button><strong id="m-count">1</strong><button onclick="updateCount(1)">+</button></div>
+    <div class="selector-wrap">
+        <span style="font-weight:700;">인원 (성인)</span>
+        <div class="counter">
+            <button class="count-btn" onclick="updateCount(-1)">-</button>
+            <strong id="m-count">1</strong>
+            <button class="count-btn" onclick="updateCount(1)">+</button>
+        </div>
     </div>
-    <button class="book-btn" onclick="location.href='login.html'">선택 완료 / 예약하기</button>
+    <div class="btn-group-mobile">
+        <button class="m-btn-buy" style="flex:1;" onclick="location.href='login.html'">선택 완료 / 구매하기</button>
+    </div>
 </div>
 
 <footer class="footer">
@@ -139,6 +165,7 @@
     </div>
 </footer>
 
+<script src="main.js"></script>
 <script>
     let adultCount = 1;
     let currentDate = new Date(2026, 2, 1);
@@ -154,20 +181,13 @@
         const month = currentDate.getMonth();
         title.innerText = `${year}년 ${month + 1}월`;
         container.innerHTML = '';
-        ['일','월','화','수','목','금','토'].forEach((d, i) => {
-            let cls = i===0 ? 'sun' : (i===6 ? 'sat' : '');
-            container.innerHTML += `<div style="color:#bbb; font-weight:800; font-size:12px;" class="${cls}">${d}</div>`;
-        });
+        ['일','월','화','수','목','금','토'].forEach(d => container.innerHTML += `<div style="color:#bbb; font-weight:800; font-size:12px;">${d}</div>`);
         const firstDay = new Date(year, month, 1).getDay();
         const lastDate = new Date(year, month + 1, 0).getDate();
         for (let i = 0; i < firstDay; i++) container.appendChild(document.createElement('div'));
         for (let i = 1; i <= lastDate; i++) {
             const div = document.createElement('div');
-            const dayOfWeek = new Date(year, month, i).getDay();
-            div.className = 'day';
-            if(dayOfWeek===0) div.classList.add('sun');
-            if(dayOfWeek===6) div.classList.add('sat');
-            if(`${year}-${(month+1).toString().padStart(2,'0')}-${i.toString().padStart(2,'0')}` === selectedDate) div.classList.add('selected');
+            div.className = 'day' + (i===2 && month===2 ? ' selected' : '');
             div.innerText = i;
             div.onclick = function() { document.querySelectorAll('.day').forEach(d => d.classList.remove('selected')); this.classList.add('selected'); selectedDate = `${year}-${(month+1).toString().padStart(2,'0')}-${i.toString().padStart(2,'0')}`; };
             container.appendChild(div);
@@ -178,7 +198,7 @@
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         cart.push(item);
         localStorage.setItem('cart', JSON.stringify(cart));
-        if(confirm('장바구니에 담겼습니다.')) location.href = 'cart.html';
+        if(confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) location.href = 'cart.html';
     }
     window.onload = () => { renderCalendar('pc-days', 'pc-month'); renderCalendar('m-days', 'm-month'); };
 </script>

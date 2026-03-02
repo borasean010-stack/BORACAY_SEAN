@@ -8,44 +8,50 @@
     <link rel="stylesheet" href="style.css">
     <style>
         body { background: #fcfcfc; padding-bottom: 80px; }
-        .tour-detail-container { max-width: 1300px; margin: 120px auto 50px; display: grid; grid-template-columns: 1fr 400px; gap: 50px; padding: 0 40px; }
-        .tour-content { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); }
-        .section-title { font-size: 24px; font-weight: 800; margin: 60px 0 30px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
-        .itinerary-img img { width: 100%; border-radius: 20px; }
+        .tour-detail-container { max-width: 1200px; margin: 120px auto 50px; display: grid; grid-template-columns: 1fr 380px; gap: 40px; padding: 0 20px; }
+        .tour-content { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.02); }
+        .section-title { font-size: 22px; font-weight: 800; margin: 40px 0 20px; border-bottom: 2px solid #f5f5f5; padding-bottom: 10px; color: #ff6a00; }
+        .itinerary-img img { width: 100%; border-radius: 15px; margin-top: 10px; }
         
-        /* 📅 달력 디자인 보강 */
-        .calendar-wrap { margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 20px; }
-        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .cal-btn { background: none; border: none; cursor: pointer; font-size: 18px; color: #ff6a00; font-weight: 800; padding: 5px 10px; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
-        .day { padding: 10px 5px; cursor: pointer; border-radius: 10px; font-size: 14px; font-weight: 600; }
-        .day:hover:not(.disabled) { background: #fff1e6; color: #ff6a00; }
+        .reservation-box { background: white; border-radius: 24px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.08); position: sticky; top: 110px; border: 1px solid #f0f0f0; }
+        .calendar-wrap { margin-bottom: 20px; border: 1px solid #eee; border-radius: 12px; padding: 15px; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+        .day { padding: 10px 0; cursor: pointer; border-radius: 8px; font-size: 13px; font-weight: 600; }
         .day.selected { background: #ff6a00; color: white; }
-        .day.disabled { color: #eee; cursor: not-allowed; }
-        .day.sun { color: #ff4d4d; }
-        .day.sat { color: #4d7cff; }
-
-        .reservation-box { background: white; border-radius: 28px; padding: 35px; box-shadow: 0 30px 70px rgba(0,0,0,0.08); position: sticky; top: 120px; }
-        .book-btn { width: 100%; padding: 20px; background: #ff6a00; color: white; border: none; border-radius: 16px; font-size: 18px; font-weight: 800; cursor: pointer; margin-top: 20px; }
-        .cart-btn { width: 100%; padding: 15px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 16px; margin-top: 10px; cursor: pointer; font-weight: 700; }
         
+        .selector-wrap { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 12px; }
+        .counter { display: flex; align-items: center; gap: 15px; }
+        .count-btn { width: 32px; height: 32px; border-radius: 50%; border: 1px solid #ddd; background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        
+        .book-btn { width: 100%; padding: 18px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 17px; font-weight: 800; cursor: pointer; }
+        .cart-btn { width: 100%; padding: 15px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 15px; margin-top: 10px; cursor: pointer; font-weight: 700; }
+
+        /* 📱 모바일 바 & 옵션 시트 */
         .mobile-bottom-bar { display: none; }
-        .option-sheet-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 3000; display: none; }
-        .option-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-radius: 30px 30px 0 0; z-index: 3100; padding: 30px 20px; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .option-sheet-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10004; display: none; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
+        .option-sheet { 
+            position: fixed; bottom: 0; left: 0; width: 100%; background: white; 
+            border-radius: 25px 25px 0 0; z-index: 10005; padding: 30px 20px 40px;
+            transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
         .option-sheet.active { transform: translateY(0); }
 
         @media (max-width: 1024px) {
-            .tour-detail-container { grid-template-columns: 1fr; padding: 0 15px; margin-top: 80px; }
+            .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
             .reservation-box { display: none; }
-            .mobile-bottom-bar { display: flex; position: fixed; bottom: 0; left: 0; width: 100%; background: white; padding: 15px 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); z-index: 2500; align-items: center; gap: 15px; }
-            .m-cart-btn { width: 60px; height: 55px; border: 1.5px solid #eee; border-radius: 15px; display: flex; align-items: center; justify-content: center; background: white; cursor: pointer; font-size: 20px; }
-            .m-book-btn { flex: 1; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 17px; font-weight: 800; cursor: pointer; }
+            .mobile-bottom-bar { 
+                display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
+                background: white; padding: 15px 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); 
+                z-index: 9000; align-items: center; gap: 12px;
+            }
+            .m-cart-btn { width: 55px; height: 55px; border: 1.5px solid #eee; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: white; font-size: 20px; }
+            .m-book-btn { flex: 1; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 800; }
+            .tour-content { padding: 20px 10px; }
         }
     </style>
 </head>
 <body>
 
-<!-- 🔥 모바일 사이드 메뉴 -->
 <div class="side-menu-overlay" id="overlay"></div>
 <div class="side-menu" id="sideMenu">
     <a href="index.html">홈으로</a>
@@ -54,13 +60,7 @@
 </div>
 
 <div class="top-bar">
-    <!-- 🔥 모바일 햄버거 버튼 추가 -->
-    <div class="menu-toggle" id="menuToggle" style="display: flex; z-index: 2000; position: relative;">
-        <span></span>
-        <span></span>
-        <span></span>
-    </div>
-
+    <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
     <div class="logo">
         <a href="index.html">
             <img src="og-image.png" class="logo-img" alt="로고">
@@ -68,9 +68,7 @@
         </a>
     </div>
     <div class="menu">
-        <a href="#">공항 픽업샌딩</a>
         <a href="hopping-tour.html">블랙펄 요트호핑투어</a>
-        <a href="#">시크릿가든 말룸파티</a>
         <a href="#">보라카이션 요금표</a>
         <a href="cart.html">장바구니 확인</a>
     </div>
@@ -82,58 +80,73 @@
 
 <div class="tour-detail-container">
     <div class="tour-content">
-        <div class="tour-header"><h1>블랙펄 요트 호핑투어</h1><p class="tour-summary">보라카이 최고의 럭셔리 호핑투어!</p></div>
+        <h1>블랙펄 요트 호핑투어</h1>
         <div class="section-title">투어 일정</div>
         <div class="itinerary">
-            <div class="itinerary-item"><div class="itinerary-img"><img src="hop1.jpg"></div></div>
-            <div class="itinerary-item"><div class="itinerary-img"><img src="hop2.jpg"></div></div>
-            <div class="itinerary-item"><div class="itinerary-img"><img src="hop3.jpg"></div></div>
-            <div class="itinerary-item"><div class="itinerary-img"><img src="hop4.jpg"></div></div>
-            <div class="itinerary-item"><div class="itinerary-img"><img src="hop5.jpg"></div></div>
+            <div class="itinerary-img"><img src="hop1.jpg"></div>
+            <div class="itinerary-img"><img src="hop2.jpg"></div>
+            <div class="itinerary-img"><img src="hop3.jpg"></div>
+            <div class="itinerary-img"><img src="hop4.jpg"></div>
+            <div class="itinerary-img"><img src="hop5.jpg"></div>
         </div>
         <div class="section-title">환불 규정</div>
-        <img src="refund.png" style="width:100%; border-radius:20px;">
+        <img src="refund.png" style="width:100%; border-radius:15px;">
     </div>
 
+    <!-- 💻 PC 예약 박스 -->
     <div class="reservation-box">
-        <div style="font-size:32px; font-weight:800; color:#ff6a00; margin-bottom:20px;">₩ 65,000</div>
-        
-        <!-- 📅 PC 달력 -->
+        <div style="font-size:30px; font-weight:900; color:#ff6a00; margin-bottom:20px;">₩ 65,000</div>
         <div class="calendar-wrap">
-            <div class="cal-header">
-                <button class="cal-btn" onclick="changeMonth(-1)"> &lt; </button>
-                <strong id="pc-cal-title">2026년 3월</strong>
-                <button class="cal-btn" onclick="changeMonth(1)"> &gt; </button>
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&lt;</button>
+                <strong id="pc-month">2026년 3월</strong>
+                <button onclick="changeMonth(1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&gt;</button>
             </div>
-            <div class="calendar-grid" id="pc-calendar-days"></div>
+            <div class="calendar-grid" id="pc-days"></div>
         </div>
-
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding:15px; background:#f8f9fa; border-radius:12px;">
-            <span>성인</span>
-            <div style="display:flex; align-items:center; gap:10px;"><button onclick="updateCount(-1)">-</button><strong id="adult-count">1</strong><button onclick="updateCount(1)">+</button></div>
+        <div class="selector-wrap">
+            <span style="font-weight:700;">성인</span>
+            <div class="counter">
+                <button class="count-btn" onclick="updateCount(-1)">-</button>
+                <strong id="pc-count">1</strong>
+                <button class="count-btn" onclick="updateCount(1)">+</button>
+            </div>
         </div>
         <button class="book-btn" onclick="location.href='login.html'">예약하기</button>
         <button class="cart-btn" onclick="addToCart()">장바구니 담기</button>
     </div>
 </div>
 
+<!-- 📱 모바일 하단 바 -->
 <div class="mobile-bottom-bar">
     <div class="m-cart-btn" onclick="addToCart()">🛒</div>
     <button class="m-book-btn" onclick="openOptionSheet()">예약하기</button>
 </div>
 
+<!-- 📱 모바일 옵션 선택창 -->
 <div class="option-sheet-overlay" id="sheetOverlay" onclick="closeOptionSheet()"></div>
 <div class="option-sheet" id="optionSheet">
-    <h3 style="font-weight:800; margin-bottom:20px;">옵션 선택</h3>
-    <!-- 📅 모바일 달력 -->
+    <h3 style="font-weight:800; margin-bottom:20px;">예약 옵션 선택</h3>
+    
     <div class="calendar-wrap">
-        <div class="cal-header">
-            <button class="cal-btn" onclick="changeMonth(-1)"> &lt; </button>
-            <strong id="m-cal-title">2026년 3월</strong>
-            <button class="cal-btn" onclick="changeMonth(1)"> &gt; </button>
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800;">&lt;</button>
+            <strong id="m-month">2026년 3월</strong>
+            <button onclick="changeMonth(1)" style="border:none; background:none; color:#ff6a00; font-weight:800;">&gt;</button>
         </div>
-        <div class="calendar-grid" id="m-calendar-days"></div>
+        <div class="calendar-grid" id="m-days"></div>
     </div>
+
+    <!-- 🔥 모바일 인원 선택 추가 -->
+    <div class="selector-wrap">
+        <span style="font-weight:700;">인원 (성인)</span>
+        <div class="counter">
+            <button class="count-btn" onclick="updateCount(-1)">-</button>
+            <strong id="m-count">1</strong>
+            <button class="count-btn" onclick="updateCount(1)">+</button>
+        </div>
+    </div>
+
     <button class="book-btn" onclick="location.href='login.html'">선택 완료 / 예약하기</button>
 </div>
 
@@ -153,73 +166,40 @@
     </div>
 </footer>
 
-<!-- 🔥 햄버거 메뉴를 위한 최후의 인라인 스크립트 -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const toggle = document.getElementById('menuToggle');
-        const menu = document.getElementById('sideMenu');
-        const overlay = document.getElementById('overlay');
-
-        if(toggle && menu && overlay) {
-            toggle.onclick = function() {
-                menu.classList.toggle('active');
-                overlay.classList.toggle('active');
-            };
-            overlay.onclick = function() {
-                menu.classList.remove('active');
-                overlay.classList.remove('active');
-            };
-        }
-    });
-</script>
-<script src="main.js"></script>
 <script>
     let adultCount = 1;
-    const pricePerPerson = 65000;
     let currentDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
 
     function openOptionSheet() { document.getElementById('sheetOverlay').style.display = 'block'; document.getElementById('optionSheet').classList.add('active'); }
     function closeOptionSheet() { document.getElementById('sheetOverlay').style.display = 'none'; document.getElementById('optionSheet').classList.remove('active'); }
-    
+
     function updateCount(delta) {
         adultCount = Math.max(1, adultCount + delta);
-        document.getElementById('adult-count').innerText = adultCount;
+        document.getElementById('pc-count').innerText = adultCount;
+        document.getElementById('m-count').innerText = adultCount;
     }
 
     function changeMonth(delta) {
         currentDate.setMonth(currentDate.getMonth() + delta);
-        renderCalendar('pc-calendar-days', 'pc-cal-title');
-        renderCalendar('m-calendar-days', 'm-cal-title');
+        renderCalendar('pc-days', 'pc-month');
+        renderCalendar('m-days', 'm-month');
     }
 
-    function renderCalendar(containerId, titleId) {
-        const container = document.getElementById(containerId);
-        const title = document.getElementById(titleId);
+    function renderCalendar(cid, tid) {
+        const container = document.getElementById(cid);
+        const title = document.getElementById(tid);
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth();
-        
         title.innerText = `${year}년 ${month + 1}월`;
         container.innerHTML = '';
-        
-        ['일','월','화','수','목','금','토'].forEach((d, i) => {
-            let colorClass = i === 0 ? 'sun' : (i === 6 ? 'sat' : '');
-            container.innerHTML += `<div style="color:#bbb; font-weight:800;" class="${colorClass}">${d}</div>`;
-        });
-
+        ['일','월','화','수','목','금','토'].forEach(d => container.innerHTML += `<div style="color:#bbb; font-weight:800; font-size:12px;">${d}</div>`);
         const firstDay = new Date(year, month, 1).getDay();
         const lastDate = new Date(year, month + 1, 0).getDate();
-
         for (let i = 0; i < firstDay; i++) container.appendChild(document.createElement('div'));
-
         for (let i = 1; i <= lastDate; i++) {
             const div = document.createElement('div');
-            const dayOfWeek = new Date(year, month, i).getDay();
             div.className = 'day';
-            if (dayOfWeek === 0) div.classList.add('sun');
-            if (dayOfWeek === 6) div.classList.add('sat');
-            if (`${year}-${(month+1).toString().padStart(2,'0')}-${i.toString().padStart(2,'0')}` === selectedDate) div.classList.add('selected');
-            
             div.innerText = i;
             div.onclick = function() {
                 document.querySelectorAll('.day').forEach(d => d.classList.remove('selected'));
@@ -231,14 +211,26 @@
     }
 
     function addToCart() {
-        const item = { name: "블랙펄 요트 호핑투어", price: pricePerPerson, count: adultCount, date: selectedDate };
+        const item = { name: "블랙펄 요트 호핑투어", price: 65000, count: adultCount, date: selectedDate };
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         cart.push(item);
         localStorage.setItem('cart', JSON.stringify(cart));
-        if(confirm('장바구니에 담겼습니다. 장바구니로 이동하시겠습니까?')) { location.href = 'cart.html'; }
+        if(confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) location.href = 'cart.html';
     }
 
-    window.onload = () => { renderCalendar('pc-calendar-days', 'pc-cal-title'); renderCalendar('m-calendar-days', 'm-cal-title'); };
+    window.onload = () => { renderCalendar('pc-days', 'pc-month'); renderCalendar('m-days', 'm-month'); };
+</script>
+<script>
+    // ☰ 햄버거 메뉴 강제 작동 스크립트
+    document.addEventListener('DOMContentLoaded', function() {
+        const t = document.getElementById('menuToggle');
+        const m = document.getElementById('sideMenu');
+        const o = document.getElementById('overlay');
+        if(t && m && o) {
+            t.onclick = function() { m.classList.toggle('active'); o.classList.toggle('active'); };
+            o.onclick = function() { m.classList.remove('active'); o.classList.remove('active'); };
+        }
+    });
 </script>
 </body>
 </html>

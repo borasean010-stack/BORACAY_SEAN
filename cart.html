@@ -12,20 +12,31 @@
         .cart-title { font-size: 32px; font-weight: 900; margin-bottom: 40px; color: #111; letter-spacing: -1px; }
         .cart-item { background: white; border-radius: 24px; padding: 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 40px rgba(0,0,0,0.03); margin-bottom: 20px; border: 1px solid #f5f5f5; }
         .item-info h4 { font-size: 22px; font-weight: 800; margin-bottom: 10px; color: #111; }
-        .item-info p { color: #888; font-size: 15px; margin-bottom: 5px; font-weight: 500; }
         .item-price { font-size: 24px; font-weight: 900; color: #ff6a00; }
-        .remove-btn { background: #f8f8f8; color: #bbb; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-size: 14px; font-weight: 600; margin-top: 15px; transition: 0.3s; }
-        .remove-btn:hover { background: #feebeb; color: #ff4d4d; }
-        .checkout-bar { background: white; border-top: 1px solid #eee; padding: 30px 60px; display: flex; justify-content: space-between; align-items: center; position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000; box-shadow: 0 -10px 40px rgba(0,0,0,0.05); }
-        .order-btn { background: #ff6a00; color: white; border: none; padding: 20px 60px; border-radius: 18px; font-size: 18px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .order-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
-        @media (max-width: 768px) { .checkout-bar { padding: 20px; } .order-btn { padding: 15px 30px; font-size: 16px; } .cart-item { flex-direction: column; align-items: flex-start; gap: 20px; } .item-price { align-self: flex-end; } }
+        .remove-btn { background: #f8f8f8; color: #bbb; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-size: 14px; margin-top: 15px; }
+        .checkout-bar { background: white; border-top: 1px solid #eee; padding: 30px 60px; display: flex; justify-content: space-between; align-items: center; position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000; }
+        .order-btn { background: #ff6a00; color: white; border: none; padding: 20px 60px; border-radius: 18px; font-size: 18px; font-weight: 800; cursor: pointer; }
     </style>
 </head>
 <body>
 
+<div class="side-menu-overlay" id="overlay"></div>
+<div class="side-menu" id="sideMenu">
+    <a href="index.html">홈으로</a>
+    <a href="hopping-tour.html">블랙펄 요트호핑투어</a>
+    <a href="cart.html">장바구니 확인</a>
+</div>
+
 <div class="top-bar">
-    <div class="logo"><a href="index.html">BORACAY_SEAN</a></div>
+    <div class="menu-toggle" id="menuToggle" style="display: flex; z-index: 2000; position: relative;">
+        <span></span><span></span><span></span>
+    </div>
+    <div class="logo">
+        <a href="index.html">
+            <img src="og-image.png" class="logo-img" alt="로고">
+            BORACAY_SEAN
+        </a>
+    </div>
     <div class="menu">
         <a href="#">공항 픽업샌딩</a>
         <a href="hopping-tour.html">블랙펄 요트호핑투어</a>
@@ -45,13 +56,38 @@
 </div>
 
 <div class="checkout-bar" id="checkout-bar" style="display:none;">
-    <div>
-        <span style="font-size:14px; color:#999; font-weight:600;">총 결제 예정금액</span><br>
-        <span style="font-size:32px; font-weight:900; color:#ff6a00;" id="final-price">₩ 0</span>
-    </div>
+    <div><span style="font-size:32px; font-weight:900; color:#ff6a00;" id="final-price">₩ 0</span></div>
     <button class="order-btn" onclick="location.href='login.html'">예약하기</button>
 </div>
 
+<footer class="footer">
+    <div class="footer-left">
+        <b class="important">상호 : 보라카이션 | 대표 : 윤오현</b><br>
+        서울특별시 중랑구 상봉로 16길 25-3<br>
+        사업자번호 : 498-31-00593<br>
+        daemit@naver.com
+    </div>
+    <div class="footer-right">
+        <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-banner">
+            <div class="kb-text"><span>무엇이든 물어보세요!</span><b>실시간 카톡 상담하기</b></div>
+        </a>
+        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-banner">
+            <div class="nb-text"><span>다양한 후기와 정보가 가득!</span><b>보라카이션 카페 바로가기</b></div>
+        </a>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggle = document.getElementById('menuToggle');
+        const menu = document.getElementById('sideMenu');
+        const overlay = document.getElementById('overlay');
+        if(toggle && menu && overlay) {
+            toggle.onclick = function() { menu.classList.toggle('active'); overlay.classList.toggle('active'); };
+            overlay.onclick = function() { menu.classList.remove('active'); overlay.classList.remove('active'); };
+        }
+    });
+</script>
 <script>
     function loadCart() {
         const cart = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -64,26 +100,11 @@
         cart.forEach((item, index) => {
             const itemTotal = item.price * item.count;
             total += itemTotal;
-            listContainer.innerHTML += `
-                <div class="cart-item">
-                    <div class="item-info">
-                        <h4>${item.name}</h4>
-                        <p>예약일: ${item.date}</p>
-                        <p>인원: 성인 ${item.count}명</p>
-                        <button class="remove-btn" onclick="removeItem(${index})">삭제하기</button>
-                    </div>
-                    <div class="item-price">₩ ${itemTotal.toLocaleString()}</div>
-                </div>
-            `;
+            listContainer.innerHTML += `<div class="cart-item"><div class="item-info"><h4>${item.name}</h4><p>예약일: ${item.date}</p><p>인원: 성인 ${item.count}명</p><button class="remove-btn" onclick="removeItem(${index})">삭제하기</button></div><div class="item-price">₩ ${itemTotal.toLocaleString()}</div></div>`;
         });
         document.getElementById('final-price').innerText = '₩ ' + total.toLocaleString();
     }
-    function removeItem(index) {
-        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        cart.splice(index, 1);
-        localStorage.setItem('cart', JSON.stringify(cart));
-        loadCart();
-    }
+    function removeItem(index) { let cart = JSON.parse(localStorage.getItem('cart') || '[]'); cart.splice(index, 1); localStorage.setItem('cart', JSON.stringify(cart)); loadCart(); }
     window.onload = loadCart;
 </script>
 </body>

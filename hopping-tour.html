@@ -45,6 +45,7 @@
 </head>
 <body>
 
+<!-- 🔥 모바일 사이드 메뉴 -->
 <div class="side-menu-overlay" id="overlay"></div>
 <div class="side-menu" id="sideMenu">
     <a href="index.html">홈으로</a>
@@ -53,7 +54,13 @@
 </div>
 
 <div class="top-bar">
-    <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
+    <!-- 🔥 모바일 햄버거 버튼 추가 -->
+    <div class="menu-toggle" id="menuToggle" style="display: flex; z-index: 2000; position: relative;">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
     <div class="logo">
         <a href="index.html">
             <img src="og-image.png" class="logo-img" alt="로고">
@@ -146,6 +153,25 @@
     </div>
 </footer>
 
+<!-- 🔥 햄버거 메뉴를 위한 최후의 인라인 스크립트 -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggle = document.getElementById('menuToggle');
+        const menu = document.getElementById('sideMenu');
+        const overlay = document.getElementById('overlay');
+
+        if(toggle && menu && overlay) {
+            toggle.onclick = function() {
+                menu.classList.toggle('active');
+                overlay.classList.toggle('active');
+            };
+            overlay.onclick = function() {
+                menu.classList.remove('active');
+                overlay.classList.remove('active');
+            };
+        }
+    });
+</script>
 <script src="main.js"></script>
 <script>
     let adultCount = 1;

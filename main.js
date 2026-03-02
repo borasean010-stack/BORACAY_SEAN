@@ -2,13 +2,28 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log("BORACAY_SEAN JS Loaded");
 
-    // 1. 🎥 비디오 자동 재생 확인
+    // 1. 🎥 비디오 자동 재생 확인 및 강제 실행 (모바일 대응)
     const video = document.getElementById('hero-video');
     if (video) {
+        // 비디오 속성 재확인
+        video.muted = true;
+        video.autoplay = true;
+        video.loop = true;
+        video.playsInline = true;
+
         video.oncanplay = () => video.classList.add('loaded');
-        video.play().catch(() => {
-            document.body.addEventListener('click', () => video.play(), { once: true });
-        });
+        
+        // 강제 재생 시도
+        const promise = video.play();
+        if (promise !== undefined) {
+            promise.catch(error => {
+                console.log("Autoplay was prevented. Retrying on user interaction.");
+                // 사용자가 화면 아무 데나 터치하면 즉시 재생되도록 백업
+                document.body.addEventListener('touchstart', () => {
+                    video.play();
+                }, { once: true });
+            });
+        }
         setTimeout(() => video.classList.add('loaded'), 2000);
     }
 

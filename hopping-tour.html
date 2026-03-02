@@ -9,11 +9,13 @@
     <style>
         body { background: #fcfcfc; }
         
-        /* 🔥 상세 페이지 전용: 상단 바 주황색 테마 */
+        /* 🔥 상세 페이지 전용: 상단 바 주황색 유리 질감 (Glassmorphism) */
         .top-bar {
-            background: rgba(255, 106, 0, 0.95) !important;
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+            background: rgba(255, 106, 0, 0.7) !important; /* 더 투명하게 */
+            backdrop-filter: blur(15px) saturate(180%);
+            -webkit-backdrop-filter: blur(15px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3) !important;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
         }
         .logo a, .menu a { text-shadow: none !important; color: white !important; }
         .menu a:hover { opacity: 0.8; }

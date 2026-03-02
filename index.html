@@ -23,10 +23,15 @@
     </div>
 </div>
 
-<!-- 🔥 유튜브 배경 섹션 -->
+<!-- 🔥 유튜브 배경 섹션 (안정적인 iframe 방식) -->
 <section class="hero">
     <div class="video-background">
-        <div id="player"></div> <!-- 유튜브 iframe이 생성될 자리 -->
+        <iframe 
+            src="https://www.youtube.com/embed/bb9bV-moCuk?autoplay=1&mute=1&loop=1&playlist=bb9bV-moCuk&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&disablekb=1&enablejsapi=1" 
+            frameborder="0" 
+            allow="autoplay; encrypted-media" 
+            allowfullscreen>
+        </iframe>
     </div>
     <div class="hero-overlay"></div>
     <div class="hero-content">
@@ -63,7 +68,5 @@
     사업자번호 : 498-31-00593 | 통신판매신고번호 : 2019-서울중랑-0496
 </footer>
 
-<script src="https://www.youtube.com/iframe_api"></script>
-<script src="main.js"></script>
 </body>
 </html>

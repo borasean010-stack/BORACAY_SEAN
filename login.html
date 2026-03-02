@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 | BORACAY_SEAN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { 
+            background: #f8f9fa; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0;
+        }
+        
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            padding: 50px 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .logo-area {
+            margin-bottom: 40px;
+        }
+        .logo-area a {
+            font-size: 32px;
+            font-weight: 900;
+            color: #ff6a00;
+            text-decoration: none;
+            letter-spacing: -1.5px;
+        }
+
+        .login-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #111;
+            margin-bottom: 15px;
+        }
+        .login-desc {
+            font-size: 16px;
+            color: #888;
+            margin-bottom: 40px;
+            line-height: 1.5;
+        }
+
+        /* 🔥 카카오 로그인 버튼 */
+        .kakao-login-btn {
+            width: 100%;
+            padding: 18px;
+            background: #fee500;
+            color: #3c1e1e;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+        .kakao-login-btn:hover {
+            background: #fada00;
+            transform: translateY(-2px);
+        }
+        .kakao-icon {
+            width: 24px;
+            height: 24px;
+            background: url('https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png') no-repeat center;
+            background-size: contain;
+        }
+
+        .other-links {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 14px;
+            color: #bbb;
+        }
+        .other-links a { color: #aaa; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <div class="logo-area">
+        <a href="index.html">BORACAY_SEAN</a>
+    </div>
+    
+    <h2 class="login-title">환영합니다!</h2>
+    <p class="login-desc">
+        보라카이션의 모든 투어 예약은<br>
+        카카오 계정으로 간편하게 시작할 수 있습니다.
+    </p>
+
+    <!-- 클릭 시 다음 단계인 예약 폼으로 이동 -->
+    <a href="booking-form.html" class="kakao-login-btn">
+        <div class="kakao-icon"></div>
+        카카오 로그인
+    </a>
+
+    <div class="other-links">
+        <a href="#">아이디 찾기</a>
+        <span>|</span>
+        <a href="#">비밀번호 찾기</a>
+        <span>|</span>
+        <a href="#">회원가입</a>
+    </div>
+</div>
+
+</body>
+</html>

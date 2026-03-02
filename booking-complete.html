@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예약 완료 | BORACAY_SEAN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { 
+            background: #f8f9fa; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0;
+        }
+        
+        .complete-container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            padding: 60px 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: #ff6a00;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin: 0 auto 30px;
+        }
+
+        .complete-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #111;
+            margin-bottom: 15px;
+        }
+        .complete-desc {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .info-box {
+            background: #fff1e6;
+            padding: 25px;
+            border-radius: 20px;
+            text-align: left;
+            margin-bottom: 40px;
+        }
+        .info-box h4 { margin: 0 0 10px; color: #ff6a00; font-size: 18px; }
+        .info-box p { margin: 0; font-size: 14px; color: #666; line-height: 1.5; }
+
+        .btn-group { display: flex; flex-direction: column; gap: 15px; }
+        .home-btn { 
+            width: 100%; padding: 18px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 17px; font-weight: 800; cursor: pointer; text-decoration: none; transition: 0.3s;
+        }
+        .kakao-channel-btn { 
+            width: 100%; padding: 18px; background: #fee500; color: #3c1e1e; border: none; border-radius: 15px; font-size: 17px; font-weight: 800; cursor: pointer; text-decoration: none; transition: 0.3s;
+        }
+        .home-btn:hover, .kakao-channel-btn:hover { transform: translateY(-2px); opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+<div class="complete-container">
+    <div class="success-icon">✓</div>
+    
+    <h2 class="complete-title">예약이 완료되었습니다!</h2>
+    <p class="complete-desc">
+        보라카이션을 선택해 주셔서 감사합니다.<br>
+        입금 확인 후 예약 확정 메시지를 보내드립니다.
+    </p>
+
+    <div class="info-box">
+        <h4>다음 절차 안내</h4>
+        <p>
+            1. 카카오톡 채널로 '예약자 성함'을 보내주세요.<br>
+            2. 담당자가 실시간 확인 후 바우처를 발송합니다.<br>
+            3. 투어 당일 미팅 포인트에서 바우처를 제시해 주세요.
+        </p>
+    </div>
+
+    <div class="btn-group">
+        <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-channel-btn">카카오톡으로 예약 알리기</a>
+        <a href="index.html" class="home-btn">홈으로 돌아가기</a>
+    </div>
+</div>
+
+</body>
+</html>

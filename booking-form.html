@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예약 정보 입력 | BORACAY_SEAN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background: #fcfcfc; }
+        .booking-container { max-width: 800px; margin: 120px auto 100px; padding: 0 20px; }
+        .form-card { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); border: 1px solid #eee; }
+        .form-title { font-size: 28px; font-weight: 800; margin-bottom: 30px; color: #111; border-bottom: 2px solid #ff6a00; padding-bottom: 15px; display: inline-block; }
+        
+        .input-group { margin-bottom: 25px; }
+        .input-group label { display: block; font-size: 15px; font-weight: 700; color: #555; margin-bottom: 10px; }
+        .input-group input, .input-group select, .input-group textarea { 
+            width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; font-size: 16px; outline: none; transition: 0.3s;
+        }
+        .input-group input:focus { border-color: #ff6a00; box-shadow: 0 0 0 4px rgba(255,106,0,0.1); }
+        .required { color: #ff6a00; margin-left: 4px; }
+
+        .payment-methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 10px; }
+        .method-item { 
+            border: 1px solid #ddd; padding: 15px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.3s; font-weight: 600;
+        }
+        .method-item:hover { border-color: #ff6a00; color: #ff6a00; }
+        .method-item.active { border-color: #ff6a00; background: #fff1e6; color: #ff6a00; border-width: 2px; }
+
+        .next-btn { width: 100%; padding: 20px; background: #ff6a00; color: white; border: none; border-radius: 16px; font-size: 18px; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 40px; }
+        .next-btn:hover { background: #e65f00; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,106,0,0.3); }
+    </style>
+</head>
+<body>
+
+<div class="top-bar" style="background: rgba(255, 106, 0, 0.7) !important; backdrop-filter: blur(15px);">
+    <div class="logo"><a href="index.html" style="color:white; text-decoration:none;">BORACAY_SEAN</a></div>
+</div>
+
+<div class="booking-container">
+    <div class="form-card">
+        <h2 class="form-title">예약자 정보 입력</h2>
+        
+        <form id="booking-form" onsubmit="return handleNext(event)">
+            <div class="input-group">
+                <label>대표자 영문 성함<span class="required">*</span></label>
+                <input type="text" id="eng-name" placeholder="여권과 동일한 영문 성함을 입력하세요 (예: HONG GILDONG)" required>
+            </div>
+
+            <div class="input-group">
+                <label>연락처<span class="required">*</span></label>
+                <input type="tel" id="phone" placeholder="'-' 제외하고 입력하세요" required>
+            </div>
+
+            <div class="input-group">
+                <label>카카오톡 ID</label>
+                <input type="text" id="kakao-id" placeholder="정확한 상담을 위해 입력해 주세요">
+            </div>
+
+            <div class="input-group">
+                <label>추가 요청사항</label>
+                <textarea rows="4" placeholder="알러지 여부, 특이사항 등이 있다면 기재해 주세요"></textarea>
+            </div>
+
+            <h3 style="font-size:20px; font-weight:800; margin:40px 0 20px; color:#111;">결제 방식 선택</h3>
+            <div class="payment-methods">
+                <div class="method-item active" onclick="selectMethod(this)">무통장 입금</div>
+                <div class="method-item" onclick="selectMethod(this)">신용카드</div>
+                <div class="method-item" onclick="selectMethod(this)">카카오페이</div>
+            </div>
+
+            <button type="submit" class="next-btn">결제하기</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function selectMethod(el) {
+        document.querySelectorAll('.method-item').forEach(m => m.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    function handleNext(e) {
+        e.preventDefault();
+        // 결제 완료 페이지로 바로 이동 (시뮬레이션)
+        location.href = 'booking-complete.html';
+        return false;
+    }
+</script>
+
+</body>
+</html>

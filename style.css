@@ -12,7 +12,7 @@ body {
     color: #333;
 }
 
-/* 🟠 상단 바: 기존 주황색 유리 질감 고정 틀 */
+/* 🟠 상단 바: 사용자 지시 고정 레이아웃 (아이폰 최적화) */
 .top-bar {
     position: fixed;
     top: 0;
@@ -23,14 +23,16 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 0 60px;
-    background: rgba(255, 106, 0, 0.95) !important; 
+    background: rgba(255, 106, 0, 0.98) !important; 
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    z-index: 9999 !important;
+    z-index: 10000 !important;
 }
 
-.logo { display: flex; align-items: center; }
+/* 왼쪽 구역: 햄버거 + 로고 */
+.header-left { display: flex; align-items: center; gap: 15px; }
+
 .logo a { 
     display: flex; 
     align-items: center; 
@@ -39,21 +41,21 @@ body {
     font-weight: 900; 
     font-size: 24px; 
     letter-spacing: -1.5px; 
-    text-transform: uppercase;
 }
 .logo-img {
-    height: 42px; width: 42px;
+    height: 40px; width: 40px;
     object-fit: contain;
-    margin-right: 12px;
+    margin-right: 10px;
     mix-blend-mode: screen;
     filter: brightness(1.2);
 }
 
+/* PC 전용 메뉴 */
 .menu { display: flex; align-items: center; }
 .menu a { 
     color: rgba(255, 255, 255, 0.85); 
     text-decoration: none; 
-    margin-right: 35px; 
+    margin-right: 30px; 
     font-weight: 700; 
     font-size: 15px; 
     letter-spacing: -0.5px;
@@ -61,25 +63,53 @@ body {
 }
 .menu a:hover { color: white; }
 
-.right-buttons { display: flex; align-items: center; gap: 10px; }
-.naver-btn { background: #03c75a; color: white; padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: 600; font-size: 13px; }
-.kakao-btn { background: #fee500; color: #3c1e1e; padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: 700; font-size: 13px; margin-left: 10px; }
+/* 오른쪽 전용 버튼 (카페, 카톡) */
+.header-right { display: flex; align-items: center; gap: 10px; }
+.naver-btn { background: #03c75a; color: white; padding: 10px 18px; border-radius: 30px; text-decoration: none; font-weight: 600; font-size: 13px; white-space: nowrap; }
+.kakao-btn { background: #fee500; color: #3c1e1e; padding: 10px 18px; border-radius: 30px; text-decoration: none; font-weight: 700; font-size: 13px; white-space: nowrap; }
 
-/* ☰ 모바일 햄버거 메뉴 */
-.menu-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; z-index: 10002; }
-.menu-toggle span { width: 25px; height: 3px; background: white; border-radius: 2px; }
+/* ☰ 모바일 햄버거 버튼 */
+.menu-toggle { 
+    display: none; 
+    flex-direction: column; 
+    gap: 5px; 
+    cursor: pointer; 
+    z-index: 10002;
+    padding: 10px;
+}
+.menu-toggle span { width: 24px; height: 3px; background: white; border-radius: 2px; }
 
-.side-menu { position: fixed; top: 0; left: 0; width: 280px; height: 100vh; background: #ff6a00; z-index: 10005; padding: 100px 30px; transform: translateX(-100%); transition: 0.4s; }
+/* 📱 모바일 사이드 메뉴 */
+.side-menu { 
+    position: fixed; top: 0; left: 0; width: 300px; height: 100vh; 
+    background: #fff; z-index: 10010; padding: 100px 30px; 
+    transform: translateX(-100%); transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+    box-shadow: 20px 0 50px rgba(0,0,0,0.1);
+}
 .side-menu.active { transform: translateX(0); }
-.side-menu a { display: block; font-size: 20px; font-weight: 700; color: #fff; text-decoration: none; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
-.side-menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10004; display: none; backdrop-filter: blur(5px); }
+.side-menu a { display: block; font-size: 18px; font-weight: 700; color: #111; text-decoration: none; padding: 20px 0; border-bottom: 1px solid #f5f5f5; }
+.side-menu a:last-child { border-bottom: none; color: #ff6a00; } /* 장바구니 강조 */
+
+.side-menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10005; display: none; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
 .side-menu-overlay.active { display: block; }
 
-/* 🔥 Hero 섹션 (DJI 스타일) */
-.hero { position: relative; width: 100%; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #000; }
+/* 🔥 Hero 섹션 (DJI 스타일 완벽 고정) */
+.hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+}
+.video-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
 .video-background video { width: 100%; height: 100%; object-fit: cover; }
+.hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.2); z-index: 2; }
 .hero-content { position: relative; z-index: 3; text-align: center; color: white; }
 .hero-content h1 { font-size: clamp(60px, 15vw, 120px); font-weight: 900; line-height: 0.9; margin-bottom: 20px; letter-spacing: -4px; text-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+.hero-content p { font-size: clamp(16px, 3vw, 24px); font-weight: 500; opacity: 0.9; }
 
 /* 🔥 마우스 지시계 */
 .scroll-indicator { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); z-index: 4; opacity: 0; transition: opacity 1s ease; }
@@ -89,30 +119,33 @@ body {
 .mouse::before { content: ''; width: 8px; height: 16px; background: white; position: absolute; left: 50%; top: 12px; transform: translateX(-50%); border-radius: 4px; animation: scroll 2s infinite; }
 @keyframes scroll { 0% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, 35px); } }
 
-/* 🔥 상품 리스트 섹션 */
-.best-title { background: #fff; color: #ff6a00; padding: 120px 40px 40px; text-align: center; font-size: 40px; font-weight: 900; }
+/* 🔥 상품 섹션 */
+.best-title { background: #fff; color: #ff6a00; padding: 120px 20px 40px; text-align: center; font-size: 40px; font-weight: 900; }
 .products { background: #fff; padding: 0 60px 150px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
 .product { border-radius: 24px; overflow: hidden; background: #fff; transition: 0.6s; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f5f5f5; }
-.img-container { width: 100%; height: 450px; overflow: hidden; }
-.img-container img { width: 100%; height: 100%; object-fit: cover; transition: 0.6s; }
 .product h3 { padding: 30px 20px; text-align: center; font-size: 20px; font-weight: 800; color: #111; }
+.img-container { width: 100%; height: 450px; overflow: hidden; }
+.img-container img { width: 100%; height: 100%; object-fit: cover; }
 
 /* 🟠 푸터 개편 */
 .footer { background: #ff6a00; color: #fff; padding: 80px 60px; display: flex; justify-content: space-between; align-items: flex-end; gap: 40px; }
 .footer-left b.important { font-size: 21px; display: inline-block; margin-bottom: 8px; }
 .footer-right { display: flex; flex-direction: column; gap: 15px; min-width: 300px; }
-.kakao-banner, .naver-banner { padding: 20px 25px; border-radius: 16px; text-decoration: none; display: flex; align-items: center; gap: 15px; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+.kakao-banner, .naver-banner { padding: 20px 25px; border-radius: 16px; text-decoration: none; display: flex; align-items: center; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
 .kakao-banner { background: #fee500; color: #3c1e1e; }
 .naver-banner { background: #03c75a; color: white; }
 
+/* 🔥 모바일 최적화 (768px 이하) */
 @media (max-width: 768px) {
-    .top-bar { height: 70px; padding: 0 20px; }
-    .logo a { font-size: 18px; }
-    .logo-img { height: 34px; width: 34px; }
+    .top-bar { height: 70px; padding: 0 15px; }
     .menu { display: none; }
     .menu-toggle { display: flex; }
-    .right-buttons { display: none; }
-    .hero-content h1 { font-size: 55px; }
+    .logo a { font-size: 16px; letter-spacing: -0.8px; }
+    .logo-img { height: 30px; width: 30px; margin-right: 5px; }
+    .header-right { gap: 6px; }
+    .naver-btn, .kakao-btn { padding: 8px 12px; font-size: 11px; border-radius: 20px; }
     .products { grid-template-columns: 1fr; gap: 20px; padding: 0 20px 80px; }
     .img-container { height: 320px; }
+    .footer { flex-direction: column; align-items: flex-start; padding: 60px 25px; }
+    .footer-right { width: 100%; min-width: auto; }
 }

@@ -29,8 +29,26 @@ body {
     z-index: 1000;
 }
 
-.logo { color: white; font-weight: 900; font-size: 26px; letter-spacing: -1.5px; }
-.logo a { color: white; text-decoration: none; text-transform: uppercase; }
+/* 🔥 로고 이미지 + 텍스트 정렬 */
+.logo { display: flex; align-items: center; gap: 12px; }
+.logo a { 
+    display: flex; 
+    align-items: center; 
+    color: white; 
+    text-decoration: none; 
+    text-transform: uppercase; 
+    font-weight: 900; 
+    font-size: 24px; 
+    letter-spacing: -1.5px; 
+}
+.logo-img {
+    height: 40px; /* 글자 크기보다 살짝 크게 하여 포인트 */
+    width: 40px;
+    object-fit: cover;
+    border-radius: 50%; /* 둥글게 처리하여 누끼 딴 듯한 효과 */
+    border: 2px solid rgba(255,255,255,0.5);
+    background: white;
+}
 
 .menu { display: flex; align-items: center; }
 .menu a { 
@@ -185,6 +203,14 @@ body {
     opacity: 0.9;
 }
 
+/* 🔥 상호명과 대표자명 강조 (글씨 포인트 업) */
+.footer-left b.important {
+    font-size: 21px; /* 약 5pt 이상 증가 */
+    display: inline-block;
+    margin-bottom: 8px;
+    opacity: 1;
+}
+
 .footer-right {
     display: flex;
     flex-direction: column;
@@ -229,11 +255,13 @@ body {
 @media (max-width: 1024px) {
     .footer { flex-direction: column; align-items: flex-start; padding: 60px 30px; }
     .footer-right { width: 100%; min-width: auto; }
+    .top-bar { padding: 0 20px; }
 }
 
 @media (max-width: 768px) {
-    .top-bar { padding: 0 20px; height: 70px; }
-    .logo { font-size: 20px; }
+    .top-bar { height: 70px; }
+    .logo a { font-size: 18px; }
+    .logo-img { height: 32px; width: 32px; }
     .menu { display: none; }
     .menu-toggle { display: flex; }
     .right-buttons .naver-btn, .right-buttons .kakao-btn { padding: 8px 12px; font-size: 11px; }

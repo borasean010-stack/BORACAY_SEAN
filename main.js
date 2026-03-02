@@ -1,12 +1,18 @@
 // main.js
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("BORACAY_SEAN site with local video background loaded.");
+    const iframe = document.getElementById('bg-video');
     
-    // 비디오 자동 재생 확인 (일부 브라우저 대응)
-    const video = document.getElementById('hero-video');
-    if (video) {
-        video.play().catch(error => {
-            console.log("Autoplay was prevented. User interaction might be required.", error);
-        });
+    // 유튜브 영상 로드 체크
+    if (iframe) {
+        iframe.onload = function() {
+            // 로드가 완료되면 opacity를 1로 변경 (CSS 클래스 추가)
+            iframe.classList.add('loaded');
+            console.log("Video loaded successfully.");
+        };
+
+        // 혹시 모르니 3초 후에도 안 나타나면 강제 표시 (또는 에러 대응)
+        setTimeout(() => {
+            iframe.classList.add('loaded');
+        }, 5000);
     }
 });

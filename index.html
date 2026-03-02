@@ -13,7 +13,8 @@
     <div class="logo">BORACAY_SEAN</div>
     <div class="menu">
         <a href="#">공항 픽업샌딩</a>
-        <a href="#">블랙펄 요트호핑투어</a>
+        <!-- 🔥 메뉴 링크 연결 -->
+        <a href="hopping-tour.html">블랙펄 요트호핑투어</a>
         <a href="#">시크릿가든 말룸파티</a>
         <a href="#">보라카이션 요금표</a>
     </div>
@@ -25,16 +26,12 @@
 
 <!-- 🔥 DJI 스타일 풀스크린 히어로 섹션 -->
 <section class="hero">
-    <!-- 영상 로딩 전 백업 이미지 -->
     <div class="hero-fallback-bg"></div>
-
     <div class="video-background">
-        <!-- 🎥 직접 업로드한 17MB 영상 파일 -->
         <video autoplay muted loop playsinline id="hero-video">
             <source src="hero-video.mp4" type="video/mp4">
         </video>
     </div>
-    
     <div class="hero-overlay"></div>
     <div class="hero-content">
         <h1>BORACAY<br>SEAN</h1>
@@ -48,14 +45,14 @@
 <div class="best-title">BEST TOUR</div>
 
 <section class="products">
-    <!-- 🖼️ 직접 업로드하신 고화질 사진 적용 완료! -->
     <div class="product">
         <div class="img-container">
             <img src="pickup.jpg" alt="공항 픽업샌딩">
         </div>
         <h3>공항 픽업샌딩</h3>
     </div>
-    <div class="product">
+    <!-- 🔥 상품 카드 클릭 시 상세 페이지로 이동하도록 수정 -->
+    <div class="product" onclick="location.href='hopping-tour.html'">
         <div class="img-container">
             <img src="hopping.jpg" alt="블랙펄 요트호핑투어">
         </div>

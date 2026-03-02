@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BORACAY_SEAN | 보라카이션</title>
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -23,20 +23,18 @@
     </div>
 </div>
 
-<!-- 🔥 유튜브 배경 섹션 (안정적인 iframe 방식) -->
+<!-- 🔥 DJI 스타일 풀스크린 히어로 섹션 -->
 <section class="hero">
-    <div class="video-background">
-        <iframe 
-            src="https://www.youtube.com/embed/bb9bV-moCuk?autoplay=1&mute=1&loop=1&playlist=bb9bV-moCuk&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&disablekb=1&enablejsapi=1" 
-            frameborder="0" 
-            allow="autoplay; encrypted-media" 
-            allowfullscreen>
-        </iframe>
+    <div class="video-foreground">
+        <div id="player"></div> <!-- 유튜브 API가 여기 영상을 생성합니다 -->
     </div>
     <div class="hero-overlay"></div>
     <div class="hero-content">
-        <h1>BORACAY SEAN</h1>
-        <p>가장 완벽한 보라카이 여행의 시작</p>
+        <h1>BORACAY<br>SEAN</h1>
+        <p>가장 완벽한 보라카이 여행의 시작, 보라카이션</p>
+        <div class="scroll-indicator">
+            <div class="mouse"></div>
+        </div>
     </div>
 </section>
 
@@ -68,5 +66,9 @@
     사업자번호 : 498-31-00593 | 통신판매신고번호 : 2019-서울중랑-0496
 </footer>
 
+<!-- 유튜브 API 로드 -->
+<script src="https://www.youtube.com/iframe_api"></script>
+<script src="main.js"></script>
 </body>
 </html>
+

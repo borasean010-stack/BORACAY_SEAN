@@ -130,10 +130,10 @@ body {
     text-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 
-/* 🔥 마우스 지시계 애니메이션 */
+/* 🔥 마우스 스크롤 지시계 (크게 강조) */
 .scroll-indicator {
     position: absolute;
-    bottom: 50px;
+    bottom: 60px; /* 약간 더 위로 */
     left: 50%;
     transform: translateX(-50%);
     z-index: 4;
@@ -143,9 +143,30 @@ body {
 .scroll-indicator.visible { opacity: 1; }
 .scroll-indicator.fade-out { opacity: 0; pointer-events: none; }
 
-.mouse { width: 24px; height: 40px; border: 2px solid white; border-radius: 12px; position: relative; }
-.mouse::before { content: ''; width: 4px; height: 8px; background: white; position: absolute; left: 50%; top: 6px; transform: translateX(-50%); border-radius: 2px; animation: scroll 2s infinite; }
-@keyframes scroll { 0% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, 20px); } }
+.mouse { 
+    width: 32px; /* 가로 확대 */
+    height: 54px; /* 세로 확대 */
+    border: 3px solid white; /* 선 굵게 */
+    border-radius: 20px; 
+    position: relative; 
+}
+.mouse::before { 
+    content: ''; 
+    width: 6px; /* 휠 굵게 */
+    height: 12px; /* 휠 길게 */
+    background: white; 
+    position: absolute; 
+    left: 50%; 
+    top: 10px; 
+    transform: translateX(-50%); 
+    border-radius: 3px; 
+    animation: scroll 2s infinite; 
+}
+@keyframes scroll { 
+    0% { opacity: 1; transform: translate(-50%, 0); } 
+    100% { opacity: 0; transform: translate(-50%, 25px); } /* 이동 거리 확대 */
+}
+
 
 /* 🔥 상품 리스트 섹션 (흰색 배경) */
 .best-title { 

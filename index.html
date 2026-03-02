@@ -6,44 +6,35 @@
     <title>BORACAY_SEAN | 보라카이션</title>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-
-    <!-- 🔥 SNS 썸네일 설정 -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="보라카이션 | BORACAY_SEAN">
-    <meta property="og:description" content="가장 완벽한 보라카이 여행의 시작, 보라카이션">
-    <meta property="og:image" content="https://boracay-sean.page/og-image.png">
-    <meta property="og:url" content="https://boracay-sean.page">
 </head>
 <body>
 
-<!-- 🔥 모바일 사이드 메뉴 (사용자 지시 내용) -->
 <div class="side-menu-overlay" id="overlay"></div>
 <div class="side-menu" id="sideMenu">
-    <a href="#">공항 픽업샌딩</a>
+    <a href="index.html">홈으로</a>
+    <a href="#">공항 왕복 픽업샌딩</a>
     <a href="hopping-tour.html">블랙펄 요트호핑투어</a>
     <a href="#">시크릿가든 말룸파티</a>
-    <a href="#">보라카이션 요금표</a>
-    <a href="cart.html">장바구니 확인</a>
+    <a href="#">한눈에 요금표</a>
+    <a href="cart.html">장바구니</a>
 </div>
 
-<!-- 🔥 상단 탭 고정 레이아웃 -->
 <div class="top-bar">
     <div class="header-left">
         <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
         <div class="logo">
             <a href="index.html">
-                <img src="og-image.png" class="logo-img" alt="마크">
+                <img src="og-image.png" class="logo-img" alt="로고">
                 BORACAY_SEAN
             </a>
         </div>
     </div>
 
-    <!-- PC 메뉴 (768px 이상에서만 보임) -->
     <div class="menu">
-        <a href="#">공항 픽업샌딩</a>
+        <a href="#">공항 왕복 픽업샌딩</a>
         <a href="hopping-tour.html">블랙펄 요트호핑투어</a>
-        <a href="#">말룸파티</a>
-        <a href="#">요금표</a>
+        <a href="#">시크릿가든 말룸파티</a>
+        <a href="#">한눈에 요금표</a>
         <a href="cart.html">장바구니</a>
     </div>
 
@@ -53,13 +44,8 @@
     </div>
 </div>
 
-<!-- 🔥 DJI 스타일 HERO (원상복구 고정) -->
 <section class="hero">
-    <div class="video-background">
-        <video autoplay muted loop playsinline id="hero-video" class="loaded">
-            <source src="hero-video.mp4" type="video/mp4">
-        </video>
-    </div>
+    <div class="video-background"><video autoplay muted loop playsinline id="hero-video" class="loaded"><source src="hero-video.mp4" type="video/mp4"></video></div>
     <div class="hero-overlay"></div>
     <div class="hero-content">
         <h1>BORACAY<br>SEAN</h1>
@@ -71,10 +57,10 @@
 <div class="best-title">BEST TOUR</div>
 
 <section class="products">
-    <div class="product"><div class="img-container"><img src="pickup.jpg"></div><h3>공항 픽업샌딩</h3></div>
+    <div class="product"><div class="img-container"><img src="pickup.jpg"></div><h3>공항 왕복 픽업샌딩</h3></div>
     <div class="product" onclick="location.href='hopping-tour.html'"><div class="img-container"><img src="hopping.jpg"></div><h3>블랙펄 요트호핑투어</h3></div>
     <div class="product"><div class="img-container"><img src="malumpati.jpg"></div><h3>시크릿가든 말룸파티</h3></div>
-    <div class="product"><div class="img-container"><img src="price.png"></div><h3>보라카이션 요금표</h3></div>
+    <div class="product"><div class="img-container"><img src="price.png"></div><h3>한눈에 요금표</h3></div>
 </section>
 
 <footer class="footer">
@@ -82,7 +68,6 @@
         <b class="important">상호 : 보라카이션 | 대표 : 윤오현</b><br>
         서울특별시 중랑구 상봉로 16길 25-3<br>
         사업자번호 : 498-31-00593<br>
-        통신판매신고번호 : 2019-서울중랑-0496<br>
         daemit@naver.com
     </div>
     <div class="footer-right">
@@ -93,12 +78,12 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const toggle = document.getElementById('menuToggle');
-        const menu = document.getElementById('sideMenu');
-        const overlay = document.getElementById('overlay');
-        if(toggle && menu && overlay) {
-            toggle.onclick = function() { menu.classList.toggle('active'); overlay.classList.toggle('active'); };
-            overlay.onclick = function() { menu.classList.remove('active'); overlay.classList.remove('active'); };
+        const t = document.getElementById('menuToggle');
+        const m = document.getElementById('sideMenu');
+        const o = document.getElementById('overlay');
+        if(t && m && o) {
+            t.onclick = function() { m.classList.toggle('active'); o.classList.toggle('active'); };
+            o.onclick = function() { m.classList.remove('active'); o.classList.remove('active'); };
         }
     });
 </script>

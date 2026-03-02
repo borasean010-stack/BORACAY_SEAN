@@ -1,43 +1,51 @@
 // main.js
 document.addEventListener('DOMContentLoaded', () => {
-    // 🎥 비디오 자동 재생 및 로딩 페이드인
+    console.log("BORACAY_SEAN JS Loaded");
+
+    // 1. 🎥 비디오 자동 재생 확인
     const video = document.getElementById('hero-video');
     if (video) {
         video.oncanplay = () => video.classList.add('loaded');
         video.play().catch(() => {
             document.body.addEventListener('click', () => video.play(), { once: true });
         });
-        setTimeout(() => video.classList.add('loaded'), 3000);
+        setTimeout(() => video.classList.add('loaded'), 2000);
     }
 
-    // 🔥 마우스 스크롤 지시계 제어 (페이드인 후 5초 뒤 페이드아웃)
+    // 2. 🔥 마우스 스크롤 지시계 애니메이션 (5초 후 페이드아웃)
     const indicator = document.querySelector('.scroll-indicator');
     if (indicator) {
-        // 처음엔 페이드 인
-        setTimeout(() => {
-            indicator.classList.add('visible');
-        }, 500);
-
-        // 5초 뒤에 페이드 아웃
-        setTimeout(() => {
-            indicator.classList.add('fade-out');
-        }, 5500); // 페이드인 대기시간 포함 약 5초
+        setTimeout(() => indicator.classList.add('visible'), 500);
+        setTimeout(() => indicator.classList.add('fade-out'), 5500);
     }
 
-    // ☰ 모바일 사이드 메뉴 토글 기능
+    // 3. ☰ 🔥 모바일 사이드 메뉴 기능 (정밀 수리)
     const menuToggle = document.getElementById('menuToggle');
     const sideMenu = document.getElementById('sideMenu');
     const overlay = document.getElementById('overlay');
 
     if (menuToggle && sideMenu && overlay) {
-        menuToggle.addEventListener('click', () => {
+        // 메뉴 열기/닫기 토글
+        menuToggle.onclick = (e) => {
+            e.stopPropagation();
             sideMenu.classList.toggle('active');
             overlay.classList.toggle('active');
-        });
+            console.log("Menu Toggled");
+        };
 
-        overlay.addEventListener('click', () => {
+        // 배경(오버레이) 클릭 시 메뉴 닫기
+        overlay.onclick = () => {
             sideMenu.classList.remove('active');
             overlay.classList.remove('active');
+        };
+
+        // 사이드 메뉴 내부 링크 클릭 시 메뉴 자동으로 닫기
+        const menuLinks = sideMenu.querySelectorAll('a');
+        menuLinks.forEach(link => {
+            link.onclick = () => {
+                sideMenu.classList.remove('active');
+                overlay.classList.remove('active');
+            };
         });
     }
 });

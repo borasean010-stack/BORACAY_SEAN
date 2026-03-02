@@ -6,26 +6,15 @@
     <title>블랙펄 요트 호핑투어 | BORACAY_SEAN</title>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-
-    <!-- 🔥 OG Tag 설정 생략 (기존 설정 유지됨) -->
     <style>
-        body { background: #fcfcfc; padding-bottom: 80px; } /* 하단 바 공간 확보 */
-        
-        .top-bar {
-            background: rgba(255, 106, 0, 0.7) !important; 
-            backdrop-filter: blur(15px) saturate(180%);
-            -webkit-backdrop-filter: blur(15px) saturate(180%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3) !important;
-        }
+        body { background: #fcfcfc; padding-bottom: 80px; }
+        .top-bar { background: rgba(255, 106, 0, 0.95) !important; backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important; }
         .logo a { font-weight: 900 !important; color: white !important; text-decoration: none; }
         .menu a { color: white !important; text-decoration: none; }
-
         .tour-detail-container { max-width: 1300px; margin: 120px auto 50px; display: grid; grid-template-columns: 1fr 400px; gap: 50px; padding: 0 40px; }
         .tour-content { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); }
         .section-title { font-size: 24px; font-weight: 800; margin: 60px 0 30px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
         .itinerary-img img { width: 100%; border-radius: 20px; }
-
-        /* 💻 PC 예약 박스 (기존 유지) */
         .reservation-box { background: white; border-radius: 28px; padding: 35px; box-shadow: 0 30px 70px rgba(0,0,0,0.08); position: sticky; top: 120px; }
         .calendar-wrap { margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 15px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-size: 13px; }
@@ -34,29 +23,16 @@
         .count-btn { width: 30px; height: 30px; border-radius: 50%; border: 1px solid #ddd; background: white; cursor: pointer; }
         .book-btn { width: 100%; padding: 20px; background: #ff6a00; color: white; border: none; border-radius: 16px; font-size: 18px; font-weight: 800; cursor: pointer; margin-top: 20px; }
         .cart-btn { width: 100%; padding: 15px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 16px; margin-top: 10px; cursor: pointer; font-weight: 700; }
-
-        /* 📱 모바일 하단 바 & 옵션 창 (Bottom Sheet) */
         .mobile-bottom-bar { display: none; }
         .option-sheet-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 3000; display: none; }
-        .option-sheet { 
-            position: fixed; bottom: 0; left: 0; width: 100%; background: white; 
-            border-radius: 30px 30px 0 0; z-index: 3100; padding: 30px 20px;
-            transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+        .option-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-radius: 30px 30px 0 0; z-index: 3100; padding: 30px 20px; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .option-sheet.active { transform: translateY(0); }
-
         @media (max-width: 1024px) {
             .tour-detail-container { grid-template-columns: 1fr; padding: 0 15px; margin-top: 80px; }
-            .reservation-box { display: none; } /* PC용 박스 숨김 */
-            .mobile-bottom-bar { 
-                display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
-                background: white; padding: 15px 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); 
-                z-index: 2500; align-items: center; gap: 15px;
-            }
-            .m-cart-btn { width: 60px; height: 55px; border: 1.5px solid #eee; border-radius: 15px; display: flex; align-items: center; justify-content: center; background: white; cursor: pointer; }
+            .reservation-box { display: none; }
+            .mobile-bottom-bar { display: flex; position: fixed; bottom: 0; left: 0; width: 100%; background: white; padding: 15px 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); z-index: 2500; align-items: center; gap: 15px; }
+            .m-cart-btn { width: 60px; height: 55px; border: 1.5px solid #eee; border-radius: 15px; display: flex; align-items: center; justify-content: center; background: white; cursor: pointer; font-size: 20px; }
             .m-book-btn { flex: 1; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 17px; font-weight: 800; cursor: pointer; }
-            
-            /* 모바일 본문 가독성 */
             .tour-content { padding: 20px 5px; box-shadow: none; border-radius: 0; }
             .tour-header h1 { font-size: 28px; line-height: 1.3; }
             .itinerary-img { width: calc(100% + 30px); margin-left: -15px; border-radius: 0; }
@@ -65,24 +41,20 @@
 </head>
 <body>
 
-<!-- 🔥 모바일 사이드 메뉴 -->
 <div class="side-menu-overlay" id="overlay"></div>
 <div class="side-menu" id="sideMenu">
     <a href="index.html">홈으로</a>
-    <a href="#">공항 픽업샌딩</a>
     <a href="hopping-tour.html">블랙펄 요트호핑투어</a>
-    <a href="#">시크릿가든 말룸파티</a>
-    <a href="#">보라카이션 요금표</a>
+    <a href="cart.html">장바구니 확인</a>
 </div>
 
 <div class="top-bar">
     <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
     <div class="logo"><a href="index.html">BORACAY_SEAN</a></div>
     <div class="menu">
-        <a href="#">공항 픽업샌딩</a>
         <a href="hopping-tour.html">블랙펄 요트호핑투어</a>
-        <a href="#">시크릿가든 말룸파티</a>
         <a href="#">보라카이션 요금표</a>
+        <a href="cart.html">장바구니 확인</a>
     </div>
     <div class="right-buttons">
         <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페</a>
@@ -91,129 +63,96 @@
 </div>
 
 <div class="tour-detail-container">
-    <!-- 왼쪽: 투어 상세 내용 -->
     <div class="tour-content">
-        <div class="tour-header">
-            <h1>블랙펄 요트 호핑투어</h1>
-            <p class="tour-summary">보라카이 최고의 럭셔리 호핑투어! 최고급 요트에서 즐기는 환상적인 스노클링과 수제 간식, 선셋까지 모두 포함된 시그니처 투어입니다.</p>
-        </div>
-
-        <div class="section-title">투어 일정 (Itinerary)</div>
+        <div class="tour-header"><h1>블랙펄 요트 호핑투어</h1><p class="tour-summary">보라카이 최고의 럭셔리 호핑투어!</p></div>
+        <div class="section-title">투어 일정</div>
         <div class="itinerary">
-            <div class="itinerary-item"><div class="itinerary-text"><h4>Step 01. 미팅 및 요트 탑승</h4></div><div class="itinerary-img"><img src="hop1.jpg"></div></div>
-            <div class="itinerary-item"><div class="itinerary-text"><h4>Step 02. 스노클링 포인트</h4></div><div class="itinerary-img"><img src="hop2.jpg"></div></div>
-            <div class="itinerary-item"><div class="itinerary-text"><h4>Step 03. 선상 파티 및 간식</h4></div><div class="itinerary-img"><img src="hop3.jpg"></div></div>
-            <div class="itinerary-item"><div class="itinerary-text"><h4>Step 04. 두 번째 포인트</h4></div><div class="itinerary-img"><img src="hop4.jpg"></div></div>
-            <div class="itinerary-item"><div class="itinerary-text"><h4>Step 05. 선셋 감상 및 복귀</h4></div><div class="itinerary-img"><img src="hop5.jpg"></div></div>
+            <div class="itinerary-item"><div class="itinerary-img"><img src="hop1.jpg"></div></div>
+            <div class="itinerary-item"><div class="itinerary-img"><img src="hop2.jpg"></div></div>
         </div>
-
-        <div class="section-title">환불 규정 및 취소 약관</div>
+        <div class="section-title">환불 규정</div>
         <img src="refund.png" style="width:100%; border-radius:20px;">
     </div>
 
-    <!-- 💻 PC용 우측 예약 박스 -->
     <div class="reservation-box">
         <div style="font-size:32px; font-weight:800; color:#ff6a00; margin-bottom:20px;">₩ 65,000</div>
-        <div class="calendar-wrap">
-            <div id="pc-calendar-title" style="font-weight:800; margin-bottom:10px; text-align:center;">2026년 3월</div>
-            <div class="calendar-grid" id="pc-calendar-days"></div>
-        </div>
+        <div class="calendar-wrap"><div class="calendar-grid" id="pc-calendar-days"></div></div>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding:15px; background:#f8f9fa; border-radius:12px;">
-            <span style="font-weight:700;">성인</span>
+            <span>성인</span>
             <div style="display:flex; align-items:center; gap:10px;">
-                <button class="count-btn" onclick="updateCount(-1)">-</button>
-                <strong id="adult-count">1</strong>
-                <button class="count-btn" onclick="updateCount(1)">+</button>
+                <button onclick="updateCount(-1)">-</button><strong id="adult-count">1</strong><button onclick="updateCount(1)">+</button>
             </div>
         </div>
-        <div style="display:flex; justify-content:space-between; font-size:20px; font-weight:800;">
-            <span>총 결제금액</span>
-            <span id="total-price" style="color:#ff6a00;">₩ 65,000</span>
-        </div>
         <button class="book-btn" onclick="location.href='login.html'">예약하기</button>
-        <button class="cart-btn" onclick="alert('장바구니에 담겼습니다!')">장바구니 담기</button>
+        <button class="cart-btn" onclick="addToCart()">장바구니 담기</button>
     </div>
 </div>
 
-<!-- 📱 모바일 하단 바 -->
 <div class="mobile-bottom-bar">
-    <div class="m-cart-btn" onclick="alert('장바구니에 담겼습니다!')">🛒</div>
+    <div class="m-cart-btn" onclick="addToCart()">🛒</div>
     <button class="m-book-btn" onclick="openOptionSheet()">예약하기</button>
 </div>
 
-<!-- 📱 모바일 옵션 선택창 (Bottom Sheet) -->
 <div class="option-sheet-overlay" id="sheetOverlay" onclick="closeOptionSheet()"></div>
 <div class="option-sheet" id="optionSheet">
-    <h3 style="font-size:20px; font-weight:800; margin-bottom:20px;">예약 옵션 선택</h3>
-    <div class="calendar-wrap">
-        <div id="m-calendar-title" style="font-weight:800; margin-bottom:10px; text-align:center;">2026년 3월</div>
-        <div class="calendar-grid" id="m-calendar-days"></div>
-    </div>
+    <h3 style="font-weight:800; margin-bottom:20px;">옵션 선택</h3>
+    <div class="calendar-wrap"><div class="calendar-grid" id="m-calendar-days"></div></div>
     <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:#f8f9fa; border-radius:12px; margin-bottom:20px;">
-        <span style="font-weight:700;">인원 (성인)</span>
+        <span>성인</span>
         <div style="display:flex; align-items:center; gap:10px;">
-            <button class="count-btn" onclick="updateCount(-1)">-</button>
-            <strong id="m-adult-count">1</strong>
-            <button class="count-btn" onclick="updateCount(1)">+</button>
+            <button onclick="updateCount(-1)">-</button><strong id="m-adult-count">1</strong><button onclick="updateCount(1)">+</button>
         </div>
-    </div>
-    <div style="display:flex; justify-content:space-between; font-size:20px; font-weight:800; margin-bottom:20px;">
-        <span>총 결제금액</span>
-        <span id="m-total-price" style="color:#ff6a00;">₩ 65,000</span>
     </div>
     <button class="book-btn" onclick="location.href='login.html'">선택 완료 / 예약하기</button>
 </div>
-
-<footer class="footer">
-    상호 : 보라카이션 | 대표 : 윤오현<br>
-    서울특별시 중랑구 상봉로 16길 25-3<br>
-    사업자번호 : 498-31-00593 | daemit@naver.com
-</footer>
 
 <script src="main.js"></script>
 <script>
     let adultCount = 1;
     const pricePerPerson = 65000;
+    let selectedDate = '2026-03-02';
 
-    function openOptionSheet() {
-        document.getElementById('sheetOverlay').style.display = 'block';
-        document.getElementById('optionSheet').classList.add('active');
-    }
-    function closeOptionSheet() {
-        document.getElementById('sheetOverlay').style.display = 'none';
-        document.getElementById('optionSheet').classList.remove('active');
-    }
+    function openOptionSheet() { document.getElementById('sheetOverlay').style.display = 'block'; document.getElementById('optionSheet').classList.add('active'); }
+    function closeOptionSheet() { document.getElementById('sheetOverlay').style.display = 'none'; document.getElementById('optionSheet').classList.remove('active'); }
 
     function updateCount(delta) {
         adultCount = Math.max(1, adultCount + delta);
         document.getElementById('adult-count').innerText = adultCount;
         document.getElementById('m-adult-count').innerText = adultCount;
-        const total = (adultCount * pricePerPerson).toLocaleString();
-        document.getElementById('total-price').innerText = '₩ ' + total;
-        document.getElementById('m-total-price').innerText = '₩ ' + total;
+    }
+
+    function addToCart() {
+        const item = {
+            name: "블랙펄 요트 호핑투어",
+            price: pricePerPerson,
+            count: adultCount,
+            date: selectedDate
+        };
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        cart.push(item);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        if(confirm('장바구니에 담겼습니다. 장바구니로 이동하시겠습니까?')) {
+            location.href = 'cart.html';
+        }
     }
 
     function renderCalendar(id) {
         const container = document.getElementById(id);
         container.innerHTML = '';
-        const days = ['일','월','화','수','목','금','토'];
-        days.forEach(d => container.innerHTML += `<div style="font-weight:800; color:#bbb; padding-bottom:5px;">${d}</div>`);
+        ['일','월','화','수','목','금','토'].forEach(d => container.innerHTML += `<div style="color:#bbb;">${d}</div>`);
         for(let i=1; i<=31; i++) {
             const div = document.createElement('div');
-            div.className = 'day';
+            div.className = 'day' + (i===2 ? ' selected' : '');
             div.innerText = i;
-            if(i === 2) div.classList.add('selected');
             div.onclick = function() {
                 document.querySelectorAll('.day').forEach(d => d.classList.remove('selected'));
                 this.classList.add('selected');
+                selectedDate = `2026-03-${i.toString().padStart(2, '0')}`;
             };
             container.appendChild(div);
         }
     }
-    window.onload = function() {
-        renderCalendar('pc-calendar-days');
-        renderCalendar('m-calendar-days');
-    };
+    window.onload = () => { renderCalendar('pc-calendar-days'); renderCalendar('m-calendar-days'); };
 </script>
 </body>
 </html>

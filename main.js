@@ -10,14 +10,21 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => video.classList.add('loaded'), 3000);
     }
 
-    // 🎥 유튜브 iframe 페이드인 (필요시)
-    const iframe = document.getElementById('bg-video');
-    if (iframe) {
-        iframe.onload = () => iframe.classList.add('loaded');
-        setTimeout(() => iframe.classList.add('loaded'), 5000);
+    // 🔥 마우스 스크롤 지시계 제어 (페이드인 후 5초 뒤 페이드아웃)
+    const indicator = document.querySelector('.scroll-indicator');
+    if (indicator) {
+        // 처음엔 페이드 인
+        setTimeout(() => {
+            indicator.classList.add('visible');
+        }, 500);
+
+        // 5초 뒤에 페이드 아웃
+        setTimeout(() => {
+            indicator.classList.add('fade-out');
+        }, 5500); // 페이드인 대기시간 포함 약 5초
     }
 
-    // ☰ 🔥 모바일 사이드 메뉴 토글 기능
+    // ☰ 모바일 사이드 메뉴 토글 기능
     const menuToggle = document.getElementById('menuToggle');
     const sideMenu = document.getElementById('sideMenu');
     const overlay = document.getElementById('overlay');
@@ -31,15 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
         overlay.addEventListener('click', () => {
             sideMenu.classList.remove('active');
             overlay.classList.remove('active');
-        });
-
-        // 메뉴 링크 클릭 시 메뉴 닫기
-        const menuLinks = sideMenu.querySelectorAll('a');
-        menuLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                sideMenu.classList.remove('active');
-                overlay.classList.remove('active');
-            });
         });
     }
 });

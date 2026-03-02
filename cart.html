@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>장바구니 | BORACAY_SEAN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background: #fcfcfc; }
+        .cart-container { max-width: 900px; margin: 120px auto 100px; padding: 0 20px; }
+        .cart-title { font-size: 32px; font-weight: 900; margin-bottom: 40px; color: #111; }
+        
+        .cart-item { 
+            background: white; border-radius: 20px; padding: 25px; 
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03); margin-bottom: 20px;
+            border: 1px solid #eee;
+        }
+        .item-info h4 { font-size: 20px; font-weight: 800; margin-bottom: 10px; }
+        .item-info p { color: #888; font-size: 15px; margin-bottom: 5px; }
+        .item-price { font-size: 22px; font-weight: 800; color: #ff6a00; }
+        
+        .empty-cart { text-align: center; padding: 100px 0; color: #bbb; font-size: 18px; }
+        
+        .remove-btn { background: #f5f5f5; color: #999; border: none; padding: 8px 15px; border-radius: 10px; cursor: pointer; font-size: 13px; }
+        .remove-btn:hover { background: #ff6a00; color: white; }
+
+        .checkout-bar { 
+            background: white; border-top: 1px solid #eee; padding: 25px 40px; 
+            display: flex; justify-content: space-between; align-items: center;
+            position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000;
+        }
+        .total-label { font-size: 16px; color: #666; }
+        .total-value { font-size: 28px; font-weight: 900; color: #ff6a00; }
+        .order-btn { background: #ff6a00; color: white; border: none; padding: 18px 40px; border-radius: 15px; font-size: 18px; font-weight: 800; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <div class="logo"><a href="index.html">BORACAY_SEAN</a></div>
+    <div class="menu">
+        <a href="#">공항 픽업샌딩</a>
+        <a href="hopping-tour.html">블랙펄 요트호핑투어</a>
+        <a href="#">시크릿가든 말룸파티</a>
+        <a href="#">보라카이션 요금표</a>
+        <a href="cart.html" style="color:white; border-bottom:2px solid white;">장바구니 확인</a>
+    </div>
+</div>
+
+<div class="cart-container">
+    <h2 class="cart-title">장바구니</h2>
+    <div id="cart-list">
+        <!-- JS로 장바구니 목록 생성 -->
+    </div>
+</div>
+
+<div class="checkout-bar" id="checkout-bar" style="display:none;">
+    <div>
+        <span class="total-label">총 결제 예정금액</span><br>
+        <span class="total-value" id="final-price">₩ 0</span>
+    </div>
+    <button class="order-btn" onclick="location.href='login.html'">전체 예약하기</button>
+</div>
+
+<script>
+    function loadCart() {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const listContainer = document.getElementById('cart-list');
+        const checkoutBar = document.getElementById('checkout-bar');
+        
+        if (cart.length === 0) {
+            listContainer.innerHTML = '<div class="empty-cart">장바구니가 비어 있습니다.</div>';
+            checkoutBar.style.display = 'none';
+            return;
+        }
+
+        checkoutBar.style.display = 'flex';
+        listContainer.innerHTML = '';
+        let total = 0;
+
+        cart.forEach((item, index) => {
+            const itemTotal = item.price * item.count;
+            total += itemTotal;
+            
+            listContainer.innerHTML += `
+                <div class="cart-item">
+                    <div class="item-info">
+                        <h4>${item.name}</h4>
+                        <p>예약일: ${item.date}</p>
+                        <p>인원: 성인 ${item.count}명</p>
+                        <button class="remove-btn" onclick="removeItem(${index})">삭제</button>
+                    </div>
+                    <div class="item-price">₩ ${itemTotal.toLocaleString()}</div>
+                </div>
+            `;
+        });
+
+        document.getElementById('final-price').innerText = '₩ ' + total.toLocaleString();
+    }
+
+    function removeItem(index) {
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        cart.splice(index, 1);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        loadCart();
+    }
+
+    window.onload = loadCart;
+</script>
+</body>
+</html>

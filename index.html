@@ -1,96 +1,69 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>보라카이션 - 여행의 모든 것</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <title>BORACAY_SEAN | 보라카이션</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header class="main-header">
-        <div class="header-container">
-            <div class="header-left">
-                <a href="/" class="logo">
-                    <h1>보라카이션</h1>
-                </a>
-                <div class="search-bar">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" placeholder="도시나 상품을 검색해보세요">
-                </div>
-            </div>
-            <nav class="header-right">
-                <a href="#" class="nav-item">파트너 등록</a>
-                <a href="#" class="nav-item">로그인</a>
-                <a href="#" class="nav-item signup">회원가입</a>
-            </nav>
-        </div>
-    </header>
 
-    <main>
-        <section class="hero-section">
-            <div class="hero-content">
-                <h2>어디로 떠나시나요?</h2>
-                <div class="main-search-bar">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" placeholder="도시나 상품을 검색해보세요">
-                    <button class="search-button">검색</button>
-                </div>
-                <div class="popular-tags">
-                    <a href="#">#보라카이</a>
-                    <a href="#">#세부</a>
-                    <a href="#">#방콕</a>
-                    <a href="#">#다낭</a>
-                    <a href="#">#코타키나발루</a>
-                </div>
-            </div>
-        </section>
+<div class="top-bar">
+    <div class="logo">BORACAY_SEAN</div>
+    <div class="menu">
+        <a href="#">공항 픽업샌딩</a>
+        <a href="#">블랙펄 요트호핑투어</a>
+        <a href="#">시크릿가든 말룸파티</a>
+        <a href="#">보라카이션 요금표</a>
+    </div>
+    <div class="right-buttons">
+        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">네이버 카페</a>
+        <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카카오채널</a>
+    </div>
+</div>
 
-        <section class="content-section">
-            <h2 class="section-title">가성비 최고의 투어 & 티켓</h2>
-            <div class="product-carousel" id="tours-tickets">
-                <!-- Product cards will be injected here by JavaScript -->
-            </div>
-        </section>
+<!-- 🔥 유튜브 배경 섹션 -->
+<section class="hero">
+    <div class="video-background">
+        <div id="player"></div> <!-- 유튜브 iframe이 생성될 자리 -->
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1>BORACAY SEAN</h1>
+        <p>가장 완벽한 보라카이 여행의 시작</p>
+    </div>
+</section>
 
-        <section class="content-section">
-            <h2 class="section-title">최저가 보장, 숙소</h2>
-            <div class="product-carousel" id="accommodations">
-                <!-- Product cards will be injected here by JavaScript -->
-            </div>
-        </section>
+<div class="best-title">BEST TOUR</div>
 
-    </main>
+<section class="products">
+    <div class="product">
+        <img src="https://cafeptthumb-phinf.pstatic.net/MjAyNjAyMjhfNjEg/MDAxNzcyMjY0MzUwNzc5.DdtU4WXN26GLFON3eHPLrz6eF8ODTUYDvBPgMMVB8Lsg.1JzyqqM6fuWXUQxnWH3wQ0uzuzqWI6wdO3DXfoG-d6og.JPEG/25%EB%85%84_11%EC%9B%94_%EC%B9%BC%EB%A6%AC%EB%B3%B4_%ED%94%BD%EC%97%85%EC%83%8C%EB%94%A9_%EC%88%98%EC%A0%95%EB%B3%B8-23.jpg?type=w1600">
+        <h3>공항 픽업샌딩</h3>
+    </div>
+    <div class="product">
+        <img src="https://cafeptthumb-phinf.pstatic.net/MjAyNjAyMjhfMjIx/MDAxNzcyMjU2OTAwNTc1.w9QtadqP2yFsZ7VLNVckMqOLqvC7XcV6xsmj3ND_LX4g.tK4zfG0dHFuAVHDMWFD9wQnfTefdqWa6FS78WL6822sg.JPEG/%EB%B8%94%EB%9E%99%ED%8E%84_%EC%9A%94%ED%8A%B8%ED%98%B8%ED%95%91-01.jpg?type=w1600">
+        <h3>블랙펄 요트호핑투어</h3>
+    </div>
+    <div class="product">
+        <img src="https://cafeptthumb-phinf.pstatic.net/MjAyNjAyMjhfMTM5/MDAxNzcyMjYxMjY2ODQz.QOpUeIocuU-MYypNGz1sbEjUaT1AXKWXu8U5__saY8Eg.qPhSoDl5bQQlUPa0qXplr23KmcE6D3vXtRxTxc4lm-Mg.JPEG/%EC%8B%9C%ED%81%AC%EB%A6%BF%EA%B0%80%EB%93%A0_%EB%A7%90%EB%A3%B8%ED%8C%8C%ED%8B%B0-01.jpg?type=w1600">
+        <h3>시크릿가든 말룸파티</h3>
+    </div>
+    <div class="product">
+        <img src="https://cafeptthumb-phinf.pstatic.net/MjAyNjAxMTJfMTgx/MDAxNzY4MTk2ODI2NTQ2.yC0hFRdhkiJaUdp3yBDLjEJeINGKUo3BzHX0zmM9hysg.wNT2MVvvlgtlVcnCyNXbwpBqpAF7EdzI50KsbvDwNicg.PNG/%EB%B3%B4%EB%9D%BC%EC%85%98%EC%9A%94%EA%B8%88%ED%91%9C_%EC%84%AC%EB%84%A4%EC%9D%BC.png?type=w1600">
+        <h3>보라카이션 요금표</h3>
+    </div>
+</section>
 
-    <footer class="main-footer">
-        <div class="footer-container">
-            <div class="footer-top">
-                <div class="footer-info">
-                    <p>(주)보라카이션 | 대표 김보라</p>
-                    <p>사업자등록번호: 123-45-67890</p>
-                    <p>주소: 서울특별시 강남구 테헤란로 123</p>
-                </div>
-                <div class="footer-cs">
-                    <p>고객센터: 1588-1234</p>
-                    <p>오전 9시 - 오후 6시 (주말/공휴일 휴무)</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <div class="footer-links">
-                    <a href="#">회사소개</a>
-                    <a href="#">이용약관</a>
-                    <a href="#">개인정보처리방침</a>
-                </div>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-facebook"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
-                </div>
-            </div>
-        </div>
-    </footer>
+<footer class="footer">
+    상호 : 보라카이션 | 대표 : 윤오현<br>
+    서울특별시 중랑구 상봉로 16길 25-3<br>
+    010-4844-1392 | daemit@naver.com<br>
+    사업자번호 : 498-31-00593 | 통신판매신고번호 : 2019-서울중랑-0496
+</footer>
 
-    <script src="main.js"></script>
+<script src="https://www.youtube.com/iframe_api"></script>
+<script src="main.js"></script>
 </body>
 </html>

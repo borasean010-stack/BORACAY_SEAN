@@ -1,293 +1,172 @@
-
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css');
-
-:root {
-    --primary-color: #4a90e2; /* MyRealTrip's approximate blue */
-    --text-color: #333;
-    --text-color-light: #555;
-    --border-color: #eee;
-    --background-color: #f8f9fa;
-}
-
+/* style.css */
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+    font-family: 'Pretendard', sans-serif;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    color: var(--text-color);
-    background-color: #fff;
+    background: #f8f8f8;
+    overflow-x: hidden;
 }
 
-a {
-    text-decoration: none;
-    color: inherit;
-}
-
-/* Header */
-.main-header {
-    position: sticky;
+/* 네비게이션 */
+.top-bar {
+    position: fixed;
     top: 0;
-    background-color: #fff;
-    border-bottom: 1px solid var(--border-color);
-    padding: 0 24px;
-    z-index: 1000;
-    height: 64px;
+    width: 100%;
+    height: 80px;
     display: flex;
     align-items: center;
-}
-
-.header-container {
-    display: flex;
     justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
+    padding: 0 40px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: 1000;
 }
 
-.header-left {
-    display: flex;
-    align-items: center;
-}
+.logo { color: white; font-weight: 800; font-size: 24px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+.menu a { color: white; text-decoration: none; margin-right: 30px; font-weight: 600; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
 
-.logo h1 {
-    font-size: 24px;
-    font-weight: 800;
-    color: var(--primary-color);
-}
-
-.search-bar {
-    margin-left: 24px;
-    display: flex;
-    align-items: center;
-    background-color: var(--background-color);
-    border-radius: 25px;
-    padding: 8px 16px;
-    width: 300px;
-}
-
-.search-bar i {
-    color: #999;
-}
-
-.search-bar input {
-    border: none;
-    background: none;
-    outline: none;
-    margin-left: 8px;
-    width: 100%;
-}
-
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.nav-item {
+.right-buttons .naver-btn { 
+    background: #03c75a; 
+    color: white; 
+    padding: 10px 20px; 
+    border-radius: 20px; 
+    text-decoration: none; 
+    font-weight: 600; 
+    margin-right: 10px; 
     font-size: 14px;
-    font-weight: 600;
-    color: var(--text-color-light);
 }
 
-.nav-item.signup {
-    border: 1px solid var(--primary-color);
-    color: var(--primary-color);
-    padding: 8px 12px;
-    border-radius: 4px;
+.right-buttons .kakao-btn { 
+    background: #fee500; 
+    color: #3c1e1e; 
+    padding: 10px 20px; 
+    border-radius: 20px; 
+    text-decoration: none; 
+    font-weight: 700; 
+    font-size: 14px;
 }
 
-/* Hero Section */
-.hero-section {
-    background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://images.unsplash.com/photo-1526778548025-13c282c8b72f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
-    background-size: cover;
-    background-position: center;
-    padding: 80px 24px;
-    text-align: center;
-    color: #fff;
-}
-
-.hero-content h2 {
-    font-size: 36px;
-    font-weight: 700;
-    margin-bottom: 24px;
-}
-
-.main-search-bar {
+/* 🔥 Hero 섹션 (영상 배경) */
+.hero {
+    position: relative;
+    width: 100%;
+    height: 80vh; 
+    overflow: hidden;
     display: flex;
     align-items: center;
-    background-color: #fff;
-    border-radius: 4px;
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    justify-content: center;
+    color: white;
+    text-align: center;
 }
 
-.main-search-bar i {
-    color: #999;
-    padding: 0 8px;
+.video-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
 }
 
-.main-search-bar input {
-    flex-grow: 1;
-    border: none;
-    outline: none;
-    font-size: 16px;
+#player {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100vw;
+    height: 56.25vw; 
+    min-height: 100vh;
+    min-width: 177.77vh; 
+    transform: translate(-50%, -50%);
+    pointer-events: none; 
 }
 
-.search-button {
-    background-color: var(--primary-color);
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 12px 24px;
-    font-size: 16px;
-    font-weight: 600;
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3); 
+    z-index: 0;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-content h1 { 
+    font-size: clamp(40px, 8vw, 80px); 
+    font-weight: 800; 
+    margin-bottom: 10px; 
+    text-shadow: 0 4px 20px rgba(0,0,0,0.5); 
+}
+
+.hero-content p { 
+    font-size: clamp(16px, 3vw, 24px); 
+    font-weight: 400; 
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5); 
+}
+
+/* 상품 리스트 */
+.best-title { 
+    max-width: 1200px; 
+    margin: 60px auto 30px; 
+    padding: 0 20px; 
+    font-size: 28px; 
+    font-weight: 800; 
+    color: #ff6a00; 
+}
+
+.products { 
+    max-width: 1200px; 
+    margin: 0 auto 100px; 
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 20px; 
+    padding: 0 20px; 
+}
+
+.product { 
+    background: white; 
+    border-radius: 15px; 
+    overflow: hidden; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+    transition: 0.3s; 
     cursor: pointer;
 }
 
-.popular-tags {
-    margin-top: 20px;
+.product:hover { transform: translateY(-10px); }
+.product img { width: 100%; height: 250px; object-fit: cover; }
+.product h3 { padding: 20px; font-size: 18px; text-align: center; font-weight: 600; }
+
+/* 푸터 */
+.footer { 
+    background: #ff6a00; 
+    color: white; 
+    padding: 60px 20px; 
+    text-align: center; 
+    line-height: 1.8; 
+    font-size: 14px; 
 }
 
-.popular-tags a {
-    display: inline-block;
-    background-color: rgba(255,255,255,0.2);
-    color: #fff;
-    padding: 8px 16px;
-    border-radius: 20px;
-    margin: 4px;
-    font-size: 14px;
-    transition: background-color 0.2s;
+/* 모바일 반응형 */
+@media (max-width: 1024px) {
+    .products { grid-template-columns: repeat(2, 1fr); }
 }
 
-.popular-tags a:hover {
-    background-color: rgba(255,255,255,0.4);
-}
-
-/* Content Section */
-.content-section {
-    max-width: 1200px;
-    margin: 48px auto;
-    padding: 0 24px;
-}
-
-.section-title {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 24px;
-}
-
-.product-carousel {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: calc(25% - 18px);
-    gap: 24px;
-    overflow-x: auto;
-    padding-bottom: 20px; /* For scrollbar */
-    scrollbar-width: thin;
-}
-
-.product-card {
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    overflow: hidden;
-    transition: box-shadow 0.2s;
-}
-
-.product-card:hover {
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-.product-image {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-}
-
-.product-info {
-    padding: 16px;
-}
-
-.product-title {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 8px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.product-location {
-    font-size: 14px;
-    color: var(--text-color-light);
-    margin-bottom: 12px;
-}
-
-.product-price {
-    font-size: 18px;
-    font-weight: 700;
-}
-
-/* Footer */
-.main-footer {
-    background-color: var(--background-color);
-    border-top: 1px solid var(--border-color);
-    padding: 40px 24px;
-    font-size: 13px;
-    color: var(--text-color-light);
-}
-
-.footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.footer-top {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 24px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.footer-bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.footer-links a {
-    margin-right: 20px;
-}
-
-.social-links a {
-    font-size: 20px;
-    margin-left: 15px;
-}
-
-/* Responsive */
 @media (max-width: 768px) {
-    .header-left .search-bar {
-        display: none;
-    }
-    .hero-content h2 {
-        font-size: 28px;
-    }
-    .product-carousel {
-        grid-auto-columns: calc(50% - 12px);
-    }
-}
-
-@media (max-width: 480px) {
-    .header-right {
-        display: none; /* Simple hiding for demo */
-    }
-    .product-carousel {
-        grid-auto-columns: calc(100% - 12px);
-    }
+    .top-bar { padding: 0 20px; height: 70px; }
+    .logo { font-size: 18px; }
+    .menu { display: none; }
+    .right-buttons .naver-btn, .right-buttons .kakao-btn { padding: 8px 12px; font-size: 12px; }
+    
+    .hero { height: 60vh; }
+    .products { grid-template-columns: 1fr; }
 }

@@ -58,11 +58,11 @@ body {
 .side-menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1400; display: none; backdrop-filter: blur(5px); }
 .side-menu-overlay.active { display: block; }
 
-/* 🔥 Hero 섹션 (기본 틀 DJI 스타일 유지) */
+/* 🔥 Hero 섹션 (DJI 스타일 풀스크린 고정 틀) */
 .hero {
     position: relative;
     width: 100%;
-    height: 100vh;
+    height: 100vh; /* 화면 꽉 채움 */
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -70,14 +70,20 @@ body {
     background: #000;
 }
 
+.video-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
 .video-background video {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 0;
-    transition: opacity 1.5s ease;
 }
-.video-background video.loaded { opacity: 1; }
 
 .hero-overlay {
     position: absolute;
@@ -85,13 +91,13 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.25); 
-    z-index: 3;
+    background: rgba(0, 0, 0, 0.2); 
+    z-index: 2;
 }
 
 .hero-content {
     position: relative;
-    z-index: 4;
+    z-index: 3;
     text-align: center;
     color: white;
 }
@@ -103,6 +109,13 @@ body {
     margin-bottom: 20px;
     letter-spacing: -4px;
     text-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+.hero-content p {
+    font-size: clamp(16px, 3vw, 24px);
+    font-weight: 500;
+    opacity: 0.9;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 
 /* 🔥 스크롤 마우스 (5초 뒤 페이드아웃 대상) */

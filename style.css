@@ -29,11 +29,68 @@ body {
 }
 
 .logo { color: white; font-weight: 900; font-size: 26px; letter-spacing: -1px; }
+.logo a { color: white; text-decoration: none; }
 .menu a { color: rgba(255,255,255,0.8); text-decoration: none; margin-right: 40px; font-weight: 600; font-size: 16px; transition: 0.3s; }
 .menu a:hover { color: white; }
 
 .right-buttons .naver-btn { background: #03c75a; color: white; padding: 12px 24px; border-radius: 30px; text-decoration: none; font-weight: 600; font-size: 14px; }
 .right-buttons .kakao-btn { background: #fee500; color: #3c1e1e; padding: 12px 24px; border-radius: 30px; text-decoration: none; font-weight: 700; font-size: 14px; margin-left: 10px; }
+
+/* 🔥 모바일 햄버거 버튼 */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    z-index: 1100;
+}
+.menu-toggle span {
+    width: 25px;
+    height: 3px;
+    background: white;
+    border-radius: 2px;
+    transition: 0.3s;
+}
+
+/* 🔥 모바일 사이드 메뉴 */
+.side-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    background: #fff;
+    z-index: 1500;
+    padding: 100px 30px;
+    transform: translateX(-100%);
+    transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 20px 0 50px rgba(0,0,0,0.1);
+}
+.side-menu.active {
+    transform: translateX(0);
+}
+.side-menu a {
+    display: block;
+    font-size: 20px;
+    font-weight: 700;
+    color: #111;
+    text-decoration: none;
+    margin-bottom: 30px;
+}
+.side-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1400;
+    display: none;
+    backdrop-filter: blur(5px);
+}
+.side-menu-overlay.active {
+    display: block;
+}
 
 /* 🔥 Hero 섹션 */
 .hero {
@@ -215,7 +272,6 @@ body {
     font-size: 14px; 
     letter-spacing: 0.5px; 
     line-height: 2.2; 
-    margin-bottom: 0;
 }
 
 /* 🔥 모바일 최적화 강화 */
@@ -227,8 +283,13 @@ body {
 @media (max-width: 768px) {
     .top-bar { padding: 0 20px; height: 70px; }
     .logo { font-size: 20px; }
+    
+    /* PC 메뉴 숨기고 햄버거 버튼 보이기 */
     .menu { display: none; }
-    .right-buttons .naver-btn, .right-buttons .kakao-btn { padding: 8px 15px; font-size: 12px; }
+    .menu-toggle { display: flex; }
+    
+    .right-buttons .naver-btn, .right-buttons .kakao-btn { padding: 8px 12px; font-size: 11px; }
+    .right-buttons .kakao-btn { margin-left: 5px; }
 
     .hero-content h1 { font-size: 50px; letter-spacing: -2px; }
     .hero-content p { font-size: 16px; }
@@ -237,7 +298,5 @@ body {
     .img-container { height: 320px; }
     .best-title { font-size: 28px; padding: 60px 20px 30px; }
 
-    /* 모바일 하단 여백 추가 (고정 바 대비) */
     body { padding-bottom: 100px; }
 }
-

@@ -1,14 +1,96 @@
-<!doctype html>
-<html lang="en">
+
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>보라카이션 - 여행의 모든 것</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
+    <header class="main-header">
+        <div class="header-container">
+            <div class="header-left">
+                <a href="/" class="logo">
+                    <h1>보라카이션</h1>
+                </a>
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="도시나 상품을 검색해보세요">
+                </div>
+            </div>
+            <nav class="header-right">
+                <a href="#" class="nav-item">파트너 등록</a>
+                <a href="#" class="nav-item">로그인</a>
+                <a href="#" class="nav-item signup">회원가입</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero-section">
+            <div class="hero-content">
+                <h2>어디로 떠나시나요?</h2>
+                <div class="main-search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="도시나 상품을 검색해보세요">
+                    <button class="search-button">검색</button>
+                </div>
+                <div class="popular-tags">
+                    <a href="#">#보라카이</a>
+                    <a href="#">#세부</a>
+                    <a href="#">#방콕</a>
+                    <a href="#">#다낭</a>
+                    <a href="#">#코타키나발루</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">가성비 최고의 투어 & 티켓</h2>
+            <div class="product-carousel" id="tours-tickets">
+                <!-- Product cards will be injected here by JavaScript -->
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">최저가 보장, 숙소</h2>
+            <div class="product-carousel" id="accommodations">
+                <!-- Product cards will be injected here by JavaScript -->
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="footer-info">
+                    <p>(주)보라카이션 | 대표 김보라</p>
+                    <p>사업자등록번호: 123-45-67890</p>
+                    <p>주소: 서울특별시 강남구 테헤란로 123</p>
+                </div>
+                <div class="footer-cs">
+                    <p>고객센터: 1588-1234</p>
+                    <p>오전 9시 - 오후 6시 (주말/공휴일 휴무)</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-links">
+                    <a href="#">회사소개</a>
+                    <a href="#">이용약관</a>
+                    <a href="#">개인정보처리방침</a>
+                </div>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
 </body>
 </html>

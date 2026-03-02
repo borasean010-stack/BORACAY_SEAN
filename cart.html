@@ -8,32 +8,18 @@
     <link rel="stylesheet" href="style.css">
     <style>
         body { background: #fcfcfc; }
-        .cart-container { max-width: 900px; margin: 120px auto 100px; padding: 0 20px; }
-        .cart-title { font-size: 32px; font-weight: 900; margin-bottom: 40px; color: #111; }
-        
-        .cart-item { 
-            background: white; border-radius: 20px; padding: 25px; 
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.03); margin-bottom: 20px;
-            border: 1px solid #eee;
-        }
-        .item-info h4 { font-size: 20px; font-weight: 800; margin-bottom: 10px; }
-        .item-info p { color: #888; font-size: 15px; margin-bottom: 5px; }
-        .item-price { font-size: 22px; font-weight: 800; color: #ff6a00; }
-        
-        .empty-cart { text-align: center; padding: 100px 0; color: #bbb; font-size: 18px; }
-        
-        .remove-btn { background: #f5f5f5; color: #999; border: none; padding: 8px 15px; border-radius: 10px; cursor: pointer; font-size: 13px; }
-        .remove-btn:hover { background: #ff6a00; color: white; }
-
-        .checkout-bar { 
-            background: white; border-top: 1px solid #eee; padding: 25px 40px; 
-            display: flex; justify-content: space-between; align-items: center;
-            position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000;
-        }
-        .total-label { font-size: 16px; color: #666; }
-        .total-value { font-size: 28px; font-weight: 900; color: #ff6a00; }
-        .order-btn { background: #ff6a00; color: white; border: none; padding: 18px 40px; border-radius: 15px; font-size: 18px; font-weight: 800; cursor: pointer; }
+        .cart-container { max-width: 900px; margin: 120px auto 150px; padding: 0 20px; }
+        .cart-title { font-size: 32px; font-weight: 900; margin-bottom: 40px; color: #111; letter-spacing: -1px; }
+        .cart-item { background: white; border-radius: 24px; padding: 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 40px rgba(0,0,0,0.03); margin-bottom: 20px; border: 1px solid #f5f5f5; }
+        .item-info h4 { font-size: 22px; font-weight: 800; margin-bottom: 10px; color: #111; }
+        .item-info p { color: #888; font-size: 15px; margin-bottom: 5px; font-weight: 500; }
+        .item-price { font-size: 24px; font-weight: 900; color: #ff6a00; }
+        .remove-btn { background: #f8f8f8; color: #bbb; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-size: 14px; font-weight: 600; margin-top: 15px; transition: 0.3s; }
+        .remove-btn:hover { background: #feebeb; color: #ff4d4d; }
+        .checkout-bar { background: white; border-top: 1px solid #eee; padding: 30px 60px; display: flex; justify-content: space-between; align-items: center; position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000; box-shadow: 0 -10px 40px rgba(0,0,0,0.05); }
+        .order-btn { background: #ff6a00; color: white; border: none; padding: 20px 60px; border-radius: 18px; font-size: 18px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .order-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
+        @media (max-width: 768px) { .checkout-bar { padding: 20px; } .order-btn { padding: 15px 30px; font-size: 16px; } .cart-item { flex-direction: column; align-items: flex-start; gap: 20px; } .item-price { align-self: flex-end; } }
     </style>
 </head>
 <body>
@@ -47,21 +33,23 @@
         <a href="#">보라카이션 요금표</a>
         <a href="cart.html" style="color:white; border-bottom:2px solid white;">장바구니 확인</a>
     </div>
+    <div class="right-buttons">
+        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페</a>
+        <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카톡</a>
+    </div>
 </div>
 
 <div class="cart-container">
     <h2 class="cart-title">장바구니</h2>
-    <div id="cart-list">
-        <!-- JS로 장바구니 목록 생성 -->
-    </div>
+    <div id="cart-list"></div>
 </div>
 
 <div class="checkout-bar" id="checkout-bar" style="display:none;">
     <div>
-        <span class="total-label">총 결제 예정금액</span><br>
-        <span class="total-value" id="final-price">₩ 0</span>
+        <span style="font-size:14px; color:#999; font-weight:600;">총 결제 예정금액</span><br>
+        <span style="font-size:32px; font-weight:900; color:#ff6a00;" id="final-price">₩ 0</span>
     </div>
-    <button class="order-btn" onclick="location.href='login.html'">전체 예약하기</button>
+    <button class="order-btn" onclick="location.href='login.html'">예약하기</button>
 </div>
 
 <script>
@@ -69,44 +57,33 @@
         const cart = JSON.parse(localStorage.getItem('cart') || '[]');
         const listContainer = document.getElementById('cart-list');
         const checkoutBar = document.getElementById('checkout-bar');
-        
-        if (cart.length === 0) {
-            listContainer.innerHTML = '<div class="empty-cart">장바구니가 비어 있습니다.</div>';
-            checkoutBar.style.display = 'none';
-            return;
-        }
-
+        if (cart.length === 0) { listContainer.innerHTML = '<div style="text-align:center; padding:100px 0; color:#ccc; font-size:18px; font-weight:600;">장바구니가 비어 있습니다.</div>'; checkoutBar.style.display = 'none'; return; }
         checkoutBar.style.display = 'flex';
         listContainer.innerHTML = '';
         let total = 0;
-
         cart.forEach((item, index) => {
             const itemTotal = item.price * item.count;
             total += itemTotal;
-            
             listContainer.innerHTML += `
                 <div class="cart-item">
                     <div class="item-info">
                         <h4>${item.name}</h4>
                         <p>예약일: ${item.date}</p>
                         <p>인원: 성인 ${item.count}명</p>
-                        <button class="remove-btn" onclick="removeItem(${index})">삭제</button>
+                        <button class="remove-btn" onclick="removeItem(${index})">삭제하기</button>
                     </div>
                     <div class="item-price">₩ ${itemTotal.toLocaleString()}</div>
                 </div>
             `;
         });
-
         document.getElementById('final-price').innerText = '₩ ' + total.toLocaleString();
     }
-
     function removeItem(index) {
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         cart.splice(index, 1);
         localStorage.setItem('cart', JSON.stringify(cart));
         loadCart();
     }
-
     window.onload = loadCart;
 </script>
 </body>

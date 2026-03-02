@@ -12,7 +12,7 @@ body {
     color: #333;
 }
 
-/* 🟠 상단 바: 주황색 유리 질감 */
+/* 🟠 상단 바: 주황색 유리 질감 (모든 페이지 공통 틀) */
 .top-bar {
     position: fixed;
     top: 0;
@@ -29,21 +29,36 @@ body {
     z-index: 1000;
 }
 
-.logo { color: white; font-weight: 900; font-size: 26px; letter-spacing: -1px; }
-.logo a { color: white; text-decoration: none; }
+.logo { color: white; font-weight: 900; font-size: 26px; letter-spacing: -1.5px; }
+.logo a { color: white; text-decoration: none; text-transform: uppercase; }
+
 .menu { display: flex; align-items: center; }
-.menu a { color: rgba(255, 255, 255, 0.8); text-decoration: none; margin-right: 35px; font-weight: 700; font-size: 15px; transition: 0.3s; }
+.menu a { 
+    color: rgba(255, 255, 255, 0.8); 
+    text-decoration: none; 
+    margin-right: 35px; 
+    font-weight: 700; 
+    font-size: 15px; 
+    letter-spacing: -0.5px;
+    transition: 0.3s;
+    white-space: nowrap;
+}
 .menu a:hover { color: white; }
 
 .right-buttons .naver-btn { background: #03c75a; color: white; padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: 600; font-size: 13px; }
 .right-buttons .kakao-btn { background: #fee500; color: #3c1e1e; padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: 700; font-size: 13px; margin-left: 10px; }
 
 /* ☰ 모바일 햄버거 버튼 */
-.menu-toggle span { background: white; }
-.side-menu { background: #ff6a00; }
-.side-menu a { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+.menu-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; z-index: 1100; }
+.menu-toggle span { width: 25px; height: 3px; background: white; border-radius: 2px; }
 
-/* 🔥 Hero 섹션 */
+.side-menu { position: fixed; top: 0; left: 0; width: 280px; height: 100vh; background: #ff6a00; z-index: 1500; padding: 100px 30px; transform: translateX(-100%); transition: 0.4s; }
+.side-menu.active { transform: translateX(0); }
+.side-menu a { display: block; font-size: 20px; font-weight: 700; color: #fff; text-decoration: none; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+.side-menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1400; display: none; backdrop-filter: blur(5px); }
+.side-menu-overlay.active { display: block; }
+
+/* 🔥 Hero 섹션 (기본 틀 DJI 스타일 유지) */
 .hero {
     position: relative;
     width: 100%;
@@ -70,7 +85,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.2); 
+    background: rgba(0, 0, 0, 0.25); 
     z-index: 3;
 }
 
@@ -90,7 +105,7 @@ body {
     text-shadow: 0 10px 40px rgba(0,0,0,0.5);
 }
 
-/* 🔥 스크롤 마우스 지시계 애니메이션 */
+/* 🔥 스크롤 마우스 (5초 뒤 페이드아웃 대상) */
 .scroll-indicator {
     position: absolute;
     bottom: 50px;
@@ -103,29 +118,9 @@ body {
 .scroll-indicator.visible { opacity: 1; }
 .scroll-indicator.fade-out { opacity: 0; pointer-events: none; }
 
-.mouse {
-    width: 24px;
-    height: 40px;
-    border: 2px solid white;
-    border-radius: 12px;
-    position: relative;
-}
-.mouse::before {
-    content: '';
-    width: 4px;
-    height: 8px;
-    background: white;
-    position: absolute;
-    left: 50%;
-    top: 6px;
-    transform: translateX(-50%);
-    border-radius: 2px;
-    animation: scroll 2s infinite;
-}
-@keyframes scroll {
-    0% { opacity: 1; transform: translate(-50%, 0); }
-    100% { opacity: 0; transform: translate(-50%, 20px); }
-}
+.mouse { width: 24px; height: 40px; border: 2px solid white; border-radius: 12px; position: relative; }
+.mouse::before { content: ''; width: 4px; height: 8px; background: white; position: absolute; left: 50%; top: 6px; transform: translateX(-50%); border-radius: 2px; animation: scroll 2s infinite; }
+@keyframes scroll { 0% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, 20px); } }
 
 /* 🔥 상품 리스트 섹션 (흰색 배경) */
 .best-title { 
@@ -173,6 +168,10 @@ body {
 
 @media (max-width: 768px) {
     .top-bar { padding: 0 20px; height: 70px; }
+    .logo { font-size: 20px; }
+    .menu { display: none; }
+    .menu-toggle { display: flex; }
+    .right-buttons .naver-btn, .right-buttons .kakao-btn { padding: 8px 12px; font-size: 11px; }
     .hero-content h1 { font-size: 55px; }
     .products { grid-template-columns: 1fr; gap: 20px; padding: 0 20px 80px; }
     .img-container { height: 350px; }

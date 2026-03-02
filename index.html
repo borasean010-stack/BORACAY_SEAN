@@ -23,10 +23,14 @@
     </div>
 </div>
 
-<!-- 🔥 DJI 스타일 풀스크린 히어로 섹션 -->
+<!-- 🔥 직접 업로드한 영상(MP4)을 사용하는 히어로 섹션 -->
 <section class="hero">
-    <div class="video-foreground">
-        <div id="player"></div> <!-- 유튜브 API가 여기 영상을 생성합니다 -->
+    <div class="video-background">
+        <!-- 🎥 프로젝트 폴더에 hero-video.mp4 파일을 넣어주세요! -->
+        <video autoplay muted loop playsinline id="hero-video">
+            <source src="hero-video.mp4" type="video/mp4">
+            <!-- 영상 경로가 정확해야 재생됩니다 -->
+        </video>
     </div>
     <div class="hero-overlay"></div>
     <div class="hero-content">
@@ -41,20 +45,21 @@
 <div class="best-title">BEST TOUR</div>
 
 <section class="products">
+    <!-- 🖼️ 임시 고화질 이미지 (나중에 직접 찍은 사진 파일로 교체하세요) -->
     <div class="product">
-        <img src="https://cafeptthumb-phinf.pstatic.net/MjAyNjAyMjhfNjEg/MDAxNzcyMjY0MzUwNzc5.DdtU4WXN26GLFON3eHPLrz6eF8ODTUYDvBPgMMVB8Lsg.1JzyqqM6fuWXUQxnWH3wQ0uzuzqWI6wdO3DXfoG-d6og.JPEG/25%EB%85%84_11%EC%9B%94_%EC%B9%BC%EB%A6%AC%EB%B3%B4_%ED%94%BD%EC%97%85%EC%83%8C%EB%94%A9_%EC%88%98%EC%A0%95%EB%B3%B8-23.jpg?type=w1600">
+        <img src="https://images.unsplash.com/photo-1544918877-460635b6d13e?auto=format&fit=crop&w=800&q=80" alt="픽업샌딩">
         <h3>공항 픽업샌딩</h3>
     </div>
     <div class="product">
-        <img src="https://cafeptthumb-phinf.pstatic.net/MjAyNjAyMjhfMjIx/MDAxNzcyMjU2OTAwNTc1.w9QtadqP2yFsZ7VLNVckMqOLqvC7XcV6xsmj3ND_LX4g.tK4zfG0dHFuAVHDMWFD9wQnfTefdqWa6FS78WL6822sg.JPEG/%EB%B8%94%EB%9E%99%ED%8E%84_%EC%9A%94%ED%8A%B8%ED%98%B8%ED%95%91-01.jpg?type=w1600">
+        <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=800&q=80" alt="호핑투어">
         <h3>블랙펄 요트호핑투어</h3>
     </div>
     <div class="product">
-        <img src="https://cafeptthumb-phinf.pstatic.net/MjAyNjAyMjhfMTM5/MDAxNzcyMjYxMjY2ODQz.QOpUeIocuU-MYypNGz1sbEjUaT1AXKWXu8U5__saY8Eg.qPhSoDl5bQQlUPa0qXplr23KmcE6D3vXtRxTxc4lm-Mg.JPEG/%EC%8B%9C%ED%81%AC%EB%A6%BF%EA%B0%80%EB%93%A0_%EB%A7%90%EB%A3%B8%ED%8C%8C%ED%8B%B0-01.jpg?type=w1600">
+        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" alt="말룸파티">
         <h3>시크릿가든 말룸파티</h3>
     </div>
     <div class="product">
-        <img src="https://cafeptthumb-phinf.pstatic.net/MjAyNjAxMTJfMTgx/MDAxNzY4MTk2ODI2NTQ2.yC0hFRdhkiJaUdp3yBDLjEJeINGKUo3BzHX0zmM9hysg.wNT2MVvvlgtlVcnCyNXbwpBqpAF7EdzI50KsbvDwNicg.PNG/%EB%B3%B4%EB%9D%BC%EC%85%98%EC%9A%94%EA%B8%88%ED%91%9C_%EC%84%AC%EB%84%A4%EC%9D%BC.png?type=w1600">
+        <img src="https://images.unsplash.com/photo-1506953823976-52e1bdc0149a?auto=format&fit=crop&w=800&q=80" alt="요금표">
         <h3>보라카이션 요금표</h3>
     </div>
 </section>
@@ -66,9 +71,6 @@
     사업자번호 : 498-31-00593 | 통신판매신고번호 : 2019-서울중랑-0496
 </footer>
 
-<!-- 유튜브 API 로드 -->
-<script src="https://www.youtube.com/iframe_api"></script>
 <script src="main.js"></script>
 </body>
 </html>
-

@@ -206,6 +206,7 @@ body {
     color: #111; 
 }
 
+/* 푸터 */
 .footer { 
     background: #111; 
     color: #888; 
@@ -214,20 +215,29 @@ body {
     font-size: 14px; 
     letter-spacing: 0.5px; 
     line-height: 2.2; 
+    margin-bottom: 0;
 }
 
-/* 모바일 대응 */
-@media (max-width: 1400px) {
+/* 🔥 모바일 최적화 강화 */
+@media (max-width: 1024px) {
     .products { grid-template-columns: repeat(2, 1fr); padding: 0 40px 100px; }
     .img-container { height: 400px; }
 }
 
 @media (max-width: 768px) {
-    .hero-content h1 { font-size: 55px; }
-    .products { grid-template-columns: 1fr; gap: 20px; padding: 0 20px 80px; }
-    .img-container { height: 350px; }
-    .top-bar { padding: 0 20px; }
-    .menu { display: none; }
+    .top-bar { padding: 0 20px; height: 70px; }
     .logo { font-size: 20px; }
-    .best-title { font-size: 30px; padding: 80px 20px 30px; }
+    .menu { display: none; }
+    .right-buttons .naver-btn, .right-buttons .kakao-btn { padding: 8px 15px; font-size: 12px; }
+
+    .hero-content h1 { font-size: 50px; letter-spacing: -2px; }
+    .hero-content p { font-size: 16px; }
+
+    .products { grid-template-columns: 1fr; gap: 20px; padding: 0 20px 80px; }
+    .img-container { height: 320px; }
+    .best-title { font-size: 28px; padding: 60px 20px 30px; }
+
+    /* 모바일 하단 여백 추가 (고정 바 대비) */
+    body { padding-bottom: 100px; }
 }
+

@@ -12,7 +12,7 @@ body {
     color: #333;
 }
 
-/* 🟠 상단 바: 주황색 유리 질감 */
+/* 🟠 상단 바: 주황색 유리 질감 (모든 페이지 절대 고정 틀) */
 .top-bar {
     position: fixed;
     top: 0;
@@ -29,13 +29,13 @@ body {
     z-index: 1000;
 }
 
-/* 🔥 로고 누끼 효과 및 정렬 */
+/* 로고 레이아웃 (메인 포인트와 동일하게 고정) */
 .logo { display: flex; align-items: center; }
 .logo a { 
     display: flex; 
     align-items: center; 
-    color: white; 
-    text-decoration: none; 
+    color: white !important; 
+    text-decoration: none !important; 
     text-transform: uppercase; 
     font-weight: 900; 
     font-size: 24px; 
@@ -45,15 +45,14 @@ body {
     height: 42px; 
     width: 42px;
     object-fit: contain;
-    margin-right: 10px;
-    /* 흰색 배경을 투명하게 만드는 블렌딩 효과 (누끼 느낌) */
-    mix-blend-mode: screen; 
+    margin-right: 12px;
+    mix-blend-mode: screen; /* 누끼 효과 */
     filter: brightness(1.2);
 }
 
 .menu { display: flex; align-items: center; }
 .menu a { 
-    color: rgba(255, 255, 255, 0.8); 
+    color: rgba(255, 255, 255, 0.85); 
     text-decoration: none; 
     margin-right: 35px; 
     font-weight: 700; 
@@ -67,26 +66,29 @@ body {
 .right-buttons .naver-btn { background: #03c75a; color: white; padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: 600; font-size: 13px; }
 .right-buttons .kakao-btn { background: #fee500; color: #3c1e1e; padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: 700; font-size: 13px; margin-left: 10px; }
 
-/* ☰ 모바일 햄버거 버튼 */
+/* ☰ 모바일 햄버거 메뉴 */
 .menu-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; z-index: 1100; }
 .menu-toggle span { width: 25px; height: 3px; background: white; border-radius: 2px; }
 
-.side-menu { position: fixed; top: 0; left: 0; width: 280px; height: 100vh; background: #ff6a00; z-index: 1500; padding: 100px 30px; transform: translateX(-100%); transition: 0.4s; }
-.side-menu.active { transform: translateX(0); }
-.side-menu a { display: block; font-size: 20px; font-weight: 700; color: #fff; text-decoration: none; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
-.side-menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1400; display: none; backdrop-filter: blur(5px); }
-.side-menu-overlay.active { display: block; }
-
-/* 🔥 Hero 섹션 */
+/* 🔥 Hero 섹션 (사용자님이 원하시는 DJI 스타일 풀스크린 고정 틀) */
 .hero {
     position: relative;
     width: 100%;
-    height: 100vh;
+    height: 100vh; /* 화면 꽉 채움 */
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
     background: #000;
+}
+
+.video-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
 }
 
 .video-background video {
@@ -101,7 +103,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.2); 
+    background: rgba(0, 0, 0, 0.2); /* 영상미를 살리기 위한 아주 얇은 필터 */
     z-index: 2;
 }
 
@@ -128,7 +130,7 @@ body {
     text-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 
-/* 🔥 스크롤 마우스 애니메이션 */
+/* 🔥 마우스 지시계 애니메이션 */
 .scroll-indicator {
     position: absolute;
     bottom: 50px;
@@ -145,7 +147,7 @@ body {
 .mouse::before { content: ''; width: 4px; height: 8px; background: white; position: absolute; left: 50%; top: 6px; transform: translateX(-50%); border-radius: 2px; animation: scroll 2s infinite; }
 @keyframes scroll { 0% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, 20px); } }
 
-/* 🔥 상품 리스트 섹션 */
+/* 🔥 상품 리스트 섹션 (흰색 배경) */
 .best-title { 
     background: #fff; 
     color: #ff6a00;
@@ -178,7 +180,7 @@ body {
 .img-container img { width: 100%; height: 100%; object-fit: cover; transition: 0.6s; }
 .product h3 { padding: 30px 20px; text-align: center; font-size: 20px; font-weight: 800; color: #111; }
 
-/* 🟠 푸터 개편 */
+/* 🟠 푸터: 주황색 배경 */
 .footer { 
     background: #ff6a00; 
     color: #fff; 
@@ -194,15 +196,10 @@ body {
 
 .footer-right { display: flex; flex-direction: column; gap: 15px; min-width: 300px; }
 
-.kakao-banner { background: #fee500; color: #3c1e1e; padding: 20px 25px; border-radius: 16px; text-decoration: none; display: flex; align-items: center; gap: 15px; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-.kakao-banner:hover { transform: translateY(-5px); }
-.kakao-banner .kb-text b { font-size: 18px; display: block; }
-.kakao-banner .kb-text span { font-size: 13px; opacity: 0.8; }
-
-.naver-banner { background: #03c75a; color: white; padding: 20px 25px; border-radius: 16px; text-decoration: none; display: flex; align-items: center; gap: 15px; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-.naver-banner:hover { transform: translateY(-5px); }
-.naver-banner .nb-text b { font-size: 18px; display: block; }
-.naver-banner .nb-text span { font-size: 13px; opacity: 0.9; }
+.kakao-banner, .naver-banner { padding: 20px 25px; border-radius: 16px; text-decoration: none; display: flex; align-items: center; gap: 15px; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+.kakao-banner { background: #fee500; color: #3c1e1e; }
+.naver-banner { background: #03c75a; color: white; }
+.kakao-banner:hover, .naver-banner:hover { transform: translateY(-5px); }
 
 @media (max-width: 1024px) {
     .footer { flex-direction: column; align-items: flex-start; padding: 60px 30px; }
@@ -217,6 +214,7 @@ body {
     .menu { display: none; }
     .menu-toggle { display: flex; }
     .right-buttons .naver-btn, .right-buttons .kakao-btn { padding: 8px 12px; font-size: 11px; }
+    .hero-content h1 { font-size: 55px; }
     .products { grid-template-columns: 1fr; gap: 20px; padding: 0 20px 80px; }
-    .img-container { height: 350px; }
+    .img-container { height: 320px; }
 }

@@ -136,7 +136,7 @@ body {
     .menu { display: none; }
     .menu-toggle { display: flex; }
     .header-right { gap: 6px; }
-    .naver-btn, .kakao-btn { padding: 8px 12px; font-size: 11px; border-radius: 20px; }
+    .naver-btn, .kakao-btn { padding: 8px 12px; font-size: 6px; border-radius: 20px; }
     .hero-content h1 { font-size: 55px; }
     .products { grid-template-columns: 1fr; gap: 20px; padding: 0 20px 80px; }
     .img-container { height: 320px; }

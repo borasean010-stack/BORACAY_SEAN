@@ -7,11 +7,12 @@
 }
 
 body {
-    background: #000;
+    background: #fff; /* 기본 배경은 흰색 */
     overflow-x: hidden;
+    color: #333;
 }
 
-/* 네비게이션 */
+/* 🟠 네비게이션 (주황색 포인트) */
 .top-bar {
     position: fixed;
     top: 0;
@@ -21,78 +22,29 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 0 60px;
-    background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.8); /* 흰색 반투명 */
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(255, 106, 0, 0.1);
     z-index: 1000;
 }
 
-.logo { color: white; font-weight: 900; font-size: 26px; letter-spacing: -1px; }
-.logo a { color: white; text-decoration: none; }
-.menu a { color: rgba(255,255,255,0.8); text-decoration: none; margin-right: 40px; font-weight: 600; font-size: 16px; transition: 0.3s; }
-.menu a:hover { color: white; }
+.logo { color: #ff6a00; font-weight: 900; font-size: 26px; letter-spacing: -1px; }
+.logo a { color: #ff6a00; text-decoration: none; }
+.menu a { color: #555; text-decoration: none; margin-right: 40px; font-weight: 700; font-size: 16px; transition: 0.3s; }
+.menu a:hover { color: #ff6a00; }
 
 .right-buttons .naver-btn { background: #03c75a; color: white; padding: 12px 24px; border-radius: 30px; text-decoration: none; font-weight: 600; font-size: 14px; }
 .right-buttons .kakao-btn { background: #fee500; color: #3c1e1e; padding: 12px 24px; border-radius: 30px; text-decoration: none; font-weight: 700; font-size: 14px; margin-left: 10px; }
 
-/* 🔥 모바일 햄버거 버튼 */
-.menu-toggle {
-    display: none;
-    flex-direction: column;
-    gap: 5px;
-    cursor: pointer;
-    z-index: 1100;
-}
-.menu-toggle span {
-    width: 25px;
-    height: 3px;
-    background: white;
-    border-radius: 2px;
-    transition: 0.3s;
-}
+/* ☰ 모바일 햄버거 버튼 (주황색) */
+.menu-toggle span { background: #ff6a00; }
 
-/* 🔥 모바일 사이드 메뉴 */
-.side-menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 280px;
-    height: 100vh;
-    background: #fff;
-    z-index: 1500;
-    padding: 100px 30px;
-    transform: translateX(-100%);
-    transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 20px 0 50px rgba(0,0,0,0.1);
-}
-.side-menu.active {
-    transform: translateX(0);
-}
-.side-menu a {
-    display: block;
-    font-size: 20px;
-    font-weight: 700;
-    color: #111;
-    text-decoration: none;
-    margin-bottom: 30px;
-}
-.side-menu-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    z-index: 1400;
-    display: none;
-    backdrop-filter: blur(5px);
-}
-.side-menu-overlay.active {
-    display: block;
-}
+/* 📱 모바일 사이드 메뉴 (주황색 테마) */
+.side-menu { background: #ff6a00; }
+.side-menu a { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
 
-/* 🔥 Hero 섹션 */
+/* 🔥 Hero 섹션 (배경 영상 유지하되 오버레이 조절) */
 .hero {
     position: relative;
     width: 100%;
@@ -101,28 +53,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #000;
-}
-
-.hero-fallback-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('https://images.unsplash.com/photo-1544918877-460635b6d13e?auto=format&fit=crop&w=1920&q=80');
-    background-size: cover;
-    background-position: center;
-    z-index: 1;
-}
-
-.video-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 2;
+    background: #ff6a00; /* 영상 로딩 전 주황색 */
 }
 
 .video-background video {
@@ -132,10 +63,7 @@ body {
     opacity: 0;
     transition: opacity 1.5s ease;
 }
-
-.video-background video.loaded {
-    opacity: 1;
-}
+.video-background video.loaded { opacity: 1; }
 
 .hero-overlay {
     position: absolute;
@@ -143,7 +71,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 100%);
+    background: linear-gradient(to bottom, rgba(255,106,0,0.2), rgba(255,255,255,1)); /* 주황색에서 흰색으로 페이드 */
     z-index: 3;
 }
 
@@ -151,7 +79,7 @@ body {
     position: relative;
     z-index: 4;
     text-align: center;
-    color: white;
+    color: #ff6a00; /* 글씨색 주황색으로 변경 */
 }
 
 .hero-content h1 {
@@ -160,59 +88,27 @@ body {
     line-height: 0.9;
     margin-bottom: 20px;
     letter-spacing: -4px;
-    text-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    text-shadow: 0 5px 20px rgba(255,106,0,0.1);
 }
 
 .hero-content p {
     font-size: clamp(16px, 3vw, 24px);
-    font-weight: 400;
-    opacity: 0.9;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    font-weight: 600;
+    color: #ff8c42;
 }
 
-.scroll-indicator {
-    position: absolute;
-    bottom: 50px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 4;
-}
+/* 🖱️ 스크롤 지시계 (주황색) */
+.mouse { border: 2px solid #ff6a00; }
+.mouse::before { background: #ff6a00; }
 
-.mouse {
-    width: 24px;
-    height: 40px;
-    border: 2px solid white;
-    border-radius: 12px;
-    position: relative;
-}
-
-.mouse::before {
-    content: '';
-    width: 4px;
-    height: 8px;
-    background: white;
-    position: absolute;
-    left: 50%;
-    top: 6px;
-    transform: translateX(-50%);
-    border-radius: 2px;
-    animation: scroll 2s infinite;
-}
-
-@keyframes scroll {
-    0% { opacity: 1; transform: translate(-50%, 0); }
-    100% { opacity: 0; transform: translate(-50%, 20px); }
-}
-
-/* 🔥 상품 리스트 (세련된 카드 디자인) */
+/* 🔥 상품 리스트 (흰색 배경) */
 .best-title { 
     background: #fff; 
-    color: #000; 
+    color: #ff6a00; /* 제목 주황색 */
     padding: 120px 40px 40px; 
     text-align: center; 
     font-size: 40px; 
     font-weight: 900; 
-    letter-spacing: -1px;
 }
 
 .products { 
@@ -229,44 +125,42 @@ body {
     background: #fff; 
     transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1); 
     cursor: pointer;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    box-shadow: 0 15px 40px rgba(255,106,0,0.08); /* 주황색 톤의 은은한 그림자 */
+    border: 1px solid #fdf0e6;
 }
 
 .product:hover { 
     transform: translateY(-15px); 
-    box-shadow: 0 30px 60px rgba(0,0,0,0.1); 
+    box-shadow: 0 30px 60px rgba(255,106,0,0.15); 
+    border-color: #ff6a00;
 }
 
 .img-container {
     width: 100%;
-    height: 450px; /* 사진을 길게 배치하여 세련되게 보여줌 */
+    height: 450px;
     overflow: hidden;
-    background: #f0f0f0;
+    background: #fff9f2;
 }
 
 .img-container img { 
     width: 100%; 
     height: 100%; 
-    object-fit: cover; /* 사진이 잘리지 않고 꽉 차게 */
+    object-fit: cover;
     transition: 0.6s;
-}
-
-.product:hover img {
-    transform: scale(1.05);
 }
 
 .product h3 { 
     padding: 30px 20px; 
     text-align: center; 
     font-size: 20px; 
-    font-weight: 700; 
-    color: #111; 
+    font-weight: 800; 
+    color: #333; 
 }
 
-/* 푸터 */
+/* 🟠 푸터 (강렬한 주황색 배경) */
 .footer { 
-    background: #111; 
-    color: #888; 
+    background: #ff6a00; 
+    color: #fff; 
     padding: 100px 40px; 
     text-align: center; 
     font-size: 14px; 
@@ -274,29 +168,12 @@ body {
     line-height: 2.2; 
 }
 
-/* 🔥 모바일 최적화 강화 */
-@media (max-width: 1024px) {
-    .products { grid-template-columns: repeat(2, 1fr); padding: 0 40px 100px; }
-    .img-container { height: 400px; }
-}
-
+/* 🔥 모바일 대응 */
 @media (max-width: 768px) {
     .top-bar { padding: 0 20px; height: 70px; }
-    .logo { font-size: 20px; }
-    
-    /* PC 메뉴 숨기고 햄버거 버튼 보이기 */
-    .menu { display: none; }
-    .menu-toggle { display: flex; }
-    
-    .right-buttons .naver-btn, .right-buttons .kakao-btn { padding: 8px 12px; font-size: 11px; }
-    .right-buttons .kakao-btn { margin-left: 5px; }
-
-    .hero-content h1 { font-size: 50px; letter-spacing: -2px; }
-    .hero-content p { font-size: 16px; }
-
+    .hero-content h1 { font-size: 55px; }
     .products { grid-template-columns: 1fr; gap: 20px; padding: 0 20px 80px; }
-    .img-container { height: 320px; }
-    .best-title { font-size: 28px; padding: 60px 20px 30px; }
-
-    body { padding-bottom: 100px; }
+    .img-container { height: 350px; }
+    .best-title { font-size: 30px; padding: 80px 20px 30px; }
+    body { padding-bottom: 80px; }
 }

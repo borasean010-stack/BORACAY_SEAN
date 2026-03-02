@@ -6,6 +6,13 @@
     <title>BORACAY_SEAN | 보라카이션</title>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+
+    <!-- 🔥 SNS 썸네일 설정 -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="보라카이션 | BORACAY_SEAN">
+    <meta property="og:description" content="가장 완벽한 보라카이 여행의 시작, 보라카이션">
+    <meta property="og:image" content="https://boracay-sean.page/og-image.png">
+    <meta property="og:url" content="https://boracay-sean.page">
 </head>
 <body>
 
@@ -16,7 +23,7 @@
     <a href="hopping-tour.html">블랙펄 요트호핑투어</a>
     <a href="#">시크릿가든 말룸파티</a>
     <a href="#">한눈에 요금표</a>
-    <a href="cart.html">장바구니</a>
+    <a href="cart.html">장바구니 확인</a>
 </div>
 
 <div class="top-bar">
@@ -39,8 +46,9 @@
     </div>
 
     <div class="header-right">
-        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페</a>
-        <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카톡</a>
+        <!-- 🔥 실제 링크 연결 완료 -->
+        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페 바로가기</a>
+        <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카톡 바로가기</a>
     </div>
 </div>
 
@@ -78,12 +86,12 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const t = document.getElementById('menuToggle');
-        const m = document.getElementById('sideMenu');
-        const o = document.getElementById('overlay');
-        if(t && m && o) {
-            t.onclick = function() { m.classList.toggle('active'); o.classList.toggle('active'); };
-            o.onclick = function() { m.classList.remove('active'); o.classList.remove('active'); };
+        const toggle = document.getElementById('menuToggle');
+        const menu = document.getElementById('sideMenu');
+        const overlay = document.getElementById('overlay');
+        if(toggle && menu && overlay) {
+            toggle.onclick = function() { menu.classList.toggle('active'); overlay.classList.toggle('active'); };
+            overlay.onclick = function() { menu.classList.remove('active'); overlay.classList.remove('active'); };
         }
     });
 </script>

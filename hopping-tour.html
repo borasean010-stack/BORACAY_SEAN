@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>블랙펄 요트 호핑투어 | BORACAY_SEAN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 상세 페이지 전용 추가 스타일 */
+        body { background: #f8f9fa; }
+        .tour-detail-container {
+            max-width: 1300px;
+            margin: 120px auto 100px;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 50px;
+            padding: 0 40px;
+        }
+
+        /* 왼쪽 정보 섹션 */
+        .tour-content { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
+        .tour-header h1 { font-size: 36px; font-weight: 800; margin-bottom: 20px; color: #111; }
+        .tour-summary { font-size: 18px; color: #666; line-height: 1.6; margin-bottom: 40px; }
+        
+        .section-title { font-size: 24px; font-weight: 800; margin: 60px 0 30px; padding-bottom: 15px; border-bottom: 2px solid #eee; position: relative; }
+        .section-title::after { content: ''; position: absolute; left: 0; bottom: -2px; width: 60px; height: 2px; background: #ff6a00; }
+
+        /* 타임라인 일정 */
+        .itinerary { position: relative; padding-left: 30px; }
+        .itinerary::before { content: ''; position: absolute; left: 0; top: 0; width: 2px; height: 100%; background: #eee; }
+        .itinerary-item { position: relative; margin-bottom: 60px; }
+        .itinerary-item::before { content: ''; position: absolute; left: -35px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: #ff6a00; border: 3px solid white; box-shadow: 0 0 0 4px #fff1e6; }
+        .itinerary-img { width: 100%; border-radius: 16px; margin-top: 15px; overflow: hidden; }
+        .itinerary-img img { width: 100%; object-fit: cover; }
+        .itinerary-text h4 { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+
+        /* 오른쪽 고정 예약 박스 */
+        .reservation-box {
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+            background: white;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            border: 1px solid #eee;
+        }
+        .price-info { margin-bottom: 25px; }
+        .price-label { font-size: 14px; color: #888; margin-bottom: 5px; }
+        .price-value { font-size: 32px; font-weight: 800; color: #ff6a00; }
+
+        /* 달력 UI */
+        .calendar-wrap { margin-bottom: 25px; border: 1px solid #eee; border-radius: 12px; padding: 15px; }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
+        .day-header { font-size: 12px; font-weight: 700; color: #bbb; padding-bottom: 10px; }
+        .day { padding: 8px; font-size: 14px; cursor: pointer; border-radius: 8px; transition: 0.2s; }
+        .day:hover { background: #fff1e6; color: #ff6a00; }
+        .day.selected { background: #ff6a00; color: white; }
+        .day.disabled { color: #ddd; cursor: not-allowed; }
+
+        /* 인원 선택 */
+        .selector-wrap { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 12px; }
+        .counter { display: flex; align-items: center; gap: 15px; }
+        .count-btn { width: 30px; height: 30px; border: 1px solid #ddd; background: white; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .book-btn { width: 100%; padding: 20px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 20px; }
+        .book-btn:hover { background: #e65f00; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,106,0,0.3); }
+
+        /* 환불 규정 사진 */
+        .refund-section img { width: 100%; border-radius: 16px; }
+
+        @media (max-width: 1024px) {
+            .tour-detail-container { grid-template-columns: 1fr; }
+            .reservation-box { position: fixed; bottom: 0; left: 0; top: auto; width: 100%; border-radius: 24px 24px 0 0; z-index: 2000; padding: 20px; display: flex; flex-direction: column; }
+            .calendar-wrap { display: none; } /* 모바일에서는 날짜 선택을 버튼으로 대체 */
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <div class="logo"><a href="index.html" style="color:white; text-decoration:none;">BORACAY_SEAN</a></div>
+    <div class="menu">
+        <a href="#">공항 픽업샌딩</a>
+        <a href="hopping-tour.html">블랙펄 요트호핑투어</a>
+        <a href="#">시크릿가든 말룸파티</a>
+        <a href="#">보라카이션 요금표</a>
+    </div>
+    <div class="right-buttons">
+        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">네이버 카페</a>
+        <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카카오채널</a>
+    </div>
+</div>
+
+<div class="tour-detail-container">
+    <!-- 왼쪽: 상세 정보 -->
+    <div class="tour-content">
+        <div class="tour-header">
+            <h1>블랙펄 요트 호핑투어</h1>
+            <p class="tour-summary">
+                보라카이 최고의 럭셔리 호핑투어! 최고급 요트에서 즐기는 환상적인 스노클링과 수제 간식, 그리고 잊지 못할 선셋까지 모두 포함된 보라카이션의 시그니처 투어입니다.
+            </p>
+        </div>
+
+        <div class="section-title">투어 일정 (Itinerary)</div>
+        <div class="itinerary">
+            <div class="itinerary-item">
+                <div class="itinerary-text">
+                    <h4>Step 01. 미팅 및 요트 탑승</h4>
+                    <p>스테이션 1 미팅 포인트에서 가이드와 만나 럭셔리 블랙펄 요트에 탑승합니다.</p>
+                </div>
+                <div class="itinerary-img"><img src="hop1.jpg"></div>
+            </div>
+            <div class="itinerary-item">
+                <div class="itinerary-text">
+                    <h4>Step 02. 첫 번째 스노클링 포인트</h4>
+                    <p>보라카이의 맑은 바다에서 즐기는 환상적인 물놀이! 전문 가이드가 함께하여 안전합니다.</p>
+                </div>
+                <div class="itinerary-img"><img src="hop2.jpg"></div>
+            </div>
+            <div class="itinerary-item">
+                <div class="itinerary-text">
+                    <h4>Step 03. 선상 파티 및 간식 타임</h4>
+                    <p>요트 위에서 즐기는 맛있는 수제 간식과 시원한 음료! 음악과 함께 보라카이의 분위기를 만끽하세요.</p>
+                </div>
+                <div class="itinerary-img"><img src="hop3.jpg"></div>
+            </div>
+            <div class="itinerary-item">
+                <div class="itinerary-text">
+                    <h4>Step 04. 두 번째 포인트 및 패들보드</h4>
+                    <p>더 깊고 투명한 바다에서의 두 번째 스노클링과 자유로운 패들보드 체험을 즐깁니다.</p>
+                </div>
+                <div class="itinerary-img"><img src="hop4.jpg"></div>
+            </div>
+            <div class="itinerary-item">
+                <div class="itinerary-text">
+                    <h4>Step 05. 선셋 감상 및 복귀</h4>
+                    <p>세계 3대 선셋, 보라카이의 노을을 요트 위에서 감상하며 투어를 마무리합니다.</p>
+                </div>
+                <div class="itinerary-img"><img src="hop5.jpg"></div>
+            </div>
+        </div>
+
+        <div class="section-title">환불 규정 및 취소 약관</div>
+        <div class="refund-section">
+            <img src="refund.png" alt="환불 약관">
+        </div>
+    </div>
+
+    <!-- 오른쪽: 고정 예약 박스 -->
+    <div class="reservation-box">
+        <div class="price-info">
+            <div class="price-label">1인 기준 (예상가)</div>
+            <div class="price-value">₩ 65,000</div>
+        </div>
+
+        <div class="calendar-wrap">
+            <div class="calendar-header">
+                <strong id="current-month">2026년 3월</strong>
+            </div>
+            <div class="calendar-grid">
+                <div class="day-header">일</div><div class="day-header">월</div><div class="day-header">화</div><div class="day-header">수</div><div class="day-header">목</div><div class="day-header">금</div><div class="day-header">토</div>
+                <!-- 달력 날짜는 JS로 생성 -->
+                <div class="day disabled">1</div><div class="day selected">2</div><div class="day">3</div><div class="day">4</div><div class="day">5</div><div class="day">6</div><div class="day">7</div>
+                <div class="day">8</div><div class="day">9</div><div class="day">10</div><div class="day">11</div><div class="day">12</div><div class="day">13</div><div class="day">14</div>
+                <div class="day">15</div><div class="day">16</div><div class="day">17</div><div class="day">18</div><div class="day">19</div><div class="day">20</div><div class="day">21</div>
+            </div>
+        </div>
+
+        <div class="selector-wrap">
+            <span>성인</span>
+            <div class="counter">
+                <button class="count-btn" onclick="updateCount(-1)">-</button>
+                <strong id="adult-count">1</strong>
+                <button class="count-btn" onclick="updateCount(1)">+</button>
+            </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; margin-top:20px; font-size:20px; font-weight:800;">
+            <span>총 결제금액</span>
+            <span id="total-price" style="color:#ff6a00;">₩ 65,000</span>
+        </div>
+
+        <button class="book-btn" onclick="location.href='https://business.kakao.com/_zBArM/chats'">예약하기 (상담 연결)</button>
+    </div>
+</div>
+
+<footer class="footer">
+    상호 : 보라카이션 | 대표 : 윤오현<br>
+    서울특별시 중랑구 상봉로 16길 25-3<br>
+    010-4844-1392 | daemit@naver.com<br>
+    사업자번호 : 498-31-00593 | 통신판매신고번호 : 2019-서울중랑-0496
+</footer>
+
+<script>
+    let adultCount = 1;
+    const pricePerPerson = 65000;
+
+    function updateCount(delta) {
+        adultCount = Math.max(1, adultCount + delta);
+        document.getElementById('adult-count').innerText = adultCount;
+        const total = adultCount * pricePerPerson;
+        document.getElementById('total-price').innerText = '₩ ' + total.toLocaleString();
+    }
+</script>
+</body>
+</html>

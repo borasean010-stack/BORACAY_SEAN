@@ -1,18 +1,22 @@
 // main.js
 document.addEventListener('DOMContentLoaded', () => {
-    const iframe = document.getElementById('bg-video');
+    const video = document.getElementById('hero-video');
     
-    // 유튜브 영상 로드 체크
-    if (iframe) {
-        iframe.onload = function() {
-            // 로드가 완료되면 opacity를 1로 변경 (CSS 클래스 추가)
-            iframe.classList.add('loaded');
-            console.log("Video loaded successfully.");
+    if (video) {
+        // 비디오가 재생 가능한 상태가 되면 'loaded' 클래스 추가
+        video.oncanplay = function() {
+            video.classList.add('loaded');
+            console.log("Local video is ready to play.");
         };
 
-        // 혹시 모르니 3초 후에도 안 나타나면 강제 표시 (또는 에러 대응)
+        // 자동 재생 시도 (일부 브라우저 정책 대응)
+        video.play().catch(error => {
+            console.log("Autoplay prevented:", error);
+        });
+        
+        // 브라우저 정책으로 인해 oncanplay가 안 불릴 경우를 대비해 2초 후 강제 표시
         setTimeout(() => {
-            iframe.classList.add('loaded');
-        }, 5000);
+            video.classList.add('loaded');
+        }, 2000);
     }
 });

@@ -23,14 +23,16 @@
     </div>
 </div>
 
-<!-- 🔥 직접 업로드한 영상(MP4)을 사용하는 히어로 섹션 -->
+<!-- 🔥 유튜브 배경을 활용한 DJI 스타일 풀스크린 히어로 섹션 -->
 <section class="hero">
     <div class="video-background">
-        <!-- 🎥 프로젝트 폴더에 hero-video.mp4 파일을 넣어주세요! -->
-        <video autoplay muted loop playsinline id="hero-video">
-            <source src="hero-video.mp4" type="video/mp4">
-            <!-- 영상 경로가 정확해야 재생됩니다 -->
-        </video>
+        <!-- 유튜브 iframe: autoplay=1 (자동재생), mute=1 (무음, 자동재생 필수조건), loop=1 (반복), playlist=id (반복 필수조건) -->
+        <iframe 
+            src="https://www.youtube.com/embed/bb9bV-moCuk?autoplay=1&mute=1&loop=1&playlist=bb9bV-moCuk&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&disablekb=1&playsinline=1" 
+            frameborder="0" 
+            allow="autoplay; fullscreen; encrypted-media" 
+            allowfullscreen>
+        </iframe>
     </div>
     <div class="hero-overlay"></div>
     <div class="hero-content">
@@ -45,7 +47,6 @@
 <div class="best-title">BEST TOUR</div>
 
 <section class="products">
-    <!-- 🖼️ 임시 고화질 이미지 (나중에 직접 찍은 사진 파일로 교체하세요) -->
     <div class="product">
         <img src="https://images.unsplash.com/photo-1544918877-460635b6d13e?auto=format&fit=crop&w=800&q=80" alt="픽업샌딩">
         <h3>공항 픽업샌딩</h3>

@@ -14,11 +14,21 @@
         .service-info-img { width: 100%; margin: 15px 0 20px; }
         .service-info-img img { width: 100%; border-radius: 15px; display: block; }
         .reservation-box { background: white; border-radius: 24px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.08); position: sticky; top: 110px; border: 1px solid #f0f0f0; height: fit-content; }
+        
+        /* 🗓️ 날짜 선택 탭 스타일 */
+        .date-tabs { display: flex; gap: 5px; margin-bottom: 15px; background: #f8f9fa; padding: 5px; border-radius: 12px; }
+        .date-tab { flex: 1; padding: 12px 5px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 10px; transition: 0.2s; color: #888; border: 1px solid transparent; }
+        .date-tab.active { background: white; color: #ff6a00; border-color: #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .date-display { font-size: 12px; display: block; margin-top: 4px; color: #ff6a00; font-weight: 800; }
+
         .calendar-wrap { margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 15px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
         .day { padding: 10px 0; cursor: pointer; border-radius: 8px; font-size: 13px; font-weight: 600; }
         .day:hover { background: #fff1e6; }
-        .day.selected { background: #ff6a00 !important; color: white !important; font-weight: 800; }
+        .day.selected-pickup { background: #ff6a00 !important; color: white !important; font-weight: 800; position: relative; }
+        .day.selected-pickup::after { content: '픽업'; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-size: 8px; }
+        .day.selected-sending { background: #00c4ff !important; color: white !important; font-weight: 800; position: relative; }
+        .day.selected-sending::after { content: '샌딩'; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-size: 8px; }
         
         .btn-buy { width: 100%; padding: 20px; background: #ff6a00; color: white; border: none; border-radius: 16px; font-size: 18px; font-weight: 800; cursor: pointer; transition: 0.3s; }
         .btn-cart { width: 100%; padding: 18px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 16px; font-size: 17px; font-weight: 800; cursor: pointer; transition: 0.3s; }
@@ -146,6 +156,13 @@
     <!-- 🗓️ 우측 예약 박스 (PC) -->
     <div class="reservation-box">
         <div style="font-size:30px; font-weight:900; color:#ff6a00; margin-bottom:20px;">₩ 40,000</div>
+        
+        <!-- 🗓️ 날짜 선택 탭 -->
+        <div class="date-tabs" id="pc-date-tabs">
+            <div class="date-tab active" onclick="setMode('pickup')">픽업 날짜<span id="pc-pickup-display" class="date-display">선택 안함</span></div>
+            <div class="date-tab" onclick="setMode('sending')">샌딩 날짜<span id="pc-sending-display" class="date-display" style="color:#00c4ff;">선택 안함</span></div>
+        </div>
+
         <div class="calendar-wrap">
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&lt;</button>
@@ -162,7 +179,7 @@
                 <button class="count-btn" onclick="updateCount(1)">+</button>
             </div>
         </div>
-        <button class="btn-buy" onclick="location.href='booking-form.html'">구매하기</button>
+        <button class="btn-buy" onclick="handleBuy()">구매하기</button>
         <button class="btn-cart" onclick="addToCart()" style="margin-top:10px;">장바구니 담기</button>
     </div>
 </div>
@@ -177,6 +194,12 @@
 <div class="option-sheet-overlay" id="sheetOverlay" onclick="closeOptionSheet()"></div>
 <div class="option-sheet" id="optionSheet">
     <h3 style="font-weight:800; margin-bottom:20px;">예약 옵션 선택</h3>
+    
+    <div class="date-tabs" id="m-date-tabs">
+        <div class="date-tab active" onclick="setMode('pickup')">픽업 날짜<span id="m-pickup-display" class="date-display">선택 안함</span></div>
+        <div class="date-tab" onclick="setMode('sending')">샌딩 날짜<span id="m-sending-display" class="date-display" style="color:#00c4ff;">선택 안함</span></div>
+    </div>
+
     <div class="calendar-wrap">
         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
             <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800;">&lt;</button>
@@ -193,7 +216,7 @@
             <button class="count-btn" onclick="updateCount(1)">+</button>
         </div>
     </div>
-    <button class="btn-buy" onclick="location.href='booking-form.html'">선택 완료 / 구매하기</button>
+    <button class="btn-buy" onclick="handleBuy()">선택 완료 / 구매하기</button>
 </div>
 
 <footer class="footer">
@@ -212,11 +235,27 @@
 <script>
     let adultCount = 1;
     let currentDate = new Date(2026, 2, 1);
-    let selectedDate = '2026-03-02';
+    let selectedPickupDate = null;
+    let selectedSendingDate = null;
+    let currentMode = 'pickup'; // 'pickup' or 'sending'
 
     function openOptionSheet() { document.getElementById('sheetOverlay').style.display = 'block'; document.getElementById('optionSheet').classList.add('active'); }
     function closeOptionSheet() { document.getElementById('sheetOverlay').style.display = 'none'; document.getElementById('optionSheet').classList.remove('active'); }
     
+    function setMode(mode) {
+        currentMode = mode;
+        const tabs = document.querySelectorAll('.date-tab');
+        tabs.forEach(tab => {
+            if (tab.innerText.includes(mode === 'pickup' ? '픽업' : '샌딩')) {
+                tab.classList.add('active');
+            } else {
+                tab.classList.remove('active');
+            }
+        });
+        renderCalendar('pc-days', 'pc-month');
+        renderCalendar('m-days', 'm-month');
+    }
+
     function updateCount(delta) {
         adultCount = Math.max(1, adultCount + delta);
         document.getElementById('pc-count').innerText = adultCount;
@@ -241,24 +280,55 @@
         const lastDate = new Date(year, month + 1, 0).getDate();
         for (let i = 0; i < firstDay; i++) container.appendChild(document.createElement('div'));
         for (let i = 1; i <= lastDate; i++) {
+            const dateStr = `${year}-${(month+1).toString().padStart(2,'0')}-${i.toString().padStart(2,'0')}`;
             const div = document.createElement('div');
-            div.className = 'day' + (i===2 && month===2 ? ' selected' : '');
+            div.className = 'day';
+            if (dateStr === selectedPickupDate) div.classList.add('selected-pickup');
+            if (dateStr === selectedSendingDate) div.classList.add('selected-sending');
+            
             div.innerText = i;
             div.onclick = function() {
-                document.querySelectorAll('.day').forEach(d => d.classList.remove('selected'));
-                this.classList.add('selected');
-                selectedDate = `${year}-${(month+1).toString().padStart(2,'0')}-${i.toString().padStart(2,'0')}`;
+                if (currentMode === 'pickup') {
+                    selectedPickupDate = dateStr;
+                    document.getElementById('pc-pickup-display').innerText = dateStr;
+                    document.getElementById('m-pickup-display').innerText = dateStr;
+                    // 픽업 선택 후 자동으로 샌딩 탭으로 전환 (사용자 편의)
+                    setTimeout(() => setMode('sending'), 200);
+                } else {
+                    selectedSendingDate = dateStr;
+                    document.getElementById('pc-sending-display').innerText = dateStr;
+                    document.getElementById('m-sending-display').innerText = dateStr;
+                }
+                renderCalendar('pc-days', 'pc-month');
+                renderCalendar('m-days', 'm-month');
             };
             container.appendChild(div);
         }
     }
 
+    function handleBuy() {
+        if (!selectedPickupDate || !selectedSendingDate) {
+            alert('픽업 날짜와 샌딩 날짜를 모두 선택해주세요.');
+            if (!selectedPickupDate) setMode('pickup');
+            else setMode('sending');
+            return;
+        }
+        location.href = 'booking-form.html';
+    }
+
     function addToCart() {
+        if (!selectedPickupDate || !selectedSendingDate) {
+            alert('픽업 날짜와 샌딩 날짜를 모두 선택해주세요.');
+            if (!selectedPickupDate) setMode('pickup');
+            else setMode('sending');
+            return;
+        }
         const item = { 
             name: "공항 왕복 픽업샌딩", 
             price: 40000, 
             count: adultCount, 
-            date: selectedDate,
+            pickupDate: selectedPickupDate,
+            sendingDate: selectedSendingDate,
             image: "pickup.jpg"
         };
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -274,7 +344,6 @@
         renderCalendar('m-days', 'm-month'); 
     };
 
-    // 사이드 메뉴 토글 로직
     document.addEventListener('DOMContentLoaded', function() {
         const t = document.getElementById('menuToggle');
         const m = document.getElementById('sideMenu');

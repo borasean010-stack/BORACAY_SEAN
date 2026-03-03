@@ -139,13 +139,21 @@ body {
     .naver-btn, .kakao-btn { padding: 8px 12px; font-size: 6px; border-radius: 20px; }
     .hero-content h1 { font-size: 55px; }
     
-    /* 📱 모바일 히어로 영상 최적화 */
-    .hero { height: 85vh; } /* 모바일에서는 약간 높이를 줄여 영상이 덜 잘리게 함 */
+    /* 📱 모바일 히어로 영상 전체 노출 최적화 */
+    .hero { 
+        height: auto; 
+        aspect-ratio: 16 / 9; /* 영상 비율에 맞춰 높이 자동 조절 */
+        min-height: auto;
+    } 
+    .video-background {
+        position: relative;
+    }
     .video-background video { 
-        object-fit: cover; 
-        object-position: center center; 
-        width: 100%; 
-        height: 100%; 
+        object-fit: contain; /* 영상 전체 노출 */
+        height: auto;
+    }
+    .hero-content {
+        padding: 40px 0;
     }
 
     .products { grid-template-columns: 1fr; gap: 20px; padding: 0 20px 80px; }

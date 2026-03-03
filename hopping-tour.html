@@ -110,7 +110,7 @@
                 <button class="count-btn" onclick="updateCount(1)">+</button>
             </div>
         </div>
-        <button class="btn-buy" onclick="location.href='login.html'">구매하기</button>
+        <button class="btn-buy" onclick="handleBuy()">구매하기</button>
         <button class="btn-cart" onclick="addToCart()" style="margin-top:10px;">장바구니 담기</button>
     </div>
 </div>
@@ -140,7 +140,7 @@
         </div>
     </div>
     <!-- 🔥 모바일 최종 버튼도 PC 스타일(웅장함) 적용 -->
-    <button class="btn-buy" onclick="location.href='login.html'">선택 완료 / 구매하기</button>
+    <button class="btn-buy" onclick="handleBuy()">선택 완료 / 구매하기</button>
 </div>
 
 <footer class="footer">
@@ -195,6 +195,13 @@
             container.appendChild(div);
         }
     }
+    
+    function handleBuy() {
+        const item = { name: "블랙펄 요트 호핑투어", price: 65000, count: adultCount, date: selectedDate };
+        sessionStorage.setItem('directBuyItem', JSON.stringify(item));
+        location.href = 'login.html';
+    }
+
     function addToCart() {
         const item = { name: "블랙펄 요트 호핑투어", price: 65000, count: adultCount, date: selectedDate };
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');

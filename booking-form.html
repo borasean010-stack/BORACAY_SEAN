@@ -129,11 +129,19 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        let cart = [];
+        const directBuy = sessionStorage.getItem('directBuyItem');
+        
+        if (directBuy) {
+            cart = [JSON.parse(directBuy)];
+        } else {
+            cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        }
+
         const summaryList = document.getElementById('summary-list');
         
         if (cart.length === 0) {
-            alert('장바구니가 비어있습니다. 상품을 먼저 선택해주세요.');
+            alert('결제할 상품이 없습니다. 상품을 먼저 선택해주세요.');
             location.href = 'index.html';
             return;
         }

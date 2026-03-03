@@ -55,7 +55,7 @@
 
 <div class="checkout-bar" id="checkout-bar" style="display:none;">
     <div><span style="font-size:32px; font-weight:900; color:#ff6a00;" id="final-price">₩ 0</span></div>
-    <button class="order-btn" onclick="location.href='login.html'">예약하기</button>
+    <button class="order-btn" onclick="checkoutCart()">예약하기</button>
 </div>
 
 <footer class="footer">
@@ -71,6 +71,11 @@
 </footer>
 
 <script>
+    function checkoutCart() {
+        sessionStorage.removeItem('directBuyItem');
+        location.href = 'login.html';
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         const toggle = document.getElementById('menuToggle');
         const menu = document.getElementById('sideMenu');

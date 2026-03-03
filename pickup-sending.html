@@ -313,7 +313,16 @@
             else setMode('sending');
             return;
         }
-        location.href = 'booking-form.html';
+        const item = { 
+            name: "공항 왕복 픽업샌딩", 
+            price: 40000, 
+            count: adultCount, 
+            pickupDate: selectedPickupDate,
+            sendingDate: selectedSendingDate,
+            image: "pickup.jpg"
+        };
+        sessionStorage.setItem('directBuyItem', JSON.stringify(item));
+        location.href = 'login.html';
     }
 
     function addToCart() {

@@ -42,11 +42,10 @@ body {
     text-transform: uppercase;
 }
 .logo-img {
-    height: 42px; width: 42px;
+    height: 48px; width: auto;
     object-fit: contain;
     margin-right: 12px;
-    mix-blend-mode: screen;
-    filter: brightness(1.2);
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 
 .menu { display: flex; align-items: center; }

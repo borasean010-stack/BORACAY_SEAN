@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>한눈에 요금표 | BORACAY_SEAN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background: #fcfcfc; }
+        .price-container { max-width: 1000px; margin: 120px auto 100px; padding: 0 20px; }
+        .price-title { font-size: 32px; font-weight: 900; color: #ff6a00; margin-bottom: 40px; text-align: center; }
+        .price-img-wrap { background: white; padding: 20px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); border: 1px solid #eee; margin-bottom: 30px; }
+        .price-img-wrap img { width: 100%; border-radius: 15px; display: block; height: auto; }
+        
+        .contact-banner { background: #fee500; color: #3c1e1e; padding: 30px; border-radius: 24px; text-align: center; margin-top: 50px; text-decoration: none; display: block; transition: 0.3s; }
+        .contact-banner:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(254,229,0,0.3); }
+        .contact-banner b { font-size: 20px; display: block; margin-bottom: 5px; }
+
+        @media (max-width: 768px) {
+            .price-container { margin-top: 90px; }
+            .price-title { font-size: 24px; margin-bottom: 25px; }
+            .price-img-wrap { padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="side-menu-overlay" id="overlay"></div>
+<div class="side-menu" id="sideMenu">
+    <a href="index.html">홈으로</a>
+    <a href="pickup-sending.html" target="_blank">공항 왕복 픽업샌딩</a>
+    <a href="hopping-tour.html" target="_blank">블랙펄 요트호핑투어</a>
+    <a href="#">시크릿가든 말룸파티</a>
+    <a href="price-list.html" target="_blank">한눈에 요금표</a>
+    <a href="cart.html">장바구니 확인</a>
+</div>
+
+<div class="top-bar">
+    <div class="header-left">
+        <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
+        <div class="logo"><a href="index.html"><img src="logo.png" class="logo-img">BORACAY_SEAN</a></div>
+    </div>
+    <div class="menu">
+        <a href="pickup-sending.html" target="_blank">공항 왕복 픽업샌딩</a>
+        <a href="hopping-tour.html" target="_blank">블랙펄 요트호핑투어</a>
+        <a href="#">시크릿가든 말룸파티</a>
+        <a href="price-list.html" target="_blank" style="color:white; border-bottom:2px solid white;">한눈에 요금표</a>
+        <a href="cart.html">장바구니</a>
+    </div>
+    <div class="header-right">
+        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페</a>
+        <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카톡</a>
+    </div>
+</div>
+
+<div class="price-container">
+    <h2 class="price-title">한눈에 요금표</h2>
+    
+    <div class="price-img-wrap"><img src="price-table1.png" alt="요금표 1"></div>
+    <div class="price-img-wrap"><img src="price-table2.png" alt="요금표 2"></div>
+    <div class="price-img-wrap"><img src="price-table3.jpg" alt="요금표 3"></div>
+
+    <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="contact-banner">
+        <b>요금 관련 더 궁금하신 점이 있나요?</b>
+        <span>실시간 카톡 상담하기 (클릭)</span>
+    </a>
+</div>
+
+<footer class="footer">
+    <div class="footer-left">
+        <b class="important">상호 : 보라카이션 | 대표 : 윤오현</b><br>
+        서울특별시 중랑구 상봉로 16길 25-3<br>
+        사업자번호 : 498-31-00593 | daemit@naver.com
+    </div>
+</footer>
+
+<script src="main.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const t = document.getElementById('menuToggle');
+        const m = document.getElementById('sideMenu');
+        const o = document.getElementById('overlay');
+        if(t && m && o) {
+            t.onclick = function() { m.classList.toggle('active'); o.classList.toggle('active'); };
+            o.onclick = function() { m.classList.remove('active'); o.classList.remove('active'); };
+        }
+    });
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>블랙펄 요트 호핑투어 | BORACAY_SEAN</title>
+    <title>공항 왕복 픽업샌딩 | BORACAY_SEAN</title>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
@@ -11,37 +11,46 @@
         .tour-detail-container { max-width: 1200px; margin: 120px auto 50px; display: grid; grid-template-columns: 1fr 380px; gap: 40px; padding: 0 20px; }
         .tour-content { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.02); }
         .section-title { font-size: 22px; font-weight: 800; margin: 40px 0 20px; border-bottom: 2px solid #f5f5f5; padding-bottom: 10px; color: #ff6a00; }
-        .itinerary-img { width: 100%; margin: 15px 0 40px; }
-        .itinerary-img img { width: 100%; border-radius: 15px; display: block; }
-        .reservation-box { background: white; border-radius: 24px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.08); position: sticky; top: 110px; border: 1px solid #f0f0f0; }
+        .service-info-img { width: 100%; margin: 15px 0 20px; }
+        .service-info-img img { width: 100%; border-radius: 15px; display: block; }
+        .reservation-box { background: white; border-radius: 24px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.08); position: sticky; top: 110px; border: 1px solid #f0f0f0; height: fit-content; }
         .calendar-wrap { margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 15px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
         .day { padding: 10px 0; cursor: pointer; border-radius: 8px; font-size: 13px; font-weight: 600; }
-        .day.selected { background: #ff6a00; color: white; }
+        .day:hover { background: #fff1e6; }
+        .day.selected { background: #ff6a00 !important; color: white !important; font-weight: 800; }
         
-        /* 🔥 공통 버튼 스타일 (PC 기준) */
         .btn-buy { width: 100%; padding: 20px; background: #ff6a00; color: white; border: none; border-radius: 16px; font-size: 18px; font-weight: 800; cursor: pointer; transition: 0.3s; }
         .btn-cart { width: 100%; padding: 18px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 16px; font-size: 17px; font-weight: 800; cursor: pointer; transition: 0.3s; }
         .btn-buy:hover { background: #e65f00; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
         .btn-cart:hover { background: #fff1e6; }
+
+        .counter { display: flex; align-items: center; gap: 15px; }
+        .count-btn { width: 32px; height: 32px; border-radius: 50%; border: 1px solid #ddd; background: white; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .count-btn:hover { background: #f5f5f5; border-color: #ff6a00; color: #ff6a00; }
 
         .mobile-bottom-bar { display: none; }
         .option-sheet-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10004; display: none; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
         .option-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-radius: 25px 25px 0 0; z-index: 10005; padding: 30px 20px 40px; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .option-sheet.active { transform: translateY(0); }
 
+        .process-list { list-style: none; padding: 0; }
+        .process-item { display: flex; align-items: flex-start; margin-bottom: 20px; gap: 15px; }
+        .process-num { background: #ff6a00; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; margin-top: 2px; }
+        .process-text b { display: block; font-size: 18px; margin-bottom: 5px; }
+        .process-text p { color: #666; font-size: 15px; margin: 0; line-height: 1.5; }
+
         @media (max-width: 1024px) {
             .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; padding: 0; }
             .tour-content { padding: 20px 15px; border-radius: 0; }
-            .itinerary-img { margin-left: -15px; margin-right: -15px; width: calc(100% + 30px); }
-            .itinerary-img img { border-radius: 0; }
+            .service-info-img { margin-left: -15px; margin-right: -15px; width: calc(100% + 30px); }
+            .service-info-img img { border-radius: 0; }
             .reservation-box { display: none; }
             .mobile-bottom-bar { 
                 display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
                 background: white; padding: 15px 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); 
                 z-index: 9000; align-items: center; gap: 10px;
             }
-            /* 📱 모바일 버튼도 PC와 동일하게 웅장하게 수정 */
             .m-btn-cart { flex: 1; height: 55px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 15px; font-size: 16px; font-weight: 800; }
             .m-btn-buy { flex: 2; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; }
         }
@@ -65,8 +74,8 @@
         <div class="logo"><a href="index.html"><img src="og-image.png" class="logo-img">BORACAY_SEAN</a></div>
     </div>
     <div class="menu">
-        <a href="pickup-sending.html">공항 왕복 픽업샌딩</a>
-        <a href="hopping-tour.html" style="color:white; border-bottom:2px solid white;">블랙펄 요트호핑투어</a>
+        <a href="pickup-sending.html" style="color:white; border-bottom:2px solid white;">공항 왕복 픽업샌딩</a>
+        <a href="hopping-tour.html">블랙펄 요트호핑투어</a>
         <a href="#">시크릿가든 말룸파티</a>
         <a href="#">한눈에 요금표</a>
         <a href="cart.html">장바구니</a>
@@ -79,21 +88,64 @@
 
 <div class="tour-detail-container">
     <div class="tour-content">
-        <h1>블랙펄 요트 호핑투어</h1>
-        <div class="section-title">투어 일정</div>
+        <h1>공항 왕복 픽업샌딩</h1>
+        
+        <div class="section-title">서비스 갤러리</div>
         <div class="itinerary">
-            <div class="itinerary-img"><img src="hop1.jpg"></div>
-            <div class="itinerary-img"><img src="hop2.jpg"></div>
-            <div class="itinerary-img"><img src="hop3.jpg"></div>
-            <div class="itinerary-img"><img src="hop4.jpg"></div>
-            <div class="itinerary-img"><img src="hop5.jpg"></div>
+            <div class="service-info-img"><img src="pickup.jpg"></div>
+            <div class="service-info-img"><img src="pickup2.jpg"></div>
+            <div class="service-info-img"><img src="pickup3.jpg"></div>
+            <div class="service-info-img"><img src="pickup4.jpg"></div>
+            <div class="service-info-img"><img src="pickup5.jpg"></div>
         </div>
+        
+        <div class="section-title">서비스 이용 절차</div>
+        <ul class="process-list">
+            <li class="process-item">
+                <div class="process-num">1</div>
+                <div class="process-text">
+                    <b>공항 미팅</b>
+                    <p>칼리보 공항 입구에서 '보라카이션' 피켓을 든 직원을 만나세요.</p>
+                </div>
+            </li>
+            <li class="process-item">
+                <div class="process-num">2</div>
+                <div class="process-text">
+                    <b>전용 차량 이동</b>
+                    <p>에어컨 빵빵한 전용 차량으로 선착장까지 안전하게 모십니다.</p>
+                </div>
+            </li>
+            <li class="process-item">
+                <div class="process-num">3</div>
+                <div class="process-text">
+                    <b>보트 탑승</b>
+                    <p>줄 서서 기다릴 필요 없이 신속하게 보트로 안내해 드립니다.</p>
+                </div>
+            </li>
+            <li class="process-item">
+                <div class="process-num">4</div>
+                <div class="process-text">
+                    <b>호텔 드랍</b>
+                    <p>보라카이 섬 도착 후 전용 트라이시클이나 밴으로 호텔 앞까지 모셔다 드립니다.</p>
+                </div>
+            </li>
+        </ul>
+
+        <div class="section-title">포함 사항</div>
+        <p style="color:#666; line-height:1.8; font-size:16px;">
+            - 칼리보 공항 ↔ 보라카이 숙소 왕복 이동 서비스<br>
+            - 모든 환경세, 터미널 피 포함<br>
+            - 전용 차량 및 보트 이용료<br>
+            - 한국인 전담 매니저 카톡 케어 서비스
+        </p>
+
         <div class="section-title">환불 규정</div>
         <img src="refund.png" style="width:100%; border-radius:15px;">
     </div>
 
+    <!-- 🗓️ 우측 예약 박스 (PC) -->
     <div class="reservation-box">
-        <div style="font-size:30px; font-weight:900; color:#ff6a00; margin-bottom:20px;">₩ 65,000</div>
+        <div style="font-size:30px; font-weight:900; color:#ff6a00; margin-bottom:20px;">₩ 40,000</div>
         <div class="calendar-wrap">
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&lt;</button>
@@ -110,16 +162,18 @@
                 <button class="count-btn" onclick="updateCount(1)">+</button>
             </div>
         </div>
-        <button class="btn-buy" onclick="location.href='login.html'">구매하기</button>
+        <button class="btn-buy" onclick="location.href='booking-form.html'">구매하기</button>
         <button class="btn-cart" onclick="addToCart()" style="margin-top:10px;">장바구니 담기</button>
     </div>
 </div>
 
+<!-- 📱 모바일 예약 바 -->
 <div class="mobile-bottom-bar">
     <button class="m-btn-cart" onclick="addToCart()">장바구니</button>
     <button class="m-btn-buy" onclick="openOptionSheet()">구매하기</button>
 </div>
 
+<!-- 📱 모바일 옵션 시트 -->
 <div class="option-sheet-overlay" id="sheetOverlay" onclick="closeOptionSheet()"></div>
 <div class="option-sheet" id="optionSheet">
     <h3 style="font-weight:800; margin-bottom:20px;">예약 옵션 선택</h3>
@@ -139,8 +193,7 @@
             <button class="count-btn" onclick="updateCount(1)">+</button>
         </div>
     </div>
-    <!-- 🔥 모바일 최종 버튼도 PC 스타일(웅장함) 적용 -->
-    <button class="btn-buy" onclick="location.href='login.html'">선택 완료 / 구매하기</button>
+    <button class="btn-buy" onclick="location.href='booking-form.html'">선택 완료 / 구매하기</button>
 </div>
 
 <footer class="footer">
@@ -160,18 +213,22 @@
     let adultCount = 1;
     let currentDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
+
     function openOptionSheet() { document.getElementById('sheetOverlay').style.display = 'block'; document.getElementById('optionSheet').classList.add('active'); }
     function closeOptionSheet() { document.getElementById('sheetOverlay').style.display = 'none'; document.getElementById('optionSheet').classList.remove('active'); }
+    
     function updateCount(delta) {
         adultCount = Math.max(1, adultCount + delta);
         document.getElementById('pc-count').innerText = adultCount;
         document.getElementById('m-count').innerText = adultCount;
     }
+
     function changeMonth(delta) {
         currentDate.setMonth(currentDate.getMonth() + delta);
         renderCalendar('pc-days', 'pc-month');
         renderCalendar('m-days', 'm-month');
     }
+
     function renderCalendar(cid, tid) {
         const container = document.getElementById(cid);
         const title = document.getElementById(tid);
@@ -195,16 +252,29 @@
             container.appendChild(div);
         }
     }
+
     function addToCart() {
-        const item = { name: "블랙펄 요트 호핑투어", price: 65000, count: adultCount, date: selectedDate };
+        const item = { 
+            name: "공항 왕복 픽업샌딩", 
+            price: 40000, 
+            count: adultCount, 
+            date: selectedDate,
+            image: "pickup.jpg"
+        };
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         cart.push(item);
         localStorage.setItem('cart', JSON.stringify(cart));
-        if(confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) location.href = 'cart.html';
+        if(confirm('장바구니에 담겼습니다. 장바구니로 이동하시겠습니까?')) {
+            location.href = 'cart.html';
+        }
     }
-    window.onload = () => { renderCalendar('pc-days', 'pc-month'); renderCalendar('m-days', 'm-month'); };
-</script>
-<script>
+
+    window.onload = () => { 
+        renderCalendar('pc-days', 'pc-month'); 
+        renderCalendar('m-days', 'm-month'); 
+    };
+
+    // 사이드 메뉴 토글 로직
     document.addEventListener('DOMContentLoaded', function() {
         const t = document.getElementById('menuToggle');
         const m = document.getElementById('sideMenu');

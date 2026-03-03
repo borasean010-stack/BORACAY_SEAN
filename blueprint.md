@@ -1,39 +1,46 @@
 
-# Boracation - Travel Agency Website (MyRealTrip Style)
+# Boracay Sean - Travel Agency Website
 
 ## Overview
 
-This project will be a clone of the MyRealTrip website, a popular online travel agency. The goal is to replicate its core design, layout, and features using modern HTML, CSS, and JavaScript. The website will be responsive, user-friendly, and visually aligned with the MyRealTrip brand.
+Boracay Sean is a premium travel agency website specializing in Boracay tours and activities. The site features a modern, high-impact visual design using DJI-style hero videos and a clean, responsive interface.
 
-## Design and Features (MyRealTrip Inspired)
+## Design and Features
 
 ### Visual Design
 
-*   **Color Palette:** Clean and modern, primarily using white space with a strong accent color (like MyRealTrip's signature blue/green) for branding and calls-to-action.
-*   **Typography:** A clean, legible sans-serif font (like Pretendard or similar) for a modern and friendly feel. Clear hierarchy will be established through font weight and size.
-*   **Layout:** A card-based, grid layout for displaying travel products (tours, tickets, accommodations). The layout will be responsive, adapting from a multi-column grid on desktops to a single-column list on mobile.
-*   **Iconography:** Simple, clean-line icons for navigation and feature highlights.
-*   **Search & Navigation:** A prominent search bar in the hero section and a comprehensive navigation header are key features.
+*   **Color Palette:** Modern and vibrant, using `oklch` color spaces. Primary accent color is a warm orange (`#ff6a00`).
+*   **Typography:** Pretendard sans-serif font for a clean, modern look.
+*   **Hero Section:** Full-screen video background with high-quality drone/action footage.
+*   **Interactive UI:** Smooth transitions, hover effects, and a card-based product layout.
+*   **Mobile Optimized:** Fully responsive design with a dedicated mobile bottom navigation bar for product pages.
 
-### Features
+### Core Features
 
-*   **Dynamic Header:** A header that becomes more compact or changes appearance as the user scrolls.
-*   **Search-centric Hero Section:** A hero section dominated by a search bar for destinations or travel products.
-*   **Categorized Product Sections:** Sections for different product types like "Tours & Tickets", "Accommodations", "Flights", etc., each with a horizontally scrolling carousel of product cards.
-*   **Product Cards:** Detailed cards for each travel product, showing an image, title, location, price, and rating.
-*   **User Authentication:** Placeholder UI for login and signup buttons.
-*   **Footer:** A comprehensive footer with links to company info, customer support, and social media.
+*   **Dynamic Navigation:** Sticky top bar with a slide-out side menu.
+*   **Product Details:** Rich product pages with itineraries, refund policies, and interactive reservation boxes.
+*   **Booking System:** Integrated calendar for date selection and quantity counters.
+*   **Shopping Cart:** LocalStorage-based cart system to manage multiple bookings.
+*   **Social Integration:** Quick access buttons for Naver Cafe and KakaoTalk consultation.
 
-## Current Plan
+## Current Project State
 
-1.  **Update `index.html`:**
-    *   Overhaul the HTML structure to match the MyRealTrip layout.
-    *   Implement a new header with a search bar and navigation links.
-    *   Create a search-focused hero section.
-    *   Add new sections for categorized travel products.
-2.  **Update `style.css`:**
-    *   Completely replace the existing styles with a new design inspired by MyRealTrip.
-    *   Implement a new color scheme, typography, and responsive grid layout.
-3.  **Update `main.js`:**
-    *   Add JavaScript to dynamically populate the product sections with sample data.
-    *   Implement interactive elements like carousels for the product lists.
+- [x] Base layout and navigation (`index.html`, `style.css`)
+- [x] Hero section with video background
+- [x] Black Pearl Yacht Hopping Tour detail page (`hopping-tour.html`)
+- [x] Shopping cart functionality (`cart.html`)
+- [x] Booking form and completion pages (`booking-form.html`, `booking-complete.html`)
+
+## Roadmap & Tasks (March 3, 2026)
+
+### 1. Airport Pick-up and Sending Service Implementation
+- [ ] Create `pickup-sending.html` detailing the airport transfer service.
+- [ ] Integrate `pickup.jpg` and relevant information (pricing, car types, process).
+- [ ] Link the new page from `index.html` and the side menu.
+- [ ] Ensure the booking logic (calendar, count, cart) is consistent with existing tours.
+
+### 2. Secret Garden Malumpati Tour (Planned)
+- [ ] Create detail page for Malumpati tour.
+
+### 3. Price Table (Planned)
+- [ ] Implement a comprehensive price overview page.

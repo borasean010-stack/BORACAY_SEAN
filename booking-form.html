@@ -11,8 +11,8 @@
         .booking-container { max-width: 800px; margin: 120px auto 100px; padding: 0 20px; }
         .form-card { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); border: 1px solid #eee; }
         .input-group { margin-bottom: 25px; }
-        .input-group label { display: block; font-size: 15px; font-weight: 700; color: #555; margin-bottom: 10px; }
-        .input-group input { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; font-family: inherit; font-size: 16px; }
+        .input-group label { display: block; font-size: 15px; font-weight: 700; color: #333; margin-bottom: 10px; }
+        .input-group input { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; font-family: inherit; font-size: 16px; transition: 0.2s; }
         .input-group input:focus { outline: none; border-color: #ff6a00; box-shadow: 0 0 0 3px rgba(255,106,0,0.1); }
         
         .section-divider { height: 1px; background: #eee; margin: 30px 0; }
@@ -21,7 +21,8 @@
         .next-btn { width: 100%; padding: 20px; background: #ff6a00; color: white; border: none; border-radius: 16px; font-size: 18px; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 20px; }
         .next-btn:hover { background: #e65f00; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
 
-        #pickup-sending-fields { display: none; } /* 기본적으로 숨김 */
+        #pickup-sending-fields { display: none; } 
+        .required-mark { color: #ff6a00; margin-left: 4px; }
     </style>
 </head>
 <body>
@@ -38,39 +39,39 @@
         <p style="color:#888; margin-bottom:30px;">정확한 예약을 위해 정보를 꼼꼼히 입력해 주세요.</p>
         
         <form onsubmit="handleFormSubmit(event)">
-            <!-- 👤 공통 정보 -->
+            <!-- 👤 기본 정보 -->
             <div class="section-subtitle">👤 대표자 정보</div>
             <div class="input-group">
-                <label>대표자 영문 성함 (여권과 동일하게)*</label>
-                <input type="text" id="eng-name" placeholder="예: HONG GILDONG" required>
+                <label>대표자 영문 이름<span class="required-mark">*</span></label>
+                <input type="text" id="eng-name" placeholder="여권과 동일한 영문 성함 (예: HONG GILDONG)" required>
             </div>
             <div class="input-group">
-                <label>카카오톡 ID 또는 연락처*</label>
-                <input type="text" id="contact" placeholder="비상 시 연락 가능한 정보" required>
+                <label>카카오톡 ID 또는 연락처<span class="required-mark">*</span></label>
+                <input type="text" id="contact" placeholder="상담 및 안내를 위한 연락처" required>
             </div>
 
-            <!-- ✈️ 픽업/샌딩 전용 정보 (스크립트로 제어) -->
+            <!-- ✈️ 픽업/샌딩 전용 정보 (장바구니 확인 후 표시) -->
             <div id="pickup-sending-fields">
                 <div class="section-divider"></div>
                 <div class="section-subtitle">✈️ 픽업 정보 (보라카이 입국)</div>
                 <div class="input-group">
-                    <label>픽업 항공편명*</label>
+                    <label>픽업 항공편명<span class="required-mark">*</span></label>
                     <input type="text" id="pickup-flight" placeholder="예: 7C2301">
                 </div>
                 <div class="input-group">
-                    <label>첫날 숙소 (보라카이 호텔/리조트)*</label>
-                    <input type="text" id="pickup-resort" placeholder="예: 헤난 가든 리조트">
+                    <label>픽업 호텔 (첫날 호텔)<span class="required-mark">*</span></label>
+                    <input type="text" id="pickup-resort" placeholder="보라카이 도착 첫날 리조트명">
                 </div>
 
                 <div class="section-divider"></div>
                 <div class="section-subtitle">🛫 샌딩 정보 (보라카이 출국)</div>
                 <div class="input-group">
-                    <label>샌딩 항공편명*</label>
+                    <label>샌딩 항공편명<span class="required-mark">*</span></label>
                     <input type="text" id="sending-flight" placeholder="예: 7C2302">
                 </div>
                 <div class="input-group">
-                    <label>마지막날 숙소 (보라카이 호텔/리조트)*</label>
-                    <input type="text" id="sending-resort" placeholder="체크아웃 하시는 호텔명">
+                    <label>샌딩 호텔 (마지막날 호텔)<span class="required-mark">*</span></label>
+                    <input type="text" id="sending-resort" placeholder="보라카이 마지막날 체크아웃 리조트명">
                 </div>
             </div>
 
@@ -94,18 +95,15 @@
 </footer>
 
 <script>
-    // 🛒 장바구니 데이터를 확인하여 픽업샌딩이 포함되어 있는지 체크
     document.addEventListener('DOMContentLoaded', function() {
         const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        
-        // 장바구니에 '공항 왕복 픽업샌딩'이 하나라도 있으면 추가 필드 표시
         const hasPickup = cart.some(item => item.name.includes('픽업샌딩'));
         
         if (hasPickup) {
             const fields = document.getElementById('pickup-sending-fields');
             fields.style.display = 'block';
             
-            // 추가 필드들에 required 속성 부여
+            // 필수 입력 설정
             document.getElementById('pickup-flight').required = true;
             document.getElementById('pickup-resort').required = true;
             document.getElementById('sending-flight').required = true;
@@ -116,8 +114,6 @@
     function handleFormSubmit(e) {
         e.preventDefault();
         
-        // 실제 서비스라면 여기서 서버로 데이터를 보내겠지만, 
-        // 현재는 완료 페이지로 이동하며 정보를 로컬스토리지에 임시 저장할 수도 있습니다.
         const bookingData = {
             name: document.getElementById('eng-name').value,
             contact: document.getElementById('contact').value,

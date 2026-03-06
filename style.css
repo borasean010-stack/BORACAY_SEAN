@@ -283,6 +283,55 @@ body {
     margin-top: auto; /* 텍스트를 위아래 균형있게 배치 */
 }
 
+.feature-card:hover {
+    transform: translateY(-10px);
+    border-color: #ff6a00;
+    box-shadow: 0 20px 40px rgba(255,106,0,0.15);
+}
+.f-icon {
+    margin-bottom: 30px;
+    width: 110px;
+    height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 28px;
+    background: linear-gradient(135deg, #fff5eb 0%, #ffe8d6 100%);
+    position: relative;
+    transition: 0.3s;
+}
+.f-icon span {
+    font-size: 52px;
+    filter: drop-shadow(0 5px 10px rgba(255,106,0,0.2));
+    transition: 0.3s;
+}
+.feature-card:hover .f-icon {
+    background: #ff6a00;
+    transform: rotate(-5deg) scale(1.1);
+}
+.feature-card:hover .f-icon span {
+    filter: brightness(0) invert(1);
+    transform: rotate(5deg);
+}
+
+.view-details-btn {
+    display: inline-block;
+    padding: 20px 50px;
+    background: #111;
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 800;
+    font-size: 17px;
+    transition: 0.3s;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+.view-details-btn:hover {
+    background: #ff6a00;
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(255,106,0,0.3);
+}
+
 /* 🖼️ 상세 보기 모달(Popup) 스타일 */
 .modal-overlay {
     position: fixed;

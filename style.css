@@ -121,16 +121,30 @@ body {
 .mouse::before { content: ''; width: 8px; height: 16px; background: white; position: absolute; left: 50%; top: 12px; transform: translateX(-50%); border-radius: 4px; animation: scroll 2s infinite; }
 @keyframes scroll { 0% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, 35px); } }
 
+/* 🔥 이벤트 섹션 타이틀 */
+.event-section-title {
+    background: #fff;
+    color: #ff6a00;
+    padding: 120px 40px 40px;
+    text-align: center;
+    font-size: 40px;
+    font-weight: 900;
+    letter-spacing: -1px;
+}
+
 /* 🔥 메인 배너 슬라이더 */
 .banner-slider {
     width: 100%;
     overflow: hidden;
     background: #fff;
     position: relative;
+    padding: 0 60px 50px;
 }
 .banner-wrapper {
     display: flex;
     transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    border-radius: 30px;
+    overflow: hidden;
 }
 .banner-slide {
     min-width: 100%;
@@ -143,32 +157,10 @@ body {
     object-fit: cover;
 }
 
-/* 🏷️ 이벤트 태그 (중앙 정렬 수정) */
-.event-tag {
-    position: absolute;
-    top: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #ff6a00;
-    color: white;
-    padding: 8px 25px;
-    border-radius: 50px;
-    font-weight: 800;
-    font-size: 15px;
-    letter-spacing: 1px;
-    box-shadow: 0 10px 25px rgba(255,106,0,0.4);
-    z-index: 10;
-    animation: bounce 2s infinite;
-}
-@keyframes bounce {
-    0%, 100% { transform: translateX(-50%) translateY(0); }
-    50% { transform: translateX(-50%) translateY(-10px); }
-}
-
 /* ◀️▶️ 슬라이더 화살표 */
 .slider-arrow {
     position: absolute;
-    top: 50%;
+    top: calc(50% - 25px);
     transform: translateY(-50%);
     width: 50px;
     height: 50px;
@@ -190,13 +182,13 @@ body {
     background: white;
     color: #ff6a00;
 }
-.arrow-left { left: 20px; }
-.arrow-right { right: 20px; }
+.arrow-left { left: 80px; }
+.arrow-right { right: 80px; }
 
 /* 슬라이더 컨트롤 (점) */
 .slider-dots {
     position: absolute;
-    bottom: 20px;
+    bottom: 70px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -218,19 +210,14 @@ body {
 }
 
 @media (max-width: 768px) {
-    .banner-slide img {
-        height: auto;
-    }
-    .event-tag {
-        top: 20px;
-        font-size: 13px;
-        padding: 6px 20px;
-    }
-    .slider-arrow {
-        width: 40px;
-        height: 40px;
-        font-size: 16px;
-    }
+    .event-section-title { padding: 80px 20px 30px; font-size: 28px; }
+    .banner-slider { padding: 0 15px 40px; }
+    .banner-wrapper { border-radius: 20px; }
+    .banner-slide img { height: auto; }
+    .slider-arrow { width: 36px; height: 36px; font-size: 14px; top: calc(50% - 20px); }
+    .arrow-left { left: 25px; }
+    .arrow-right { right: 25px; }
+    .slider-dots { bottom: 55px; }
 }
 
 /* 🔥 인원 선택 (+, -) 버튼 디자인 */

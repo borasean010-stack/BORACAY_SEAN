@@ -6,49 +6,120 @@
     <title>예약 완료 | BORACAY_SEAN</title>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        body { background: #fdfdfd; }
+        .complete-container { 
+            max-width: 600px; 
+            margin: 150px auto 100px; 
+            padding: 0 20px; 
+            text-align: center; 
+        }
+        .success-card { 
+            background: white; 
+            padding: 60px 40px; 
+            border-radius: 35px; 
+            box-shadow: 0 30px 80px rgba(0,0,0,0.06); 
+            border: 1px solid #f5f5f5;
+            position: relative;
+            overflow: hidden;
+        }
+        .success-icon { 
+            width: 90px; height: 90px; background: #ff6a00; color: white; 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            font-size: 45px; margin: 0 auto 30px; 
+            box-shadow: 0 10px 25px rgba(255,106,0,0.3);
+            animation: scaleUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes scaleUp { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        h2 { font-size: 32px; font-weight: 900; margin-bottom: 15px; letter-spacing: -1.5px; }
+        .sub-text { color: #888; font-size: 16px; margin-bottom: 40px; line-height: 1.6; }
+
+        .booking-info-box { 
+            background: #fcfcfc; border: 1px solid #eee; border-radius: 20px; 
+            padding: 25px; margin-bottom: 40px; text-align: left;
+        }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 15px; }
+        .info-row:last-child { margin-bottom: 0; }
+        .info-label { color: #999; font-weight: 600; }
+        .info-value { color: #333; font-weight: 800; }
+
+        .action-btns { display: flex; flex-direction: column; gap: 12px; }
+        .btn-home { background: #111; color: white; padding: 20px; border-radius: 18px; font-weight: 800; text-decoration: none; font-size: 17px; transition: 0.3s; }
+        .btn-kakao { background: #fee500; color: #3c1e1e; padding: 20px; border-radius: 18px; font-weight: 800; text-decoration: none; font-size: 17px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
+        
+        .btn-home:hover { background: #333; transform: translateY(-3px); }
+        .btn-kakao:hover { background: #fada00; transform: translateY(-3px); }
+
+        .next-steps { margin-top: 50px; text-align: left; border-top: 1px solid #eee; padding-top: 30px; }
+        .next-steps h4 { font-size: 17px; font-weight: 800; margin-bottom: 15px; }
+        .step-item { display: flex; gap: 12px; margin-bottom: 15px; font-size: 14px; color: #666; line-height: 1.5; }
+        .step-num { background: #eee; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; flex-shrink: 0; color: #999; }
+    </style>
 </head>
 <body>
 
 <div class="top-bar">
-    <div class="logo"><a href="index.html">BORACAY_SEAN</a></div>
-    <div class="menu">
-        <a href="#">공항 픽업샌딩</a>
-        <a href="hopping-tour.html">블랙펄 요트호핑투어</a>
-        <a href="#">시크릿가든 말룸파티</a>
-        <a href="#">보라카이션 요금표</a>
-        <a href="cart.html">장바구니 확인</a>
-    </div>
-    <div class="right-buttons">
-        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페</a>
-        <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카톡</a>
+    <div class="header-left">
+        <div class="logo">
+            <a href="index.html">
+                <img src="logo.png" class="logo-img" alt="로고">
+                BORACAY_SEAN
+            </a>
+        </div>
     </div>
 </div>
 
-<div style="display:flex; align-items:center; justify-content:center; min-height:80vh; padding:120px 20px;">
-    <div style="width:100%; max-width:500px; background:white; padding:60px 40px; border-radius:30px; box-shadow:0 20px 60px rgba(0,0,0,0.05); text-align:center;">
-        <div style="width:80px; height:80px; background:#ff6a00; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; margin:0 auto 30px;">✓</div>
-        <h2 style="font-size:28px; font-weight:800; margin-bottom:15px;">예약이 완료되었습니다!</h2>
-        <p style="color:#666; margin-bottom:40px;">보라카이션을 선택해 주셔서 감사합니다.</p>
-        <a href="index.html" style="background:#ff6a00; color:white; padding:18px; border-radius:15px; display:block; font-weight:800; text-decoration:none;">홈으로 돌아가기</a>
+<div class="complete-container">
+    <div class="success-card">
+        <div class="success-icon">✓</div>
+        <h2>예약 신청 완료!</h2>
+        <p class="sub-text">
+            보라카이션을 선택해 주셔서 감사합니다.<br>
+            방금 신청하신 예약 정보를 확인해 주세요.
+        </p>
+
+        <div class="booking-info-box" id="info-box">
+            <!-- 자바스크립트로 예약 정보 렌더링 -->
+            <div class="info-row"><span class="info-label">대표 예약자</span><span class="info-value" id="res-name">-</span></div>
+            <div class="info-row"><span class="info-label">연락처</span><span class="info-value" id="res-contact">-</span></div>
+            <div class="info-row"><span class="info-label">예약 상품</span><span class="info-value" id="res-product">-</span></div>
+            <div class="info-row" id="res-date-row" style="display:none;"><span class="info-label">예약 날짜</span><span class="info-value" id="res-date">-</span></div>
+        </div>
+
+        <div class="action-btns">
+            <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="btn-kakao">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e3/KakaoTalk_logo.svg" width="20">
+                카톡으로 예약 확정 문의하기
+            </a>
+            <a href="index.html" class="btn-home">홈으로 돌아가기</a>
+        </div>
+
+        <div class="next-steps">
+            <h4>💡 다음 단계는 어떻게 되나요?</h4>
+            <div class="step-item">
+                <div class="step-num">1</div>
+                <div><b>상담원 확인:</b> 담당자가 예약 내역을 확인한 후 1시간 이내(영업시간 기준)에 카톡으로 안내 메시지를 드립니다.</div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">2</div>
+                <div><b>예약금 입금:</b> 안내받으신 계좌로 예약금을 입금해 주시면 예약이 최종 확정됩니다.</div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">3</div>
+                <div><b>확정서 발권:</b> 입금 확인 후 마이페이지에서 예약 확정서를 확인하실 수 있습니다.</div>
+            </div>
+        </div>
     </div>
 </div>
 
 <footer class="footer">
     <div class="footer-left">
         <b>상호 : 보라카이션 | 대표 : 윤오현</b><br>
-        서울특별시 중랑구 상봉로 16길 25-3<br>
-        사업자번호 : 498-31-00593<br>
-        daemit@naver.com
-    </div>
-    <div class="footer-right">
-        <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-banner">
-            <div class="kb-text"><span>무엇이든 물어보세요!</span><b>실시간 카톡 상담하기</b></div>
-        </a>
-        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-banner">
-            <div class="nb-text"><span>다양한 후기와 정보가 가득!</span><b>보라카이션 카페 바로가기</b></div>
-        </a>
+        사업자번호 : 498-31-00593 | daemit@naver.com
     </div>
 </footer>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const lastInfo = JSON.parse(localStorage.getItem('last_booking_info'));
@@ -63,6 +134,20 @@
         }
 
         if (lastInfo && cart.length > 0) {
+            // 화면 렌더링
+            document.getElementById('res-name').innerText = lastInfo.customerKorName;
+            document.getElementById('res-contact').innerText = lastInfo.contact;
+            
+            const productNames = cart.map(item => item.name).join(', ');
+            document.getElementById('res-product').innerText = productNames;
+
+            // 날짜 정보가 있는 경우 (픽업샌딩 등)
+            if (cart[0].pickupDate) {
+                document.getElementById('res-date-row').style.display = 'flex';
+                document.getElementById('res-date').innerText = cart[0].pickupDate + ' (픽업)';
+            }
+
+            // 최종 예약 내역으로 저장
             const newBooking = {
                 info: lastInfo,
                 items: cart,
@@ -73,10 +158,13 @@
             completedBookings.push(newBooking);
             localStorage.setItem('completed_bookings', JSON.stringify(completedBookings));
 
-            // 장바구니 비우기 (직접 구매가 아닌 경우)
+            // 장바구니 비우기
             if (!directBuy) {
                 localStorage.removeItem('cart');
             }
+        } else {
+            // 정보가 없는 경우 마이페이지로 유도하거나 기본 메시지
+            document.querySelector('.sub-text').innerText = "최근 예약 내역을 불러올 수 없습니다. 마이페이지에서 확인해 주세요.";
         }
     });
 </script>

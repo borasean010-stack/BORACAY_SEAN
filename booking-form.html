@@ -183,47 +183,74 @@
         }
     });
 
-    function handleFormSubmit(e) {
+    // 폼 전송 이벤트 리스너 강화
+    document.getElementById('booking-form').addEventListener('submit', function(e) {
         e.preventDefault();
         
-        let pickupFlight = document.getElementById('pickup-flight').value;
-        if (pickupFlight === '기타') pickupFlight = document.getElementById('pickup-flight-etc').value;
+        try {
+            let pickupFlight = document.getElementById('pickup-flight').value;
+            if (pickupFlight === '기타') {
+                pickupFlight = document.getElementById('pickup-flight-etc').value;
+                if (!pickupFlight) { alert('항공편명을 입력해주세요.'); return; }
+            }
 
-        let sendingFlight = document.getElementById('sending-flight').value;
-        if (sendingFlight === '기타') sendingFlight = document.getElementById('sending-flight-etc').value;
+            let sendingFlight = document.getElementById('sending-flight').value;
+            if (sendingFlight === '기타') {
+                sendingFlight = document.getElementById('sending-flight-etc').value;
+                if (!sendingFlight) { alert('항공편명을 입력해주세요.'); return; }
+            }
 
-        const bookingData = {
-            customerKorName: document.getElementById('kor-name').value,
-            contact: document.getElementById('contact').value,
-            // 픽업샌딩 정보 (없을 경우 빈 문자열)
-            engName: document.getElementById('eng-name').value || '',
-            pickupFlight: pickupFlight || '',
-            pickupResort: document.getElementById('pickup-resort').value || '',
-            sendingFlight: sendingFlight || '',
-            sendingResort: document.getElementById('sending-resort').value || ''
-        };
-        
-        localStorage.setItem('last_booking_info', JSON.stringify(bookingData));
-        
-        // 버튼 로딩 효과 시뮬레이션
-        const btn = e.target.querySelector('button');
-        btn.innerText = '예약 정보 확인 중...';
-        btn.disabled = true;
+            const bookingData = {
+                customerKorName: document.getElementById('kor-name').value,
+                contact: document.getElementById('contact').value,
+                engName: document.getElementById('eng-name') ? document.getElementById('eng-name').value : '',
+                pickupFlight: pickupFlight || '',
+                pickupResort: document.getElementById('pickup-resort') ? document.getElementById('pickup-resort').value : '',
+                sendingFlight: sendingFlight || '',
+                sendingResort: document.getElementById('sending-resort') ? document.getElementById('sending-resort').value : ''
+            };
+            
+            // 데이터 저장 확인
+            localStorage.setItem('last_booking_info', JSON.stringify(bookingData));
+            console.log("Data Saved:", bookingData);
+            
+            // 버튼 상태 변경
+            const btn = this.querySelector('button[type="submit"]');
+            btn.innerText = '예약 처리 중...';
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
 
-        setTimeout(() => {
-            location.href = 'booking-complete.html';
-        }, 800);
-    }
+            // 강제 페이지 이동 (충분한 지연 시간 부여)
+            setTimeout(() => {
+                window.location.href = 'booking-complete.html';
+            }, 500);
+
+        } catch (error) {
+            console.error("Booking Submit Error:", error);
+            alert("예약 처리 중 오류가 발생했습니다. 다시 시도해주세요.");
+        }
+    });
 
     // ✈️ 항공편 직접 입력 필드 토글 로직
-    document.addEventListener('change', function(e) {
-        if (e.target.id === 'pickup-flight') {
-            document.getElementById('pickup-flight-etc').style.display = e.target.value === '기타' ? 'block' : 'none';
-            if (e.target.value === '기타') document.getElementById('pickup-flight-etc').required = true;
+    document.getElementById('pickup-flight').addEventListener('change', function() {
+        const etcField = document.getElementById('pickup-flight-etc');
+        if (this.value === '기타') {
+            etcField.style.display = 'block';
+            etcField.required = true;
+        } else {
+            etcField.style.display = 'none';
+            etcField.required = false;
         }
-        if (e.target.id === 'sending-flight') {
-            document.getElementById('sending-flight-etc').style.display = e.target.value === '기타' ? 'block' : 'none';
-            if (e.target.value === '기타') document.getElementById('sending-flight-etc').required = true;
+    });
+
+    document.getElementById('sending-flight').addEventListener('change', function() {
+        const etcField = document.getElementById('sending-flight-etc');
+        if (this.value === '기타') {
+            etcField.style.display = 'block';
+            etcField.required = true;
+        } else {
+            etcField.style.display = 'none';
+            etcField.required = false;
         }
     });
 </script>

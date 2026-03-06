@@ -300,30 +300,40 @@
         ['일','월','화','수','목','금','토'].forEach(d => container.innerHTML += `<div style="color:#bbb; font-weight:800; font-size:12px;">${d}</div>`);
         const firstDay = new Date(year, month, 1).getDay();
         const lastDate = new Date(year, month + 1, 0).getDate();
+        
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
         for (let i = 0; i < firstDay; i++) container.appendChild(document.createElement('div'));
         for (let i = 1; i <= lastDate; i++) {
             const dateStr = `${year}-${(month+1).toString().padStart(2,'0')}-${i.toString().padStart(2,'0')}`;
+            const targetDate = new Date(year, month, i);
             const div = document.createElement('div');
-            div.className = 'day';
-            if (dateStr === selectedPickupDate) div.classList.add('selected-pickup');
-            if (dateStr === selectedSendingDate) div.classList.add('selected-sending');
             
+            if (targetDate < today) {
+                div.className = 'day disabled';
+            } else {
+                div.className = 'day';
+                if (dateStr === selectedPickupDate) div.classList.add('selected-pickup');
+                if (dateStr === selectedSendingDate) div.classList.add('selected-sending');
+                
+                div.onclick = function() {
+                    if (currentMode === 'pickup') {
+                        selectedPickupDate = dateStr;
+                        document.getElementById('pc-pickup-display').innerText = dateStr;
+                        document.getElementById('m-pickup-display').innerText = dateStr;
+                        // 픽업 선택 후 자동으로 샌딩 탭으로 전환 (사용자 편의)
+                        setTimeout(() => setMode('sending'), 200);
+                    } else {
+                        selectedSendingDate = dateStr;
+                        document.getElementById('pc-sending-display').innerText = dateStr;
+                        document.getElementById('m-sending-display').innerText = dateStr;
+                    }
+                    renderCalendar('pc-days', 'pc-month');
+                    renderCalendar('m-days', 'm-month');
+                };
+            }
             div.innerText = i;
-            div.onclick = function() {
-                if (currentMode === 'pickup') {
-                    selectedPickupDate = dateStr;
-                    document.getElementById('pc-pickup-display').innerText = dateStr;
-                    document.getElementById('m-pickup-display').innerText = dateStr;
-                    // 픽업 선택 후 자동으로 샌딩 탭으로 전환 (사용자 편의)
-                    setTimeout(() => setMode('sending'), 200);
-                } else {
-                    selectedSendingDate = dateStr;
-                    document.getElementById('pc-sending-display').innerText = dateStr;
-                    document.getElementById('m-sending-display').innerText = dateStr;
-                }
-                renderCalendar('pc-days', 'pc-month');
-                renderCalendar('m-days', 'm-month');
-            };
             container.appendChild(div);
         }
     }

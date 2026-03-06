@@ -370,3 +370,4 @@ body {
     
     .products { grid-template-columns: 1fr; gap: 20px; }
 }
+.day.disabled { color: #ccc !important; cursor: not-allowed; pointer-events: none; text-decoration: line-through; opacity: 0.5; }

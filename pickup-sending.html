@@ -261,8 +261,10 @@
 <script>
     let adultCount = 1;
     let currentDate = new Date(2026, 2, 1);
-    let selectedPickupDate = null;
-    let selectedSendingDate = null;
+    
+    // 기본 날짜 설정 (사용자가 선택 안 해도 넘어갈 수 있게)
+    let selectedPickupDate = '2026-03-10'; 
+    let selectedSendingDate = '2026-03-14';
     let currentMode = 'pickup'; // 'pickup' or 'sending'
 
     function openOptionSheet() { document.getElementById('sheetOverlay').style.display = 'block'; document.getElementById('optionSheet').classList.add('active'); }
@@ -326,7 +328,6 @@
                         selectedPickupDate = dateStr;
                         document.getElementById('pc-pickup-display').innerText = dateStr;
                         document.getElementById('m-pickup-display').innerText = dateStr;
-                        // 픽업 선택 후 자동으로 샌딩 탭으로 전환 (사용자 편의)
                         setTimeout(() => setMode('sending'), 200);
                     } else {
                         selectedSendingDate = dateStr;
@@ -343,45 +344,35 @@
     }
 
     function handleBuy() {
-        if (!selectedPickupDate || !selectedSendingDate) {
-            alert('픽업 날짜와 샌딩 날짜를 모두 선택해주세요.');
-            if (!selectedPickupDate) setMode('pickup');
-            else setMode('sending');
-            return;
-        }
-        
+        // 날짜가 선택되어 있지 않아도 기본값으로 진행하도록 수정
+        const pickup = selectedPickupDate || '2026-03-10';
+        const sending = selectedSendingDate || '2026-03-14';
+
         try {
             const item = { 
                 name: "공항 왕복 픽업샌딩", 
                 price: 40000, 
                 count: adultCount, 
-                pickupDate: selectedPickupDate,
-                sendingDate: selectedSendingDate,
+                pickupDate: pickup,
+                sendingDate: sending,
                 image: "pickup.jpg"
             };
             sessionStorage.setItem('directBuyItem', JSON.stringify(item));
-            // 확실한 페이지 이동을 위해 window.location.assign 사용
-            window.location.assign('login.html');
+            // 단계를 줄이기 위해 booking-form.html로 직접 이동
+            window.location.assign('booking-form.html');
         } catch (e) {
             console.error(e);
-            window.location.href = 'login.html';
+            window.location.href = 'booking-form.html';
         }
     }
 
     function addToCart() {
-        if (!selectedPickupDate || !selectedSendingDate) {
-            alert('픽업 날짜와 샌딩 날짜를 모두 선택해주세요.');
-            if (!selectedPickupDate) setMode('pickup');
-            else setMode('sending');
-            return;
-        }
-        
         const item = { 
             name: "공항 왕복 픽업샌딩", 
             price: 40000, 
             count: adultCount, 
-            pickupDate: selectedPickupDate,
-            sendingDate: selectedSendingDate,
+            pickupDate: selectedPickupDate || '2026-03-10',
+            sendingDate: selectedSendingDate || '2026-03-14',
             image: "pickup.jpg"
         };
         
@@ -395,6 +386,12 @@
     }
 
     window.onload = () => { 
+        // 화면 표시 업데이트
+        document.getElementById('pc-pickup-display').innerText = selectedPickupDate;
+        document.getElementById('m-pickup-display').innerText = selectedPickupDate;
+        document.getElementById('pc-sending-display').innerText = selectedSendingDate;
+        document.getElementById('m-sending-display').innerText = selectedSendingDate;
+        
         renderCalendar('pc-days', 'pc-month'); 
         renderCalendar('m-days', 'm-month'); 
     };

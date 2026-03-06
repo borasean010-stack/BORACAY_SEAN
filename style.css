@@ -143,25 +143,26 @@ body {
     object-fit: cover;
 }
 
-/* 🏷️ 이벤트 태그 */
+/* 🏷️ 이벤트 태그 (중앙 정렬 수정) */
 .event-tag {
     position: absolute;
     top: 30px;
-    left: 60px;
+    left: 50%;
+    transform: translateX(-50%);
     background: #ff6a00;
     color: white;
-    padding: 8px 20px;
+    padding: 8px 25px;
     border-radius: 50px;
     font-weight: 800;
-    font-size: 14px;
+    font-size: 15px;
     letter-spacing: 1px;
-    box-shadow: 0 10px 20px rgba(255,106,0,0.3);
+    box-shadow: 0 10px 25px rgba(255,106,0,0.4);
     z-index: 10;
     animation: bounce 2s infinite;
 }
 @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-10px); }
 }
 
 /* ◀️▶️ 슬라이더 화살표 */
@@ -222,9 +223,8 @@ body {
     }
     .event-tag {
         top: 20px;
-        left: 20px;
-        font-size: 12px;
-        padding: 6px 15px;
+        font-size: 13px;
+        padding: 6px 20px;
     }
     .slider-arrow {
         width: 40px;

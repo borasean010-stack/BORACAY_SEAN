@@ -49,5 +49,36 @@
         </a>
     </div>
 </footer>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const lastInfo = JSON.parse(localStorage.getItem('last_booking_info'));
+        let cart = [];
+        const directBuy = sessionStorage.getItem('directBuyItem');
+        
+        if (directBuy) {
+            cart = [JSON.parse(directBuy)];
+            sessionStorage.removeItem('directBuyItem');
+        } else {
+            cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        }
+
+        if (lastInfo && cart.length > 0) {
+            const newBooking = {
+                info: lastInfo,
+                items: cart,
+                timestamp: new Date().getTime()
+            };
+
+            const completedBookings = JSON.parse(localStorage.getItem('completed_bookings') || '[]');
+            completedBookings.push(newBooking);
+            localStorage.setItem('completed_bookings', JSON.stringify(completedBookings));
+
+            // 장바구니 비우기 (직접 구매가 아닌 경우)
+            if (!directBuy) {
+                localStorage.removeItem('cart');
+            }
+        }
+    });
+</script>
 </body>
 </html>

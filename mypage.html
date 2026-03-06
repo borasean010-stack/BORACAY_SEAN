@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이페이지 | BORACAY_SEAN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="side-menu-overlay" id="overlay"></div>
+<div class="side-menu" id="sideMenu">
+    <a href="index.html">홈으로</a>
+    <a href="pickup-sending.html" target="_blank">공항 왕복 픽업샌딩</a>
+    <a href="hopping-tour.html" target="_blank">블랙펄 요트호핑투어</a>
+    <a href="#">시크릿가든 말룸파티</a>
+    <a href="price-list.html" target="_blank">한눈에 요금표</a>
+    <a href="cart.html">장바구니</a>
+</div>
+
+<div class="top-bar">
+    <div class="header-left">
+        <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
+        <div class="logo">
+            <a href="index.html">
+                <img src="logo.png" class="logo-img" alt="로고">
+                BORACAY_SEAN
+            </a>
+        </div>
+    </div>
+    <div class="menu">
+        <a href="pickup-sending.html" target="_blank">공항 왕복 픽업샌딩</a>
+        <a href="hopping-tour.html" target="_blank">블랙펄 요트호핑투어</a>
+        <a href="#">시크릿가든 말룸파티</a>
+        <a href="price-list.html" target="_blank">한눈에 요금표</a>
+        <a href="cart.html">장바구니</a>
+    </div>
+    <div class="header-right">
+        <a href="mypage.html" class="mypage-btn">마이페이지</a>
+        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페</a>
+        <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카톡</a>
+    </div>
+</div>
+
+<div class="mypage-container">
+    <div class="mypage-header">
+        <h2>마이페이지</h2>
+        <p>예약하신 내역을 확인하실 수 있습니다.</p>
+    </div>
+
+    <div id="booking-list-container">
+        <!-- 예약 내역이 여기에 렌더링됩니다 -->
+        <div style="text-align:center; padding:100px 0; color:#ccc; font-size:18px; font-weight:600;">
+            로딩 중...
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="footer-left">
+        <b class="important">상호 : 보라카이션 | 대표 : 윤오현</b><br>
+        서울특별시 중랑구 상봉로 16길 25-3<br>
+        사업자번호 : 498-31-00593 | daemit@naver.com
+    </div>
+    <div class="footer-right">
+        <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-banner"><div class="kb-text"><span>무엇이든 물어보세요!</span><b>실시간 카톡 상담하기</b></div></a>
+        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-banner"><div class="nb-text"><span>정보가 가득!</span><b>보라카이션 카페 바로가기</b></div></a>
+    </div>
+</footer>
+
+<script src="main.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.getElementById('booking-list-container');
+        const lastBooking = JSON.parse(localStorage.getItem('last_booking_info'));
+        const completedBookings = JSON.parse(localStorage.getItem('completed_bookings') || '[]');
+
+        if (!lastBooking && completedBookings.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center; padding:100px 0; background:white; border-radius:24px; border:1px dashed #ddd;">
+                    <p style="color:#888; margin-bottom:20px; font-size:17px;">아직 예약된 내역이 없습니다.</p>
+                    <a href="index.html" style="color:#ff6a00; font-weight:800; text-decoration:none;">투어 보러가기 →</a>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = '';
+
+        // 만약 completed_bookings가 없고 last_booking_info만 있다면 (구버전 호환 또는 현재 진행중인 예약)
+        // 하지만 제대로 된 마이페이지라면 completed_bookings를 순회해야 함.
+        
+        const allBookings = [...completedBookings];
+        // 만약 방금 예약을 마쳤는데 아직 completed_bookings에 안 들어갔다면 (테스트용)
+        // 실제로는 booking-complete.html에서 넣어주는 로직을 추가할 것임.
+
+        if (allBookings.length === 0 && lastBooking) {
+            // 임시로 lastBooking이라도 보여줌
+            renderBooking(container, { info: lastBooking, items: [] }, 0);
+        } else {
+            allBookings.reverse().forEach((booking, index) => {
+                renderBooking(container, booking, index);
+            });
+        }
+    });
+
+    function renderBooking(container, booking, index) {
+        const info = booking.info;
+        const items = booking.items || [];
+        const date = booking.timestamp ? new Date(booking.timestamp).toLocaleDateString() : '최근 예약';
+
+        const card = document.createElement('div');
+        card.className = 'booking-card';
+        
+        let itemsHtml = '';
+        let totalPrice = 0;
+        
+        items.forEach(item => {
+            const price = item.price * item.count;
+            totalPrice += price;
+            itemsHtml += `
+                <div class="reserved-item">
+                    <div>
+                        <div class="item-title">${item.name}</div>
+                        <div class="item-meta">예약일: ${item.date} | 인원: ${item.count}명</div>
+                    </div>
+                    <div class="item-price">₩ ${price.toLocaleString()}</div>
+                </div>
+            `;
+        });
+
+        card.innerHTML = `
+            <h3><span>●</span> 예약 내역 (${date})</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>대표자명</label>
+                    <span>${info.customerKorName}</span>
+                </div>
+                <div class="info-item">
+                    <label>연락처/카톡ID</label>
+                    <span>${info.contact}</span>
+                </div>
+                ${info.engName ? `
+                <div class="info-item">
+                    <label>영문성함</label>
+                    <span>${info.engName}</span>
+                </div>` : ''}
+                ${info.pickupFlight ? `
+                <div class="info-item">
+                    <label>항공편 (픽업/샌딩)</label>
+                    <span>${info.pickupFlight} / ${info.sendingFlight}</span>
+                </div>` : ''}
+            </div>
+            <div class="reserved-items-list">
+                <label style="display:block; font-size:14px; color:#888; margin-bottom:15px; font-weight:600;">예약 상품</label>
+                ${itemsHtml || '<p style="color:#ccc;">상품 정보 없음</p>'}
+            </div>
+            ${totalPrice > 0 ? `
+            <div style="margin-top:30px; padding-top:20px; border-top:1px solid #f5f5f5; text-align:right;">
+                <span style="color:#888; font-size:14px; margin-right:15px;">총 결제 금액</span>
+                <span style="font-size:24px; font-weight:900; color:#ff6a00;">₩ ${totalPrice.toLocaleString()}</span>
+            </div>` : ''}
+        `;
+        
+        container.appendChild(card);
+    }
+</script>
+</body>
+</html>

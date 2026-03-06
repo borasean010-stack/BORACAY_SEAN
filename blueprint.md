@@ -42,5 +42,9 @@ Boracay Sean is a premium travel agency website specializing in Boracay tours an
 ### 2. Secret Garden Malumpati Tour (Planned)
 - [ ] Create detail page for Malumpati tour.
 
-### 3. Price Table (Planned)
-- [ ] Implement a comprehensive price overview page.
+### 4. My Page (Reservation Inquiry)
+- [x] Create `mypage.html` to display user's reservation history.
+- [x] Add "My Page" button to the top navigation bar (fixed bar).
+- [x] Add "My Page" link to the mobile side menu.
+- [x] Implement logic to save completed bookings to `localStorage` under `completed_bookings` key.
+- [x] Display detailed booking information including representative name, contact, flight info, and booked items.

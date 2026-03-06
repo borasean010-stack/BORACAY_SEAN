@@ -101,4 +101,20 @@ document.addEventListener('DOMContentLoaded', () => {
             autoSlide = setInterval(() => moveSlide(1), 5000);
         });
     }
+
+    // 5. 🖼️ 소개 모달(Popup) 제어 함수
+    const introModal = document.getElementById('introModal');
+    window.openIntroModal = () => {
+        if (introModal) {
+            introModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // 배경 스크롤 방지
+        }
+    };
+
+    window.closeIntroModal = () => {
+        if (introModal) {
+            introModal.style.display = 'none';
+            document.body.style.overflow = 'auto'; // 배경 스크롤 복구
+        }
+    };
 });

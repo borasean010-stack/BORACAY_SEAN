@@ -46,7 +46,21 @@
 <div class="mypage-container">
     <div class="mypage-header">
         <h2>마이페이지</h2>
-        <p>예약하신 내역을 확인하실 수 있습니다.</p>
+        <p>예약하신 내역과 AI 맞춤 일정을 확인해보세요.</p>
+    </div>
+
+    <!-- 🔥 AI 추천 일정 섹션 추가 -->
+    <div class="ai-recommend-section">
+        <div class="ai-card">
+            <div class="ai-header">
+                <div class="ai-badge">AI 추천</div>
+                <h3>나만을 위한 보라카이 최적 코스</h3>
+            </div>
+            <div id="ai-content-area">
+                <p class="ai-desc">고객님의 예약 성향을 분석하여 가장 완벽한 하루를 설계해드립니다.</p>
+                <button onclick="generateAIPlan()" class="ai-gen-btn">✨ 맞춤 일정 생성하기</button>
+            </div>
+        </div>
     </div>
 
     <div id="booking-list-container">
@@ -56,6 +70,123 @@
         </div>
     </div>
 </div>
+
+<!-- 스타일 추가 -->
+<style>
+    .ai-recommend-section { margin-bottom: 40px; }
+    .ai-card { 
+        background: linear-gradient(135deg, #fff 0%, #fffbf5 100%); 
+        border-radius: 28px; padding: 40px; 
+        border: 1px solid rgba(255, 106, 0, 0.15);
+        box-shadow: 0 20px 40px rgba(255, 106, 0, 0.05);
+        position: relative; overflow: hidden;
+    }
+    .ai-card::before {
+        content: ''; position: absolute; top: -50%; right: -10%; 
+        width: 300px; height: 300px; 
+        background: radial-gradient(circle, rgba(255, 106, 0, 0.05) 0%, transparent 70%);
+        z-index: 0;
+    }
+    .ai-header { position: relative; z-index: 1; margin-bottom: 25px; }
+    .ai-badge { 
+        display: inline-block; background: #ff6a00; color: white; 
+        padding: 4px 12px; border-radius: 8px; font-size: 12px; 
+        font-weight: 800; margin-bottom: 15px; 
+    }
+    .ai-card h3 { font-size: 24px; font-weight: 900; letter-spacing: -1px; }
+    .ai-desc { color: #666; font-size: 16px; margin-bottom: 30px; }
+    
+    .ai-gen-btn { 
+        background: #111; color: white; border: none; 
+        padding: 18px 35px; border-radius: 15px; 
+        font-size: 16px; font-weight: 800; cursor: pointer;
+        transition: 0.3s;
+    }
+    .ai-gen-btn:hover { background: #ff6a00; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255, 106, 0, 0.2); }
+
+    /* 로딩 애니메이션 */
+    .ai-loading { text-align: center; padding: 40px 0; }
+    .ai-loading-dots { display: inline-flex; gap: 8px; }
+    .ai-loading-dots span { 
+        width: 10px; height: 10px; background: #ff6a00; border-radius: 50%; 
+        animation: ai-bounce 1.4s infinite ease-in-out both; 
+    }
+    .ai-loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+    .ai-loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes ai-bounce { 
+        0%, 80%, 100% { transform: scale(0); } 
+        40% { transform: scale(1.0); } 
+    }
+
+    /* 결과 일정 스타일 */
+    .ai-plan-list { text-align: left; position: relative; z-index: 1; }
+    .ai-step { display: flex; gap: 20px; margin-bottom: 20px; padding-left: 15px; border-left: 2px dashed #eee; position: relative; }
+    .ai-step::after { 
+        content: ''; position: absolute; left: -6px; top: 0; 
+        width: 10px; height: 10px; background: #ff6a00; border-radius: 50%; 
+    }
+    .ai-time { font-weight: 800; color: #ff6a00; font-size: 14px; min-width: 70px; }
+    .ai-text b { display: block; font-size: 17px; margin-bottom: 4px; }
+    .ai-text p { font-size: 14px; color: #777; line-height: 1.5; }
+</style>
+
+<script>
+    function generateAIPlan() {
+        const area = document.getElementById('ai-content-area');
+        area.innerHTML = `
+            <div class="ai-loading">
+                <div class="ai-loading-dots"><span></span><span></span><span></span></div>
+                <p style="margin-top:15px; font-weight:700; color:#ff6a00;">보라카이션 AI가 최적의 동선을 분석 중입니다...</p>
+            </div>
+        `;
+
+        setTimeout(() => {
+            const plans = [
+                {
+                    title: "🌅 보라카이 첫날, 완벽 적응 코스",
+                    steps: [
+                        { time: "10:00", name: "단독 픽업샌딩", desc: "칼리보 공항에서 리조트까지 막힘없이 편안하게 이동" },
+                        { time: "13:00", name: "리조트 체크인 & 점심", desc: "화이트비치 근처 맛집에서 현지식 즐기기" },
+                        { time: "16:00", name: "블랙펄 요트 호핑", desc: "최고급 요트에서 즐기는 선셋 스노클링과 파티" },
+                        { time: "19:00", name: "비치사이드 디너", desc: "파도 소리를 들으며 즐기는 해산물 만찬" }
+                    ]
+                },
+                {
+                    title: "🌊 액티비티 매니아를 위한 열정 코스",
+                    steps: [
+                        { time: "09:00", name: "말룸파티 투어", desc: "천연 튜빙과 다이빙으로 즐기는 정글 익스피리언스" },
+                        { time: "14:00", name: "현지 특식 점심", desc: "말룸파티에서만 맛볼 수 있는 꿀맛 점심" },
+                        { time: "17:00", name: "전신 마사지", desc: "하루의 피로를 녹여줄 90분간의 힐링 타임" },
+                        { time: "20:00", name: "디몰 쇼핑 & 바", desc: "화려한 보라카이의 밤을 만끽하기" }
+                    ]
+                }
+            ];
+
+            const selected = plans[Math.floor(Math.random() * plans.length)];
+            
+            let stepsHtml = '';
+            selected.steps.forEach(s => {
+                stepsHtml += `
+                    <div class="ai-step">
+                        <div class="ai-time">${s.time}</div>
+                        <div class="ai-text"><b>${s.name}</b><p>${s.desc}</p></div>
+                    </div>
+                `;
+            });
+
+            area.innerHTML = `
+                <div class="ai-plan-list">
+                    <h4 style="font-size:19px; font-weight:800; margin-bottom:25px; color:#111;">${selected.title}</h4>
+                    ${stepsHtml}
+                    <div style="margin-top:30px; display:flex; gap:10px;">
+                        <button onclick="generateAIPlan()" class="ai-gen-btn" style="padding:12px 25px; font-size:14px; background:#f5f5f5; color:#666;">다른 일정 추천</button>
+                        <button onclick="location.href='index.html'" class="ai-gen-btn" style="padding:12px 25px; font-size:14px;">상품 바로 예약하기</button>
+                    </div>
+                </div>
+            `;
+        }, 2500);
+    }
+</script>
 
 <footer class="footer">
     <div class="footer-left">

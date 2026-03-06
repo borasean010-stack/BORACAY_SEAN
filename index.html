@@ -17,42 +17,69 @@
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <style>
-        /* 팝업 스타일 */
+        /* 팝업 스타일 개선 */
         .popup-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); z-index: 20000;
+            background: rgba(0,0,0,0.8); z-index: 20000;
             display: none; align-items: center; justify-content: center;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
         }
         .popup-content {
             position: relative; width: 90%; max-width: 500px;
-            background: white; border-radius: 20px; overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            animation: popup-anim 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            background: white; border-radius: 30px; overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            animation: popup-anim 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex; flex-direction: column;
+            max-height: 90vh;
         }
         @keyframes popup-anim {
-            from { opacity: 0; transform: translateY(30px) scale(0.9); }
+            from { opacity: 0; transform: translateY(50px) scale(0.95); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
-        .popup-content img { width: 100%; display: block; cursor: pointer; }
+        /* 이미지 영역 스크롤 가능하게 */
+        .popup-body {
+            overflow-y: auto;
+            flex: 1;
+            -webkit-overflow-scrolling: touch;
+        }
+        .popup-body img { width: 100%; display: block; cursor: pointer; }
+        
         .popup-footer {
-            padding: 15px 20px; display: flex; justify-content: space-between;
-            align-items: center; background: #f8f9fa; font-size: 14px;
+            padding: 15px 25px; display: flex; justify-content: space-between;
+            align-items: center; background: #fff; border-top: 1px solid #f0f0f0;
+            font-size: 14px; z-index: 10;
         }
         .popup-footer label { cursor: pointer; color: #666; font-weight: 600; display: flex; align-items: center; gap: 8px; }
         .popup-footer button {
-            background: #333; color: white; border: none; padding: 8px 20px;
-            border-radius: 8px; cursor: pointer; font-weight: 700; transition: 0.2s;
+            background: #ff6a00; color: white; border: none; padding: 10px 25px;
+            border-radius: 12px; cursor: pointer; font-weight: 800; transition: 0.2s;
         }
-        .popup-footer button:hover { background: #000; }
+        .popup-footer button:hover { background: #e65f00; transform: scale(1.05); }
+        
+        /* 스크롤 유도 화살표 애니메이션 (선택사항) */
+        .scroll-hint {
+            position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%);
+            background: rgba(255,106,0,0.9); color: white; padding: 5px 15px;
+            border-radius: 20px; font-size: 12px; font-weight: 700;
+            pointer-events: none; animation: hint-bounce 2s infinite;
+            z-index: 5;
+        }
+        @keyframes hint-bounce { 0%, 100% { bottom: 80px; opacity: 1; } 50% { bottom: 90px; opacity: 0.7; } }
     </style>
 </head>
 <body>
 
-<!-- 팝업창 -->
+<!-- 팝업창 (스크롤형 멀티 팝업) -->
 <div id="home-popup" class="popup-overlay">
     <div class="popup-content">
-        <img src="popup.png" alt="공지사항" onclick="window.open('price-list.html', '_blank'); closePopup();">
+        <div class="popup-body" id="popupBody">
+            <!-- 첫 번째 팝업 -->
+            <img src="popup.png" alt="공지사항 1" onclick="window.open('price-list.html', '_blank');">
+            <!-- 두 번째 팝업 (좀 보라! 맵) -->
+            <img src="좀 보라! 맵.png" alt="좀 보라! 맵" style="border-top: 4px solid #f0f0f0;">
+            
+            <div class="scroll-hint">아래로 스크롤하여 더 보기 ↓</div>
+        </div>
         <div class="popup-footer">
             <label><input type="checkbox" id="no-show-today"> 오늘 하루 보지 않기</label>
             <button onclick="closePopup()">닫기</button>
@@ -307,6 +334,18 @@
         if (!expiry || now > parseInt(expiry)) {
             setTimeout(() => {
                 popup.style.display = 'flex';
+                
+                // 스크롤 시 힌트 숨기기 로직 추가
+                const popupBody = document.getElementById('popupBody');
+                const scrollHint = document.querySelector('.scroll-hint');
+                if (popupBody && scrollHint) {
+                    popupBody.addEventListener('scroll', () => {
+                        if (popupBody.scrollTop > 50) {
+                            scrollHint.style.opacity = '0';
+                            scrollHint.style.transition = '0.5s';
+                        }
+                    });
+                }
             }, 500); // 0.5초 뒤 등장
         }
     });

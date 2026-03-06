@@ -61,15 +61,20 @@
             <!-- 💬 채팅 창 영역 -->
             <div class="ai-chat-window" id="aiChatWindow">
                 <div class="chat-message ai">
-                    안녕하세요! 보라카이 자유여행 1위, **보라카이션 AI 가이드**입니다. 😊<br>
-                    고객님의 예약 내역과 성향에 딱 맞는 **보라카이션 전용 투어**를 추천해 드릴게요! <br><br>
-                    궁금하신 점을 아래에 입력해 보시거나, 관심 있는 투어를 말씀해 주세요!
+                    안녕하세요! 보라카이 여행의 모든 것을 해결해드리는 **보라카이션 전용 AI 플래너**입니다. 😊<br><br>
+                    무엇을 도와드릴까요? 원하시는 항목을 선택해 주세요!
+                </div>
+                <!-- 🔥 요청하신 핵심 3가지 선택지 -->
+                <div class="ai-quick-options" id="initialOptions">
+                    <button onclick="handleQuickClick('투어 추천')">🎡 투어 추천</button>
+                    <button onclick="handleQuickClick('추천 일정')">📅 추천 일정</button>
+                    <button onclick="handleQuickClick('맛집 추천')">🍴 맛집 추천</button>
                 </div>
             </div>
 
             <!-- ⌨️ 채팅 입력창 -->
             <div class="ai-chat-input-wrap">
-                <input type="text" id="aiInput" placeholder="예: 첫날 하기 좋은 투어 알려줘!" onkeypress="if(event.keyCode==13) sendMessage()">
+                <input type="text" id="aiInput" placeholder="질문을 입력하거나 위 버튼을 눌러보세요!" onkeypress="if(event.keyCode==13) sendMessage()">
                 <button onclick="sendMessage()" id="sendBtn">전송</button>
             </div>
         </div>
@@ -101,13 +106,21 @@
     .chat-message.ai { background: #f0f2f5; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; }
     .chat-message.user { background: #ff6a00; color: white; align-self: flex-end; border-bottom-right-radius: 4px; font-weight: 600; }
     
+    /* ⚡ 퀵 옵션 버튼 스타일 */
+    .ai-quick-options { display: flex; flex-wrap: wrap; gap: 8px; padding-left: 10px; }
+    .ai-quick-options button { 
+        background: white; border: 1.5px solid #ff6a00; color: #ff6a00; 
+        padding: 8px 16px; border-radius: 50px; font-size: 13px; font-weight: 700;
+        cursor: pointer; transition: 0.3s;
+    }
+    .ai-quick-options button:hover { background: #ff6a00; color: white; transform: translateY(-2px); }
+
     .ai-chat-input-wrap { display: flex; gap: 10px; padding-top: 15px; border-top: 1px solid #f5f5f5; }
     .ai-chat-input-wrap input { flex: 1; padding: 15px 20px; border: 1.5px solid #eee; border-radius: 15px; outline: none; font-size: 15px; transition: 0.3s; }
     .ai-chat-input-wrap input:focus { border-color: #ff6a00; background: #fffcf9; }
     .ai-chat-input-wrap button { background: #111; color: white; border: none; padding: 0 25px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; }
     .ai-chat-input-wrap button:hover { background: #ff6a00; }
 
-    /* 타이핑 애니메이션 */
     .typing { font-style: italic; color: #aaa; font-size: 13px; }
 </style>
 
@@ -119,61 +132,105 @@
         { name: "다이아몬드 마사지", desc: "여행의 피로를 풀어줄 프리미엄 전신 스파 서비스.", tags: ["힐링", "마사지", "피로회복"] }
     ];
 
+    function handleQuickClick(keyword) {
+        document.getElementById('initialOptions').style.opacity = '0.5';
+        document.getElementById('initialOptions').style.pointerEvents = 'none';
+        processResponse(keyword);
+    }
+
     function sendMessage() {
         const input = document.getElementById('aiInput');
-        const window = document.getElementById('aiChatWindow');
         const text = input.value.trim();
-
         if (!text) return;
-
-        // 사용자 메시지 추가
-        appendMessage('user', text);
         input.value = '';
+        processResponse(text);
+    }
 
-        // AI 응답 시뮬레이션
+    function processResponse(text) {
+        appendMessage('user', text);
+
         setTimeout(() => {
-            const loadingId = appendMessage('ai', '<span class="typing">보라카이션 상품 데이터를 분석 중입니다...</span>');
+            const loadingId = appendMessage('ai', '<span class="typing">분석 중입니다...</span>');
             
             setTimeout(() => {
                 const aiResponse = generateResponse(text);
                 updateMessage(loadingId, aiResponse);
-            }, 1500);
-        }, 500);
+                
+                // AI가 먼저 추가 질문 던지기
+                setTimeout(() => {
+                    const followUp = getFollowUpQuestion(text);
+                    appendMessage('ai', followUp);
+                }, 1000);
+            }, 1200);
+        }, 400);
     }
 
     function appendMessage(type, content) {
-        const window = document.getElementById('aiChatWindow');
+        const chatWindow = document.getElementById('aiChatWindow');
         const msgDiv = document.createElement('div');
-        const id = 'msg-' + Date.now();
-        msgDiv.id = id;
         msgDiv.className = 'chat-message ' + type;
         msgDiv.innerHTML = content;
-        window.appendChild(msgDiv);
-        window.scrollTop = window.scrollHeight;
-        return id;
+        chatWindow.appendChild(msgDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+        return msgDiv;
     }
 
-    function updateMessage(id, newContent) {
-        document.getElementById(id).innerHTML = newContent;
-        const window = document.getElementById('aiChatWindow');
-        window.scrollTop = window.scrollHeight;
+    function updateMessage(msgElement, newContent) {
+        msgElement.innerHTML = newContent;
+        const chatWindow = document.getElementById('aiChatWindow');
+        chatWindow.scrollTop = chatWindow.scrollHeight;
     }
 
     function generateResponse(input) {
+        // 🎡 1. 투어 추천 요청 시
+        if (input.includes("투어 추천")) {
+            return `보라카이션이 강력 추천하는 3대 투어입니다!<br><br>
+            1. **블랙펄 요트 호핑**: 보라카이 유일의 럭셔리 요트 투어<br>
+            2. **시크릿가든 말룸파티**: 튜빙과 다이빙의 짜릿한 계곡 물놀이<br>
+            3. **공항 왕복 픽업샌딩**: 15년 노하우의 가장 안전한 이동 서비스<br><br>
+            어떤 투어에 대해 더 자세히 알려드릴까요?`;
+        }
+
+        // 📅 2. 추천 일정 요청 시
+        if (input.includes("추천 일정")) {
+            return `고객님을 위한 3박 4일 골든 코스입니다!<br><br>
+            - **1일차**: 픽업샌딩으로 편안한 입국 + 리조트 휴식<br>
+            - **2일차**: 시크릿가든 말룸파티 투어로 신나는 계곡 물놀이<br>
+            - **3일차**: 오전 자유시간 + 오후 블랙펄 선셋 호핑투어<br>
+            - **4일차**: 프리미엄 마사지로 피로 회복 + 공항 샌딩<br><br>
+            이대로 일정을 확정해 드릴까요?`;
+        }
+
+        // 🍴 3. 맛집 추천 요청 시
+        if (input.includes("맛집 추천")) {
+            return `보라카이션 현지 매니저들이 선정한 리얼 맛집입니다!<br><br>
+            - **해산물**: 스테이션 2 근처 '게 부수기' 전문점<br>
+            - **현지식**: 화이트비치가 보이는 가성비 갑 '메사(Mesa)'<br>
+            - **디저트**: 1일 1망고 필수! '할로망고'와 '코코마마'<br><br>
+            혹시 특정 메뉴(삼겹살, 햄버거 등)를 찾으시나요?`;
+        }
+
         let matched = products.filter(p => 
             p.tags.some(t => input.includes(t)) || p.name.includes(input) || input.includes(p.name.split(' ')[0])
         );
 
-        if (input.includes("추천") || input.includes("코스") || input.includes("알려줘")) {
-            if (matched.length === 0) matched = [products[Math.floor(Math.random() * products.length)]];
-        }
-
         if (matched.length > 0) {
-            let res = `고객님께는 보라카이션의 **[${matched[0].name}]**을 강력 추천드려요! <br><br> ${matched[0].desc} <br><br> 다른 보라카이션 상품도 더 알아볼까요?`;
-            return res;
+            return `보라카이션의 **[${matched[0].name}]**은(는) 후기가 정말 좋은 상품이에요! <br><br> ${matched[0].desc}`;
         }
+        
+        if (input.includes("첫날")) return `보라카이 첫날은 역시 **[공항 픽업샌딩]**이 필수죠! 편안하게 리조트까지 모셔다 드립니다.`;
+        if (input.includes("호핑")) return `보라카이션의 자랑, **[블랙펄 요트 호핑]**을 추천해요. 선셋과 스노클링을 동시에 즐길 수 있습니다.`;
 
-        return "죄송해요, 보라카이션의 공식 투어 상품(픽업샌딩, 호핑투어, 말룸파티 등) 범위 내에서만 안내가 가능합니다. 다른 투어나 일정에 대해 물어봐 주시겠어요?";
+        return "보라카이션의 전문 가이드인 제가 도와드릴게요! 혹시 호핑투어나 말룸파티 투어에 관심 있으신가요?";
+    }
+
+    function getFollowUpQuestion(input) {
+        if (input.includes("투어 추천")) return "투어 예약을 위해 장바구니로 이동하시겠어요?";
+        if (input.includes("추천 일정")) return "이 일정에 맞춰 비어있는 시간을 채워드릴까요?";
+        if (input.includes("맛집 추천")) return "맛집 위치를 지도로 확인하고 싶으신가요?";
+        if (input.includes("호핑")) return "호핑투어 후에 마사지로 피로를 푸시는 건 어떠세요? 추천해 드릴까요?";
+        if (input.includes("첫날") || input.includes("픽업")) return "호텔 체크인 후에 바로 하실 수 있는 오후 일정도 알려드릴까요?";
+        return "더 궁금하신 점이 있다면 편하게 말씀해 주세요! 😊";
     }
 </script>
 

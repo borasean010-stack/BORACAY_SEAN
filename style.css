@@ -121,7 +121,7 @@ body {
 .mouse::before { content: ''; width: 8px; height: 16px; background: white; position: absolute; left: 50%; top: 12px; transform: translateX(-50%); border-radius: 4px; animation: scroll 2s infinite; }
 @keyframes scroll { 0% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, 35px); } }
 
-/* 🔥 이벤트 섹션 타이틀 */
+/* 🔥 이벤트 섹션 타이늘 */
 .event-section-title {
     background: #fff;
     color: #ff6a00;
@@ -148,6 +148,7 @@ body {
 }
 .banner-slide {
     min-width: 100%;
+    flex-shrink: 0; /* 배너가 줄어들지 않도록 강제 설정 */
     cursor: pointer;
     position: relative;
 }

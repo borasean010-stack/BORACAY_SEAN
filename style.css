@@ -224,6 +224,84 @@ body {
     .slider-dots { bottom: 55px; }
 }
 
+/* 🔥 왜 '보라카이션'인가? 섹션 스타일 */
+.why-choose-us {
+    background: #fcfcfc;
+    padding: 100px 60px;
+    text-align: center;
+}
+.section-header {
+    margin-bottom: 60px;
+}
+.section-header p {
+    color: #ff6a00;
+    font-weight: 800;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+.section-header h2 {
+    font-size: 36px;
+    font-weight: 900;
+    letter-spacing: -1.5px;
+    color: #111;
+}
+
+.feature-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* PC: 4열 */
+    gap: 25px;
+}
+.feature-card {
+    background: white;
+    padding: 40px 30px;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    border: 1px solid #f0f0f0;
+    transition: 0.4s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.feature-card:hover {
+    transform: translateY(-10px);
+    border-color: #ff6a00;
+    box-shadow: 0 20px 40px rgba(255,106,0,0.1);
+}
+.f-icon {
+    font-size: 40px;
+    margin-bottom: 20px;
+    background: #fff5eb;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+}
+.feature-card h3 {
+    font-size: 19px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    color: #222;
+}
+.feature-card p {
+    font-size: 14px;
+    color: #777;
+    line-height: 1.5;
+    font-weight: 500;
+    word-break: keep-all;
+}
+
+@media (max-width: 1024px) {
+    .why-choose-us { padding: 80px 20px; }
+    .feature-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; } /* 태블릿/모바일: 2열 (요청하신 2*2 느낌) */
+    .feature-card { padding: 30px 15px; }
+    .section-header h2 { font-size: 26px; }
+}
+
 /* 🔥 인원 선택 (+, -) 버튼 디자인 */
 .counter { display: flex; align-items: center; gap: 18px; }
 .count-btn { 

@@ -63,4 +63,29 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         });
     }
+
+    // 4. 🖼️ 메인 배너 슬라이더 자동 재생
+    let currentIdx = 0;
+    const bannerWrapper = document.getElementById('bannerWrapper');
+    const dots = document.querySelectorAll('.dot');
+    const totalSlides = document.querySelectorAll('.banner-slide').length;
+
+    if (bannerWrapper && totalSlides > 0) {
+        window.goToSlide = (idx) => {
+            currentIdx = idx;
+            bannerWrapper.style.transform = `translateX(-${currentIdx * 100}%)`;
+            
+            // 점 업데이트
+            dots.forEach((dot, i) => {
+                if (i === currentIdx) dot.classList.add('active');
+                else dot.classList.remove('active');
+            });
+        };
+
+        // 자동 슬라이드 (5초마다)
+        setInterval(() => {
+            currentIdx = (currentIdx + 1) % totalSlides;
+            goToSlide(currentIdx);
+        }, 5000);
+    }
 });

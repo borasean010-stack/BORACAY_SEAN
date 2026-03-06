@@ -133,8 +133,7 @@
     ];
 
     function handleQuickClick(keyword) {
-        document.getElementById('initialOptions').style.opacity = '0.5';
-        document.getElementById('initialOptions').style.pointerEvents = 'none';
+        // 비활성화 로직 제거하여 버튼을 언제든 다시 누를 수 있게 수정
         processResponse(keyword);
     }
 
@@ -150,64 +149,48 @@
         appendMessage('user', text);
 
         setTimeout(() => {
-            const loadingId = appendMessage('ai', '<span class="typing">분석 중입니다...</span>');
+            const loadingId = appendMessage('ai', '<span class="typing">보라카이션 데이터를 분석 중입니다...</span>');
             
             setTimeout(() => {
                 const aiResponse = generateResponse(text);
                 updateMessage(loadingId, aiResponse);
                 
-                // AI가 먼저 추가 질문 던지기
+                // AI가 대화 끝에 항상 후속 질문
                 setTimeout(() => {
                     const followUp = getFollowUpQuestion(text);
                     appendMessage('ai', followUp);
-                }, 1000);
+                }, 800);
             }, 1200);
         }, 400);
     }
 
-    function appendMessage(type, content) {
-        const chatWindow = document.getElementById('aiChatWindow');
-        const msgDiv = document.createElement('div');
-        msgDiv.className = 'chat-message ' + type;
-        msgDiv.innerHTML = content;
-        chatWindow.appendChild(msgDiv);
-        chatWindow.scrollTop = chatWindow.scrollHeight;
-        return msgDiv;
-    }
-
-    function updateMessage(msgElement, newContent) {
-        msgElement.innerHTML = newContent;
-        const chatWindow = document.getElementById('aiChatWindow');
-        chatWindow.scrollTop = chatWindow.scrollHeight;
-    }
-
     function generateResponse(input) {
-        // 🎡 1. 투어 추천 요청 시
+        // 🎡 1. 투어 추천
         if (input.includes("투어 추천")) {
-            return `보라카이션이 강력 추천하는 3대 투어입니다!<br><br>
-            1. **블랙펄 요트 호핑**: 보라카이 유일의 럭셔리 요트 투어<br>
-            2. **시크릿가든 말룸파티**: 튜빙과 다이빙의 짜릿한 계곡 물놀이<br>
-            3. **공항 왕복 픽업샌딩**: 15년 노하우의 가장 안전한 이동 서비스<br><br>
-            어떤 투어에 대해 더 자세히 알려드릴까요?`;
+            return `보라카이션의 베스트 투어 상품입니다. 클릭 시 상세 페이지로 이동합니다!<br><br>
+            1. <a href="hopping-tour.html" target="_blank" style="color:#ff6a00; font-weight:800; text-decoration:underline;">[블랙펄 요트 호핑]</a>: 럭셔리 요트 & 선셋 파티<br>
+            2. <a href="#" style="color:#ff6a00; font-weight:800; text-decoration:underline;">[시크릿가든 말룸파티]</a>: 정글 계곡 튜빙 & 다이빙<br>
+            3. <a href="pickup-sending.html" target="_blank" style="color:#ff6a00; font-weight:800; text-decoration:underline;">[공항 왕복 픽업샌딩]</a>: 15년 경력의 안전한 이동<br><br>
+            원하시는 투어를 선택해 보세요!`;
         }
 
-        // 📅 2. 추천 일정 요청 시
+        // 📅 2. 추천 일정
         if (input.includes("추천 일정")) {
-            return `고객님을 위한 3박 4일 골든 코스입니다!<br><br>
-            - **1일차**: 픽업샌딩으로 편안한 입국 + 리조트 휴식<br>
-            - **2일차**: 시크릿가든 말룸파티 투어로 신나는 계곡 물놀이<br>
-            - **3일차**: 오전 자유시간 + 오후 블랙펄 선셋 호핑투어<br>
-            - **4일차**: 프리미엄 마사지로 피로 회복 + 공항 샌딩<br><br>
-            이대로 일정을 확정해 드릴까요?`;
+            return `추천드리는 3박 4일 알찬 일정입니다!<br><br>
+            - **1일차**: <a href="pickup-sending.html" target="_blank" style="color:#ff6a00; font-weight:700;">[픽업샌딩]</a>으로 편안한 도착<br>
+            - **2일차**: **말룸파티 투어**로 즐기는 다이내믹한 물놀이<br>
+            - **3일차**: 자유시간 후 <a href="hopping-tour.html" target="_blank" style="color:#ff6a00; font-weight:700;">[블랙펄 선셋 호핑]</a>으로 마무리<br>
+            - **4일차**: **프리미엄 마사지** 후 공항 샌딩<br><br>
+            일정에 대해 더 궁금한 점이 있으신가요?`;
         }
 
-        // 🍴 3. 맛집 추천 요청 시
+        // 🍴 3. 맛집 추천
         if (input.includes("맛집 추천")) {
-            return `보라카이션 현지 매니저들이 선정한 리얼 맛집입니다!<br><br>
-            - **해산물**: 스테이션 2 근처 '게 부수기' 전문점<br>
-            - **현지식**: 화이트비치가 보이는 가성비 갑 '메사(Mesa)'<br>
-            - **디저트**: 1일 1망고 필수! '할로망고'와 '코코마마'<br><br>
-            혹시 특정 메뉴(삼겹살, 햄버거 등)를 찾으시나요?`;
+            return `현지 가이드들이 매일 가는 보라카이 진짜 맛집!<br><br>
+            - **해산물**: 스테이션 2의 '게 부수기' 전문점 (크랩 추천!)<br>
+            - **현지식**: 퓨전 필리핀 요리 '메사(Mesa)'<br>
+            - **디저트**: '할로망고'의 망고 홀릭 시리즈<br><br>
+            다른 종류의 음식점도 추천해 드릴까요?`;
         }
 
         let matched = products.filter(p => 
@@ -215,13 +198,14 @@
         );
 
         if (matched.length > 0) {
-            return `보라카이션의 **[${matched[0].name}]**은(는) 후기가 정말 좋은 상품이에요! <br><br> ${matched[0].desc}`;
+            let url = "index.html";
+            if (matched[0].name.includes("호핑")) url = "hopping-tour.html";
+            if (matched[0].name.includes("픽업")) url = "pickup-sending.html";
+            
+            return `추천드리는 상품은 **<a href="${url}" target="_blank" style="color:#ff6a00; font-weight:800; text-decoration:underline;">[${matched[0].name}]</a>**입니다! <br><br> ${matched[0].desc}`;
         }
-        
-        if (input.includes("첫날")) return `보라카이 첫날은 역시 **[공항 픽업샌딩]**이 필수죠! 편안하게 리조트까지 모셔다 드립니다.`;
-        if (input.includes("호핑")) return `보라카이션의 자랑, **[블랙펄 요트 호핑]**을 추천해요. 선셋과 스노클링을 동시에 즐길 수 있습니다.`;
 
-        return "보라카이션의 전문 가이드인 제가 도와드릴게요! 혹시 호핑투어나 말룸파티 투어에 관심 있으신가요?";
+        return "보라카이션의 투어, 맛집, 일정에 대해 무엇이든 말씀해 주세요! 😊";
     }
 
     function getFollowUpQuestion(input) {

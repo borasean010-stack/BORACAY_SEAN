@@ -6,6 +6,7 @@
     <title>로그인 | BORACAY_SEAN</title>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <!-- 카카오 SDK -->
     <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.0/kakao.min.js" integrity="sha384-l68G9m6HS8uR7C/5L94K8N08O0t8TzU+A0fS2x5W5F9z7Vz0O+6x1H6Z8M2N5R1" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -23,7 +24,6 @@
     <div style="width:100%; max-width:400px; background:white; padding:50px 40px; border-radius:30px; box-shadow:0 20px 60px rgba(0,0,0,0.05); text-align:center;">
         <h2 style="font-size:24px; font-weight:800; margin-bottom:15px;">환영합니다!</h2>
         <p style="color:#888; margin-bottom:40px;">카카오 계정으로 간편하게 시작하세요.</p>
-        <!-- 인가 코드 방식으로 변경 (팝업 차단 방지) -->
         <button onclick="loginWithKakao()" style="width:100%; border:none; background:#fee500; color:#3c1e1e; padding:18px; border-radius:12px; display:flex; align-items:center; justify-content:center; gap:10px; font-weight:700; cursor:pointer;">
             <img src="https://upload.wikimedia.org/wikipedia/commons/e/e3/KakaoTalk_logo.svg" width="20">
             카카오 로그인
@@ -36,36 +36,39 @@
 </footer>
 
 <script>
-    const KAKAO_KEY = '7610f11ad9a9851159dec6168f83099b';
-    const REDIRECT_URI = window.location.origin + '/login.html';
+    // 제공해주신 자바스크립트 키 적용
+    const KAKAO_KEY = '9e8b2d2be22f60f1cc512d61d6ba6991';
+    // Cloudflare Pages 도메인에 맞춘 Redirect URI (반드시 카카오 설정과 일치해야 함)
+    const REDIRECT_URI = 'https://boracay-sean.pages.dev/login.html';
 
     if (!Kakao.isInitialized()) Kakao.init(KAKAO_KEY);
 
     function loginWithKakao() {
-        // 팝업 대신 리다이렉트 방식 사용
         Kakao.Auth.authorize({
             redirectUri: REDIRECT_URI
         });
     }
 
-    // 카카오로부터 돌아왔을 때 (인가 코드가 URL에 있을 때) 처리
+    // 카카오로부터 인가 코드를 가지고 돌아왔을 때 처리
     window.onload = function() {
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('code');
 
         if (code) {
-            console.log("인가 코드 수신 완료. 토큰 요청 중...");
-            // 실제 상용 환경에서는 서버에서 토큰을 교환해야 하지만, 
-            // 프론트엔드 프로토타입 구현을 위해 SDK의 기능을 최대한 활용합니다.
-            // 여기서는 SDK가 인가 코드를 자동으로 처리하도록 시도하거나 안내합니다.
-            
-            // 임시: 로그인이 완료된 것으로 간주하고 테스트용 유저 생성 (실제 토큰 교환은 백엔드 필요)
-            // 인가 코드가 왔다는 것은 카카오 로그인이 성공했다는 뜻입니다.
-            const tempUser = { nickname: "보라카이션 손님", id: Date.now() };
+            console.log("인가 코드 확인됨:", code);
+            // 프론트엔드 프로토타입 구현을 위해 임시 유저 정보를 생성합니다.
+            // (실제 서비스에서는 이 코드를 서버로 보내 access_token으로 교환해야 합니다.)
+            const tempUser = { 
+                nickname: "보라카이션 손님", 
+                id: "kakao_" + Math.floor(Math.random() * 1000000) 
+            };
             localStorage.setItem('kakao_user', JSON.stringify(tempUser));
             
+            // 로그인 전 하던 작업이 있다면 해당 페이지로, 아니면 홈으로
             const directBuy = sessionStorage.getItem('directBuyItem');
-            location.href = directBuy ? 'booking-form.html' : 'index.html';
+            setTimeout(() => {
+                location.href = directBuy ? 'booking-form.html' : 'index.html';
+            }, 500);
         }
     };
 </script>

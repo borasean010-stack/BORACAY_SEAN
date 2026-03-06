@@ -5,8 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 카카오 SDK 초기화 ---
     if (typeof Kakao !== 'undefined') {
         if (!Kakao.isInitialized()) {
-            Kakao.init('7610f11ad9a9851159dec6168f83099b');
-            console.log("Kakao SDK Initialized");
+            // 실제 발급받으신 자바스크립트 키를 사용합니다.
+            Kakao.init('9e8b2d2be22f60f1cc512d61d6ba6991');
+            console.log("Kakao SDK Initialized with JS Key");
         }
     }
 

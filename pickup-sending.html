@@ -7,13 +7,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
-        body { background: #fcfcfc; padding-bottom: 100px; }
-        .tour-detail-container { max-width: 1200px; margin: 120px auto 50px; display: grid; grid-template-columns: 1fr 380px; gap: 40px; padding: 0 20px; }
-        .tour-content { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.02); }
-        .section-title { font-size: 22px; font-weight: 800; margin: 40px 0 20px; border-bottom: 2px solid #f5f5f5; padding-bottom: 10px; color: #ff6a00; }
-        .service-info-img { width: 100%; margin: 15px 0 20px; }
-        .service-info-img img { width: 100%; border-radius: 15px; display: block; }
-        .reservation-box { background: white; border-radius: 24px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.08); position: sticky; top: 110px; border: 1px solid #f0f0f0; height: fit-content; }
+        body { background: #fdfdfd; padding-bottom: 100px; }
+        .tour-detail-container { 
+            max-width: 1100px; 
+            margin: 120px auto 50px; 
+            display: grid; 
+            grid-template-columns: 1fr 360px; 
+            gap: 40px; 
+            padding: 0 20px; 
+        }
+        .tour-content { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 28px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.03); 
+            border: 1px solid #f5f5f5;
+        }
+        .tour-content h1 { font-size: 32px; font-weight: 900; margin-bottom: 30px; letter-spacing: -1.5px; }
+        .section-title { 
+            font-size: 20px; 
+            font-weight: 800; 
+            margin: 40px 0 20px; 
+            padding-bottom: 12px; 
+            border-bottom: 2px solid #fff5eb; 
+            color: #ff6a00; 
+        }
+        .service-info-img { width: 100%; margin-bottom: 30px; }
+        .service-info-img img { width: 100%; border-radius: 20px; display: block; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         
         /* 🗓️ 날짜 선택 탭 스타일 */
         .date-tabs { display: flex; gap: 5px; margin-bottom: 15px; background: #f8f9fa; padding: 5px; border-radius: 12px; }
@@ -21,28 +41,31 @@
         .date-tab.active { background: white; color: #ff6a00; border-color: #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .date-display { font-size: 12px; display: block; margin-top: 4px; color: #ff6a00; font-weight: 800; }
 
-        .calendar-wrap { margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 15px; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+        /* 🗓️ 예약 박스 (달력 포함 영역) */
+        .reservation-box { 
+            background: white; 
+            border-radius: 28px; 
+            padding: 30px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.08); 
+            position: sticky; 
+            top: 100px; 
+            border: 1px solid #f0f0f0; 
+            height: fit-content;
+        }
+        
         .day { padding: 10px 0; cursor: pointer; border-radius: 8px; font-size: 13px; font-weight: 600; }
         .day:hover { background: #fff1e6; }
         .day.selected-pickup { background: #ff6a00 !important; color: white !important; font-weight: 800; position: relative; }
         .day.selected-pickup::after { content: '픽업'; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-size: 8px; }
         .day.selected-sending { background: #00c4ff !important; color: white !important; font-weight: 800; position: relative; }
         .day.selected-sending::after { content: '샌딩'; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-size: 8px; }
-        
-        .btn-buy { width: 100%; padding: 20px; background: #ff6a00; color: white; border: none; border-radius: 16px; font-size: 18px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .btn-cart { width: 100%; padding: 18px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 16px; font-size: 17px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .btn-buy:hover { background: #e65f00; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
-        .btn-cart:hover { background: #fff1e6; }
 
-        .counter { display: flex; align-items: center; gap: 15px; }
-        .count-btn { width: 32px; height: 32px; border-radius: 50%; border: 1px solid #ddd; background: white; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .count-btn:hover { background: #f5f5f5; border-color: #ff6a00; color: #ff6a00; }
+        .btn-buy { width: 100%; padding: 20px; background: #111; color: white; border: none; border-radius: 16px; font-size: 17px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-cart { width: 100%; padding: 18px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 16px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-buy:hover { background: #ff6a00; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
+        .btn-cart:hover { background: #fff5eb; }
 
         .mobile-bottom-bar { display: none; }
-        .option-sheet-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10004; display: none; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
-        .option-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-radius: 25px 25px 0 0; z-index: 10005; padding: 30px 20px 40px; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        .option-sheet.active { transform: translateY(0); }
 
         .process-list { list-style: none; padding: 0; }
         .process-item { display: flex; align-items: flex-start; margin-bottom: 20px; gap: 15px; }
@@ -51,17 +74,14 @@
         .process-text p { color: #666; font-size: 15px; margin: 0; line-height: 1.5; }
 
         @media (max-width: 1024px) {
-            .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; padding: 0; }
-            .tour-content { padding: 20px 15px; border-radius: 0; }
-            .service-info-img { margin-left: -15px; margin-right: -15px; width: calc(100% + 30px); }
-            .service-info-img img { border-radius: 0; }
+            .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
             .reservation-box { display: none; }
             .mobile-bottom-bar { 
                 display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
-                background: white; padding: 15px 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); 
+                background: white; padding: 15px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); 
                 z-index: 9000; align-items: center; gap: 10px;
             }
-            .m-btn-cart { flex: 1; height: 55px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 15px; font-size: 16px; font-weight: 800; }
+            .m-btn-cart { flex: 1; height: 55px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 15px; font-size: 15px; font-weight: 800; }
             .m-btn-buy { flex: 2; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; }
         }
     </style>
@@ -152,12 +172,12 @@
         </p>
 
         <div class="section-title">환불 규정</div>
-        <img src="refund.png" style="width:100%; border-radius:15px;">
+        <img src="refund.png" style="width:100%; border-radius:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
     </div>
 
     <!-- 🗓️ 우측 예약 박스 (PC) -->
     <div class="reservation-box">
-        <div style="font-size:30px; font-weight:900; color:#ff6a00; margin-bottom:20px;">₩ 40,000</div>
+        <div style="font-size:28px; font-weight:900; color:#ff6a00; margin-bottom:20px; letter-spacing: -1px;">₩ 40,000</div>
         
         <!-- 🗓️ 날짜 선택 탭 -->
         <div class="date-tabs" id="pc-date-tabs">
@@ -165,16 +185,16 @@
             <div class="date-tab" onclick="setMode('sending')">샌딩 날짜<span id="pc-sending-display" class="date-display" style="color:#00c4ff;">선택 안함</span></div>
         </div>
 
-        <div class="calendar-wrap">
+        <div class="calendar-wrap" style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 15px;">
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&lt;</button>
                 <strong id="pc-month">2026년 3월</strong>
                 <button onclick="changeMonth(1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&gt;</button>
             </div>
-            <div class="calendar-grid" id="pc-days"></div>
+            <div class="calendar-grid" id="pc-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding:15px; background:#f8f9fa; border-radius:12px;">
-            <span style="font-weight:700;">인원 (성인)</span>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding:15px; background:#fcfcfc; border-radius:15px; border:1px solid #f0f0f0;">
+            <span style="font-weight:700; font-size:15px;">인원 (성인)</span>
             <div class="counter">
                 <button class="count-btn" onclick="updateCount(-1)">-</button>
                 <strong id="pc-count">1</strong>
@@ -194,23 +214,23 @@
 
 <!-- 📱 모바일 옵션 시트 -->
 <div class="option-sheet-overlay" id="sheetOverlay" onclick="closeOptionSheet()"></div>
-<div class="option-sheet" id="optionSheet">
-    <h3 style="font-weight:800; margin-bottom:20px;">예약 옵션 선택</h3>
+<div class="option-sheet" id="optionSheet" style="position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-radius: 25px 25px 0 0; z-index: 10005; padding: 30px 20px 40px; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
+    <h3 style="font-weight:900; margin-bottom:20px; font-size:20px;">예약 옵션 선택</h3>
     
     <div class="date-tabs" id="m-date-tabs">
         <div class="date-tab active" onclick="setMode('pickup')">픽업 날짜<span id="m-pickup-display" class="date-display">선택 안함</span></div>
         <div class="date-tab" onclick="setMode('sending')">샌딩 날짜<span id="m-sending-display" class="date-display" style="color:#00c4ff;">선택 안함</span></div>
     </div>
 
-    <div class="calendar-wrap">
+    <div class="calendar-wrap" style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 15px;">
         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
             <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800;">&lt;</button>
             <strong id="m-month">2026년 3월</strong>
             <button onclick="changeMonth(1)" style="border:none; background:none; color:#ff6a00; font-weight:800;">&gt;</button>
         </div>
-        <div class="calendar-grid" id="m-days"></div>
+        <div class="calendar-grid" id="m-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
     </div>
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:#f8f9fa; border-radius:12px; margin-bottom:20px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:#fcfcfc; border-radius:15px; margin-bottom:20px; border:1px solid #f0f0f0;">
         <span style="font-weight:700;">인원 (성인)</span>
         <div class="counter">
             <button class="count-btn" onclick="updateCount(-1)">-</button>
@@ -218,7 +238,7 @@
             <button class="count-btn" onclick="updateCount(1)">+</button>
         </div>
     </div>
-    <button class="btn-buy" onclick="handleBuy()">선택 완료 / 구매하기</button>
+    <button class="btn-buy" onclick="handleBuy()" style="background:#ff6a00;">선택 완료 / 구매하기</button>
 </div>
 
 <footer class="footer">

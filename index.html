@@ -17,7 +17,7 @@
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <style>
-        /* 팝업 스타일 개선 */
+        /* 팝업 스타일 개선 (슬라이더 형) */
         .popup-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.8); z-index: 20000;
@@ -25,60 +25,96 @@
             backdrop-filter: blur(8px);
         }
         .popup-content {
-            position: relative; width: 90%; max-width: 500px;
+            position: relative; width: 90%; max-width: 450px;
             background: white; border-radius: 30px; overflow: hidden;
             box-shadow: 0 30px 60px rgba(0,0,0,0.5);
             animation: popup-anim 0.5s cubic-bezier(0.16, 1, 0.3, 1);
             display: flex; flex-direction: column;
-            max-height: 90vh;
         }
         @keyframes popup-anim {
             from { opacity: 0; transform: translateY(50px) scale(0.95); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
-        /* 이미지 영역 스크롤 가능하게 */
-        .popup-body {
-            overflow-y: auto;
-            flex: 1;
-            -webkit-overflow-scrolling: touch;
-        }
-        .popup-body img { width: 100%; display: block; cursor: pointer; }
         
+        /* 팝업 슬라이더 영역 */
+        .popup-body {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+        .popup-wrapper {
+            display: flex;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            width: 100%;
+        }
+        .popup-slide {
+            min-width: 100%;
+            flex-shrink: 0;
+        }
+        .popup-slide img { width: 100%; display: block; cursor: pointer; }
+        
+        /* 팝업 화살표 */
+        .p-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            width: 36px; height: 36px; background: rgba(255,255,255,0.8);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 10; font-size: 14px; color: #111;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.3s;
+        }
+        .p-arrow:hover { background: #ff6a00; color: white; }
+        .pa-left { left: 15px; }
+        .pa-right { right: 15px; }
+
+        /* 팝업 점(dots) */
+        .p-dots {
+            position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 6px; z-index: 10;
+        }
+        .p-dot {
+            width: 6px; height: 6px; background: rgba(255,255,255,0.5);
+            border-radius: 50%; cursor: pointer; transition: 0.3s;
+        }
+        .p-dot.active { background: #fff; width: 18px; border-radius: 10px; }
+
         .popup-footer {
             padding: 15px 25px; display: flex; justify-content: space-between;
             align-items: center; background: #fff; border-top: 1px solid #f0f0f0;
-            font-size: 14px; z-index: 10;
+            font-size: 13px;
         }
         .popup-footer label { cursor: pointer; color: #666; font-weight: 600; display: flex; align-items: center; gap: 8px; }
         .popup-footer button {
-            background: #ff6a00; color: white; border: none; padding: 10px 25px;
-            border-radius: 12px; cursor: pointer; font-weight: 800; transition: 0.2s;
+            background: #111; color: white; border: none; padding: 8px 20px;
+            border-radius: 10px; cursor: pointer; font-weight: 800; transition: 0.2s;
         }
-        .popup-footer button:hover { background: #e65f00; transform: scale(1.05); }
-        
-        /* 스크롤 유도 화살표 애니메이션 (선택사항) */
-        .scroll-hint {
-            position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%);
-            background: rgba(255,106,0,0.9); color: white; padding: 5px 15px;
-            border-radius: 20px; font-size: 12px; font-weight: 700;
-            pointer-events: none; animation: hint-bounce 2s infinite;
-            z-index: 5;
-        }
-        @keyframes hint-bounce { 0%, 100% { bottom: 80px; opacity: 1; } 50% { bottom: 90px; opacity: 0.7; } }
+        .popup-footer button:hover { background: #ff6a00; }
     </style>
 </head>
 <body>
 
-<!-- 팝업창 (스크롤형 멀티 팝업) -->
+<!-- 팝업창 (슬라이더형 멀티 팝업) -->
 <div id="home-popup" class="popup-overlay">
     <div class="popup-content">
-        <div class="popup-body" id="popupBody">
-            <!-- 첫 번째 팝업 -->
-            <img src="popup.png" alt="공지사항 1" onclick="window.open('price-list.html', '_blank');">
-            <!-- 두 번째 팝업 (좀 보라! 맵) -->
-            <img src="좀 보라! 맵.png" alt="좀 보라! 맵" style="border-top: 4px solid #f0f0f0;">
+        <div class="popup-body">
+            <div class="popup-wrapper" id="popupWrapper">
+                <!-- 첫 번째 팝업 -->
+                <div class="popup-slide">
+                    <img src="popup.png" alt="공지사항 1" onclick="window.open('price-list.html', '_blank');">
+                </div>
+                <!-- 두 번째 팝업 (좀 보라! 맵) -->
+                <div class="popup-slide">
+                    <img src="좀 보라! 맵.png" alt="좀 보라! 맵">
+                </div>
+            </div>
             
-            <div class="scroll-hint">아래로 스크롤하여 더 보기 ↓</div>
+            <!-- 화살표 -->
+            <div class="p-arrow pa-left" onclick="movePopup( -1 )">❮</div>
+            <div class="p-arrow pa-right" onclick="movePopup( 1 )">❯</div>
+            
+            <!-- 점 인디케이터 -->
+            <div class="p-dots" id="popupDots">
+                <div class="p-dot active" onclick="goPopup(0)"></div>
+                <div class="p-dot" onclick="goPopup(1)"></div>
+            </div>
         </div>
         <div class="popup-footer">
             <label><input type="checkbox" id="no-show-today"> 오늘 하루 보지 않기</label>
@@ -310,6 +346,28 @@
 
 <script src="main.js"></script>
 <script>
+    // 팝업 슬라이더 제어 로직
+    let currentPopupIdx = 0;
+    const popupWrapper = document.getElementById('popupWrapper');
+    const pDots = document.querySelectorAll('.p-dot');
+
+    window.goPopup = (idx) => {
+        currentPopupIdx = idx;
+        if (popupWrapper) {
+            popupWrapper.style.transform = `translateX(-${currentPopupIdx * 100}%)`;
+            pDots.forEach((dot, i) => {
+                if (i === currentPopupIdx) dot.classList.add('active');
+                else dot.classList.remove('active');
+            });
+        }
+    };
+
+    window.movePopup = (step) => {
+        const totalPopupSlides = document.querySelectorAll('.popup-slide').length;
+        currentPopupIdx = (currentPopupIdx + step + totalPopupSlides) % totalPopupSlides;
+        goPopup(currentPopupIdx);
+    };
+
     // 팝업 닫기 함수
     function closePopup() {
         const popup = document.getElementById('home-popup');
@@ -334,18 +392,6 @@
         if (!expiry || now > parseInt(expiry)) {
             setTimeout(() => {
                 popup.style.display = 'flex';
-                
-                // 스크롤 시 힌트 숨기기 로직 추가
-                const popupBody = document.getElementById('popupBody');
-                const scrollHint = document.querySelector('.scroll-hint');
-                if (popupBody && scrollHint) {
-                    popupBody.addEventListener('scroll', () => {
-                        if (popupBody.scrollTop > 50) {
-                            scrollHint.style.opacity = '0';
-                            scrollHint.style.transition = '0.5s';
-                        }
-                    });
-                }
             }, 500); // 0.5초 뒤 등장
         }
     });

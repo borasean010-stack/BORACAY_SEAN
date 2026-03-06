@@ -75,7 +75,7 @@
         <h2>예약 정보 입력</h2>
         <p class="desc">정확한 정보를 입력해 주셔야 차질 없는 진행이 가능합니다.</p>
         
-        <form id="booking-form" onsubmit="handleFormSubmit(event)">
+        <form id="booking-form">
             <!-- 👤 기본 정보 -->
             <div class="section-subtitle">👤 대표자 기본 정보</div>
             <div class="input-group">
@@ -87,7 +87,7 @@
                 <input type="text" id="contact" placeholder="안내 메시지를 받으실 수 있는 정보" required>
             </div>
 
-            <!-- ✈️ 픽업/샌딩 전용 정보 (장바구니 확인 후 표시) -->
+            <!-- ✈️ 픽업/샌딩 전용 정보 -->
             <div id="pickup-sending-fields">
                 <div class="section-subtitle" style="color:#ff6a00;">✈️ 픽업/샌딩 상세 정보</div>
                 <p style="font-size:13px; color:#888; margin-bottom:20px;">공항 이동 서비스를 위해 반드시 필요한 정보입니다.</p>
@@ -134,12 +134,13 @@
 <footer class="footer">
     <div class="footer-left">
         <b>상호 : 보라카이션 | 대표 : 윤오현</b><br>
-        서울특별시 중랑구 상봉로 16길 25-3<br>
         사업자번호 : 498-31-00593 | daemit@naver.com
     </div>
 </footer>
 
 <script>
+    let hasPickupItem = false;
+
     document.addEventListener('DOMContentLoaded', function() {
         let cart = [];
         const directBuy = sessionStorage.getItem('directBuyItem');
@@ -159,9 +160,8 @@
         }
 
         // 📋 주문 요약 렌더링
-        let hasPickup = false;
         cart.forEach(item => {
-            if (item.name.includes('픽업샌딩')) hasPickup = true;
+            if (item.name.includes('픽업샌딩')) hasPickupItem = true;
             
             const div = document.createElement('div');
             div.className = 'order-item';
@@ -173,85 +173,83 @@
         });
 
         // ✈️ 픽업샌딩 필드 제어
-        if (hasPickup) {
+        if (hasPickupItem) {
             const fields = document.getElementById('pickup-sending-fields');
             fields.style.display = 'block';
             
-            // 필수 속성 강제 부여
             const inputs = fields.querySelectorAll('input');
             inputs.forEach(input => input.required = true);
         }
     });
 
-    // 폼 전송 이벤트 리스너 강화
+    // 폼 전송 로직 통합
     document.getElementById('booking-form').addEventListener('submit', function(e) {
         e.preventDefault();
+        console.log("Form Submit Started");
         
         try {
-            let pickupFlight = document.getElementById('pickup-flight').value;
-            if (pickupFlight === '기타') {
-                pickupFlight = document.getElementById('pickup-flight-etc').value;
-                if (!pickupFlight) { alert('항공편명을 입력해주세요.'); return; }
-            }
+            const korName = document.getElementById('kor-name').value;
+            const contact = document.getElementById('contact').value;
 
-            let sendingFlight = document.getElementById('sending-flight').value;
-            if (sendingFlight === '기타') {
-                sendingFlight = document.getElementById('sending-flight-etc').value;
-                if (!sendingFlight) { alert('항공편명을 입력해주세요.'); return; }
-            }
-
-            const bookingData = {
-                customerKorName: document.getElementById('kor-name').value,
-                contact: document.getElementById('contact').value,
-                engName: document.getElementById('eng-name') ? document.getElementById('eng-name').value : '',
-                pickupFlight: pickupFlight || '',
-                pickupResort: document.getElementById('pickup-resort') ? document.getElementById('pickup-resort').value : '',
-                sendingFlight: sendingFlight || '',
-                sendingResort: document.getElementById('sending-resort') ? document.getElementById('sending-resort').value : ''
+            let bookingData = {
+                customerKorName: korName,
+                contact: contact,
+                timestamp: new Date().getTime()
             };
+
+            // 픽업샌딩 정보가 필요한 경우만 데이터 수집
+            if (hasPickupItem) {
+                let pickupFlight = document.getElementById('pickup-flight').value;
+                if (pickupFlight === '기타') {
+                    pickupFlight = document.getElementById('pickup-flight-etc').value;
+                }
+
+                let sendingFlight = document.getElementById('sending-flight').value;
+                if (sendingFlight === '기타') {
+                    sendingFlight = document.getElementById('sending-flight-etc').value;
+                }
+
+                bookingData.engName = document.getElementById('eng-name').value;
+                bookingData.pickupFlight = pickupFlight;
+                bookingData.pickupResort = document.getElementById('pickup-resort').value;
+                bookingData.sendingFlight = sendingFlight;
+                bookingData.sendingResort = document.getElementById('sending-resort').value;
+            }
             
-            // 데이터 저장 확인
+            // 데이터 저장
             localStorage.setItem('last_booking_info', JSON.stringify(bookingData));
-            console.log("Data Saved:", bookingData);
+            console.log("Data Saved Successfully");
             
             // 버튼 상태 변경
             const btn = this.querySelector('button[type="submit"]');
             btn.innerText = '예약 처리 중...';
             btn.disabled = true;
-            btn.style.opacity = '0.7';
 
-            // 강제 페이지 이동 (충분한 지연 시간 부여)
+            // 페이지 이동
             setTimeout(() => {
                 window.location.href = 'booking-complete.html';
-            }, 500);
+            }, 300);
 
         } catch (error) {
             console.error("Booking Submit Error:", error);
-            alert("예약 처리 중 오류가 발생했습니다. 다시 시도해주세요.");
+            alert("예약 정보를 저장하는 중 오류가 발생했습니다. 다시 시도해 주세요.");
+            const btn = this.querySelector('button[type="submit"]');
+            btn.disabled = false;
+            btn.innerText = '예약 완료 및 결제하기';
         }
     });
 
-    // ✈️ 항공편 직접 입력 필드 토글 로직
+    // 항공편 직접 입력 토글
     document.getElementById('pickup-flight').addEventListener('change', function() {
         const etcField = document.getElementById('pickup-flight-etc');
-        if (this.value === '기타') {
-            etcField.style.display = 'block';
-            etcField.required = true;
-        } else {
-            etcField.style.display = 'none';
-            etcField.required = false;
-        }
+        etcField.style.display = (this.value === '기타') ? 'block' : 'none';
+        etcField.required = (this.value === '기타');
     });
 
     document.getElementById('sending-flight').addEventListener('change', function() {
         const etcField = document.getElementById('sending-flight-etc');
-        if (this.value === '기타') {
-            etcField.style.display = 'block';
-            etcField.required = true;
-        } else {
-            etcField.style.display = 'none';
-            etcField.required = false;
-        }
+        etcField.style.display = (this.value === '기타') ? 'block' : 'none';
+        etcField.required = (this.value === '기타');
     });
 </script>
 </body>

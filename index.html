@@ -112,12 +112,24 @@
     <div class="scroll-indicator"><div class="mouse"></div></div>
 </section>
 
-<!-- 🔥 메인 배너 슬라이더 추가 -->
+<!-- 🔥 메인 배너 슬라이더 -->
 <section class="banner-slider">
+    <!-- 🏷️ 공통 이벤트 태그 -->
+    <div class="event-tag">SPECIAL EVENT</div>
+
     <div class="banner-wrapper" id="bannerWrapper">
-        <div class="banner-slide" onclick="window.open('pickup-sending.html', '_blank')"><img src="banner1.png" alt="배너 1"></div>
-        <div class="banner-slide" onclick="window.open('hopping-tour.html', '_blank')"><img src="banner2.png" alt="배너 2"></div>
+        <div class="banner-slide" onclick="window.open('pickup-sending.html', '_blank')">
+            <img src="banner1.png" alt="배너 1">
+        </div>
+        <div class="banner-slide" onclick="window.open('hopping-tour.html', '_blank')">
+            <img src="banner2.png" alt="배너 2">
+        </div>
     </div>
+
+    <!-- ◀️▶️ 화살표 네비게이션 -->
+    <div class="slider-arrow arrow-left" onclick="moveSlide(-1)">❮</div>
+    <div class="slider-arrow arrow-right" onclick="moveSlide(1)">❯</div>
+
     <div class="slider-dots" id="sliderDots">
         <div class="dot active" onclick="goToSlide(0)"></div>
         <div class="dot" onclick="goToSlide(1)"></div>

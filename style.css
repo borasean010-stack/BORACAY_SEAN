@@ -135,6 +135,7 @@ body {
 .banner-slide {
     min-width: 100%;
     cursor: pointer;
+    position: relative;
 }
 .banner-slide img {
     width: 100%;
@@ -142,7 +143,56 @@ body {
     object-fit: cover;
 }
 
-/* 슬라이더 컨트롤 (필요 시) */
+/* 🏷️ 이벤트 태그 */
+.event-tag {
+    position: absolute;
+    top: 30px;
+    left: 60px;
+    background: #ff6a00;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 1px;
+    box-shadow: 0 10px 20px rgba(255,106,0,0.3);
+    z-index: 10;
+    animation: bounce 2s infinite;
+}
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* ◀️▶️ 슬라이더 화살표 */
+.slider-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 20;
+    transition: 0.3s;
+    font-size: 20px;
+}
+.slider-arrow:hover {
+    background: white;
+    color: #ff6a00;
+}
+.arrow-left { left: 20px; }
+.arrow-right { right: 20px; }
+
+/* 슬라이더 컨트롤 (점) */
 .slider-dots {
     position: absolute;
     bottom: 20px;
@@ -150,6 +200,7 @@ body {
     transform: translateX(-50%);
     display: flex;
     gap: 10px;
+    z-index: 20;
 }
 .dot {
     width: 8px;
@@ -167,7 +218,18 @@ body {
 
 @media (max-width: 768px) {
     .banner-slide img {
-        height: auto; /* 모바일에서는 비율에 맞게 조정 */
+        height: auto;
+    }
+    .event-tag {
+        top: 20px;
+        left: 20px;
+        font-size: 12px;
+        padding: 6px 15px;
+    }
+    .slider-arrow {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
     }
 }
 

@@ -64,11 +64,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 4. 🖼️ 메인 배너 슬라이더 자동 재생
+    // 4. 🖼️ 메인 배너 슬라이더 자동 재생 및 컨트롤
     let currentIdx = 0;
     const bannerWrapper = document.getElementById('bannerWrapper');
     const dots = document.querySelectorAll('.dot');
-    const totalSlides = document.querySelectorAll('.banner-slide').length;
+    const slides = document.querySelectorAll('.banner-slide');
+    const totalSlides = slides.length;
 
     if (bannerWrapper && totalSlides > 0) {
         window.goToSlide = (idx) => {
@@ -82,10 +83,22 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         };
 
-        // 자동 슬라이드 (5초마다)
-        setInterval(() => {
-            currentIdx = (currentIdx + 1) % totalSlides;
+        // ◀️▶️ 화살표 이동 함수
+        window.moveSlide = (step) => {
+            currentIdx = (currentIdx + step + totalSlides) % totalSlides;
             goToSlide(currentIdx);
+        };
+
+        // 자동 슬라이드 (5초마다)
+        let autoSlide = setInterval(() => {
+            moveSlide(1);
         }, 5000);
+
+        // 사용자가 조작하면 자동 슬라이드 일시 정지 후 재시작 (선택 사항)
+        const stopAutoSlide = () => clearInterval(autoSlide);
+        bannerWrapper.parentElement.addEventListener('mouseenter', stopAutoSlide);
+        bannerWrapper.parentElement.addEventListener('mouseleave', () => {
+            autoSlide = setInterval(() => moveSlide(1), 5000);
+        });
     }
 });

@@ -24,8 +24,9 @@
 
         .input-group { margin-bottom: 25px; }
         .input-group label { display: block; font-size: 15px; font-weight: 700; color: #444; margin-bottom: 10px; }
-        .input-group input { width: 100%; padding: 16px; border: 1.5px solid #eee; border-radius: 14px; font-family: inherit; font-size: 16px; transition: 0.3s; background: #fafafa; }
-        .input-group input:focus { outline: none; border-color: #ff6a00; background: white; box-shadow: 0 0 0 4px rgba(255,106,0,0.1); }
+        .input-group input, .input-group select { width: 100%; padding: 16px; border: 1.5px solid #eee; border-radius: 14px; font-family: inherit; font-size: 16px; transition: 0.3s; background: #fafafa; -webkit-appearance: none; -moz-appearance: none; appearance: none; }
+        .input-group select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em; }
+        .input-group input:focus, .input-group select:focus { outline: none; border-color: #ff6a00; background: white; box-shadow: 0 0 0 4px rgba(255,106,0,0.1); }
         
         .section-divider { height: 1px; background: #f0f0f0; margin: 35px 0; position: relative; }
         .section-divider span { position: absolute; left: 0; top: -10px; background: white; padding-right: 15px; font-size: 14px; font-weight: 800; color: #bbb; text-transform: uppercase; }
@@ -99,7 +100,11 @@
                 <div class="section-divider"><span>입국 시 정보 (픽업)</span></div>
                 <div class="input-group">
                     <label>픽업 항공편명<span class="required-mark">*</span></label>
-                    <input type="text" id="pickup-flight" placeholder="예: 7C2301">
+                    <select id="pickup-flight">
+                        <option value="TW125">TW125</option>
+                        <option value="기타">직접 입력 (기타)</option>
+                    </select>
+                    <input type="text" id="pickup-flight-etc" placeholder="기타 항공편명을 입력하세요" style="display:none; margin-top:10px;">
                 </div>
                 <div class="input-group">
                     <label>픽업 호텔 (첫날 호텔)<span class="required-mark">*</span></label>
@@ -109,7 +114,11 @@
                 <div class="section-divider"><span>출국 시 정보 (샌딩)</span></div>
                 <div class="input-group">
                     <label>샌딩 항공편명<span class="required-mark">*</span></label>
-                    <input type="text" id="sending-flight" placeholder="예: 7C2302">
+                    <select id="sending-flight">
+                        <option value="TW126">TW126</option>
+                        <option value="기타">직접 입력 (기타)</option>
+                    </select>
+                    <input type="text" id="sending-flight-etc" placeholder="기타 항공편명을 입력하세요" style="display:none; margin-top:10px;">
                 </div>
                 <div class="input-group">
                     <label>샌딩 호텔 (마지막날 호텔)<span class="required-mark">*</span></label>
@@ -177,14 +186,20 @@
     function handleFormSubmit(e) {
         e.preventDefault();
         
+        let pickupFlight = document.getElementById('pickup-flight').value;
+        if (pickupFlight === '기타') pickupFlight = document.getElementById('pickup-flight-etc').value;
+
+        let sendingFlight = document.getElementById('sending-flight').value;
+        if (sendingFlight === '기타') sendingFlight = document.getElementById('sending-flight-etc').value;
+
         const bookingData = {
             customerKorName: document.getElementById('kor-name').value,
             contact: document.getElementById('contact').value,
             // 픽업샌딩 정보 (없을 경우 빈 문자열)
             engName: document.getElementById('eng-name').value || '',
-            pickupFlight: document.getElementById('pickup-flight').value || '',
+            pickupFlight: pickupFlight || '',
             pickupResort: document.getElementById('pickup-resort').value || '',
-            sendingFlight: document.getElementById('sending-flight').value || '',
+            sendingFlight: sendingFlight || '',
             sendingResort: document.getElementById('sending-resort').value || ''
         };
         
@@ -199,6 +214,18 @@
             location.href = 'booking-complete.html';
         }, 800);
     }
+
+    // ✈️ 항공편 직접 입력 필드 토글 로직
+    document.addEventListener('change', function(e) {
+        if (e.target.id === 'pickup-flight') {
+            document.getElementById('pickup-flight-etc').style.display = e.target.value === '기타' ? 'block' : 'none';
+            if (e.target.value === '기타') document.getElementById('pickup-flight-etc').required = true;
+        }
+        if (e.target.id === 'sending-flight') {
+            document.getElementById('sending-flight-etc').style.display = e.target.value === '기타' ? 'block' : 'none';
+            if (e.target.value === '기타') document.getElementById('sending-flight-etc').required = true;
+        }
+    });
 </script>
 </body>
 </html>

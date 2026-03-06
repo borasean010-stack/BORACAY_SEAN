@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof Kakao !== 'undefined') {
         if (!Kakao.isInitialized()) {
             Kakao.init('7610f11ad9a9851159dec6168f83099b');
-            console.log("Kakao SDK Initialized:", Kakao.isInitialized());
+            console.log("Kakao SDK Initialized");
         }
     }
 
@@ -16,39 +16,36 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateAuthUI() {
         const userInfo = JSON.parse(localStorage.getItem('kakao_user'));
         const headerRight = document.querySelector('.header-right');
-        
-        if (userInfo && headerRight) {
-            // 로그인 상태일 때: 마이페이지 버튼 옆에 로그아웃 추가 또는 변경
-            const myPageBtn = headerRight.querySelector('.mypage-btn');
-            if (myPageBtn) {
-                myPageBtn.innerHTML = `👤 ${userInfo.nickname}`;
-            }
-            
-            // 로그아웃 버튼이 없으면 추가
-            if (!headerRight.querySelector('.logout-btn')) {
-                const logoutBtn = document.createElement('a');
-                logoutBtn.href = '#';
-                logoutBtn.className = 'logout-btn';
-                logoutBtn.style.marginLeft = '10px';
-                logoutBtn.style.fontSize = '13px';
-                logoutBtn.style.color = '#999';
-                logoutBtn.innerText = '로그아웃';
-                logoutBtn.onclick = (e) => {
-                    e.preventDefault();
-                    logout();
-                };
-                headerRight.appendChild(logoutBtn);
-            }
+        if (!headerRight) return;
+
+        // 기존 버튼들 초기화 (중복 방지)
+        headerRight.innerHTML = '';
+
+        if (userInfo) {
+            // [로그인 상태] 닉네임 + 마이페이지 + 로그아웃
+            headerRight.innerHTML = `
+                <a href="mypage.html" class="mypage-btn" style="background:#f0f0f0; color:#333;">👤 ${userInfo.nickname}</a>
+                <a href="#" class="logout-btn" onclick="logout(event)" style="margin-left:12px; font-size:13px; color:#999; text-decoration:none;">로그아웃</a>
+                <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페</a>
+                <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카톡</a>
+            `;
+        } else {
+            // [로그아웃 상태] 로그인 버튼 + 마이페이지 + 카페/카톡
+            headerRight.innerHTML = `
+                <a href="login.html" class="login-btn" style="background:#ff6a00; color:white; padding:8px 16px; border-radius:10px; font-weight:800; text-decoration:none; margin-right:8px;">로그인</a>
+                <a href="mypage.html" class="mypage-btn">마이페이지</a>
+                <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페</a>
+                <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카톡</a>
+            `;
         }
     }
 
-    window.logout = function() {
+    window.logout = function(e) {
+        if (e) e.preventDefault();
         if (confirm('로그아웃 하시겠습니까?')) {
             localStorage.removeItem('kakao_user');
-            if (Kakao.Auth.getAccessToken()) {
-                Kakao.Auth.logout(() => {
-                    location.href = 'index.html';
-                });
+            if (typeof Kakao !== 'undefined' && Kakao.Auth.getAccessToken()) {
+                Kakao.Auth.logout(() => { location.href = 'index.html'; });
             } else {
                 location.href = 'index.html';
             }

@@ -74,8 +74,12 @@
 
 <script>
     function checkoutCart() {
-        sessionStorage.removeItem('directBuyItem');
-        location.href = 'login.html';
+        try {
+            sessionStorage.removeItem('directBuyItem');
+            window.location.assign('login.html');
+        } catch (e) {
+            window.location.href = 'login.html';
+        }
     }
 
     document.addEventListener('DOMContentLoaded', function() {

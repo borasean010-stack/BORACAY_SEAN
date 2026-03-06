@@ -294,9 +294,13 @@
     }
     
     function handleBuy() {
-        const item = { name: "블랙펄 요트 호핑투어", price: 65000, count: adultCount, date: selectedDate };
-        sessionStorage.setItem('directBuyItem', JSON.stringify(item));
-        location.href = 'login.html';
+        try {
+            const item = { name: "블랙펄 요트 호핑투어", price: 65000, count: adultCount, date: selectedDate };
+            sessionStorage.setItem('directBuyItem', JSON.stringify(item));
+            window.location.assign('login.html');
+        } catch (e) {
+            window.location.href = 'login.html';
+        }
     }
 
     function addToCart() {
@@ -304,7 +308,9 @@
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         cart.push(item);
         localStorage.setItem('cart', JSON.stringify(cart));
-        if(confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) location.href = 'cart.html';
+        if(confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) {
+            window.location.assign('cart.html');
+        }
     }
     window.onload = () => { renderCalendar('pc-days', 'pc-month'); renderCalendar('m-days', 'm-month'); };
 

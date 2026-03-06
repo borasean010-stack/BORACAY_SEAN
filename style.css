@@ -397,32 +397,29 @@ body {
 
 /* 🔥 여행 매거진 (비디오 매거진) 섹션 스타일 */
 .magazine-section {
-    padding: 80px 60px; /* 패딩 축소 */
+    padding: 60px 60px; /* 상하 여백 더 축소 */
     background: #fff;
     text-align: center;
 }
 .video-container {
-    max-width: 800px; /* 너비 축소 (너무 크지 않게) */
+    max-width: 850px; /* 가로 너비 적정 수준 유지 */
+    width: 100%;
+    aspect-ratio: 16 / 9; /* 가로 16:9 비율 명시적 고정 */
     margin: 0 auto;
-    position: relative;
-    padding-bottom: 56.25%; /* 16:9 비율 절대 유지 */
-    height: 0;
     overflow: hidden;
     border-radius: 24px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+    box-shadow: 0 15px 45px rgba(0,0,0,0.1);
     background: #000;
 }
 .video-container iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
     border: none;
+    display: block;
 }
 
 @media (max-width: 1024px) {
-    .magazine-section { padding: 60px 20px; }
+    .magazine-section { padding: 40px 20px; }
     .video-container { border-radius: 16px; }
 }
 

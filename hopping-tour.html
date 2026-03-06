@@ -35,6 +35,12 @@
         .itinerary-img { width: 100%; margin-bottom: 30px; }
         .itinerary-img img { width: 100%; border-radius: 20px; display: block; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         
+        /* 🗓️ 날짜 선택 탭 스타일 */
+        .date-tabs { display: flex; gap: 5px; margin-bottom: 15px; background: #f8f9fa; padding: 5px; border-radius: 12px; }
+        .date-tab { flex: 1; padding: 12px 5px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 10px; transition: 0.2s; color: #888; border: 1px solid transparent; }
+        .date-tab.active { background: white; color: #ff6a00; border-color: #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .date-display { font-size: 12px; display: block; margin-top: 4px; color: #ff6a00; font-weight: 800; }
+
         /* 🗓️ 예약 박스 (달력 포함 영역) */
         .reservation-box { 
             background: white; 
@@ -47,6 +53,10 @@
             height: fit-content;
         }
         
+        .day { padding: 10px 0; cursor: pointer; border-radius: 8px; font-size: 13px; font-weight: 600; }
+        .day:hover { background: #fff1e6; }
+        .day.selected { background: #ff6a00 !important; color: white !important; font-weight: 800; }
+
         .btn-buy { width: 100%; padding: 20px; background: #111; color: white; border: none; border-radius: 16px; font-size: 17px; font-weight: 800; cursor: pointer; transition: 0.3s; }
         .btn-cart { width: 100%; padding: 18px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 16px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; }
         .btn-buy:hover { background: #ff6a00; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
@@ -111,19 +121,24 @@
             <div class="itinerary-img"><img src="hop5.jpg"></div>
         </div>
         <div class="section-title">환불 규정</div>
-        <img src="refund.png" style="width:100%; border-radius:15px;">
+        <img src="refund.png" style="width:100%; border-radius:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
     </div>
 
     <div class="reservation-box">
         <div style="font-size:28px; font-weight:900; color:#ff6a00; margin-bottom:20px; letter-spacing: -1px;">₩ 65,000</div>
-        <!-- 🗓️ 달력 영역 (구조 유지) -->
+        
+        <!-- 🗓️ 날짜 선택 탭 (픽업샌딩과 디자인 통일) -->
+        <div class="date-tabs">
+            <div class="date-tab active">투어 날짜 선택<span id="pc-date-display" class="date-display">2026-03-02</span></div>
+        </div>
+
         <div class="calendar-wrap" style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 15px;">
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&lt;</button>
                 <strong id="pc-month">2026년 3월</strong>
                 <button onclick="changeMonth(1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&gt;</button>
             </div>
-            <div class="calendar-grid" id="pc-days"></div>
+            <div class="calendar-grid" id="pc-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
         </div>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding:15px; background:#fcfcfc; border-radius:15px; border:1px solid #f0f0f0;">
             <span style="font-weight:700; font-size:15px;">인원 (성인)</span>
@@ -144,17 +159,22 @@
 </div>
 
 <div class="option-sheet-overlay" id="sheetOverlay" onclick="closeOptionSheet()"></div>
-<div class="option-sheet" id="optionSheet">
-    <h3 style="font-weight:800; margin-bottom:20px;">예약 옵션 선택</h3>
-    <div class="calendar-wrap">
+<div class="option-sheet" id="optionSheet" style="position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-radius: 25px 25px 0 0; z-index: 10005; padding: 30px 20px 40px; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
+    <h3 style="font-weight:900; margin-bottom:20px; font-size:20px;">예약 옵션 선택</h3>
+    
+    <div class="date-tabs">
+        <div class="date-tab active">투어 날짜 선택<span id="m-date-display" class="date-display">2026-03-02</span></div>
+    </div>
+
+    <div class="calendar-wrap" style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 15px;">
         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
             <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800;">&lt;</button>
             <strong id="m-month">2026년 3월</strong>
             <button onclick="changeMonth(1)" style="border:none; background:none; color:#ff6a00; font-weight:800;">&gt;</button>
         </div>
-        <div class="calendar-grid" id="m-days"></div>
+        <div class="calendar-grid" id="m-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
     </div>
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:#f8f9fa; border-radius:12px; margin-bottom:20px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:#fcfcfc; border-radius:15px; margin-bottom:20px; border:1px solid #f0f0f0;">
         <span style="font-weight:700;">인원 (성인)</span>
         <div class="counter">
             <button class="count-btn" onclick="updateCount(-1)">-</button>
@@ -162,8 +182,7 @@
             <button class="count-btn" onclick="updateCount(1)">+</button>
         </div>
     </div>
-    <!-- 🔥 모바일 최종 버튼도 PC 스타일(웅장함) 적용 -->
-    <button class="btn-buy" onclick="handleBuy()">선택 완료 / 구매하기</button>
+    <button class="btn-buy" onclick="handleBuy()" style="background:#ff6a00;">선택 완료 / 구매하기</button>
 </div>
 
 <footer class="footer">
@@ -207,13 +226,16 @@
         const lastDate = new Date(year, month + 1, 0).getDate();
         for (let i = 0; i < firstDay; i++) container.appendChild(document.createElement('div'));
         for (let i = 1; i <= lastDate; i++) {
+            const dateStr = `${year}-${(month+1).toString().padStart(2,'0')}-${i.toString().padStart(2,'0')}`;
             const div = document.createElement('div');
-            div.className = 'day' + (i===2 && month===2 ? ' selected' : '');
+            div.className = 'day' + (dateStr === selectedDate ? ' selected' : '');
             div.innerText = i;
             div.onclick = function() {
-                document.querySelectorAll('.day').forEach(d => d.classList.remove('selected'));
-                this.classList.add('selected');
-                selectedDate = `${year}-${(month+1).toString().padStart(2,'0')}-${i.toString().padStart(2,'0')}`;
+                selectedDate = dateStr;
+                document.getElementById('pc-date-display').innerText = dateStr;
+                document.getElementById('m-date-display').innerText = dateStr;
+                renderCalendar('pc-days', 'pc-month');
+                renderCalendar('m-days', 'm-month');
             };
             container.appendChild(div);
         }
@@ -233,8 +255,7 @@
         if(confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) location.href = 'cart.html';
     }
     window.onload = () => { renderCalendar('pc-days', 'pc-month'); renderCalendar('m-days', 'm-month'); };
-</script>
-<script>
+
     document.addEventListener('DOMContentLoaded', function() {
         const t = document.getElementById('menuToggle');
         const m = document.getElementById('sideMenu');

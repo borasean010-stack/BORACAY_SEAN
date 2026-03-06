@@ -135,28 +135,30 @@ body {
 /* 🔥 메인 배너 슬라이더 */
 .banner-slider {
     width: 100%;
-    overflow: hidden;
+    overflow: hidden; /* 영역 밖 배너 숨김 */
     background: #fff;
     position: relative;
-    padding: 0 60px 50px;
+    padding: 0 0 50px;
 }
 .banner-wrapper {
     display: flex;
     transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    border-radius: 30px;
+    width: 100%;
 }
 .banner-slide {
     width: 100%;
-    flex: 0 0 100%; /* 부모 너비의 100%를 정확히 차지하고 줄어들지 않음 */
+    flex: 0 0 100%; /* 한 슬라이드가 전체 너비를 차지하게 고정 */
     cursor: pointer;
     position: relative;
+    padding: 0 60px; /* 배너 내부 여백 */
 }
 .banner-slide img {
     width: 100%;
-    height: auto; /* 원본 배너 사이즈 반영 */
+    height: auto;
     display: block;
-    object-fit: contain; /* 배너가 잘리지 않도록 설정 */
+    object-fit: contain;
     border-radius: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
 
 /* ◀️▶️ 슬라이더 화살표 */
@@ -213,9 +215,10 @@ body {
 
 @media (max-width: 768px) {
     .event-section-title { padding: 80px 20px 30px; font-size: 28px; }
-    .banner-slider { padding: 0 15px 40px; }
+    .banner-slider { padding: 0 0 40px; }
+    .banner-slide { padding: 0 15px; }
     .banner-slide img { border-radius: 20px; }
-    .slider-arrow { width: 36px; height: 36px; font-size: 14px; top: 50%; }
+    .slider-arrow { width: 36px; height: 36px; font-size: 14px; top: calc(50% - 20px); }
     .arrow-left { left: 25px; }
     .arrow-right { right: 25px; }
     .slider-dots { bottom: 55px; }

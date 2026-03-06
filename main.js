@@ -2,7 +2,61 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log("BORACAY_SEAN JS Loaded");
 
+    // --- 카카오 SDK 초기화 ---
+    if (typeof Kakao !== 'undefined') {
+        if (!Kakao.isInitialized()) {
+            Kakao.init('7610f11ad9a9851159dec6168f83099b');
+            console.log("Kakao SDK Initialized:", Kakao.isInitialized());
+        }
+    }
+
+    // --- 로그인 상태 확인 및 헤더 UI 업데이트 ---
+    updateAuthUI();
+
+    function updateAuthUI() {
+        const userInfo = JSON.parse(localStorage.getItem('kakao_user'));
+        const headerRight = document.querySelector('.header-right');
+        
+        if (userInfo && headerRight) {
+            // 로그인 상태일 때: 마이페이지 버튼 옆에 로그아웃 추가 또는 변경
+            const myPageBtn = headerRight.querySelector('.mypage-btn');
+            if (myPageBtn) {
+                myPageBtn.innerHTML = `👤 ${userInfo.nickname}`;
+            }
+            
+            // 로그아웃 버튼이 없으면 추가
+            if (!headerRight.querySelector('.logout-btn')) {
+                const logoutBtn = document.createElement('a');
+                logoutBtn.href = '#';
+                logoutBtn.className = 'logout-btn';
+                logoutBtn.style.marginLeft = '10px';
+                logoutBtn.style.fontSize = '13px';
+                logoutBtn.style.color = '#999';
+                logoutBtn.innerText = '로그아웃';
+                logoutBtn.onclick = (e) => {
+                    e.preventDefault();
+                    logout();
+                };
+                headerRight.appendChild(logoutBtn);
+            }
+        }
+    }
+
+    window.logout = function() {
+        if (confirm('로그아웃 하시겠습니까?')) {
+            localStorage.removeItem('kakao_user');
+            if (Kakao.Auth.getAccessToken()) {
+                Kakao.Auth.logout(() => {
+                    location.href = 'index.html';
+                });
+            } else {
+                location.href = 'index.html';
+            }
+        }
+    };
+
     // 1. 🎥 비디오 자동 재생 확인 및 강제 실행 (모바일 대응)
+... (기존 비디오 로직 생략 없이 유지) ...
     const video = document.getElementById('hero-video');
     if (video) {
         // 비디오 속성 재확인

@@ -83,7 +83,11 @@
             }
             .m-btn-cart { flex: 1; height: 55px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 15px; font-size: 15px; font-weight: 800; }
             .m-btn-buy { flex: 2; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; }
-        }
+
+            /* 📱 모바일 옵션 시트 활성화 */
+            .option-sheet.active { transform: translateY(0) !important; }
+            .option-sheet-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; }
+            </style>
     </style>
 </head>
 <body>

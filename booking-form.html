@@ -9,74 +9,47 @@
     <style>
         body { background: #f8f9fa; color: #333; }
         .booking-container { max-width: 800px; margin: 100px auto 100px; padding: 0 20px; }
-        
-        /* 📦 주문 요약 카드 */
         .order-summary-card { background: #fff; padding: 30px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid #eee; margin-bottom: 30px; }
         .order-summary-card h3 { font-size: 20px; font-weight: 800; margin-bottom: 20px; color: #ff6a00; display: flex; align-items: center; gap: 8px; }
         .order-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed #eee; font-size: 15px; }
         .order-item:last-child { border-bottom: none; }
         .order-item b { color: #ff6a00; }
-
-        /* 📝 정보 입력 카드 */
         .form-card { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); border: 1px solid #eee; }
         .form-card h2 { font-size: 28px; font-weight: 900; margin-bottom: 10px; letter-spacing: -1px; }
         .form-card p.desc { color: #888; margin-bottom: 35px; font-size: 15px; }
-
         .input-group { margin-bottom: 25px; }
         .input-group label { display: block; font-size: 15px; font-weight: 700; color: #444; margin-bottom: 10px; }
-        .input-group input, .input-group select { width: 100%; padding: 16px; border: 1.5px solid #eee; border-radius: 14px; font-family: inherit; font-size: 16px; transition: 0.3s; background: #fafafa; -webkit-appearance: none; -moz-appearance: none; appearance: none; }
-        .input-group select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em; }
+        .input-group input, .input-group select { width: 100%; padding: 16px; border: 1.5px solid #eee; border-radius: 14px; font-family: inherit; font-size: 16px; transition: 0.3s; background: #fafafa; }
         .input-group input:focus, .input-group select:focus { outline: none; border-color: #ff6a00; background: white; box-shadow: 0 0 0 4px rgba(255,106,0,0.1); }
-        
         .section-divider { height: 1px; background: #f0f0f0; margin: 35px 0; position: relative; }
-        .section-divider span { position: absolute; left: 0; top: -10px; background: white; padding-right: 15px; font-size: 14px; font-weight: 800; color: #bbb; text-transform: uppercase; }
-        
+        .section-divider span { position: absolute; left: 0; top: -10px; background: white; padding-right: 15px; font-size: 14px; font-weight: 800; color: #bbb; }
         .section-subtitle { font-size: 19px; font-weight: 800; color: #333; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
-        
         .next-btn { width: 100%; padding: 22px; background: #ff6a00; color: white; border: none; border-radius: 18px; font-size: 19px; font-weight: 900; cursor: pointer; transition: 0.3s; margin-top: 20px; box-shadow: 0 10px 25px rgba(255,106,0,0.25); }
-        .next-btn:hover { background: #e65f00; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(255,106,0,0.3); }
-
+        .next-btn:hover { background: #e65f00; transform: translateY(-3px); }
         #pickup-sending-fields { display: none; background: #fffcf9; padding: 25px; border-radius: 20px; border: 1px solid #fff1e6; margin-top: 10px; }
         .required-mark { color: #ff6a00; margin-left: 4px; }
-
-        @media (max-width: 600px) {
-            .form-card { padding: 30px 20px; }
-            .booking-container { margin-top: 80px; }
-        }
+        @media (max-width: 600px) { .form-card { padding: 30px 20px; } .booking-container { margin-top: 80px; } }
     </style>
 </head>
 <body>
 
 <div class="top-bar">
     <div class="header-left">
-        <div class="logo">
-            <a href="index.html">
-                <img src="logo.png" class="logo-img" alt="로고">
-                BORACAY_SEAN
-            </a>
-        </div>
-    </div>
-    <div class="header-right">
-        <a href="mypage.html" class="mypage-btn">마이페이지</a>
+        <div class="logo"><a href="index.html"><img src="logo.png" class="logo-img">BORACAY_SEAN</a></div>
     </div>
 </div>
 
 <div class="booking-container">
-    
-    <!-- 🛒 주문 요약 섹션 -->
-    <div class="order-summary-card" id="order-summary">
-        <h3><span style="font-size:24px;">🛒</span> 선택하신 상품 확인</h3>
-        <div id="summary-list">
-            <!-- 자바스크립트로 렌더링 -->
-        </div>
+    <div class="order-summary-card">
+        <h3>🛒 선택하신 상품 확인</h3>
+        <div id="summary-list"></div>
     </div>
 
     <div class="form-card">
         <h2>예약 정보 입력</h2>
         <p class="desc">정확한 정보를 입력해 주셔야 차질 없는 진행이 가능합니다.</p>
         
-        <form id="booking-form">
-            <!-- 👤 기본 정보 -->
+        <form id="real-booking-form">
             <div class="section-subtitle">👤 대표자 기본 정보</div>
             <div class="input-group">
                 <label>대표자 성함 (한글)<span class="required-mark">*</span></label>
@@ -87,170 +60,68 @@
                 <input type="text" id="contact" placeholder="안내 메시지를 받으실 수 있는 정보" required>
             </div>
 
-            <!-- ✈️ 픽업/샌딩 전용 정보 -->
             <div id="pickup-sending-fields">
                 <div class="section-subtitle" style="color:#ff6a00;">✈️ 픽업/샌딩 상세 정보</div>
-                <p style="font-size:13px; color:#888; margin-bottom:20px;">공항 이동 서비스를 위해 반드시 필요한 정보입니다.</p>
-                
-                <div class="input-group">
-                    <label>대표자 영문 이름<span class="required-mark">*</span></label>
-                    <input type="text" id="eng-name" placeholder="여권과 동일한 영문 성함 (예: HONG GILDONG)">
-                </div>
-
-                <div class="section-divider"><span>입국 시 정보 (픽업)</span></div>
-                <div class="input-group">
-                    <label>픽업 항공편명<span class="required-mark">*</span></label>
-                    <select id="pickup-flight">
-                        <option value="TW125">TW125</option>
-                        <option value="기타">직접 입력 (기타)</option>
-                    </select>
-                    <input type="text" id="pickup-flight-etc" placeholder="기타 항공편명을 입력하세요" style="display:none; margin-top:10px;">
-                </div>
-                <div class="input-group">
-                    <label>픽업 호텔 (첫날 호텔)<span class="required-mark">*</span></label>
-                    <input type="text" id="pickup-resort" placeholder="보라카이 도착 후 투숙하시는 리조트명">
-                </div>
-
-                <div class="section-divider"><span>출국 시 정보 (샌딩)</span></div>
-                <div class="input-group">
-                    <label>샌딩 항공편명<span class="required-mark">*</span></label>
-                    <select id="sending-flight">
-                        <option value="TW126">TW126</option>
-                        <option value="기타">직접 입력 (기타)</option>
-                    </select>
-                    <input type="text" id="sending-flight-etc" placeholder="기타 항공편명을 입력하세요" style="display:none; margin-top:10px;">
-                </div>
-                <div class="input-group">
-                    <label>샌딩 호텔 (마지막날 호텔)<span class="required-mark">*</span></label>
-                    <input type="text" id="sending-resort" placeholder="보라카이에서 체크아웃 하시는 리조트명">
-                </div>
+                <div class="input-group"><label>대표자 영문 이름</label><input type="text" id="eng-name" placeholder="예: HONG GILDONG"></div>
+                <div class="section-divider"><span>입국 시 정보</span></div>
+                <div class="input-group"><label>픽업 항공편명</label><input type="text" id="pickup-flight" placeholder="예: TW125"></div>
+                <div class="input-group"><label>픽업 호텔</label><input type="text" id="pickup-resort" placeholder="리조트명"></div>
+                <div class="section-divider"><span>출국 시 정보</span></div>
+                <div class="input-group"><label>샌딩 항공편명</label><input type="text" id="sending-flight" placeholder="예: TW126"></div>
+                <div class="input-group"><label>샌딩 호텔</label><input type="text" id="sending-resort" placeholder="리조트명"></div>
             </div>
 
-            <button type="submit" class="next-btn">예약 완료 및 결제하기</button>
+            <button type="submit" class="next-btn" id="submit-btn">예약 완료 및 결제하기</button>
         </form>
     </div>
 </div>
 
-<footer class="footer">
-    <div class="footer-left">
-        <b>상호 : 보라카이션 | 대표 : 윤오현</b><br>
-        사업자번호 : 498-31-00593 | daemit@naver.com
-    </div>
-</footer>
-
 <script>
-    let hasPickupItem = false;
+    let hasPickup = false;
+    let cartData = [];
 
     document.addEventListener('DOMContentLoaded', function() {
-        let cart = [];
         const directBuy = sessionStorage.getItem('directBuyItem');
+        cartData = directBuy ? [JSON.parse(directBuy)] : JSON.parse(localStorage.getItem('cart') || '[]');
         
-        if (directBuy) {
-            cart = [JSON.parse(directBuy)];
-        } else {
-            cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        }
+        if (cartData.length === 0) { alert('상품이 없습니다.'); location.href='index.html'; return; }
 
-        const summaryList = document.getElementById('summary-list');
-        
-        if (cart.length === 0) {
-            alert('결제할 상품이 없습니다. 상품을 먼저 선택해주세요.');
-            location.href = 'index.html';
-            return;
-        }
-
-        // 📋 주문 요약 렌더링
-        cart.forEach(item => {
-            if (item.name.includes('픽업샌딩')) hasPickupItem = true;
-            
-            const div = document.createElement('div');
-            div.className = 'order-item';
-            div.innerHTML = `
-                <span>${item.name} (${item.count}명)</span>
-                <b>₩ ${ (item.price * item.count).toLocaleString() }</b>
-            `;
-            summaryList.appendChild(div);
+        const list = document.getElementById('summary-list');
+        cartData.forEach(item => {
+            if (item.name.includes('픽업샌딩')) hasPickup = true;
+            list.innerHTML += `<div class="order-item"><span>${item.name} (${item.count}명)</span><b>₩ ${(item.price * item.count).toLocaleString()}</b></div>`;
         });
 
-        // ✈️ 픽업샌딩 필드 제어
-        if (hasPickupItem) {
-            const fields = document.getElementById('pickup-sending-fields');
-            fields.style.display = 'block';
-            
-            const inputs = fields.querySelectorAll('input');
-            inputs.forEach(input => input.required = true);
-        }
+        if (hasPickup) document.getElementById('pickup-sending-fields').style.display = 'block';
     });
 
-    // 폼 전송 로직 통합
-    document.getElementById('booking-form').addEventListener('submit', function(e) {
+    document.getElementById('real-booking-form').onsubmit = function(e) {
         e.preventDefault();
-        console.log("Form Submit Started");
+        const btn = document.getElementById('submit-btn');
+        btn.innerText = '처리 중...';
+        btn.disabled = true;
+
+        const bookingData = {
+            customerKorName: document.getElementById('kor-name').value,
+            contact: document.getElementById('contact').value,
+            engName: document.getElementById('eng-name')?.value || '',
+            pickupFlight: document.getElementById('pickup-flight')?.value || '',
+            pickupResort: document.getElementById('pickup-resort')?.value || '',
+            sendingFlight: document.getElementById('sending-flight')?.value || '',
+            sendingResort: document.getElementById('sending-resort')?.value || '',
+            timestamp: new Date().getTime()
+        };
+
+        localStorage.setItem('last_booking_info', JSON.stringify(bookingData));
         
-        try {
-            const korName = document.getElementById('kor-name').value;
-            const contact = document.getElementById('contact').value;
-
-            let bookingData = {
-                customerKorName: korName,
-                contact: contact,
-                timestamp: new Date().getTime()
-            };
-
-            // 픽업샌딩 정보가 필요한 경우만 데이터 수집
-            if (hasPickupItem) {
-                let pickupFlight = document.getElementById('pickup-flight').value;
-                if (pickupFlight === '기타') {
-                    pickupFlight = document.getElementById('pickup-flight-etc').value;
-                }
-
-                let sendingFlight = document.getElementById('sending-flight').value;
-                if (sendingFlight === '기타') {
-                    sendingFlight = document.getElementById('sending-flight-etc').value;
-                }
-
-                bookingData.engName = document.getElementById('eng-name').value;
-                bookingData.pickupFlight = pickupFlight;
-                bookingData.pickupResort = document.getElementById('pickup-resort').value;
-                bookingData.sendingFlight = sendingFlight;
-                bookingData.sendingResort = document.getElementById('sending-resort').value;
-            }
-            
-            // 데이터 저장
-            localStorage.setItem('last_booking_info', JSON.stringify(bookingData));
-            console.log("Data Saved Successfully");
-            
-            // 버튼 상태 변경
-            const btn = this.querySelector('button[type="submit"]');
-            btn.innerText = '예약 처리 중...';
-            btn.disabled = true;
-
-            // 페이지 이동
-            setTimeout(() => {
-                window.location.href = 'booking-complete.html';
-            }, 300);
-
-        } catch (error) {
-            console.error("Booking Submit Error:", error);
-            alert("예약 정보를 저장하는 중 오류가 발생했습니다. 다시 시도해 주세요.");
-            const btn = this.querySelector('button[type="submit"]');
-            btn.disabled = false;
-            btn.innerText = '예약 완료 및 결제하기';
+        // 픽업샌딩의 경우 날짜 정보를 cart에서 가져와 보정 (완료 페이지용)
+        if (hasPickup && cartData[0]) {
+            sessionStorage.setItem('directBuyItem', JSON.stringify(cartData[0]));
         }
-    });
 
-    // 항공편 직접 입력 토글
-    document.getElementById('pickup-flight').addEventListener('change', function() {
-        const etcField = document.getElementById('pickup-flight-etc');
-        etcField.style.display = (this.value === '기타') ? 'block' : 'none';
-        etcField.required = (this.value === '기타');
-    });
-
-    document.getElementById('sending-flight').addEventListener('change', function() {
-        const etcField = document.getElementById('sending-flight-etc');
-        etcField.style.display = (this.value === '기타') ? 'block' : 'none';
-        etcField.required = (this.value === '기타');
-    });
+        location.href = 'booking-complete.html';
+        return false;
+    };
 </script>
 </body>
 </html>

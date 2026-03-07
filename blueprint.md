@@ -44,6 +44,7 @@ Boracay Sean is a premium travel agency website specializing in Boracay tours an
 
 ### 5. Main Banner Slider Enhancements
 - [x] Add left/right navigation arrows to the banner slider.
-- [x] Implement a floating "SPECIAL EVENT" tag on the banner.
+- [x] Implement a floating "SPECIAL EVENT" tag on the banner. (Fixed: Dynamic Dot Generation & Navigation)
 - [x] Add manual navigation logic (moveSlide) and pause auto-slide on hover.
 - [x] Apply Glassmorphism effect to slider arrows for a premium look.
+- [x] Remove "Power Link" behavior and fix dual-banner slide issues.

@@ -54,7 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // 1. 🎥 비디오 자동 재생 확인 및 강제 실행 (모바일 대응)
-... (기존 비디오 로직 생략 없이 유지) ...
     const video = document.getElementById('hero-video');
     if (video) {
         // 비디오 속성 재확인
@@ -119,11 +118,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. 🖼️ 메인 배너 슬라이더 자동 재생 및 컨트롤
     let currentIdx = 0;
     const bannerWrapper = document.getElementById('bannerWrapper');
-    const dots = document.querySelectorAll('.dot');
+    const sliderDotsContainer = document.getElementById('sliderDots');
     const slides = document.querySelectorAll('.banner-slide');
     const totalSlides = slides.length;
 
     if (bannerWrapper && totalSlides > 0) {
+        // 동적으로 점(Dots) 생성
+        if (sliderDotsContainer) {
+            sliderDotsContainer.innerHTML = '';
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.classList.add('dot');
+                if (i === 0) dot.classList.add('active');
+                dot.onclick = () => goToSlide(i);
+                sliderDotsContainer.appendChild(dot);
+            }
+        }
+
+        const dots = document.querySelectorAll('.dot');
+
         window.goToSlide = (idx) => {
             currentIdx = idx;
             bannerWrapper.style.transform = `translateX(-${currentIdx * 100}%)`;
@@ -146,12 +159,32 @@ document.addEventListener('DOMContentLoaded', () => {
             moveSlide(1);
         }, 5000);
 
-        // 사용자가 조작하면 자동 슬라이드 일시 정지 후 재시작 (선택 사항)
+        // 사용자가 조작하면 자동 슬라이드 일시 정지 후 재시작
         const stopAutoSlide = () => clearInterval(autoSlide);
-        bannerWrapper.parentElement.addEventListener('mouseenter', stopAutoSlide);
-        bannerWrapper.parentElement.addEventListener('mouseleave', () => {
+        const startAutoSlide = () => {
+            clearInterval(autoSlide);
             autoSlide = setInterval(() => moveSlide(1), 5000);
-        });
+        };
+
+        const sliderElement = bannerWrapper.parentElement;
+        sliderElement.addEventListener('mouseenter', stopAutoSlide);
+        sliderElement.addEventListener('mouseleave', startAutoSlide);
+
+        // 터치 슬라이드 지원 (모바일용 선택 사항)
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        sliderElement.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            stopAutoSlide();
+        }, {passive: true});
+
+        sliderElement.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            if (touchStartX - touchEndX > 50) moveSlide(1); // 왼쪽으로 쓸기
+            if (touchEndX - touchStartX > 50) moveSlide(-1); // 오른쪽으로 쓸기
+            startAutoSlide();
+        }, {passive: true});
     }
 
     // 5. 🖼️ 소개 모달(Popup) 제어 함수

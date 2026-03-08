@@ -14,14 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 상품 데이터 정의 ---
     const productData = {
         essential: [
-            { title: "비치 아일랜드 투어", img: "beach1.jpg", url: "beach-island-tour.html" },
             { title: "공항 왕복 픽업샌딩", img: "pickup.jpg", url: "pickup-sending.html" },
             { title: "블랙펄 요트호핑투어", img: "hopping.jpg", url: "hopping-tour.html" },
             { title: "시크릿가든 말룸파티", img: "malumpati.jpg", url: "malumpati.html" },
             { title: "한눈에 요금표", img: "price.png", url: "price-list.html" }
         ],
         activity: [
-            { title: "비치 아일랜드 투어", img: "beach1.jpg", url: "beach-island-tour.html" },
+            { title: "Island Tour", img: "beach1.jpg", url: "island-tour.html" },
             { title: "스쿠버 다이빙", img: "hop2.jpg", url: "#" },
             { title: "파라세일링", img: "hop3.jpg", url: "#" },
             { title: "헬멧 다이빙", img: "hop4.jpg", url: "#" },

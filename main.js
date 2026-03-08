@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: "한눈에 요금표", img: "price.png", url: "price-list.html" }
         ],
         activity: [
+            { title: "보라아재 호핑투어", img: "bora1.jpg", url: "bora-ajae-hopping.html" },
             { title: "Island Tour", img: "beach1.jpg", url: "island-tour.html" },
             { title: "스쿠버 다이빙", img: "hop2.jpg", url: "#" },
             { title: "파라세일링", img: "hop3.jpg", url: "#" },

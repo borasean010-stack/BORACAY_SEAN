@@ -19,7 +19,7 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    height: 88px; /* 기존 72px에서 확대 */
+    height: 88px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -39,11 +39,11 @@ body {
     color: white !important; 
     text-decoration: none !important; 
     font-weight: 900; 
-    font-size: 26px; /* 로고 텍스트도 살짝 키움 */
+    font-size: 26px; 
     letter-spacing: -1px; 
 }
 .logo-img {
-    height: 44px; /* 로고 이미지 크기도 키움 */
+    height: 44px; 
     width: auto;
     object-fit: contain;
     margin-right: 12px;
@@ -54,8 +54,8 @@ body {
 .menu a { 
     color: rgba(255, 255, 255, 0.9); 
     text-decoration: none; 
-    font-weight: 800; /* 더 굵게 */
-    font-size: 19px; /* 기존 16px에서 대폭 확대 */
+    font-weight: 800; 
+    font-size: 19px; 
     letter-spacing: -0.5px;
     transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     white-space: nowrap;
@@ -70,7 +70,7 @@ body {
     bottom: -5px;
     left: 0;
     width: 100%;
-    height: 4px; /* 더 두껍게 */
+    height: 4px; 
     background: white;
     border-radius: 10px;
 }
@@ -81,49 +81,120 @@ body {
 .naver-btn { background: #03c75a; color: white; padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: 700; font-size: 13px; }
 .kakao-btn { background: #fee500; color: #3c1e1e; padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: 800; font-size: 13px; }
 
-/* 🔥 프리미엄 상품 그리드 */
-.best-title { padding: clamp(60px, 10vw, 100px) 20px 40px; text-align: center; font-size: clamp(28px, 5vw, 36px); font-weight: 900; letter-spacing: -1px; color: #111; }
-.products { 
-    display: grid; 
-    grid-template-columns: repeat(4, 1fr); 
-    gap: 30px; 
-    max-width: 1200px; 
-    margin: 0 auto;
-    padding: 0 20px 100px;
+/* 🔥 공통 투어 카드 스타일 (필수투어, 액티비티, 마사지 공용) */
+.tour-grid {
+    max-width: 1200px;
+    margin: 0 auto 100px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    padding: 0 20px;
 }
-.product { 
-    border-radius: 32px; 
-    overflow: hidden; 
-    background: #fff; 
-    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); 
-    cursor: pointer; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.03); 
-    border: 1px solid rgba(0,0,0,0.04);
+
+.tour-card {
+    background: white;
+    border-radius: 32px;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.04);
+    border: 1px solid rgba(0,0,0,0.03);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: block;
 }
-.product:hover { 
-    transform: translateY(-15px); 
-    box-shadow: 0 30px 60px rgba(255,106,0,0.15); 
-    border-color: rgba(255,106,0,0.3); 
+
+.tour-card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 30px 60px rgba(255,106,0,0.15);
+    border-color: rgba(255,106,0,0.2);
 }
-.product h3 { 
-    padding: 30px 25px; 
-    text-align: center; 
-    font-size: 19px; 
-    font-weight: 900; 
+
+.card-img-wrap {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    position: relative;
+}
+
+.card-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tour-card:hover .card-img-wrap img {
+    transform: scale(1.1);
+}
+
+.card-body {
+    padding: 30px;
+    text-align: center;
+}
+
+.card-body h3 {
+    font-size: 22px;
+    font-weight: 900;
+    margin-bottom: 12px;
     color: #111;
+    letter-spacing: -0.5px;
 }
-.img-container { 
-    width: 100%; 
-    aspect-ratio: 1 / 1.1; 
-    overflow: hidden; 
+
+.card-body p {
+    font-size: 15px;
+    color: #777;
+    line-height: 1.6;
+    font-weight: 500;
+    word-break: keep-all;
 }
-.img-container img { 
-    width: 100%; 
-    height: 100%; 
-    object-fit: cover; 
-    transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1); 
+
+.price-tag {
+    display: inline-block;
+    margin-top: 20px;
+    color: #ff6a00;
+    font-weight: 900;
+    font-size: 18px;
 }
-.product:hover .img-container img { transform: scale(1.1); }
+
+/* 🔥 상단 카테고리 탭 (카드 형태) */
+.category-nav {
+    max-width: 1200px;
+    margin: 140px auto 60px; 
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 0 20px;
+}
+
+.cat-tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    background: white;
+    border-radius: 28px;
+    text-decoration: none;
+    color: #111;
+    font-weight: 900;
+    font-size: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+    border: 2px solid transparent;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cat-tab:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(255,106,0,0.12);
+    border-color: rgba(255,106,0,0.2);
+    color: #ff6a00;
+}
+
+.cat-tab.active {
+    background: #ff6a00;
+    color: white;
+    box-shadow: 0 20px 40px rgba(255,106,0,0.3);
+}
 
 /* 👤 마이페이지 전용 스타일 */
 .mypage-container { max-width: 900px; margin: 140px auto 100px; padding: 0 20px; }
@@ -379,9 +450,9 @@ body {
 /* 📱 반응형 처리 */
 @media (max-width: 1024px) {
     .feature-grid { grid-template-columns: repeat(2, 1fr); }
-    .products { grid-template-columns: repeat(2, 1fr); }
     .footer { flex-direction: column; align-items: flex-start; }
     .footer-right { width: 100%; min-width: 100%; }
+    .tour-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 768px) {
@@ -409,6 +480,9 @@ body {
     .modal-item h3 { font-size: 17px; }
     .modal-item p { font-size: 14px; }
     
-    .products { grid-template-columns: 1fr; gap: 20px; }
+    .tour-grid { grid-template-columns: 1fr; gap: 20px; }
+    .card-img-wrap { aspect-ratio: 16 / 9; }
+    .category-nav { grid-template-columns: 1fr; margin-top: 100px; gap: 10px; }
+    .cat-tab { padding: 15px; font-size: 16px; }
 }
 .day.disabled { color: #ccc !important; cursor: not-allowed; pointer-events: none; text-decoration: line-through; opacity: 0.5; }

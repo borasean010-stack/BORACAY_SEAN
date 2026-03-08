@@ -27,10 +27,10 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: "선셋 세일링", img: "hop5.jpg", url: "#" }
         ],
         massage: [
-            { title: "프리미엄 힐링 스파", img: "hop5.jpg", url: "#" },
-            { title: "럭셔리 전신 마사지", img: "pickup2.jpg", url: "#" },
-            { title: "오가닉 아로마 테라피", img: "pickup3.jpg", url: "#" },
-            { title: "태반 마사지 패키지", img: "pickup4.jpg", url: "#" }
+            { title: "프리미엄 힐링 스파", img: "hop5.jpg", url: "massage.html" },
+            { title: "럭셔리 전신 마사지", img: "pickup2.jpg", url: "massage.html" },
+            { title: "오가닉 아로마 테라피", img: "pickup3.jpg", url: "massage.html" },
+            { title: "태반 마사지 패키지", img: "pickup4.jpg", url: "massage.html" }
         ]
     };
 

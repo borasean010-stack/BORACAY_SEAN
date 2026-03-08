@@ -6,101 +6,6 @@
     <title>보라카이 필수투어 | BORACAY_SEAN</title>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <style>
-        body { background: #fdfdfd; }
-        .essential-hero {
-            padding: 160px 20px 60px;
-            text-align: center;
-            background: linear-gradient(to bottom, #fff5eb, #fff);
-        }
-        .essential-hero h1 { font-size: clamp(32px, 5vw, 48px); font-weight: 900; color: #111; margin-bottom: 15px; letter-spacing: -1.5px; }
-        .essential-hero p { font-size: 18px; color: #666; font-weight: 500; }
-
-        .tour-grid {
-            max-width: 1200px;
-            margin: 0 auto 100px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
-            padding: 0 20px;
-        }
-
-        .tour-card {
-            background: white;
-            border-radius: 32px;
-            overflow: hidden;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.04);
-            border: 1px solid rgba(0,0,0,0.03);
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
-            display: block;
-        }
-
-        .tour-card:hover {
-            transform: translateY(-15px);
-            box-shadow: 0 30px 60px rgba(255,106,0,0.15);
-            border-color: rgba(255,106,0,0.2);
-        }
-
-        .card-img-wrap {
-            width: 100%;
-            aspect-ratio: 4 / 5;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .card-img-wrap img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .tour-card:hover .card-img-wrap img {
-            transform: scale(1.1);
-        }
-
-        .card-body {
-            padding: 30px;
-            text-align: center;
-        }
-
-        .card-body h3 {
-            font-size: 22px;
-            font-weight: 900;
-            margin-bottom: 12px;
-            color: #111;
-            letter-spacing: -0.5px;
-        }
-
-        .card-body p {
-            font-size: 15px;
-            color: #777;
-            line-height: 1.6;
-            font-weight: 500;
-            word-break: keep-all;
-        }
-
-        .price-tag {
-            display: inline-block;
-            margin-top: 20px;
-            color: #ff6a00;
-            font-weight: 900;
-            font-size: 18px;
-        }
-
-        @media (max-width: 1024px) {
-            .tour-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-
-        @media (max-width: 768px) {
-            .essential-hero { padding-top: 120px; }
-            .tour-grid { grid-template-columns: 1fr; gap: 20px; }
-            .card-img-wrap { aspect-ratio: 16 / 9; }
-        }
-    </style>
 </head>
 <body>
 
@@ -109,8 +14,8 @@
     <a href="index.html">홈으로</a>
     <a href="mypage.html">마이페이지 (예약확인)</a>
     <a href="essential-tours.html">보라카이 필수투어</a>
-    <a href="#">액티비티</a>
-    <a href="#">마사지</a>
+    <a href="activities.html">액티비티</a>
+    <a href="massage.html">마사지</a>
     <a href="price-list.html" target="_blank">한눈에 요금표</a>
     <a href="cart.html">장바구니 확인</a>
 </div>
@@ -129,7 +34,7 @@
     <div class="menu">
         <a href="essential-tours.html" class="tab-link active">보라카이 필수투어</a>
         <a href="activities.html" class="tab-link">액티비티</a>
-        <a href="#" class="tab-link">마사지</a>
+        <a href="massage.html" class="tab-link">마사지</a>
     </div>
 
     <div class="header-right">
@@ -139,9 +44,16 @@
     </div>
 </div>
 
-<section class="essential-hero">
-    <h1>BORACAY ESSENTIALS</h1>
-    <p>보라카이 여행에서 결코 빠질 수 없는 필수 코스</p>
+<!-- 🔥 카테고리 선택 (카드 스타일) -->
+<nav class="category-nav">
+    <a href="essential-tours.html" class="cat-tab active">보라카이 필수투어</a>
+    <a href="activities.html" class="cat-tab">액티비티</a>
+    <a href="massage.html" class="cat-tab">마사지</a>
+</nav>
+
+<section class="section-header" style="margin-bottom: 40px;">
+    <p>BORACAY ESSENTIALS</p>
+    <h2>보라카이 필수투어</h2>
 </section>
 
 <section class="tour-grid">

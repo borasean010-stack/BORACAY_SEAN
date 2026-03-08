@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>예약 데이터 삭제</title>
+</head>
+<body>
+    <h1>기존 예약 데이터 삭제 중...</h1>
+    <div id="status"></div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD-PLEASE-REPLACE-WITH-REAL-KEY", 
+            authDomain: "boracay-sean.firebaseapp.com",
+            projectId: "boracay-sean",
+            storageBucket: "boracay-sean.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef"
+        };
+
+        const statusEl = document.getElementById('status');
+        try {
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            const colRef = collection(db, "reservations");
+            const snapshot = await getDocs(colRef);
+            
+            let count = 0;
+            const deletePromises = [];
+            snapshot.forEach((d) => {
+                deletePromises.push(deleteDoc(doc(db, "reservations", d.id)));
+                count++;
+            });
+            
+            await Promise.all(deletePromises);
+            statusEl.innerText = `${count}개의 예약 데이터를 성공적으로 삭제했습니다.`;
+        } catch (e) {
+            statusEl.innerText = "에러 발생: " + e.message;
+            console.error(e);
+        }
+    </script>
+</body>
+</html>

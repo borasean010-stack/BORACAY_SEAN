@@ -1,4 +1,4 @@
-ㅂ<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -113,10 +113,7 @@
                     </section>
 
                     <aside class="right-panel">
-                        <div class="panel-card">
-                            <div class="panel-header"><h3>📅 <span id="today-date-label">2024.03.08</span> 스케줄</h3></div>
-                            <div id="today-schedule-list" class="mini-schedule-list"></div>
-                        </div>
+                        <!-- Real-time Alert (Moved to TOP of right panel) -->
                         <div class="panel-card alert-card">
                             <div class="panel-header"><h3>📢 실시간 알림</h3></div>
                             <div id="new-order-alert" class="ss-alert-box" style="display: none;">
@@ -126,11 +123,17 @@
                             </div>
                             <p id="no-alert-msg" class="empty-msg-v2">새로운 주문이 없습니다.</p>
                         </div>
+
+                        <!-- Daily Schedule (Moved to BOTTOM of right panel) -->
+                        <div class="panel-card">
+                            <div class="panel-header"><h3>📅 <span id="today-date-label">2024.03.08</span> 스케줄</h3></div>
+                            <div id="today-schedule-list" class="mini-schedule-list"></div>
+                        </div>
                     </aside>
                 </main>
             </div>
 
-            <!-- Mode: Settlement Management -->
+            <!-- Mode: Settlement Management (Restored Content) -->
             <div id="settlement-view" style="display: none;">
                 <div class="dashboard-summary">
                     <div class="summary-card highlight">
@@ -138,12 +141,12 @@
                         <span class="value" id="total-settle-amount">₩ 0</span>
                     </div>
                     <div class="summary-card">
-                        <span class="label">다음 정산 예정일 (PG)</span>
-                        <span class="value">매주 목요일</span>
+                        <span class="label">정산 주기</span>
+                        <span class="value">매주 정기 정산</span>
                     </div>
                 </div>
                 <section class="main-section">
-                    <div class="section-header"><h3>일자별 정산 예정 상세</h3></div>
+                    <div class="section-header"><h3>일자별 정산 내역</h3></div>
                     <div class="table-container">
                         <table class="ss-table">
                             <thead>
@@ -151,7 +154,7 @@
                                     <th>정산 예정일</th>
                                     <th>완료 건수</th>
                                     <th>정산 예정 금액</th>
-                                    <th>비고</th>
+                                    <th>상태</th>
                                 </tr>
                             </thead>
                             <tbody id="settlement-table-body"></tbody>

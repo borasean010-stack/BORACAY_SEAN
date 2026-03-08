@@ -108,18 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function useFallback() {
-        const products = ["왕복 픽업샌딩", "블랙펄 요트호핑", "말룸파티 투어", "파라세일링"];
-        const names = ["김철수", "이영희", "박지민", "최현우", "정다은"];
-        const statuses = ["신규", "예약완료", "확정", "취소"];
-        allReservations = Array.from({length: 12}).map((_, i) => ({
-            id: `BK-${240300 + i}`,
-            customerKorName: names[i % names.length],
-            contact: "010-1234-5678",
-            items: [{name: products[i % products.length], date: getTodayStr(), time: "10:00"}],
-            totalPrice: 150000 + (i * 5000),
-            status: statuses[i % 3], 
-            createdAt: {seconds: (Date.now()/1000) - (i * 3600)}
-        }));
+        allReservations = [];
         renderAll();
     }
 

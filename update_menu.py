@@ -96,7 +96,6 @@ for filename in files_to_update:
                 standard_header_right = '''
         <a href="mypage.html" class="mypage-btn">마이페이지</a>
         <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페 바로가기</a>
-        <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카톡 바로가기</a>
     '''
                 content = re.sub(r'<div class="header-right">.*?</div>', f'<div class="header-right">{standard_header_right}</div>', content, flags=re.DOTALL)
 

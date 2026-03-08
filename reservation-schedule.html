@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예약 확인서 - Boracay Sean</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Pretendard', sans-serif; background: #f0f2f5; margin: 0; padding: 40px 20px; color: #333; line-height: 1.6; }
+        .voucher-container { max-width: 800px; margin: 0 auto; background: #fff; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.1); }
+        .voucher-header { background: #111; color: #fff; padding: 40px; text-align: center; }
+        .voucher-header img { width: 80px; margin-bottom: 15px; }
+        .voucher-header h1 { margin: 0; font-size: 28px; font-weight: 900; letter-spacing: 2px; }
+        .voucher-header p { margin: 10px 0 0 0; opacity: 0.6; font-size: 14px; }
+        
+        .voucher-body { padding: 40px; }
+        .section-title { font-size: 18px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; color: #00c73c; }
+        .section-title::before { content: ''; width: 4px; height: 18px; background: #00c73c; border-radius: 2px; }
+        
+        .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; background: #f9fafb; padding: 25px; border-radius: 20px; margin-bottom: 40px; }
+        .info-item label { display: block; font-size: 12px; color: #888; margin-bottom: 5px; font-weight: 600; }
+        .info-item span { display: block; font-size: 16px; font-weight: 700; color: #111; }
+        
+        .item-card { border: 1px solid #eee; border-radius: 20px; padding: 25px; margin-bottom: 20px; transition: 0.3s; }
+        .item-card:hover { border-color: #00c73c; box-shadow: 0 10px 30px rgba(0,199,60,0.05); }
+        .item-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .item-name { font-size: 18px; font-weight: 800; color: #111; }
+        .item-status { background: #e6f9ed; color: #00c73c; font-size: 12px; font-weight: 800; padding: 6px 12px; border-radius: 50px; }
+        
+        .item-details { display: flex; flex-wrap: wrap; gap: 20px; }
+        .detail-point { font-size: 14px; color: #666; display: flex; align-items: center; gap: 8px; }
+        .detail-point b { color: #111; }
+
+        .notice-box { background: #fff8e6; border-radius: 20px; padding: 25px; border: 1px solid #ffeeba; margin-top: 40px; }
+        .notice-box h4 { margin: 0 0 10px 0; font-size: 15px; font-weight: 800; color: #856404; }
+        .notice-box ul { margin: 0; padding-left: 20px; font-size: 13px; color: #856404; }
+        
+        .print-btn { position: fixed; bottom: 30px; right: 30px; background: #00c73c; color: #fff; border: none; padding: 15px 30px; border-radius: 50px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 30px rgba(0,199,60,0.3); transition: 0.3s; }
+        .print-btn:hover { transform: translateY(-5px); background: #00b035; }
+
+        @media print { .print-btn { display: none; } body { padding: 0; background: #fff; } .voucher-container { box-shadow: none; border-radius: 0; } }
+    </style>
+</head>
+<body>
+
+<div class="voucher-container">
+    <div class="voucher-header">
+        <img src="logo.png" alt="Logo">
+        <h1>BORACAY_SEAN</h1>
+        <p>GUEST RESERVATION VOUCHER</p>
+    </div>
+
+    <div class="voucher-body">
+        <div class="section-title">예약자 정보</div>
+        <div class="info-grid">
+            <div class="info-item"><label>대표자명</label><span id="guest-name">-</span></div>
+            <div class="info-item"><label>연락처</label><span id="guest-contact">-</span></div>
+            <div class="info-item"><label>예약번호</label><span id="res-id">-</span></div>
+            <div class="info-item"><label>결제금액</label><span id="total-price">-</span></div>
+        </div>
+
+        <div class="section-title">투어 및 액티비티 일정</div>
+        <div id="item-list">
+            <!-- JS Render -->
+        </div>
+
+        <div class="notice-box">
+            <h4>안내 및 유의사항</h4>
+            <ul>
+                <li>모든 일정은 현지 기상 상황 및 업체 사정에 의해 다소 변경될 수 있습니다.</li>
+                <li>픽업 시간 10분 전까지 약속 장소에서 대기해 주시기 바랍니다.</li>
+                <li>문의 사항은 보라카이션 카카오톡 채널을 이용해 주세요.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<button class="print-btn" onclick="window.print()">인쇄하기</button>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const resId = urlParams.get('id');
+        
+        if (!resId) {
+            alert('예약 정보를 찾을 수 없습니다.');
+            return;
+        }
+
+        // 로컬스토리지 또는 목데이터에서 정보를 가져옵니다.
+        // 실제 서비스에서는 서버 API 또는 Firebase에서 가져와야 합니다.
+        // 여기서는 URL 파라미터로 전달된 ID를 기반으로 로컬스토리지를 먼저 확인합니다.
+        
+        const allRes = JSON.parse(localStorage.getItem('admin_reservations_cache') || '[]');
+        const res = allRes.find(r => r.id === resId);
+
+        if (res) {
+            document.getElementById('guest-name').textContent = res.customerKorName;
+            document.getElementById('guest-contact').textContent = res.contact || '정보 없음';
+            document.getElementById('res-id').textContent = res.id;
+            document.getElementById('total-price').textContent = `₩ ${res.totalPrice.toLocaleString()}`;
+
+            const listContainer = document.getElementById('item-list');
+            res.items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.innerHTML = `
+                    <div class="item-header">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-status">확정됨</div>
+                    </div>
+                    <div class="item-details">
+                        <div class="detail-point">이용 일자: <b>${item.date}</b></div>
+                        <div class="detail-point">이용 시간: <b>${item.time || '종일'}</b></div>
+                        ${item.count ? `<div class="detail-point">인원: <b>${item.count}명</b></div>` : ''}
+                    </div>
+                `;
+                listContainer.appendChild(card);
+            });
+        } else {
+            document.body.innerHTML = '<div style="text-align:center; padding:100px;"><h1>예약 데이터를 불러올 수 없습니다.</h1><p>관리자 페이지에서 다시 시도해 주세요.</p></div>';
+        }
+    });
+</script>
+
+</body>
+</html>

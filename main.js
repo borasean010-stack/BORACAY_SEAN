@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: "시크릿가든 말룸파티", img: "malumpati.jpg", url: "malumpati.html", badge: "BEST" },
             { title: "보라카이 프리다이빙 체험", img: "free1.jpg", url: "freediving.html" },
             { title: "보라아재 호핑투어", img: "bora1.jpg", url: "bora-ajae-hopping.html" },
-            { title: "Island Tour", img: "beach1.jpg", url: "island-tour.html" },
+            { title: "비치 아일랜드 투어", img: "beach1.jpg", url: "island-tour.html" },
             { title: "스쿠버 다이빙", img: "hop2.jpg", url: "#" },
             { title: "파라세일링", img: "hop3.jpg", url: "#" },
             { title: "헬멧 다이빙", img: "hop4.jpg", url: "#" },

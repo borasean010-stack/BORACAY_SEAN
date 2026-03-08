@@ -23,102 +23,99 @@
 
     <!-- Main Admin Layout -->
     <div id="admin-container" class="admin-layout" style="display: none;">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <img src="logo.png" alt="Logo" class="sidebar-logo">
-                <span class="store-name">Boracay Sean</span>
+        <!-- Top Navigation Area -->
+        <header class="admin-header">
+            <div class="header-top">
+                <div class="logo-area"><img src="logo.png" alt="Logo"> <span>관리자 센터</span></div>
+                <nav class="main-nav">
+                    <button class="nav-btn active" data-mode="sales">판매 관리</button>
+                    <button class="nav-btn" data-mode="settlement">정산 관리</button>
+                </nav>
+                <div class="user-area"><button id="logout-btn">로그아웃</button></div>
             </div>
-            <ul class="sidebar-menu">
-                <li class="menu-item active" data-tab="dashboard">
-                    <a href="#"><span class="material-icons">dashboard</span> 대시보드</a>
-                </li>
-                <li class="menu-item has-sub active">
-                    <a href="#"><span class="material-icons">list_alt</span> 예약 관리 <span class="material-icons arrow">expand_more</span></a>
-                    <ul class="sub-menu">
-                        <li data-tab="search-all"><a href="#">주문 통합 검색 <span class="menu-count" id="menu-cnt-all">0</span></a></li>
-                        <li data-tab="search-confirmed"><a href="#">구매 확정 내역 <span class="menu-count" id="menu-cnt-confirmed">0</span></a></li>
-                        <li data-tab="search-cancelled"><a href="#">취소 관리 <span class="menu-count" id="menu-cnt-cancelled">0</span></a></li>
-                    </ul>
-                </li>
-                <li class="menu-item"><a href="#"><span class="material-icons">inventory_2</span> 상품 관리</a></li>
-                <li class="menu-item"><a href="#"><span class="material-icons">bar_chart</span> 정산 내역</a></li>
-            </ul>
-        </aside>
 
-        <div class="main-content">
-            <header class="top-header">
-                <div class="header-left"><h2 id="page-title">대시보드</h2></div>
-                <div class="header-right">
-                    <button id="logout-btn" class="header-btn text-danger">로그아웃</button>
-                </div>
-            </header>
-
-            <main class="dashboard-wrap">
-                <!-- Status Board (Dashboard Only) -->
-                <section id="status-board-section" class="panel status-panel">
-                    <div class="status-funnel">
-                        <div class="status-step">
-                            <span class="step-title">신규 예약</span>
-                            <span class="step-count text-primary" id="count-new">0</span>
-                        </div>
-                        <div class="status-divider"><span class="material-icons">chevron_right</span></div>
-                        <div class="status-step">
-                            <span class="step-title">예약 확정</span>
-                            <span class="step-count" id="count-confirmed">0</span>
-                        </div>
-                        <div class="status-divider"><span class="material-icons">chevron_right</span></div>
-                        <div class="status-step">
-                            <span class="step-title">정산 내역</span>
-                            <span class="step-count text-success" id="count-settled">0</span>
-                        </div>
-                        <div class="status-divider divider-vertical"></div>
-                        <div class="status-step side-step">
-                            <div class="sub-step"><span>취소/환불</span><span class="text-danger" id="count-cancelled">0</span></div>
-                        </div>
+            <!-- Sub Navigation (Sales Management) -->
+            <div id="sales-sub-nav" class="sub-nav-wrapper">
+                <div class="sub-nav">
+                    <div class="tab-item active" data-tab="신규">
+                        <span class="label">신규 주문</span>
+                        <span class="count" id="cnt-new">0</span>
                     </div>
-                </section>
-
-                <!-- Data Table Section -->
-                <div class="dashboard-grid">
-                    <section class="panel table-panel">
-                        <div class="panel-header">
-                            <h3 id="table-title">최근 예약 내역</h3>
-                            <div class="panel-actions">
-                                <input type="text" id="reservation-search" class="form-input" placeholder="예약자명 검색">
-                            </div>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>이용일자 / 예약일</th>
-                                        <th>예약자명</th>
-                                        <th>상품명</th>
-                                        <th>금액</th>
-                                        <th>상태</th>
-                                        <th>관리</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="reservations-body"></tbody>
-                            </table>
-                        </div>
-                    </section>
-
-                    <!-- Right Calendar Info (Dashboard Only) -->
-                    <aside id="side-panel-section" class="side-panels">
-                        <section class="panel date-check-panel">
-                            <div class="panel-header">
-                                <h3>일정 확인</h3>
-                                <input type="date" id="date-selector" class="form-input">
-                            </div>
-                            <div id="date-res-list" class="date-res-list">
-                                <p class="empty-msg">날짜를 선택해 주세요.</p>
-                            </div>
-                        </section>
-                    </aside>
+                    <div class="status-arrow"><span class="material-icons">east</span></div>
+                    <div class="tab-item" data-tab="예약완료">
+                        <span class="label">예약 완료</span>
+                        <span class="count" id="cnt-completed">0</span>
+                    </div>
+                    <div class="status-arrow"><span class="material-icons">east</span></div>
+                    <div class="tab-item" data-tab="확정">
+                        <span class="label">구매 확정</span>
+                        <span class="count" id="cnt-confirmed">0</span>
+                    </div>
                 </div>
-            </main>
-        </div>
+            </div>
+
+            <!-- Settlement Info (Hidden by default) -->
+            <div id="settlement-info-bar" class="settlement-bar" style="display: none;">
+                <div class="settle-card">
+                    <span class="label">이번 달 정산 예정 금액</span>
+                    <span class="value" id="settle-amount">₩ 0</span>
+                </div>
+                <div class="settle-card">
+                    <span class="label">다음 정산 예정일 (PG)</span>
+                    <span class="value" id="settle-date">2024-03-15</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content (Table) -->
+        <main class="admin-main">
+            <section class="content-panel table-section">
+                <div class="panel-header">
+                    <h3 id="view-title">신규 주문 내역</h3>
+                    <div class="search-area">
+                        <input type="text" id="res-search" placeholder="예약자명 검색...">
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>예약번호</th>
+                                <th>이용일자</th>
+                                <th>예약자</th>
+                                <th>상품명</th>
+                                <th>금액</th>
+                                <th>상태</th>
+                                <th>관리</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-table-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Bottom Section (Schedule & Alerts) -->
+            <section class="bottom-grid">
+                <!-- Daily Schedule -->
+                <div class="content-panel schedule-panel">
+                    <div class="panel-header"><h3>📅 당일 예약 스케줄</h3></div>
+                    <div id="today-schedule-list" class="schedule-list">
+                        <!-- JS Render -->
+                    </div>
+                </div>
+
+                <!-- New Order Alert -->
+                <div class="content-panel alert-panel">
+                    <div class="panel-header"><h3>📢 실시간 알림</h3></div>
+                    <div id="new-order-alert" class="new-order-notice" style="display: none;">
+                        <span class="material-icons">notifications_active</span>
+                        <p>새로운 주문 <b id="alert-cnt">0</b>건이 들어왔습니다!</p>
+                        <button onclick="goToNewOrders()">확인하기</button>
+                    </div>
+                    <p id="no-alert-msg" class="empty-msg">새로운 알림이 없습니다.</p>
+                </div>
+            </section>
+        </main>
     </div>
 
     <script type="module" src="admin.js"></script>

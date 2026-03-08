@@ -6,93 +6,204 @@
     <title>로그인 | BORACAY_SEAN</title>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <!-- 카카오 SDK -->
     <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.0/kakao.min.js" integrity="sha384-l68G9m6HS8uR7C/5L94K8N08O0t8TzU+A0fS2x5W5F9z7Vz0O+6x1H6Z8M2N5R1" crossorigin="anonymous"></script>
-</head>
-<body>
-
-<div class="side-menu-overlay" id="overlay"></div>
-<div class="side-menu" id="sideMenu">
-    <a href="index.html">홈으로</a>
-    <a href="mypage.html">마이페이지 (예약확인)</a>
-    <a href="pickup-sending.html" target="_blank">공항 왕복 픽업샌딩</a>
-    <a href="hopping-tour.html" target="_blank">블랙펄 요트호핑투어</a>
-    <a href="#">시크릿가든 말룸파티</a>
-    <a href="price-list.html" target="_blank">한눈에 요금표</a>
-    <a href="cart.html">장바구니 확인</a>
-</div>
-
-<div class="top-bar">
-    <div class="header-left">
-        <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
-        <div class="logo"><a href="index.html"><img src="logo.png" class="logo-img">BORACAY_SEAN</a></div>
-    </div>
-    <div class="menu">
-        <a href="essential-tours.html" class="tab-link" data-category="essential">보라카이 필수투어</a>
-        <a href="activities.html" class="tab-link" data-category="activity">액티비티</a>
-        <a href="massage.html" class="tab-link" data-category="massage">마사지</a>
-        <a href="price-list.html" class="tab-link">한눈에 요금표</a>
-        <a href="cart.html" class="tab-link">장바구니</a>
-    </div>
-    <div class="header-right">
-        <a href="mypage.html" class="mypage-btn">마이페이지</a>
-        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페 바로가기</a>
-        <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카톡 바로가기</a>
-    </div>
-</div>
-
-<div style="display:flex; align-items:center; justify-content:center; min-height:80vh; padding:120px 20px;">
-    <div style="width:100%; max-width:400px; background:white; padding:50px 40px; border-radius:30px; box-shadow:0 20px 60px rgba(0,0,0,0.05); text-align:center;">
-        <h2 style="font-size:24px; font-weight:800; margin-bottom:15px;">환영합니다!</h2>
-        <p style="color:#888; margin-bottom:40px;">카카오 계정으로 간편하게 시작하세요.</p>
-        <button onclick="loginWithKakao()" style="width:100%; border:none; background:#fee500; color:#3c1e1e; padding:18px; border-radius:12px; display:flex; align-items:center; justify-content:center; gap:10px; font-weight:700; cursor:pointer;">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e3/KakaoTalk_logo.svg" width="20">
-            카카오 로그인
-        </button>
-    </div>
-</div>
-
-<footer class="footer">
-    <div class="footer-left"><b>상호 : 보라카이션 | 대표 : 윤오현</b><br>사업자번호 : 498-31-00593</div>
-</footer>
-
-<script src="main.js"></script>
-<script>
-    // 제공해주신 자바스크립트 키 적용
-    const KAKAO_KEY = '9e8b2d2be22f60f1cc512d61d6ba6991';
-    // Cloudflare Pages 도메인에 맞춘 Redirect URI (반드시 카카오 설정과 일치해야 함)
-    const REDIRECT_URI = 'https://boracay-sean.pages.dev/login.html';
-
-    if (!Kakao.isInitialized()) Kakao.init(KAKAO_KEY);
-
-    function loginWithKakao() {
-        Kakao.Auth.authorize({
-            redirectUri: REDIRECT_URI
-        });
-    }
-
-    // 카카오로부터 인가 코드를 가지고 돌아왔을 때 처리
-    window.onload = function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get('code');
-
-        if (code) {
-            console.log("인가 코드 확인됨:", code);
-            // 프론트엔드 프로토타입 구현을 위해 임시 유저 정보를 생성합니다.
-            // (실제 서비스에서는 이 코드를 서버로 보내 access_token으로 교환해야 합니다.)
-            const tempUser = { 
-                nickname: "보라카이션 손님", 
-                id: "kakao_" + Math.floor(Math.random() * 1000000) 
-            };
-            localStorage.setItem('kakao_user', JSON.stringify(tempUser));
-            
-            // 로그인 전 하던 작업이 있다면 해당 페이지로, 아니면 홈으로
-            const directBuy = sessionStorage.getItem('directBuyItem');
-            setTimeout(() => {
-                location.href = directBuy ? 'booking-form.html' : 'index.html';
-            }, 500);
+    <style>
+        :root {
+            --lux-gold: #c5a059;
+            --lux-dark: #1a1a1a;
+            --lux-light: #fdfdfd;
         }
-    };
-</script>
+
+        body.lux-login-bg {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at center, #2c3e50 0%, #000000 100%);
+            font-family: 'Pretendard', sans-serif;
+            overflow: hidden;
+        }
+
+        /* Ambient Background Effect */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('beach1.jpg') no-repeat center center;
+            background-size: cover;
+            filter: blur(40px) brightness(0.4);
+            z-index: -1;
+            transform: scale(1.1);
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 60px 50px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-logo-centered {
+            margin-bottom: 40px;
+        }
+
+        .login-logo-centered img {
+            width: 120px;
+            height: auto;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+        }
+
+        .login-logo-centered h1 {
+            color: #fff;
+            font-size: 28px;
+            font-weight: 900;
+            margin-top: 15px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .login-welcome {
+            margin-bottom: 50px;
+        }
+
+        .login-welcome h2 {
+            color: var(--lux-gold);
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .login-welcome p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .kakao-login-btn {
+            width: 100%;
+            border: none;
+            background: #fee500;
+            color: #3c1e1e;
+            padding: 20px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-weight: 800;
+            font-size: 17px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 20px rgba(254, 229, 0, 0.2);
+        }
+
+        .kakao-login-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(254, 229, 0, 0.4);
+        }
+
+        .kakao-login-btn img {
+            width: 24px;
+        }
+
+        .home-link {
+            display: inline-block;
+            margin-top: 40px;
+            color: rgba(255, 255, 255, 0.4);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .home-link:hover {
+            color: #fff;
+        }
+
+        /* Footer in Login */
+        .login-footer {
+            position: absolute;
+            bottom: 30px;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 12px;
+            text-align: center;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="lux-login-bg">
+    <div class="ambient-bg"></div>
+
+    <div class="login-card">
+        <div class="login-logo-centered">
+            <a href="index.html">
+                <img src="logo.png" alt="Boracay Sean Logo">
+                <h1>BORACAY_SEAN</h1>
+            </a>
+        </div>
+
+        <div class="login-welcome">
+            <h2>Luxury Experience</h2>
+            <p>보라카이션 멤버십으로 드리는 특별한 혜택,<br>카카오 계정으로 1초만에 시작하세요.</p>
+        </div>
+
+        <button onclick="loginWithKakao()" class="kakao-login-btn">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e3/KakaoTalk_logo.svg" alt="Kakao">
+            카카오 1초 로그인
+        </button>
+
+        <a href="index.html" class="home-link">홈으로 돌아가기</a>
+    </div>
+
+    <div class="login-footer">
+        © 2024 BORACAY SEAN. All Rights Reserved.
+    </div>
+
+    <script>
+        const KAKAO_KEY = '9e8b2d2be22f60f1cc512d61d6ba6991';
+        const REDIRECT_URI = 'https://boracay-sean.pages.dev/login.html';
+
+        if (!Kakao.isInitialized()) Kakao.init(KAKAO_KEY);
+
+        function loginWithKakao() {
+            Kakao.Auth.authorize({
+                redirectUri: REDIRECT_URI
+            });
+        }
+
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+
+            if (code) {
+                console.log("인가 코드 확인됨:", code);
+                const tempUser = { 
+                    nickname: "보라카이션 손님", 
+                    id: "kakao_" + Math.floor(Math.random() * 1000000) 
+                };
+                localStorage.setItem('kakao_user', JSON.stringify(tempUser));
+                
+                const directBuy = sessionStorage.getItem('directBuyItem');
+                setTimeout(() => {
+                    location.href = directBuy ? 'booking-form.html' : 'index.html';
+                }, 500);
+            }
+        };
+    </script>
 </body>
 </html>

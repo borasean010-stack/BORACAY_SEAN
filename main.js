@@ -21,7 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ],
         activity: [
             { title: "프리다이빙 체험", img: "free1.jpg", url: "freediving.html", badge: "NEW", desc: "보라카이의 투명한 바다 속을 한 번의 호흡으로 탐험하세요." },
-            { title: "비치 아일랜드 투어", img: "beach1.jpg", url: "land-tour.html", desc: "보라카이의 가장 아름다운 프라이빗 비치를 탐험하는 한적한 힐링 투어." },
+            { title: "보라카이 랜드투어", img: "pickup5.jpg", url: "land-tour.html", desc: "전용 차량으로 즐기는 보라카이 섬 구석구석 명소 탐방." },
+            { title: "JL 스냅사진 촬영", img: "jl1.jpg", url: "jl-snap.html", desc: "보라카이의 아름다운 풍경과 함께 인생샷을 남겨보세요." },
             { title: "보라아재 호핑투어", img: "bora1.jpg", url: "bora-ajae-hopping.html", desc: "신나는 음악과 파티가 함께하는 보라카이 최고의 호핑." },
             { title: "블랙펄 요트호핑투어", img: "hopping.jpg", url: "hopping-tour.html", badge: "BEST", desc: "럭셔리 요트 위에서 즐기는 최고의 선셋과 스노클링." },
             { title: "시크릿가든 말룸파티", img: "malumpati.jpg", url: "malumpati.html", badge: "BEST", desc: "신비로운 블루라군 탐험과 푸짐한 현지식 오찬." },

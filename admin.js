@@ -324,9 +324,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.confirmPurchase = async (id) => {
+        if (!confirm('구매확정 처리하시겠습니까?')) return;
         await window.updateStatus(id, '확정');
-        // 새로운 탭으로 예약 일정(바우처) 보기
-        window.open(`reservation-schedule.html?id=${id}`, '_blank');
+        
+        // 구매확정 관리(확정) 탭으로 자동 이동
+        const confirmCard = document.querySelector('.summary-card[data-tab="확정"]');
+        if (confirmCard) confirmCard.click();
     };
 
     window.showDetail = (id) => {
@@ -335,16 +338,39 @@ document.addEventListener('DOMContentLoaded', () => {
         const modal = document.getElementById('res-detail-modal');
         const body = document.getElementById('modal-body');
         
+        // 예약 상품 목록 구성
+        const itemsHtml = res.items.map(item => `
+            <div style="background:#f8f9fa; padding:10px; border-radius:8px; margin-bottom:5px;">
+                <b style="color:#ff6a00;">${item.name}</b> (${item.count}명)<br>
+                <small>날짜: ${item.date} | 시간: ${item.time || '정보없음'}</small>
+            </div>
+        `).join('');
+
         body.innerHTML = `
-            <div class="detail-row"><span class="label">예약자명</span><span class="val">${res.customerKorName}</span></div>
-            <div class="detail-row"><span class="label">연락처</span><span class="val">${res.contact || '-'}</span></div>
-            <div class="detail-row"><span class="label">상품명</span><span class="val">${res.items[0].name}</span></div>
-            <div class="detail-row"><span class="label">이용 일자</span><span class="val">${res.items[0].date}</span></div>
-            <div class="detail-row"><span class="label">이용 시간</span><span class="val">${res.items[0].time || '정보 없음'}</span></div>
-            <div class="detail-row"><span class="label">결제 금액</span><span class="val">₩ ${res.totalPrice.toLocaleString()}</span></div>
-            <div class="detail-row"><span class="label">상태</span><span class="val">${res.status}</span></div>
-            <hr style="border:none; border-top:1px solid #eee; margin:20px 0;">
-            <p style="font-size:12px; color:#888;">* 세부 픽업 정보 및 요청 사항은 Firebase 실시간 데이터에서 로드됩니다.</p>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                <div>
+                    <h4 style="margin-bottom:10px; border-bottom:2px solid #eee; padding-bottom:5px;">👤 고객 정보</h4>
+                    <div class="detail-row"><span class="label">예약자명</span><span class="val">${res.customerKorName}</span></div>
+                    <div class="detail-row"><span class="label">영문명</span><span class="val">${res.engName || '-'}</span></div>
+                    <div class="detail-row"><span class="label">연락처</span><span class="val">${res.contact || '-'}</span></div>
+                    <div class="detail-row"><span class="label">결제수단</span><span class="val">${res.paymentMethod || '-'}</span></div>
+                    <div class="detail-row"><span class="label">총 결제액</span><span class="val" style="color:#ff6a00; font-weight:800;">₩ ${res.totalPrice.toLocaleString()}</span></div>
+                </div>
+                <div>
+                    <h4 style="margin-bottom:10px; border-bottom:2px solid #eee; padding-bottom:5px;">✈️ 픽업/샌딩 정보</h4>
+                    <div class="detail-row"><span class="label">픽업항공</span><span class="val">${res.pickupFlight || '-'}</span></div>
+                    <div class="detail-row"><span class="label">픽업호텔</span><span class="val">${res.pickupResort || '-'}</span></div>
+                    <div class="detail-row"><span class="label">샌딩항공</span><span class="val">${res.sendingFlight || '-'}</span></div>
+                    <div class="detail-row"><span class="label">샌딩호텔</span><span class="val">${res.sendingResort || '-'}</span></div>
+                </div>
+            </div>
+            <div style="margin-top:20px;">
+                <h4 style="margin-bottom:10px; border-bottom:2px solid #eee; padding-bottom:5px;">🛒 예약 상품</h4>
+                ${itemsHtml}
+            </div>
+            <div style="margin-top:15px; font-size:12px; color:#999; text-align:right;">
+                예약 ID: ${res.id} | 접수일시: ${res.createdAt?.toDate ? res.createdAt.toDate().toLocaleString() : '-'}
+            </div>
         `;
         if (modal) modal.style.display = 'flex';
     };

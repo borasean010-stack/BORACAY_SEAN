@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ]
     };
 
-    // --- 탭 전환 및 상품 렌더링 ---
+    // --- 탭 전환 및 상품 렌더링 (단순화: 페이지 이동 위주) ---
     const tabLinks = document.querySelectorAll('.tab-link');
     const productsContainer = document.querySelector('.products');
     const bestTitle = document.querySelector('.best-title');
@@ -89,47 +89,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (tabLinks.length > 0) {
-        tabLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                // index.html이 아니면 기본 동작(링크 이동) 수행
-                if (!window.location.pathname.endsWith('index.html') && window.location.pathname !== '/') {
-                    return; 
-                }
-
-                e.preventDefault();
-                
-                // 활성 상태 변경
-                tabLinks.forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
-                
-                // 상품 렌더링
-                const category = link.getAttribute('data-category');
-                renderProducts(category);
-
-                // 스크롤 이동 (선택 사항)
-                if (bestTitle) {
-                    bestTitle.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            });
-        });
-
-        // URL 파라미터 확인 (cat=activity 등)
+        // URL 파라미터 확인 (cat=activity 등) 또는 현재 활성 탭 기반 렌더링
         const urlParams = new URLSearchParams(window.location.search);
         const catParam = urlParams.get('cat');
         
         if (catParam && productData[catParam]) {
-            // 해당 탭 활성화
-            tabLinks.forEach(l => {
-                if (l.getAttribute('data-category') === catParam) {
-                    l.classList.add('active');
-                } else {
-                    l.classList.remove('active');
-                }
-            });
             renderProducts(catParam);
         } else {
-            // 초기 렌더링 (첫 번째 탭)
-            renderProducts('essential');
+            // active 클래스가 있는 탭의 데이터 카테고리를 찾음
+            const activeTab = document.querySelector('.tab-link.active');
+            const initialCategory = activeTab ? activeTab.getAttribute('data-category') : 'essential';
+            renderProducts(initialCategory);
         }
     }
 

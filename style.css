@@ -490,3 +490,19 @@ body {
     .cat-tab { padding: 15px; font-size: 16px; }
 }
 .day.disabled { color: #ccc !important; cursor: not-allowed; pointer-events: none; text-decoration: line-through; opacity: 0.5; }
+
+/* 상품 배지 (BEST 등) */
+.product-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: #ff6a00;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 900;
+    z-index: 10;
+    box-shadow: 0 4px 10px rgba(255,106,0,0.3);
+    text-transform: uppercase;
+}

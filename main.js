@@ -20,6 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: "한눈에 요금표", img: "price.png", url: "price-list.html" }
         ],
         activity: [
+            { title: "블랙펄 요트호핑투어", img: "hopping.jpg", url: "hopping-tour.html", badge: "BEST" },
+            { title: "시크릿가든 말룸파티", img: "malumpati.jpg", url: "malumpati.html", badge: "BEST" },
             { title: "보라카이 프리다이빙 체험", img: "free1.jpg", url: "freediving.html" },
             { title: "보라아재 호핑투어", img: "bora1.jpg", url: "bora-ajae-hopping.html" },
             { title: "Island Tour", img: "beach1.jpg", url: "island-tour.html" },
@@ -74,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             
             productDiv.innerHTML = `
+                ${p.badge ? `<div class="product-badge">${p.badge}</div>` : ''}
                 <div class="img-container">
                     <img src="${p.img}" alt="${p.title}" loading="lazy">
                 </div>

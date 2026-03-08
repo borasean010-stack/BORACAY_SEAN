@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: "선셋 세일링", img: "hop5.jpg", url: "#", desc: "낭만적인 돛단배 위에서 감상하는 보라카이의 일몰." }
         ],
         massage: [
+            { title: "아유르베다 스파", img: "aspa1.jpg", url: "aspa.html", desc: "고대 인도의 전통 치유 요법으로 즐기는 심신 안정 테라피." },
             { title: "에스파 (S-SPA)", img: "spa1.jpg", url: "spa.html", desc: "보라카이의 정취를 느끼며 즐기는 최고의 힐링 마사지." },
             { title: "포세이돈 스파", img: "poseidon1.jpg", url: "poseidon.html", badge: "BEST", desc: "최고급 시설에서 제공하는 프리미엄 테라피 서비스." },
             { title: "마리스 스파", img: "maris1.jpg", url: "maris.html", desc: "한적한 분위기 속에서 즐기는 정성 어린 힐링 체험." },

@@ -34,10 +34,13 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: "선셋 세일링", img: "hop5.jpg", url: "#", desc: "낭만적인 돛단배 위에서 감상하는 보라카이의 일몰." }
         ],
         massage: [
-            { title: "프리미엄 힐링 스파", img: "hop5.jpg", url: "massage.html", desc: "최고급 시설에서 즐기는 고품격 전신 아로마 테라피." },
-            { title: "럭셔리 전신 마사지", img: "pickup2.jpg", url: "massage.html", desc: "테라피스트의 손길로 여행의 피로를 완벽하게 해소하세요." },
-            { title: "오가닉 아로마 테라피", img: "pickup3.jpg", url: "massage.html", desc: "유기농 오일을 사용한 심신 안정과 피부 보습 케어." },
-            { title: "태반 마사지 패키지", img: "pickup4.jpg", url: "massage.html", desc: "피부 재생과 탄력에 도움을 주는 프리미엄 케어." }
+            { title: "에스파 (S-SPA)", img: "spa1.jpg", url: "spa.html", desc: "보라카이의 정취를 느끼며 즐기는 최고의 힐링 마사지." },
+            { title: "포세이돈 스파", img: "poseidon1.jpg", url: "poseidon.html", badge: "BEST", desc: "최고급 시설에서 제공하는 프리미엄 테라피 서비스." },
+            { title: "마리스 스파", img: "maris1.jpg", url: "maris.html", desc: "한적한 분위기 속에서 즐기는 정성 어린 힐링 체험." },
+            { title: "카바얀 스파", img: "kabayan1.jpg", url: "kabayan.html", desc: "보라카이 전통과 전문성이 어우러진 고품격 스파." },
+            { title: "루나 스파", img: "luna1.jpg", url: "luna.html", desc: "차별화된 프로그램으로 일상의 스트레스를 해소하세요." },
+            { title: "보라스파", img: "boraspa1.jpg", url: "boraspa.html", desc: "전문 테라피스트의 손길로 여행의 피로를 풀어보세요." },
+            { title: "헬리오스 스파", img: "helios1.jpg", url: "helios.html", desc: "특별한 휴식을 원하는 분들을 위한 프리미엄 케어." }
         ]
     };
 

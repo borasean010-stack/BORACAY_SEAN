@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>에스파 | BORACAY_SEAN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background: #fdfdfd; padding-bottom: 100px; }
+        .tour-detail-container { 
+            max-width: 1100px; 
+            margin: 120px auto 50px; 
+            display: grid; 
+            grid-template-columns: 1fr 360px; 
+            gap: 40px; 
+            padding: 0 20px; 
+        }
+        .tour-content { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 28px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.03); 
+            border: 1px solid #f5f5f5;
+        }
+        .tour-content h1 { font-size: 32px; font-weight: 900; margin-bottom: 30px; letter-spacing: -1.5px; }
+        .section-title { 
+            font-size: 20px; 
+            font-weight: 800; 
+            margin: 40px 0 20px; 
+            padding-bottom: 12px; 
+            border-bottom: 2px solid #fff5eb; 
+            color: #ff6a00; 
+        }
+        .itinerary-img { width: 100%; margin-bottom: 30px; }
+        .itinerary-img img { width: 100%; border-radius: 20px; display: block; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        
+        .date-tabs { display: flex; gap: 5px; margin-bottom: 15px; background: #f8f9fa; padding: 5px; border-radius: 12px; }
+        .date-tab { flex: 1; padding: 12px 5px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 10px; transition: 0.2s; color: #888; border: 1px solid transparent; }
+        .date-tab.active { background: white; color: #ff6a00; border-color: #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .date-display { font-size: 12px; display: block; margin-top: 4px; color: #ff6a00; font-weight: 800; }
+
+        .reservation-box { 
+            background: white; 
+            border-radius: 28px; 
+            padding: 30px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.08); 
+            position: sticky; 
+            top: 100px; 
+            border: 1px solid #f0f0f0; 
+            height: fit-content;
+        }
+        
+        .day { padding: 10px 0; cursor: pointer; border-radius: 8px; font-size: 13px; font-weight: 600; }
+        .day:hover { background: #fff1e6; }
+        .day.selected { background: #ff6a00 !important; color: white !important; font-weight: 800; }
+
+        .btn-buy { width: 100%; padding: 20px; background: #111; color: white; border: none; border-radius: 16px; font-size: 17px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-cart { width: 100%; padding: 18px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 16px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-buy:hover { background: #ff6a00; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
+        .btn-cart:hover { background: #fff5eb; }
+
+        @media (max-width: 1024px) {
+            .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
+            .reservation-box { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="side-menu-overlay" id="overlay"></div>
+<div class="side-menu" id="sideMenu">
+    <a href="index.html">홈으로</a>
+    <a href="mypage.html">마이페이지 (예약확인)</a>
+    <a href="essential-tours.html">보라카이 필수투어</a>
+    <a href="activities.html">액티비티</a>
+    <a href="massage.html">마사지</a>
+    <a href="price-list.html" target="_blank">한눈에 요금표</a>
+    <a href="cart.html">장바구니 확인</a>
+</div>
+
+<div class="top-bar">
+    <div class="header-left">
+        <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
+        <div class="logo">
+            <a href="index.html">
+                <img src="logo.png" class="logo-img" alt="로고">
+                BORACAY_SEAN
+            </a>
+        </div>
+    </div>
+
+    <div class="menu">
+        <a href="essential-tours.html" class="tab-link" data-category="essential">보라카이 필수투어</a>
+        <a href="activities.html" class="tab-link" data-category="activity">액티비티</a>
+        <a href="massage.html" class="tab-link active" data-category="massage">마사지</a>
+    </div>
+
+    <div class="header-right">
+        <a href="mypage.html" class="mypage-btn">마이페이지</a>
+        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페 바로가기</a>
+        <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카톡 바로가기</a>
+    </div>
+</div>
+
+<div class="tour-detail-container">
+    <div class="tour-content">
+        <h1>에스파 (S-SPA)</h1>
+        <div class="section-title">스파 갤러리</div>
+        <div class="itinerary">
+            <div class="itinerary-img"><img src="spa1.jpg"></div>
+            <div class="itinerary-img"><img src="spa2.jpg"></div>
+        </div>
+
+        <div class="section-title">서비스 이용 안내</div>
+        <p style="color:#666; line-height:1.8; font-size:16px;">
+            보라카이의 정취를 느끼며 즐기는 최고의 힐링 타임. 에스파만의 전문 테라피스트들이 지친 몸과 마음을 정성껏 치유해 드립니다.
+        </p>
+
+        <div class="section-title">포함 사항</div>
+        <p style="color:#666; line-height:1.8; font-size:16px; margin-bottom: 40px;">
+            - 웰컴 드링크 제공<br>
+            - 전문 테라피스트 마사지<br>
+            - 샤워 시설 이용 가능<br>
+            - 무료 와이파이 제공
+        </p>
+
+        <div class="section-title">환불 규정</div>
+        <img src="refund.png" style="width:100%; border-radius:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+    </div>
+
+    <div class="reservation-box">
+        <div style="font-size:28px; font-weight:900; color:#ff6a00; margin-bottom:20px; letter-spacing: -1px;">₩ 45,000</div>
+        
+        <div class="date-tabs">
+            <div class="date-tab active">예약 날짜 선택<span id="pc-date-display" class="date-display">2026-03-02</span></div>
+        </div>
+
+        <div class="calendar-wrap" style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 15px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&lt;</button>
+                <strong id="pc-month">2026년 3월</strong>
+                <button onclick="changeMonth(1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&gt;</button>
+            </div>
+            <div class="calendar-grid" id="pc-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding:15px; background:#fcfcfc; border-radius:15px; border:1px solid #f0f0f0;">
+            <span style="font-weight:700; font-size:15px;">인원 (성인)</span>
+            <div class="counter">
+                <button class="count-btn" onclick="updateCount(-1)">-</button>
+                <strong id="pc-count">1</strong>
+                <button class="count-btn" onclick="updateCount(1)">+</button>
+            </div>
+        </div>
+        <button class="btn-buy" onclick="handleBuy()">구매하기</button>
+        <button class="btn-cart" onclick="addToCart()" style="margin-top:10px;">장바구니 담기</button>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="footer-left">
+        <b class="important">상호 : 보라카이션 | 대표 : 윤오현</b><br>
+        서울특별시 중랑구 상봉로 16길 25-3<br>
+        사업자번호 : 498-31-00593 | daemit@naver.com
+    </div>
+</footer>
+
+<script src="main.js"></script>
+<script>
+    let adultCount = 1;
+    let currentDate = new Date(2026, 2, 1);
+    let selectedDate = '2026-03-02';
+    
+    function updateCount(delta) {
+        adultCount = Math.max(1, adultCount + delta);
+        document.getElementById('pc-count').innerText = adultCount;
+    }
+    function changeMonth(delta) {
+        currentDate.setMonth(currentDate.getMonth() + delta);
+        renderCalendar('pc-days', 'pc-month');
+    }
+    function renderCalendar(cid, tid) {
+        const container = document.getElementById(cid);
+        const title = document.getElementById(tid);
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        title.innerText = `${year}년 ${month + 1}월`;
+        container.innerHTML = '';
+        ['일','월','화','수','목','금','토'].forEach(d => container.innerHTML += `<div style="color:#bbb; font-weight:800; font-size:12px;">${d}</div>`);
+        const firstDay = new Date(year, month, 1).getDay();
+        const lastDate = new Date(year, month + 1, 0).getDate();
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        for (let i = 0; i < firstDay; i++) container.appendChild(document.createElement('div'));
+        for (let i = 1; i <= lastDate; i++) {
+            const dateStr = `${year}-${(month+1).toString().padStart(2,'0')}-${i.toString().padStart(2,'0')}`;
+            const targetDate = new Date(year, month, i);
+            const div = document.createElement('div');
+            if (targetDate < today) { div.className = 'day disabled'; }
+            else {
+                div.className = 'day' + (dateStr === selectedDate ? ' selected' : '');
+                div.onclick = function() {
+                    selectedDate = dateStr;
+                    document.getElementById('pc-date-display').innerText = dateStr;
+                    renderCalendar('pc-days', 'pc-month');
+                };
+            }
+            div.innerText = i;
+            container.appendChild(div);
+        }
+    }
+    function handleBuy() {
+        const item = { name: "에스파", price: 45000, count: adultCount, date: selectedDate };
+        sessionStorage.setItem('directBuyItem', JSON.stringify(item));
+        window.location.assign('login.html');
+    }
+    function addToCart() {
+        const item = { name: "에스파", price: 45000, count: adultCount, date: selectedDate };
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        cart.push(item);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        if(confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) { window.location.assign('cart.html'); }
+    }
+    window.onload = () => { renderCalendar('pc-days', 'pc-month'); };
+</script>
+</body>
+</html>

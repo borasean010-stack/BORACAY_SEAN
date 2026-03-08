@@ -4,7 +4,7 @@ import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc, d
 
 // FIXME: Replace this with your actual Firebase config from the Firebase Console
 const firebaseConfig = {
-    apiKey: "AIzaSyD-fake-key-for-now", 
+    apiKey: "AIzaSyD-PLEASE-REPLACE-WITH-REAL-KEY", 
     authDomain: "boracay-sean.firebaseapp.com",
     projectId: "boracay-sean",
     storageBucket: "boracay-sean.appspot.com",
@@ -12,13 +12,12 @@ const firebaseConfig = {
     appId: "1:123456789:web:abcdef"
 };
 
-// Initialize Firebase with error handling
 let db = null;
 try {
     const app = initializeApp(firebaseConfig);
     db = getFirestore(app);
 } catch (e) {
-    console.warn("Firebase initialization failed, using mock data mode.");
+    console.warn("Firebase initialization failed.");
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -35,18 +34,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let allReservations = [];
 
-    // 로그인 상태 확인
     if (sessionStorage.getItem('isAdminLoggedIn') === 'true') {
         showAdminPanel();
     }
 
-    // 로그인 폼 제출
     if (loginForm) {
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-
             if (username === correctUsername && password === correctPassword) {
                 sessionStorage.setItem('isAdminLoggedIn', 'true');
                 showAdminPanel();
@@ -56,46 +52,54 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 로그아웃
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             sessionStorage.removeItem('isAdminLoggedIn');
-            location.reload(); // 리로드하여 로그인 화면으로 복귀
+            location.reload();
         });
     }
 
     function showAdminPanel() {
-        if (loginContainer && adminContainer) {
-            loginContainer.style.display = 'none';
-            adminContainer.style.display = 'flex';
-            
-            if (db) {
-                fetchReservations();
-            } else {
-                renderReservations(mockData);
-            }
+        loginContainer.style.display = 'none';
+        adminContainer.style.display = 'flex';
+        fetchReservations();
+    }
+
+    function fetchReservations() {
+        // 로컬 스토리지에서 최근 예약 1개 가져오기 (테스트용)
+        const lastLocal = JSON.parse(localStorage.getItem('last_booking_info') || 'null');
+        
+        if (db) {
+            const q = query(collection(db, "reservations"), orderBy("createdAt", "desc"));
+            onSnapshot(q, (snapshot) => {
+                allReservations = [];
+                snapshot.forEach((doc) => {
+                    allReservations.push({ id: doc.id, ...doc.data() });
+                });
+                // 만약 DB가 비어있고 로컬 정보가 있다면 합치기
+                if (allReservations.length === 0 && lastLocal) {
+                    allReservations.push({ id: 'local-temp', ...lastLocal });
+                }
+                filterAndSearch();
+                updateDashboardStats();
+            }, (error) => {
+                console.error("Firestore Listen Error:", error);
+                useFallback(lastLocal);
+            });
+        } else {
+            useFallback(lastLocal);
         }
     }
 
-    const mockData = [
-        { id: 'm1', customerKorName: '홍길동(샘플)', contact: '010-1234-5678', items: [{name: '블랙펄 요트호핑'}], totalPrice: 120000, status: '신규', createdAt: {seconds: Date.now()/1000} }
-    ];
-
-    function fetchReservations() {
-        if (!db) return;
-        const q = query(collection(db, "reservations"), orderBy("createdAt", "desc"));
-        
-        onSnapshot(q, (snapshot) => {
-            allReservations = [];
-            snapshot.forEach((doc) => {
-                allReservations.push({ id: doc.id, ...doc.data() });
-            });
-            filterAndSearch();
-            updateDashboardStats();
-        }, (error) => {
-            console.error("Firestore Listen Error:", error);
-            renderReservations(mockData);
-        });
+    function useFallback(lastLocal) {
+        allReservations = [
+            { id: 'sample-1', customerKorName: '홍길동(샘플)', contact: '010-1234-5678', items: [{name: '블랙펄 요트호핑'}], totalPrice: 120000, status: '신규', createdAt: {seconds: Date.now()/1000} }
+        ];
+        if (lastLocal) {
+            allReservations.unshift({ id: 'local-recent', ...lastLocal });
+        }
+        filterAndSearch();
+        updateDashboardStats();
     }
 
     function updateDashboardStats() {
@@ -116,16 +120,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderReservations(data) {
         if (!reservationsBody) return;
         reservationsBody.innerHTML = '';
-        
         if (data.length === 0) {
             reservationsBody.innerHTML = '<tr><td colspan="6" style="padding:40px; color:#999;">표시할 예약 내역이 없습니다.</td></tr>';
             return;
         }
-
         data.forEach(res => {
-            const dateStr = res.createdAt ? new Date(res.createdAt.seconds * 1000).toLocaleString('ko-KR') : '진행중';
+            let dateStr = '진행중';
+            if (res.createdAt) {
+                const dateObj = res.createdAt.seconds ? new Date(res.createdAt.seconds * 1000) : new Date(res.createdAt);
+                dateStr = dateObj.toLocaleString('ko-KR');
+            }
             const itemsSummary = res.items ? res.items.map(i => i.name).join(', ') : '정보 없음';
-            
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${dateStr}</td>
@@ -154,20 +159,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.updateStatus = async (id, newStatus) => {
-        if (!db) { alert("Firebase가 연결되지 않았습니다."); return; }
+        if (!db || id.startsWith('local') || id.startsWith('sample')) { 
+            // DB 미연동 시 로컬 상태만 변경 (화면 갱신용)
+            const idx = allReservations.findIndex(r => r.id === id);
+            if (idx !== -1) {
+                allReservations[idx].status = newStatus;
+                filterAndSearch();
+                updateDashboardStats();
+            }
+            return; 
+        }
         if (confirm(`상태를 '${newStatus}'(으)로 변경하시겠습니까?`)) {
             try {
                 await updateDoc(doc(db, "reservations", id), { status: newStatus });
-            } catch (error) {
-                console.error("Error updating:", error);
-            }
+            } catch (error) { console.error("Error updating:", error); }
         }
     };
 
     function filterAndSearch() {
         const searchTerm = searchInput?.value.toLowerCase() || "";
         const statusValue = statusFilter?.value || "all";
-
         const filtered = allReservations.filter(res => {
             const name = res.customerKorName || "";
             const contact = res.contact || "";
@@ -175,7 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const matchesStatus = statusValue === 'all' || res.status === statusValue;
             return matchesSearch && matchesStatus;
         });
-
         renderReservations(filtered);
     }
 

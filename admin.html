@@ -7,16 +7,12 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="admin.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="smartstore-admin">
     <!-- Login Screen -->
     <div id="login-container" class="login-wrapper">
         <div class="login-box">
-            <div class="login-logo">
-                <img src="logo.png" alt="Logo">
-                <h2>판매자 센터</h2>
-            </div>
+            <div class="login-logo"><img src="logo.png" alt="Logo"><h2>판매자 센터</h2></div>
             <form id="login-form">
                 <div class="input-row"><input type="text" id="username" placeholder="관리자 아이디" required></div>
                 <div class="input-row"><input type="password" id="password" placeholder="관리자 비밀번호" required></div>
@@ -27,7 +23,6 @@
 
     <!-- Main Admin Layout -->
     <div id="admin-container" class="admin-layout" style="display: none;">
-        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="sidebar-header">
                 <img src="logo.png" alt="Logo" class="sidebar-logo">
@@ -37,34 +32,30 @@
                 <li class="menu-item active" data-tab="dashboard">
                     <a href="#"><span class="material-icons">dashboard</span> 대시보드</a>
                 </li>
-                <li class="menu-item has-sub">
+                <li class="menu-item has-sub active">
                     <a href="#"><span class="material-icons">list_alt</span> 예약 관리 <span class="material-icons arrow">expand_more</span></a>
                     <ul class="sub-menu">
-                        <li data-tab="search"><a href="#">주문 통합 검색</a></li>
-                        <li data-tab="confirmed-list"><a href="#">구매 확정 내역</a></li>
-                        <li data-tab="cancel-list"><a href="#">취소 관리</a></li>
+                        <li data-tab="search-all"><a href="#">주문 통합 검색 <span class="menu-count" id="menu-cnt-all">0</span></a></li>
+                        <li data-tab="search-confirmed"><a href="#">구매 확정 내역 <span class="menu-count" id="menu-cnt-confirmed">0</span></a></li>
+                        <li data-tab="search-cancelled"><a href="#">취소 관리 <span class="menu-count" id="menu-cnt-cancelled">0</span></a></li>
                     </ul>
                 </li>
-                <li><a href="#"><span class="material-icons">inventory_2</span> 상품 관리</a></li>
-                <li><a href="#"><span class="material-icons">bar_chart</span> 정산 내역</a></li>
-                <li><a href="#"><span class="material-icons">settings</span> 설정</a></li>
+                <li class="menu-item"><a href="#"><span class="material-icons">inventory_2</span> 상품 관리</a></li>
+                <li class="menu-item"><a href="#"><span class="material-icons">bar_chart</span> 정산 내역</a></li>
             </ul>
         </aside>
 
-        <!-- Main Content Area -->
         <div class="main-content">
             <header class="top-header">
-                <div class="header-left"><h2>관리자 대시보드</h2></div>
+                <div class="header-left"><h2 id="page-title">대시보드</h2></div>
                 <div class="header-right">
-                    <span id="current-time"></span>
                     <button id="logout-btn" class="header-btn text-danger">로그아웃</button>
                 </div>
             </header>
 
             <main class="dashboard-wrap">
-                <!-- Status Board -->
-                <section class="panel status-panel">
-                    <div class="panel-header"><h3>예약/결제 현황</h3></div>
+                <!-- Status Board (Dashboard Only) -->
+                <section id="status-board-section" class="panel status-panel">
                     <div class="status-funnel">
                         <div class="status-step">
                             <span class="step-title">신규 예약</span>
@@ -87,11 +78,11 @@
                     </div>
                 </section>
 
+                <!-- Data Table Section -->
                 <div class="dashboard-grid">
-                    <!-- Left: Reservation Table -->
                     <section class="panel table-panel">
                         <div class="panel-header">
-                            <h3>최근 예약 내역</h3>
+                            <h3 id="table-title">최근 예약 내역</h3>
                             <div class="panel-actions">
                                 <input type="text" id="reservation-search" class="form-input" placeholder="예약자명 검색">
                             </div>
@@ -100,7 +91,7 @@
                             <table class="data-table">
                                 <thead>
                                     <tr>
-                                        <th>예약일시</th>
+                                        <th>이용일자 / 예약일</th>
                                         <th>예약자명</th>
                                         <th>상품명</th>
                                         <th>금액</th>
@@ -113,11 +104,11 @@
                         </div>
                     </section>
 
-                    <!-- Right: Date Specific Panel -->
-                    <aside class="side-panels">
+                    <!-- Right Calendar Info (Dashboard Only) -->
+                    <aside id="side-panel-section" class="side-panels">
                         <section class="panel date-check-panel">
                             <div class="panel-header">
-                                <h3>날짜별 예약 확인</h3>
+                                <h3>일정 확인</h3>
                                 <input type="date" id="date-selector" class="form-input">
                             </div>
                             <div id="date-res-list" class="date-res-list">

@@ -119,14 +119,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Data Fetching ---
     function fetchReservations() {
-        if (!db) { useFallback(); return; }
-        const q = query(collection(db, "reservations"), orderBy("createdAt", "desc"));
+        if (!db) { 
+            console.error("Firebase DB 객체가 없습니다.");
+            useFallback(); 
+            return; 
+        }
+        
+        // 정렬(orderBy)을 제거하여 인덱스 생성 전에도 데이터가 보이도록 함
+        const q = query(collection(db, "reservations")); 
+        
         onSnapshot(q, (snapshot) => {
+            console.log("실시간 데이터 수신:", snapshot.size, "건");
             allReservations = [];
-            snapshot.forEach((doc) => allReservations.push({ id: doc.id, ...doc.data() }));
-            if (allReservations.length === 0) useFallback();
-            else renderAll();
-        }, () => useFallback());
+            snapshot.forEach((doc) => {
+                allReservations.push({ id: doc.id, ...doc.data() });
+            });
+            
+            // 데이터 수신 후 클라이언트 측에서 정렬
+            allReservations.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+            
+            renderAll();
+        }, (error) => {
+            console.error("데이터 로드 중 오류 발생:", error);
+            useFallback();
+        });
     }
 
     function useFallback() {

@@ -2,12 +2,12 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
 import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyD-PLEASE-REPLACE-WITH-REAL-KEY", 
-    authDomain: "boracay-sean.firebaseapp.com",
-    projectId: "boracay-sean",
-    storageBucket: "boracay-sean.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "1:123456789:web:abcdef"
+    apiKey: "AIzaSyDkDjmGKQDF-0Vu2S_qtI6W5Hf2-j4tKcM",
+    authDomain: "boracaysean-69b4a.firebaseapp.com",
+    projectId: "boracaysean-69b4a",
+    storageBucket: "boracaysean-69b4a.firebasestorage.app",
+    messagingSenderId: "806585874771",
+    appId: "1:806585874771:web:64a094d241730ca38109a6"
 };
 
 let db = null;

@@ -120,12 +120,12 @@
 
     // FIXME: 실제 운영을 위해 아래 설정값을 Firebase 콘솔에서 복사해서 붙여넣으세요.
     const firebaseConfig = {
-        apiKey: "AIzaSyD-PLEASE-REPLACE-WITH-REAL-KEY",
-        authDomain: "boracay-sean.firebaseapp.com",
-        projectId: "boracay-sean",
-        storageBucket: "boracay-sean.appspot.com",
-        messagingSenderId: "123456789",
-        appId: "1:123456789:web:abcdef"
+        apiKey: "AIzaSyDkDjmGKQDF-0Vu2S_qtI6W5Hf2-j4tKcM",
+        authDomain: "boracaysean-69b4a.firebaseapp.com",
+        projectId: "boracaysean-69b4a",
+        storageBucket: "boracaysean-69b4a.firebasestorage.app",
+        messagingSenderId: "806585874771",
+        appId: "1:806585874771:web:64a094d241730ca38109a6"
     };
 
     let db = null;
@@ -175,7 +175,8 @@
         if (!selectedPayment) { alert('결제 수단을 선택해 주세요.'); return; }
         
         const btn = document.getElementById('pay-btn');
-        btn.innerText = '신청 완료 중...';
+        const originalText = btn.innerText;
+        btn.innerText = '예약 정보 전송 중...';
         btn.disabled = true;
 
         const bookingData = {
@@ -193,27 +194,24 @@
             sendingResort: document.getElementById('sending-resort').value || ''
         };
 
-        // 데이터베이스 저장 시도 (최대 2초 타임아웃 설정)
-        const saveToDb = async () => {
-            if (!db) return;
-            await addDoc(collection(db, "reservations"), bookingData);
-        };
-
         try {
-            // DB 저장을 시도하지만, 2초가 지나면 무조건 다음으로 넘어감
-            await Promise.race([
-                saveToDb(),
-                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 2000))
-            ]);
+            if (!db) throw new Error("데이터베이스 연결 실패");
+            
+            // 확실하게 저장될 때까지 대기 (타임아웃 제거)
+            await addDoc(collection(db, "reservations"), bookingData);
+            
+            // 성공 시 처리
+            localStorage.setItem('last_booking_info', JSON.stringify(bookingData));
+            localStorage.removeItem('cart');
+            sessionStorage.removeItem('directBuyItem');
+            location.href = 'booking-complete.html';
+            
         } catch (e) {
-            console.warn("DB 저장 실패 또는 타임아웃 (로컬 저장 후 진행)");
+            console.error("예약 저장 오류:", e);
+            alert("예약 정보를 전송하지 못했습니다. 다시 시도해 주세요.\n(오류: " + e.message + ")");
+            btn.innerText = originalText;
+            btn.disabled = false;
         }
-
-        // 성공 여부와 상관없이 UX를 위해 완료 페이지로 이동
-        localStorage.setItem('last_booking_info', JSON.stringify(bookingData));
-        localStorage.removeItem('cart');
-        sessionStorage.removeItem('directBuyItem');
-        location.href = 'booking-complete.html';
     };
 </script>
 </body>

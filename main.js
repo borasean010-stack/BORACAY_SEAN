@@ -58,34 +58,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // 상품 카드 생성
-        products.forEach(p => {
+        products.forEach((p, idx) => {
             const productDiv = document.createElement('div');
             productDiv.className = 'product';
+            // 필수투어의 경우 애니메이션 딜레이 추가
+            productDiv.style.animationDelay = `${idx * 0.1}s`;
+            
             productDiv.onclick = () => {
-                if (p.url && p.url !== '#') window.open(p.url, '_blank');
+                if (p.url && p.url !== '#') window.location.href = p.url;
                 else alert('상품 상세 페이지 준비 중입니다.');
             };
             
             productDiv.innerHTML = `
                 <div class="img-container">
-                    <img src="${p.img}" alt="${p.title}">
+                    <img src="${p.img}" alt="${p.title}" loading="lazy">
                 </div>
                 <h3>${p.title}</h3>
             `;
             productsContainer.appendChild(productDiv);
         });
 
-        // 애니메이션 효과 (선택 사항)
+        // 부드러운 페이드인 효과
         productsContainer.style.opacity = '0';
+        productsContainer.style.transform = 'translateY(20px)';
         setTimeout(() => {
             productsContainer.style.opacity = '1';
-            productsContainer.style.transition = 'opacity 0.5s ease';
+            productsContainer.style.transform = 'translateY(0)';
+            productsContainer.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
         }, 50);
     }
 
     if (tabLinks.length > 0) {
         tabLinks.forEach(link => {
             link.addEventListener('click', (e) => {
+                // index.html이 아니면 기본 동작(링크 이동) 수행
+                if (!window.location.pathname.endsWith('index.html') && window.location.pathname !== '/') {
+                    return; 
+                }
+
                 e.preventDefault();
                 
                 // 활성 상태 변경
@@ -95,11 +105,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 상품 렌더링
                 const category = link.getAttribute('data-category');
                 renderProducts(category);
+
+                // 스크롤 이동 (선택 사항)
+                if (bestTitle) {
+                    bestTitle.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             });
         });
 
-        // 초기 렌더링 (첫 번째 탭)
-        renderProducts('essential');
+        // URL 파라미터 확인 (cat=activity 등)
+        const urlParams = new URLSearchParams(window.location.search);
+        const catParam = urlParams.get('cat');
+        
+        if (catParam && productData[catParam]) {
+            // 해당 탭 활성화
+            tabLinks.forEach(l => {
+                if (l.getAttribute('data-category') === catParam) {
+                    l.classList.add('active');
+                } else {
+                    l.classList.remove('active');
+                }
+            });
+            renderProducts(catParam);
+        } else {
+            // 초기 렌더링 (첫 번째 탭)
+            renderProducts('essential');
+        }
     }
 
     // --- 로그인 상태 확인 및 헤더 UI 업데이트 ---
@@ -118,16 +149,16 @@ document.addEventListener('DOMContentLoaded', () => {
             headerRight.innerHTML = `
                 <a href="mypage.html" class="mypage-btn" style="background:#f0f0f0; color:#333;">👤 ${userInfo.nickname}</a>
                 <a href="#" class="logout-btn" onclick="logout(event)" style="margin-left:12px; font-size:13px; color:#999; text-decoration:none;">로그아웃</a>
-                <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페</a>
-                <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카톡</a>
+                <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페 바로가기</a>
+                <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카톡 바로가기</a>
             `;
         } else {
             // [로그아웃 상태] 로그인 버튼 + 마이페이지 + 카페/카톡
             headerRight.innerHTML = `
                 <a href="login.html" class="login-btn" style="background:#ff6a00; color:white; padding:8px 16px; border-radius:10px; font-weight:800; text-decoration:none; margin-right:8px;">로그인</a>
                 <a href="mypage.html" class="mypage-btn">마이페이지</a>
-                <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페</a>
-                <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카톡</a>
+                <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페 바로가기</a>
+                <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카톡 바로가기</a>
             `;
         }
     }

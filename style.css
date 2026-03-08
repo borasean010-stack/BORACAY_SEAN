@@ -7,7 +7,7 @@
 }
 
 body {
-    background: #fdfdfd; /* 완전한 흰색보다 미세하게 부드러운 배경 */
+    background: #fdfdfd; 
     overflow-x: hidden;
     color: #333;
     line-height: 1.6;
@@ -24,12 +24,12 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 0 clamp(20px, 5vw, 60px);
-    background: rgba(255, 106, 0, 0.85) !important; 
-    backdrop-filter: blur(15px) saturate(180%);
-    -webkit-backdrop-filter: blur(15px) saturate(180%);
+    background: rgba(255, 106, 0, 0.9) !important; 
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     z-index: 10000 !important;
-    box-shadow: 0 4px 30px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 30px rgba(0,0,0,0.1);
 }
 
 .header-left { display: flex; align-items: center; gap: 15px; }
@@ -50,29 +50,29 @@ body {
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
 }
 
-.menu { display: flex; align-items: center; gap: 30px; }
+.menu { display: flex; align-items: center; gap: clamp(15px, 3vw, 40px); }
 .menu a { 
-    color: rgba(255, 255, 255, 0.9); 
+    color: rgba(255, 255, 255, 0.85); 
     text-decoration: none; 
     font-weight: 700; 
-    font-size: 15px; 
+    font-size: 16px; 
     letter-spacing: -0.3px;
-    transition: 0.3s ease;
+    transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     white-space: nowrap;
     position: relative;
+    padding: 10px 0;
 }
 .menu a:hover { color: white; transform: translateY(-1px); }
-.menu a.active { color: white; }
+.menu a.active { color: white; font-weight: 900; }
 .menu a.active::after {
     content: '';
     position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 20px;
+    bottom: 0;
+    left: 0;
+    width: 100%;
     height: 3px;
     background: white;
-    border-radius: 2px;
+    border-radius: 10px;
 }
 
 .header-right { display: flex; align-items: center; gap: 8px; }
@@ -80,6 +80,50 @@ body {
 .mypage-btn:hover { background: white; color: #ff6a00; }
 .naver-btn { background: #03c75a; color: white; padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: 700; font-size: 13px; }
 .kakao-btn { background: #fee500; color: #3c1e1e; padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: 800; font-size: 13px; }
+
+/* 🔥 프리미엄 상품 그리드 */
+.best-title { padding: clamp(60px, 10vw, 100px) 20px 40px; text-align: center; font-size: clamp(28px, 5vw, 36px); font-weight: 900; letter-spacing: -1px; color: #111; }
+.products { 
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 30px; 
+    max-width: 1200px; 
+    margin: 0 auto;
+    padding: 0 20px 100px;
+}
+.product { 
+    border-radius: 32px; 
+    overflow: hidden; 
+    background: #fff; 
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); 
+    cursor: pointer; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.03); 
+    border: 1px solid rgba(0,0,0,0.04);
+}
+.product:hover { 
+    transform: translateY(-15px); 
+    box-shadow: 0 30px 60px rgba(255,106,0,0.15); 
+    border-color: rgba(255,106,0,0.3); 
+}
+.product h3 { 
+    padding: 30px 25px; 
+    text-align: center; 
+    font-size: 19px; 
+    font-weight: 900; 
+    color: #111;
+}
+.img-container { 
+    width: 100%; 
+    aspect-ratio: 1 / 1.1; 
+    overflow: hidden; 
+}
+.img-container img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1); 
+}
+.product:hover .img-container img { transform: scale(1.1); }
 
 /* 👤 마이페이지 전용 스타일 */
 .mypage-container { max-width: 900px; margin: 140px auto 100px; padding: 0 20px; }
@@ -113,7 +157,7 @@ body {
 .side-menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10005; display: none; backdrop-filter: blur(3px); }
 .side-menu-overlay.active { display: block; }
 
-/* 🔥 Hero 섹션 (DJI 스타일 완벽 고정) */
+/* 🔥 Hero 섹션 */
 .hero {
     position: relative;
     width: 100%;
@@ -155,12 +199,12 @@ body {
     color: #ff6a00;
 }
 
-/* 🔥 메인 배너 슬라이더 (가로 확장 버전) */
+/* 🔥 메인 배너 슬라이더 */
 .banner-slider {
     width: 100%;
     overflow: hidden;
     position: relative;
-    padding: 0 20px clamp(40px, 8vw, 80px); /* 사이드 여백 최소화 */
+    padding: 0 20px clamp(40px, 8vw, 80px); 
 }
 .banner-wrapper {
     display: flex;
@@ -177,7 +221,7 @@ body {
 }
 .banner-slide img {
     width: 100%;
-    max-width: 1200px; /* 기존 1000px에서 1200px로 대폭 확장 */
+    max-width: 1200px; 
     height: auto;
     object-fit: contain;
     border-radius: 24px;
@@ -222,7 +266,7 @@ body {
 .dot { width: 8px; height: 8px; border-radius: 50%; background: #ddd; cursor: pointer; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
 .dot.active { background: #ff6a00; width: 32px; border-radius: 10px; }
 
-/* 🔥 왜 '보라카이션'인가? 섹션 (프리미엄 그리드) */
+/* 🔥 왜 '보라카이션'인가? 섹션 */
 .why-choose-us {
     padding: clamp(60px, 10vw, 120px) 20px;
     text-align: center;
@@ -321,22 +365,6 @@ body {
     background: #111;
 }
 .video-container iframe { width: 100%; height: 100%; border: none; display: block; }
-
-/* 🔥 상품 섹션 (BEST TOUR) */
-.best-title { padding: clamp(60px, 10vw, 100px) 20px 40px; text-align: center; font-size: clamp(28px, 5vw, 36px); font-weight: 900; letter-spacing: -1px; color: #111; }
-.products { padding: 0 20px clamp(60px, 10vw, 120px); display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; max-width: 1200px; margin: 0 auto; }
-.product { border-radius: 28px; overflow: hidden; background: #fff; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; box-shadow: 0 15px 35px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.02); }
-.product:hover { transform: translateY(-10px); box-shadow: 0 25px 50px rgba(0,0,0,0.1); border-color: rgba(255,106,0,0.3); }
-.product h3 { padding: 25px 20px; text-align: center; font-size: 18px; font-weight: 800; color: #222; }
-.img-container { width: 100%; aspect-ratio: 4/5; overflow: hidden; }
-.img-container img { width: 100%; height: 100%; object-fit: cover; transition: 0.6s ease; }
-.product:hover .img-container img { transform: scale(1.05); }
-
-/* 🔥 인원 선택 카운터 */
-.counter { display: flex; align-items: center; gap: 20px; }
-.count-btn { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid #eaeaea; background: white; color: #333; font-size: 22px; font-weight: 400; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
-.count-btn:hover { border-color: #ff6a00; color: #ff6a00; background: #fff9f5; }
-.count-btn:active { transform: scale(0.9); }
 
 /* 🟠 푸터 */
 .footer { background: #ff6a00; color: #fff; padding: 80px clamp(20px, 5vw, 60px); display: flex; justify-content: space-between; align-items: flex-end; gap: 40px; flex-wrap: wrap; }

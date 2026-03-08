@@ -14,102 +14,126 @@
         .order-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed #eee; font-size: 15px; }
         .order-item:last-child { border-bottom: none; }
         .order-item b { color: #ff6a00; }
+        
         .form-card { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); border: 1px solid #eee; }
         .form-card h2 { font-size: 28px; font-weight: 900; margin-bottom: 10px; letter-spacing: -1px; }
         .form-card p.desc { color: #888; margin-bottom: 35px; font-size: 15px; }
+        
+        .step-indicator { display: flex; gap: 10px; margin-bottom: 30px; }
+        .step { flex: 1; height: 6px; background: #eee; border-radius: 10px; position: relative; }
+        .step.active { background: #ff6a00; }
+        .step span { position: absolute; top: 12px; left: 0; font-size: 12px; font-weight: 800; color: #bbb; }
+        .step.active span { color: #ff6a00; }
+
         .input-group { margin-bottom: 25px; }
         .input-group label { display: block; font-size: 15px; font-weight: 700; color: #444; margin-bottom: 10px; }
         .input-group input, .input-group select { width: 100%; padding: 16px; border: 1.5px solid #eee; border-radius: 14px; font-family: inherit; font-size: 16px; transition: 0.3s; background: #fafafa; }
         .input-group input:focus, .input-group select:focus { outline: none; border-color: #ff6a00; background: white; box-shadow: 0 0 0 4px rgba(255,106,0,0.1); }
-        .section-divider { height: 1px; background: #f0f0f0; margin: 35px 0; position: relative; }
-        .section-divider span { position: absolute; left: 0; top: -10px; background: white; padding-right: 15px; font-size: 14px; font-weight: 800; color: #bbb; }
+        
         .section-subtitle { font-size: 19px; font-weight: 800; color: #333; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
         .next-btn { width: 100%; padding: 22px; background: #ff6a00; color: white; border: none; border-radius: 18px; font-size: 19px; font-weight: 900; cursor: pointer; transition: 0.3s; margin-top: 20px; box-shadow: 0 10px 25px rgba(255,106,0,0.25); }
         .next-btn:hover { background: #e65f00; transform: translateY(-3px); }
-        #pickup-sending-fields { display: none; background: #fffcf9; padding: 25px; border-radius: 20px; border: 1px solid #fff1e6; margin-top: 10px; }
+        
+        #pickup-sending-fields { display: none; background: #fffcf9; padding: 25px; border-radius: 20px; border: 1px solid #fff1e6; margin-top: 10px; margin-bottom: 30px; }
         .required-mark { color: #ff6a00; margin-left: 4px; }
+
+        /* 결제 수단 창 */
+        #payment-section { display: none; }
+        .payment-methods { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
+        .method-card { border: 2px solid #eee; padding: 20px; border-radius: 18px; cursor: pointer; text-align: center; transition: 0.3s; }
+        .method-card:hover { border-color: #ff6a00; background: #fffaf5; }
+        .method-card.selected { border-color: #ff6a00; background: #fffaf5; box-shadow: 0 5px 15px rgba(255,106,0,0.1); }
+        .method-card img { height: 30px; margin-bottom: 10px; }
+        .method-card b { display: block; font-size: 15px; }
+
         @media (max-width: 600px) { .form-card { padding: 30px 20px; } .booking-container { margin-top: 80px; } }
     </style>
 </head>
 <body>
 
-<div class="side-menu-overlay" id="overlay"></div>
-<div class="side-menu" id="sideMenu">
-    <a href="index.html">홈으로</a>
-    <a href="mypage.html">마이페이지 (예약확인)</a>
-    <a href="pickup-sending.html" target="_blank">공항 왕복 픽업샌딩</a>
-    <a href="hopping-tour.html" target="_blank">블랙펄 요트호핑투어</a>
-    <a href="#">시크릿가든 말룸파티</a>
-    <a href="price-list.html" target="_blank">한눈에 요금표</a>
-    <a href="cart.html">장바구니 확인</a>
-</div>
-
 <div class="top-bar">
     <div class="header-left">
-        <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
         <div class="logo"><a href="index.html"><img src="logo.png" class="logo-img">BORACAY_SEAN</a></div>
-    </div>
-    <div class="menu">
-        <a href="essential-tours.html" class="tab-link" data-category="essential">보라카이 필수투어</a>
-        <a href="activities.html" class="tab-link" data-category="activity">액티비티</a>
-        <a href="massage.html" class="tab-link" data-category="massage">마사지</a>
-        <a href="price-list.html" class="tab-link">한눈에 요금표</a>
-        <a href="cart.html" class="tab-link">장바구니</a>
-    </div>
-    <div class="header-right">
-        <a href="mypage.html" class="mypage-btn">마이페이지</a>
-        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페 바로가기</a>
-        <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카톡 바로가기</a>
     </div>
 </div>
 
 <div class="booking-container">
+    <div class="step-indicator">
+        <div class="step active" id="step1-bar"><span>01 예약정보</span></div>
+        <div class="step" id="step2-bar"><span>02 결제수단</span></div>
+    </div>
+
     <div class="order-summary-card">
         <h3>🛒 선택하신 상품 확인</h3>
         <div id="summary-list"></div>
     </div>
 
     <div class="form-card">
-        <h2>예약 정보 입력</h2>
-        <p class="desc">정확한 정보를 입력해 주셔야 차질 없는 진행이 가능합니다.</p>
-        
-        <form id="real-booking-form">
-            <div class="section-subtitle">👤 대표자 기본 정보</div>
-            <div class="input-group">
-                <label>대표자 성함 (한글)<span class="required-mark">*</span></label>
-                <input type="text" id="kor-name" placeholder="예: 홍길동" required>
-            </div>
-            <div class="input-group">
-                <label>카카오톡 ID 또는 연락처<span class="required-mark">*</span></label>
-                <input type="text" id="contact" placeholder="안내 메시지를 받으실 수 있는 정보" required>
+        <!-- 1단계: 정보 입력 -->
+        <div id="info-section">
+            <h2>예약 정보 입력</h2>
+            <p class="desc">정확한 정보를 입력해 주셔야 차질 없는 진행이 가능합니다.</p>
+            
+            <form id="info-form">
+                <div class="section-subtitle">👤 대표자 기본 정보</div>
+                <div class="input-group">
+                    <label>대표자 성함 (한글)<span class="required-mark">*</span></label>
+                    <input type="text" id="kor-name" placeholder="예: 홍길동" required>
+                </div>
+                <div class="input-group">
+                    <label>카카오톡 ID 또는 연락처<span class="required-mark">*</span></label>
+                    <input type="text" id="contact" placeholder="안내 메시지를 받으실 수 있는 정보" required>
+                </div>
+
+                <div id="pickup-sending-fields">
+                    <div class="section-subtitle" style="color:#ff6a00;">✈️ 픽업/샌딩 상세 정보</div>
+                    <div class="input-group"><label>대표자 영문 이름</label><input type="text" id="eng-name" placeholder="예: HONG GILDONG"></div>
+                    <div class="input-group"><label>픽업 항공편명</label><input type="text" id="pickup-flight" placeholder="예: TW125"></div>
+                    <div class="input-group"><label>픽업 호텔</label><input type="text" id="pickup-resort" placeholder="리조트명"></div>
+                    <div class="input-group"><label>샌딩 항공편명</label><input type="text" id="sending-flight" placeholder="예: TW126"></div>
+                    <div class="input-group"><label>샌딩 호텔</label><input type="text" id="sending-resort" placeholder="리조트명"></div>
+                </div>
+
+                <button type="submit" class="next-btn">다음 단계로 (결제수단 선택)</button>
+            </form>
+        </div>
+
+        <!-- 2단계: 결제 수단 선택 -->
+        <div id="payment-section">
+            <h2>결제 수단 선택</h2>
+            <p class="desc">원하시는 결제 수단을 선택해 주세요.</p>
+            
+            <div class="payment-methods">
+                <div class="method-card" onclick="selectMethod(this, 'card')">
+                    <b>신용/체크카드</b>
+                </div>
+                <div class="method-card" onclick="selectMethod(this, 'transfer')">
+                    <b>실시간 계좌이체</b>
+                </div>
+                <div class="method-card" onclick="selectMethod(this, 'vbank')">
+                    <b>가상계좌</b>
+                </div>
+                <div class="method-card" onclick="selectMethod(this, 'kakao')">
+                    <b>카카오페이</b>
+                </div>
             </div>
 
-            <div id="pickup-sending-fields">
-                <div class="section-subtitle" style="color:#ff6a00;">✈️ 픽업/샌딩 상세 정보</div>
-                <div class="input-group"><label>대표자 영문 이름</label><input type="text" id="eng-name" placeholder="예: HONG GILDONG"></div>
-                <div class="section-divider"><span>입국 시 정보</span></div>
-                <div class="input-group"><label>픽업 항공편명</label><input type="text" id="pickup-flight" placeholder="예: TW125"></div>
-                <div class="input-group"><label>픽업 호텔</label><input type="text" id="pickup-resort" placeholder="리조트명"></div>
-                <div class="section-divider"><span>출국 시 정보</span></div>
-                <div class="input-group"><label>샌딩 항공편명</label><input type="text" id="sending-flight" placeholder="예: TW126"></div>
-                <div class="input-group"><label>샌딩 호텔</label><input type="text" id="sending-resort" placeholder="리조트명"></div>
-            </div>
-
-            <button type="submit" class="next-btn" id="submit-btn">예약 완료 및 결제하기</button>
-        </form>
+            <button type="button" class="next-btn" id="pay-btn" onclick="submitFinal()">결제 및 예약 완료</button>
+            <button type="button" onclick="goBack()" style="width:100%; margin-top:15px; background:none; border:none; color:#999; font-weight:700; cursor:pointer;">이전 단계로</button>
+        </div>
     </div>
 </div>
 
-<script src="main.js"></script>
 <script>
     let hasPickup = false;
     let cartData = [];
+    let selectedPayment = '';
 
     document.addEventListener('DOMContentLoaded', function() {
         const directBuy = sessionStorage.getItem('directBuyItem');
         cartData = directBuy ? [JSON.parse(directBuy)] : JSON.parse(localStorage.getItem('cart') || '[]');
         
-        if (cartData.length === 0) { alert('상품이 없습니다.'); location.href='index.html'; return; }
+        if (cartData.length === 0) { alert('상품이 없습니다.'); window.close(); return; }
 
         const list = document.getElementById('summary-list');
         cartData.forEach(item => {
@@ -120,33 +144,43 @@
         if (hasPickup) document.getElementById('pickup-sending-fields').style.display = 'block';
     });
 
-    document.getElementById('real-booking-form').onsubmit = function(e) {
+    document.getElementById('info-form').onsubmit = function(e) {
         e.preventDefault();
-        const btn = document.getElementById('submit-btn');
-        btn.innerText = '처리 중...';
+        document.getElementById('info-section').style.display = 'none';
+        document.getElementById('payment-section').style.display = 'block';
+        document.getElementById('step2-bar').classList.add('active');
+        window.scrollTo(0, 0);
+    };
+
+    function selectMethod(el, method) {
+        document.querySelectorAll('.method-card').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedPayment = method;
+    }
+
+    function goBack() {
+        document.getElementById('info-section').style.display = 'block';
+        document.getElementById('payment-section').style.display = 'none';
+        document.getElementById('step2-bar').classList.remove('active');
+    }
+
+    function submitFinal() {
+        if (!selectedPayment) { alert('결제 수단을 선택해 주세요.'); return; }
+        
+        const btn = document.getElementById('pay-btn');
+        btn.innerText = '결제 요청 중...';
         btn.disabled = true;
 
         const bookingData = {
             customerKorName: document.getElementById('kor-name').value,
             contact: document.getElementById('contact').value,
-            engName: document.getElementById('eng-name')?.value || '',
-            pickupFlight: document.getElementById('pickup-flight')?.value || '',
-            pickupResort: document.getElementById('pickup-resort')?.value || '',
-            sendingFlight: document.getElementById('sending-flight')?.value || '',
-            sendingResort: document.getElementById('sending-resort')?.value || '',
+            paymentMethod: selectedPayment,
             timestamp: new Date().getTime()
         };
 
         localStorage.setItem('last_booking_info', JSON.stringify(bookingData));
-        
-        // 픽업샌딩의 경우 날짜 정보를 cart에서 가져와 보정 (완료 페이지용)
-        if (hasPickup && cartData[0]) {
-            sessionStorage.setItem('directBuyItem', JSON.stringify(cartData[0]));
-        }
-
         location.href = 'booking-complete.html';
-        return false;
-    };
+    }
 </script>
 </body>
 </html>

@@ -246,7 +246,7 @@
     function handleBuy() {
         const item = { name: "JL 스냅사진 촬영", price: 80000, count: adultCount, date: selectedDate };
         sessionStorage.setItem('directBuyItem', JSON.stringify(item));
-        window.location.assign('login.html');
+        window.open('booking-form.html', '_blank');
     }
     function addToCart() {
         const item = { name: "JL 스냅사진 촬영", price: 80000, count: adultCount, date: selectedDate };

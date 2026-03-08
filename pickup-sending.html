@@ -344,14 +344,6 @@
     }
 
     function handleBuy() {
-        // --- 로그인 체크 추가 ---
-        const userInfo = localStorage.getItem('kakao_user');
-        if (!userInfo) {
-            alert('예약을 위해 먼저 카카오 로그인을 해주세요!');
-            location.href = 'login.html';
-            return;
-        }
-
         const pickup = selectedPickupDate || '2026-03-10';
         const sending = selectedSendingDate || '2026-03-14';
 
@@ -365,10 +357,10 @@
                 image: "pickup.jpg"
             };
             sessionStorage.setItem('directBuyItem', JSON.stringify(item));
-            window.location.assign('booking-form.html');
+            window.open('booking-form.html', '_blank');
         } catch (e) {
             console.error(e);
-            window.location.href = 'booking-form.html';
+            window.open('booking-form.html', '_blank');
         }
     }
 

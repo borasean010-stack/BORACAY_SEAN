@@ -247,7 +247,7 @@
     function handleBuy() {
         const item = { name: "제트스키", price: 45000, count: adultCount, date: selectedDate };
         sessionStorage.setItem('directBuyItem', JSON.stringify(item));
-        window.location.assign('login.html');
+        window.open('booking-form.html', '_blank');
     }
     function addToCart() {
         const item = { name: "제트스키", price: 45000, count: adultCount, date: selectedDate };

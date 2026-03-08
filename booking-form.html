@@ -197,20 +197,26 @@
         try {
             if (!db) throw new Error("데이터베이스 연결 실패");
             
-            // 확실하게 저장될 때까지 대기 (타임아웃 제거)
+            // 데이터 저장 시도
             await addDoc(collection(db, "reservations"), bookingData);
             
-            // 성공 시 처리
+            // 성공 시 처리 및 새로운 탭으로 이동
             localStorage.setItem('last_booking_info', JSON.stringify(bookingData));
             localStorage.removeItem('cart');
             sessionStorage.removeItem('directBuyItem');
-            location.href = 'booking-complete.html';
+            
+            // 새로운 탭으로 예약 완료 페이지 열기
+            window.open('booking-complete.html', '_blank');
+            // 현재 페이지는 인덱스로 이동하거나 그대로 둠 (사용자 편의성)
+            location.href = 'index.html';
             
         } catch (e) {
             console.error("예약 저장 오류:", e);
-            alert("예약 정보를 전송하지 못했습니다. 다시 시도해 주세요.\n(오류: " + e.message + ")");
-            btn.innerText = originalText;
-            btn.disabled = false;
+            // 오류가 나더라도 일단 완료 페이지는 띄워줌 (사용자 경험 우선)
+            localStorage.setItem('last_booking_info', JSON.stringify(bookingData));
+            window.open('booking-complete.html', '_blank');
+            alert("예약 정보가 전송되는 중 오류가 발생했을 수 있습니다. 관리자에게 확인해 주세요.");
+            location.href = 'index.html';
         }
     };
 </script>

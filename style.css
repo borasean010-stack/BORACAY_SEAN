@@ -488,6 +488,29 @@ body {
     .card-img-wrap { aspect-ratio: 16 / 9; }
     .category-nav { grid-template-columns: 1fr; margin-top: 100px; gap: 10px; }
     .cat-tab { padding: 15px; font-size: 16px; }
+
+    /* 추가된 모바일 최적화 */
+    .pc-only { display: none !important; }
+
+    /* 메인 배너(이벤트) 높이 확대 */
+    .banner-slider { height: 350px !important; margin-top: 20px; }
+    .banner-slide img { height: 350px !important; object-fit: cover; }
+
+    /* 베스트 상품 가독성 개선 (썸네일 크게, 글씨 최적화) */
+    .product-grid { 
+        grid-template-columns: 1fr !important; /* 모바일에서 1열로 썸네일 최대화 */
+        gap: 30px !important;
+        padding: 0 20px !important;
+    }
+    .product-card { border-radius: 20px !important; overflow: hidden; background: #fff; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+    .product-card .p-img { height: 280px !important; } /* 썸네일 높이 대폭 증가 */
+    .product-card .p-info { padding: 20px !important; }
+    .product-card h3 { font-size: 20px !important; margin-bottom: 8px !important; font-weight: 800; }
+    .product-card .price { font-size: 18px !important; font-weight: 700; color: #ff6a00; }
+    .product-card .desc { font-size: 14px !important; line-height: 1.5; color: #666; margin-top: 10px; display: block !important; }
+    
+    /* 햄버거 메뉴 강조 */
+    .side-menu a { font-size: 18px !important; padding: 18px 25px !important; border-bottom: 1px solid #f5f5f5; }
 }
 .day.disabled { color: #ccc !important; cursor: not-allowed; pointer-events: none; text-decoration: line-through; opacity: 0.5; }
 

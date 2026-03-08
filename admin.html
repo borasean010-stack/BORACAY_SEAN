@@ -36,12 +36,21 @@
             </div>
             <nav class="sidebar-nav">
                 <div class="nav-group">
-                    <p class="group-title">메인 메뉴</p>
-                    <button class="sidebar-btn active" data-mode="sales">
-                        <span class="material-icons">storefront</span> 판매 관리
+                    <p class="group-title">판매 관리</p>
+                    <button class="sidebar-btn active" data-mode="sales" data-tab="all">
+                        <span class="material-icons">search</span> 주문 통합검색
                     </button>
+                    <button class="sidebar-btn" data-mode="sales" data-tab="확정">
+                        <span class="material-icons">check_circle</span> 구매확정 관리
+                    </button>
+                    <button class="sidebar-btn" data-mode="sales" data-tab="취소">
+                        <span class="material-icons">cancel</span> 취소/환불 관리
+                    </button>
+                </div>
+                <div class="nav-group">
+                    <p class="group-title">정산 관리</p>
                     <button class="sidebar-btn" data-mode="settlement">
-                        <span class="material-icons">payments</span> 정산 관리
+                        <span class="material-icons">payments</span> 정산 내역
                     </button>
                 </div>
                 <div class="nav-group">

@@ -60,22 +60,35 @@ document.addEventListener('DOMContentLoaded', () => {
         // Main Mode Switch (Sales vs Settlement) - FIXED
         document.querySelectorAll('.sidebar-btn').forEach(btn => {
             if (btn.classList.contains('logout-trigger')) return;
+            if (btn.id === 'logout-btn') return;
+            if (btn.onclick && btn.innerText.includes('새로고침')) return;
+
             btn.onclick = () => {
                 document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
+                
                 currentMode = btn.dataset.mode;
+                if (btn.dataset.tab) {
+                    currentTab = btn.dataset.tab;
+                }
                 
                 if (salesView) salesView.style.display = (currentMode === 'sales') ? 'block' : 'none';
                 if (settlementView) settlementView.style.display = (currentMode === 'settlement') ? 'block' : 'none';
                 
                 const viewTitle = document.getElementById('view-title');
-                if (viewTitle) viewTitle.textContent = btn.textContent.trim();
+                if (viewTitle) viewTitle.textContent = (currentMode === 'sales' && currentTab === 'all') ? '주문 통합검색' : btn.textContent.trim();
                 
+                const subTitle = document.getElementById('table-sub-title');
+                if (subTitle) {
+                    if (currentTab === 'all') subTitle.textContent = '전체 주문 내역';
+                    else subTitle.textContent = `${currentTab} 내역`;
+                }
+
                 renderAll();
             };
         });
 
-        // Sales Sub-tabs
+        // Sales Sub-tabs (Top Counters)
         document.querySelectorAll('.summary-card').forEach(card => {
             if (!card.dataset.tab) return;
             card.onclick = () => {
@@ -84,6 +97,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentTab = card.dataset.tab;
                 const subTitle = document.getElementById('table-sub-title');
                 if (subTitle) subTitle.textContent = `${currentTab} 내역`;
+                
+                // Sidebar also sync
+                document.querySelectorAll('.sidebar-btn').forEach(b => {
+                    b.classList.remove('active');
+                    if (b.dataset.mode === 'sales' && b.dataset.tab === (currentTab === '확정' ? '확정' : 'all')) {
+                        b.classList.add('active');
+                    }
+                });
+
                 renderMainTable();
             };
         });
@@ -144,9 +166,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!tableBody) return;
         tableBody.innerHTML = '';
         
-        let filtered = allReservations.filter(r => r.status === currentTab);
+        let filtered = allReservations;
+        if (currentTab !== 'all') {
+            filtered = allReservations.filter(r => r.status === currentTab);
+        }
+
         if (searchTerm) {
-            filtered = filtered.filter(r => r.customerKorName.includes(searchTerm));
+            filtered = filtered.filter(r => r.customerKorName.toLowerCase().includes(searchTerm.toLowerCase()));
+        }
+
+        if (filtered.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="7" class="empty-msg-v2">조회된 내역이 없습니다.</td></tr>';
+            return;
         }
 
         filtered.forEach(res => {
@@ -164,6 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${(res.status === '예약완료' || res.status === '확정') ? `<button class="ss-btn-action" onclick="showDetail('${res.id}')">상세 정보</button>` : ''}
                         ${res.status === '예약완료' ? `<button class="ss-btn-action" onclick="confirmPurchase('${res.id}')">구매확정</button>` : ''}
                         ${res.status === '확정' ? `<button class="ss-btn-action" style="color:red" onclick="updateStatus('${res.id}', '취소')">취소/환불</button>` : ''}
+                        ${res.status === '취소' ? `<button class="ss-btn-action" onclick="updateStatus('${res.id}', '신규')">재주문 처리</button>` : ''}
                     </div>
                 </td>
             `;
@@ -307,10 +339,9 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.goToNewOrders = () => {
-        const salesBtn = document.querySelector('[data-mode="sales"]');
-        if (salesBtn) salesBtn.click();
-        const newTab = document.querySelector('[data-tab="신규"]');
-        if (newTab) newTab.click();
+        // Find '신규' summary card and click it
+        const newCard = document.querySelector('.summary-card[data-tab="신규"]');
+        if (newCard) newCard.click();
     };
 
     function getTodayStr() { return new Date().toISOString().split('T')[0]; }

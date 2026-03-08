@@ -87,6 +87,8 @@ body.smartstore-admin {
 .ss-badge-신규 { background: #e6f9ed; color: var(--ss-green); }
 .ss-badge-예약완료 { background: #eef4ff; color: var(--ss-blue); }
 .ss-badge-확정 { background: #f0f2f5; color: #666; }
+.ss-badge-취소 { background: #fff1f0; color: var(--ss-danger); }
+.ss-badge-all { background: #f5f5f5; color: #333; }
 
 .ss-alert-box { background: #fff8e6; border-radius: 16px; padding: 20px; text-align: center; border: 1px solid #ffeeba; }
 .ss-alert-box button { background: #ff9900; color: #fff; border: none; padding: 8px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 10px; }

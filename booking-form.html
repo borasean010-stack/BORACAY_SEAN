@@ -124,18 +124,19 @@
     </div>
 </div>
 
+<script type="module">
     // Firebase SDK (using ES modules from CDN)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     // FIXME: Replace this with your actual Firebase config from the Firebase Console
     const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
+        apiKey: "AIzaSyD-fake-key-for-now", // Replace with real key
         authDomain: "boracay-sean.firebaseapp.com",
         projectId: "boracay-sean",
         storageBucket: "boracay-sean.appspot.com",
-        messagingSenderId: "YOUR_SENDER_ID",
-        appId: "YOUR_APP_ID"
+        messagingSenderId: "123456789",
+        appId: "1:123456789:web:abcdef"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -218,7 +219,7 @@
             location.href = 'booking-complete.html';
         } catch (error) {
             console.error("Error adding document: ", error);
-            alert('예약 저장 중 오류가 발생했습니다. 다시 시도해 주세요.');
+            alert('예약 저장 중 오류가 발생했습니다. (Firebase 설정을 확인해주세요)');
             btn.innerText = '결제 및 예약 완료';
             btn.disabled = false;
         }

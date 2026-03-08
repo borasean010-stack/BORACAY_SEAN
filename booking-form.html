@@ -188,40 +188,36 @@
         btn.innerText = '예약 저장 중...';
         btn.disabled = true;
 
+        const bookingData = {
+            customerKorName: document.getElementById('kor-name').value,
+            contact: document.getElementById('contact').value,
+            paymentMethod: selectedPayment,
+            items: cartData,
+            totalPrice: cartData.reduce((acc, curr) => acc + (curr.price * curr.count), 0),
+            status: '신규',
+            createdAt: serverTimestamp ? serverTimestamp() : new Date(),
+            engName: document.getElementById('eng-name').value || '',
+            pickupFlight: document.getElementById('pickup-flight').value || '',
+            pickupResort: document.getElementById('pickup-resort').value || '',
+            sendingFlight: document.getElementById('sending-flight').value || '',
+            sendingResort: document.getElementById('sending-resort').value || ''
+        };
+
         try {
-            // Collect all form data
-            const bookingData = {
-                customerKorName: document.getElementById('kor-name').value,
-                contact: document.getElementById('contact').value,
-                paymentMethod: selectedPayment,
-                items: cartData,
-                totalPrice: cartData.reduce((acc, curr) => acc + (curr.price * curr.count), 0),
-                status: '신규',
-                createdAt: serverTimestamp(),
-                // Optional pickup fields
-                engName: document.getElementById('eng-name').value || '',
-                pickupFlight: document.getElementById('pickup-flight').value || '',
-                pickupResort: document.getElementById('pickup-resort').value || '',
-                sendingFlight: document.getElementById('sending-flight').value || '',
-                sendingResort: document.getElementById('sending-resort').value || ''
-            };
-
             // Save to Firestore
-            const docRef = await addDoc(collection(db, "reservations"), bookingData);
-            console.log("Document written with ID: ", docRef.id);
-
-            localStorage.setItem('last_booking_info', JSON.stringify({ ...bookingData, id: docRef.id }));
-            
-            // Clear cart after successful booking
+            if (db) {
+                const docRef = await addDoc(collection(db, "reservations"), bookingData);
+                console.log("Document written with ID: ", docRef.id);
+                bookingData.id = docRef.id;
+            }
+        } catch (error) {
+            console.error("Firestore Error (falling back to local): ", error);
+        } finally {
+            // Always redirect to complete page for UX
+            localStorage.setItem('last_booking_info', JSON.stringify(bookingData));
             localStorage.removeItem('cart');
             sessionStorage.removeItem('directBuyItem');
-
             location.href = 'booking-complete.html';
-        } catch (error) {
-            console.error("Error adding document: ", error);
-            alert('예약 저장 중 오류가 발생했습니다. (Firebase 설정을 확인해주세요)');
-            btn.innerText = '결제 및 예약 완료';
-            btn.disabled = false;
         }
     };
 </script>

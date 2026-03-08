@@ -90,17 +90,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (tabLinks.length > 0) {
-        // URL 파라미터 확인 (cat=activity 등) 또는 현재 활성 탭 기반 렌더링
-        const urlParams = new URLSearchParams(window.location.search);
-        const catParam = urlParams.get('cat');
+        // 메인 페이지(index.html 또는 /)에서는 동적 렌더링을 하지 않음 (HTML에 이미 정적으로 존재)
+        const isHomePage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname === '';
         
-        if (catParam && productData[catParam]) {
-            renderProducts(catParam);
-        } else {
-            // active 클래스가 있는 탭의 데이터 카테고리를 찾음
-            const activeTab = document.querySelector('.tab-link.active');
-            const initialCategory = activeTab ? activeTab.getAttribute('data-category') : 'essential';
-            renderProducts(initialCategory);
+        if (!isHomePage) {
+            // URL 파라미터 확인 (cat=activity 등) 또는 현재 활성 탭 기반 렌더링
+            const urlParams = new URLSearchParams(window.location.search);
+            const catParam = urlParams.get('cat');
+            
+            if (catParam && productData[catParam]) {
+                renderProducts(catParam);
+            } else {
+                // active 클래스가 있는 탭의 데이터 카테고리를 찾음
+                const activeTab = document.querySelector('.tab-link.active');
+                const initialCategory = activeTab ? activeTab.getAttribute('data-category') : 'essential';
+                renderProducts(initialCategory);
+            }
         }
     }
 

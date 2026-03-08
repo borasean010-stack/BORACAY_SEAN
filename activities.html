@@ -6,6 +6,22 @@
     <title>액티비티 | BORACAY_SEAN</title>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        .activities-container { max-width: 1200px; margin: 0 auto 100px; padding: 0 20px; }
+        .sub-section-title { font-size: 24px; font-weight: 900; margin: 60px 0 30px; color: #111; display: flex; align-items: center; gap: 10px; }
+        .sub-section-title span { color: #ff6a00; font-size: 18px; }
+        
+        /* 그리드 조정: 베스트 아이템은 상단에 고정된 느낌을 주기 위해 별도 컨테이너 사용 가능 */
+        .best-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; margin-bottom: 80px; }
+        .more-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
+
+        @media (max-width: 1024px) {
+            .more-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .best-grid, .more-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
 
@@ -44,72 +60,24 @@
     </div>
 </div>
 
-<section class="section-header" style="margin-top: 140px; margin-bottom: 40px;">
+<section class="section-header" style="margin-top: 140px; margin-bottom: 20px;">
     <p>BORACAY ACTIVITIES</p>
     <h2>액티비티</h2>
 </section>
 
-<section class="tour-grid">
-    <!-- Freediving Experience -->
-    <a href="freediving.html" class="tour-card">
-        <div class="card-img-wrap">
-            <img src="free1.jpg" alt="프리다이빙 체험">
-        </div>
-        <div class="card-body">
-            <h3>보라카이 프리다이빙 체험</h3>
-            <p>한 번의 호흡으로 바다와 하나가 되는 특별한 경험.<br>전문 강사와 함께 안전하게 시작하세요.</p>
-            <div class="price-tag">₩ 70,000 ~</div>
-        </div>
-    </a>
+<div class="activities-container">
+    <!-- 🔥 Best Activities Row -->
+    <div class="sub-section-title"><span>★</span> Best Activities</div>
+    <div id="best-activities" class="best-grid">
+        <!-- JS renders BEST products here -->
+    </div>
 
-    <!-- Bora-Ajae Hopping Tour -->
-    <a href="bora-ajae-hopping.html" class="tour-card">
-        <div class="card-img-wrap">
-            <img src="bora1.jpg" alt="보라아재 호핑투어">
-        </div>
-        <div class="card-body">
-            <h3>보라아재 호핑투어</h3>
-            <p>보라카이에서 가장 핫한 호핑투어!<br>신나는 음악과 함께 즐기는 최고의 선상 파티.</p>
-            <div class="price-tag">₩ 55,000 ~</div>
-        </div>
-    </a>
-
-    <!-- Island Tour -->
-    <a href="island-tour.html" class="tour-card">
-        <div class="card-img-wrap">
-            <img src="beach1.jpg" alt="Island Tour">
-        </div>
-        <div class="card-body">
-            <h3>Island Tour</h3>
-            <p>보라카이의 가장 아름다운 프라이빗 비치를 탐험하고<br>한적한 해변에서 여유로운 스노클링을 즐기세요.</p>
-            <div class="price-tag">₩ 45,000 ~</div>
-        </div>
-    </a>
-
-    <!-- Scuba Diving -->
-    <a href="#" class="tour-card">
-        <div class="card-img-wrap">
-            <img src="hop2.jpg" alt="스쿠버 다이빙">
-        </div>
-        <div class="card-body">
-            <h3>Scuba Diving</h3>
-            <p>환상적인 보라카이 수중 세계를<br>전문 강사와 함께 안전하게 체험하세요.</p>
-            <div class="price-tag">₩ 50,000 ~</div>
-        </div>
-    </a>
-
-    <!-- Parasailing -->
-    <a href="#" class="tour-card">
-        <div class="card-img-wrap">
-            <img src="hop3.jpg" alt="파라세일링">
-        </div>
-        <div class="card-body">
-            <h3>Parasailing</h3>
-            <p>하늘 높이 날아올라 보라카이의<br>전경을 한눈에 담는 짜릿한 경험.</p>
-            <div class="price-tag">₩ 40,000 ~</div>
-        </div>
-    </a>
-</section>
+    <!-- 🔥 More Activities -->
+    <div class="sub-section-title">More Activities</div>
+    <div id="more-activities" class="more-grid">
+        <!-- JS renders other products here -->
+    </div>
+</div>
 
 <footer class="footer">
     <div class="footer-left">

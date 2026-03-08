@@ -2,14 +2,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log("BORACAY_SEAN JS Loaded");
 
-    // --- 카카오 SDK 초기화 ---
-    if (typeof Kakao !== 'undefined') {
-        if (!Kakao.isInitialized()) {
-            // 실제 발급받으신 자바스크립트 키를 사용합니다.
-            Kakao.init('9e8b2d2be22f60f1cc512d61d6ba6991');
-            console.log("Kakao SDK Initialized with JS Key");
-        }
-    }
+    // --- 카카오 로그인 기능 제거 ---
+    // Kakao SDK 관련 코드를 완전히 비활성화합니다.
 
     // --- 상품 데이터 정의 ---
     const productData = {
@@ -23,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: "프리다이빙 체험", img: "free1.jpg", url: "freediving.html", badge: "NEW", desc: "보라카이의 투명한 바다 속을 한 번의 호흡으로 탐험하세요." },
             { title: "보라카이 랜드투어", img: "beach1.jpg", url: "land-tour.html", desc: "전용 차량으로 즐기는 보라카이 섬 구석구석 명소 탐방." },
             { title: "JL 스냅사진 촬영", img: "jl1.jpg", url: "jl-snap.html", desc: "보라카이의 아름다운 풍경과 함께 인생샷을 남겨보세요." },
-            { title: "보라아재 호핑투어", img: "bora1.jpg", url: "bora-ajae-hopping.html", desc: "신나는 음악과 파티가 함께하는 보라카이 1위 선상 파티 호핑." },
+            { title: "보라아재 호핑투어", img: "bora1.jpg", url: "bora-ajae-hopping.html", desc: "신나는 음악과 파티가 함께하는 보라카이 최고의 호핑." },
             { title: "블랙펄 요트호핑투어", img: "hopping.jpg", url: "hopping-tour.html", badge: "BEST", desc: "럭셔리 요트 위에서 즐기는 최고의 선셋과 스노클링." },
             { title: "시크릿가든 말룸파티", img: "malumpati.jpg", url: "malumpati.html", badge: "BEST", desc: "신비로운 블루라군 탐험과 푸짐한 현지식 오찬." },
             { title: "파라세일링", img: "para1.jpg", url: "parasailing.html", desc: "하늘 높이 날아올라 보라카이 전경을 한눈에 담아보세요." },
@@ -120,46 +114,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- 로그인 상태 확인 및 헤더 UI 업데이트 ---
-    updateAuthUI();
-
-    function updateAuthUI() {
-        const userInfo = JSON.parse(localStorage.getItem('kakao_user'));
+    // --- 헤더 UI 상시 고정 (로그인 체크 제거) ---
+    const updateHeaderUI = () => {
         const headerRight = document.querySelector('.header-right');
         if (!headerRight) return;
-        headerRight.innerHTML = '';
-        if (userInfo) {
-            headerRight.innerHTML = `
-                <a href="mypage.html" class="mypage-btn" style="background:#f0f0f0; color:#333;">👤 ${userInfo.nickname}</a>
-                <a href="#" class="logout-btn" onclick="logout(event)" style="margin-left:12px; font-size:13px; color:#999; text-decoration:none;">로그아웃</a>
-                <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페 바로가기</a>
-                <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카톡 바로가기</a>
-            `;
-        } else {
-            headerRight.innerHTML = `
-                <a href="login.html" class="login-btn" style="background:#ff6a00; color:white; padding:8px 16px; border-radius:10px; font-weight:800; text-decoration:none; margin-right:8px;">로그인</a>
-                <a href="mypage.html" class="mypage-btn">마이페이지</a>
-                <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페 바로가기</a>
-                <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카톡 바로가기</a>
-            `;
-        }
-    }
-
-    window.logout = function(e) {
-        if (e) e.preventDefault();
-        if (confirm('로그아웃 하시겠습니까?')) {
-            localStorage.removeItem('kakao_user');
-            if (typeof Kakao !== 'undefined' && Kakao.Auth.getAccessToken()) {
-                Kakao.Auth.logout(() => { location.href = 'index.html'; });
-            } else { location.href = 'index.html'; }
-        }
+        headerRight.innerHTML = `
+            <a href="mypage.html" class="mypage-btn">마이페이지</a>
+            <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페 바로가기</a>
+            <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카톡 바로가기</a>
+        `;
     };
+    updateHeaderUI();
 
     // --- 비디오 및 애니메이션 ---
     const video = document.getElementById('hero-video');
     if (video) {
         video.muted = true; video.autoplay = true; video.loop = true; video.playsInline = true;
-        video.play().catch(() => { document.body.addEventListener('touchstart', () => { video.play(); }, { once: true }); });
+        video.play().catch(() => {
+            document.body.addEventListener('touchstart', () => { video.play(); }, { once: true });
+        });
         setTimeout(() => video.classList.add('loaded'), 2000);
     }
     const indicator = document.querySelector('.scroll-indicator');

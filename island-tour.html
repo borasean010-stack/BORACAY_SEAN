@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>블랙펄 요트 호핑투어 | BORACAY_SEAN</title>
+    <title>아일랜드 투어 | BORACAY_SEAN</title>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
@@ -35,13 +35,11 @@
         .itinerary-img { width: 100%; margin-bottom: 30px; }
         .itinerary-img img { width: 100%; border-radius: 20px; display: block; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         
-        /* 🗓️ 날짜 선택 탭 스타일 */
         .date-tabs { display: flex; gap: 5px; margin-bottom: 15px; background: #f8f9fa; padding: 5px; border-radius: 12px; }
         .date-tab { flex: 1; padding: 12px 5px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 10px; transition: 0.2s; color: #888; border: 1px solid transparent; }
         .date-tab.active { background: white; color: #ff6a00; border-color: #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .date-display { font-size: 12px; display: block; margin-top: 4px; color: #ff6a00; font-weight: 800; }
 
-        /* 🗓️ 예약 박스 (달력 포함 영역) */
         .reservation-box { 
             background: white; 
             border-radius: 28px; 
@@ -83,9 +81,9 @@
 <div class="side-menu" id="sideMenu">
     <a href="index.html">홈으로</a>
     <a href="mypage.html">마이페이지 (예약확인)</a>
-    <a href="pickup-sending.html">공항 왕복 픽업샌딩</a>
-    <a href="hopping-tour.html">블랙펄 요트호핑투어</a>
-    <a href="#">시크릿가든 말룸파티</a>
+    <a href="essential-tours.html">보라카이 필수투어</a>
+    <a href="activities.html">액티비티</a>
+    <a href="#">마사지</a>
     <a href="price-list.html" target="_blank">한눈에 요금표</a>
     <a href="cart.html">장바구니 확인</a>
 </div>
@@ -97,7 +95,7 @@
     </div>
     <div class="menu">
         <a href="essential-tours.html" class="tab-link">보라카이 필수투어</a>
-        <a href="activities.html" class="tab-link">액티비티</a>
+        <a href="activities.html" class="tab-link active">액티비티</a>
         <a href="#" class="tab-link">마사지</a>
     </div>
     <div class="header-right">
@@ -109,14 +107,12 @@
 
 <div class="tour-detail-container">
     <div class="tour-content">
-        <h1>블랙펄 요트 호핑투어</h1>
+        <h1>Island Tour (아일랜드 투어)</h1>
         <div class="section-title">투어 일정</div>
         <div class="itinerary">
             <div class="itinerary-img"><img src="hop1.jpg"></div>
             <div class="itinerary-img"><img src="hop2.jpg"></div>
             <div class="itinerary-img"><img src="hop3.jpg"></div>
-            <div class="itinerary-img"><img src="hop4.jpg"></div>
-            <div class="itinerary-img"><img src="hop5.jpg"></div>
         </div>
 
         <div class="section-title">서비스 이용 절차</div>
@@ -124,40 +120,33 @@
             <li class="process-item" style="display: flex; align-items: flex-start; margin-bottom: 20px; gap: 15px;">
                 <div class="process-num" style="background: #ff6a00; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; margin-top: 2px;">1</div>
                 <div class="process-text">
-                    <b style="display: block; font-size: 18px; margin-bottom: 5px;">가이드 미팅</b>
-                    <p style="color: #666; font-size: 15px; margin: 0; line-height: 1.5;">화이트비치 지정된 장소에서 보라카이션 전담 가이드를 만납니다.</p>
+                    <b style="display: block; font-size: 18px; margin-bottom: 5px;">호텔 픽업</b>
+                    <p style="color: #666; font-size: 15px; margin: 0; line-height: 1.5;">지정된 시간에 가이드를 만나 투어 보트로 이동합니다.</p>
                 </div>
             </li>
             <li class="process-item" style="display: flex; align-items: flex-start; margin-bottom: 20px; gap: 15px;">
                 <div class="process-num" style="background: #ff6a00; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; margin-top: 2px;">2</div>
                 <div class="process-text">
-                    <b style="display: block; font-size: 18px; margin-bottom: 5px;">요트 탑승 및 안전 교육</b>
-                    <p style="color: #666; font-size: 15px; margin: 0; line-height: 1.5;">최고급 블랙펄 요트에 승선하여 안전 장비 착용 및 주의사항을 안내받습니다.</p>
+                    <b style="display: block; font-size: 18px; margin-bottom: 5px;">주변 섬 탐험</b>
+                    <p style="color: #666; font-size: 15px; margin: 0; line-height: 1.5;">푸카쉘 비치, 크리스탈 코브 등 보라카이의 숨겨진 보석 같은 섬들을 방문합니다.</p>
                 </div>
             </li>
             <li class="process-item" style="display: flex; align-items: flex-start; margin-bottom: 20px; gap: 15px;">
                 <div class="process-num" style="background: #ff6a00; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; margin-top: 2px;">3</div>
                 <div class="process-text">
-                    <b style="display: block; font-size: 18px; margin-bottom: 5px;">스노클링 & 액티비티</b>
-                    <p style="color: #666; font-size: 15px; margin: 0; line-height: 1.5;">에메랄드빛 포인트에서 스노클링과 패들보드를 즐기며 수중 세계를 탐험합니다.</p>
-                </div>
-            </li>
-            <li class="process-item" style="display: flex; align-items: flex-start; margin-bottom: 20px; gap: 15px;">
-                <div class="process-num" style="background: #ff6a00; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; margin-top: 2px;">4</div>
-                <div class="process-text">
-                    <b style="display: block; font-size: 18px; margin-bottom: 5px;">선셋 감상 및 요트 파티</b>
-                    <p style="color: #666; font-size: 15px; margin: 0; line-height: 1.5;">환상적인 보라카이의 선셋을 배경으로 핑거푸드와 함께 요트 파티를 즐깁니다.</p>
+                    <b style="display: block; font-size: 18px; margin-bottom: 5px;">프라이빗 런치</b>
+                    <p style="color: #666; font-size: 15px; margin: 0; line-height: 1.5;">아름다운 해변에서 즐기는 신선한 해산물 BBQ 런치가 제공됩니다.</p>
                 </div>
             </li>
         </ul>
 
         <div class="section-title">포함 사항</div>
         <p style="color:#666; line-height:1.8; font-size:16px; margin-bottom: 40px;">
-            - 블랙펄 요트 승선료 (최신형 대형 요트)<br>
-            - 스노클링 장비 일체 대여 (마스크, 오리발)<br>
-            - 안전을 위한 구명조끼 대여<br>
-            - 요트 내 간식 (샌드위치, 열대과일, 맥주, 음료)<br>
-            - 보라카이션 전문 스탭 및 가이드 케어 서비스
+            - 전용 보트 이용료<br>
+            - 섬 입장료 일체<br>
+            - 점심 식사 및 음료<br>
+            - 스노클링 장비 및 구명조끼<br>
+            - 전문 로컬 가이드 안내
         </p>
 
         <div class="section-title">환불 규정</div>
@@ -165,9 +154,8 @@
     </div>
 
     <div class="reservation-box">
-        <div style="font-size:28px; font-weight:900; color:#ff6a00; margin-bottom:20px; letter-spacing: -1px;">₩ 65,000</div>
+        <div style="font-size:28px; font-weight:900; color:#ff6a00; margin-bottom:20px; letter-spacing: -1px;">₩ 45,000</div>
         
-        <!-- 🗓️ 날짜 선택 탭 (픽업샌딩과 디자인 통일) -->
         <div class="date-tabs">
             <div class="date-tab active">투어 날짜 선택<span id="pc-date-display" class="date-display">2026-03-02</span></div>
         </div>
@@ -193,38 +181,6 @@
     </div>
 </div>
 
-<div class="mobile-bottom-bar">
-    <button class="m-btn-cart" onclick="addToCart()">장바구니</button>
-    <button class="m-btn-buy" onclick="openOptionSheet()">구매하기</button>
-</div>
-
-<div class="option-sheet-overlay" id="sheetOverlay" onclick="closeOptionSheet()"></div>
-<div class="option-sheet" id="optionSheet" style="position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-radius: 25px 25px 0 0; z-index: 10005; padding: 30px 20px 40px; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
-    <h3 style="font-weight:900; margin-bottom:20px; font-size:20px;">예약 옵션 선택</h3>
-    
-    <div class="date-tabs">
-        <div class="date-tab active">투어 날짜 선택<span id="m-date-display" class="date-display">2026-03-02</span></div>
-    </div>
-
-    <div class="calendar-wrap" style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 15px;">
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-            <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800;">&lt;</button>
-            <strong id="m-month">2026년 3월</strong>
-            <button onclick="changeMonth(1)" style="border:none; background:none; color:#ff6a00; font-weight:800;">&gt;</button>
-        </div>
-        <div class="calendar-grid" id="m-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
-    </div>
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:#fcfcfc; border-radius:15px; margin-bottom:20px; border:1px solid #f0f0f0;">
-        <span style="font-weight:700;">인원 (성인)</span>
-        <div class="counter">
-            <button class="count-btn" onclick="updateCount(-1)">-</button>
-            <strong id="m-count">1</strong>
-            <button class="count-btn" onclick="updateCount(1)">+</button>
-        </div>
-    </div>
-    <button class="btn-buy" onclick="handleBuy()" style="background:#ff6a00;">선택 완료 / 구매하기</button>
-</div>
-
 <footer class="footer">
     <div class="footer-left">
         <b class="important">상호 : 보라카이션 | 대표 : 윤오현</b><br>
@@ -242,17 +198,14 @@
     let adultCount = 1;
     let currentDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
-    function openOptionSheet() { document.getElementById('sheetOverlay').style.display = 'block'; document.getElementById('optionSheet').classList.add('active'); }
-    function closeOptionSheet() { document.getElementById('sheetOverlay').style.display = 'none'; document.getElementById('optionSheet').classList.remove('active'); }
+    
     function updateCount(delta) {
         adultCount = Math.max(1, adultCount + delta);
         document.getElementById('pc-count').innerText = adultCount;
-        document.getElementById('m-count').innerText = adultCount;
     }
     function changeMonth(delta) {
         currentDate.setMonth(currentDate.getMonth() + delta);
         renderCalendar('pc-days', 'pc-month');
-        renderCalendar('m-days', 'm-month');
     }
     function renderCalendar(cid, tid) {
         const container = document.getElementById(cid);
@@ -281,9 +234,7 @@
                 div.onclick = function() {
                     selectedDate = dateStr;
                     document.getElementById('pc-date-display').innerText = dateStr;
-                    document.getElementById('m-date-display').innerText = dateStr;
                     renderCalendar('pc-days', 'pc-month');
-                    renderCalendar('m-days', 'm-month');
                 };
             }
             div.innerText = i;
@@ -292,17 +243,13 @@
     }
     
     function handleBuy() {
-        try {
-            const item = { name: "블랙펄 요트 호핑투어", price: 65000, count: adultCount, date: selectedDate };
-            sessionStorage.setItem('directBuyItem', JSON.stringify(item));
-            window.location.assign('login.html');
-        } catch (e) {
-            window.location.href = 'login.html';
-        }
+        const item = { name: "아일랜드 투어", price: 45000, count: adultCount, date: selectedDate };
+        sessionStorage.setItem('directBuyItem', JSON.stringify(item));
+        window.location.assign('login.html');
     }
 
     function addToCart() {
-        const item = { name: "블랙펄 요트 호핑투어", price: 65000, count: adultCount, date: selectedDate };
+        const item = { name: "아일랜드 투어", price: 45000, count: adultCount, date: selectedDate };
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         cart.push(item);
         localStorage.setItem('cart', JSON.stringify(cart));
@@ -310,17 +257,7 @@
             window.location.assign('cart.html');
         }
     }
-    window.onload = () => { renderCalendar('pc-days', 'pc-month'); renderCalendar('m-days', 'm-month'); };
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const t = document.getElementById('menuToggle');
-        const m = document.getElementById('sideMenu');
-        const o = document.getElementById('overlay');
-        if(t && m && o) {
-            t.onclick = function() { m.classList.toggle('active'); o.classList.toggle('active'); };
-            o.onclick = function() { m.classList.remove('active'); o.classList.remove('active'); };
-        }
-    });
+    window.onload = () => { renderCalendar('pc-days', 'pc-month'); };
 </script>
 </body>
 </html>

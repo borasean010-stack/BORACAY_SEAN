@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>보라카이 필수투어 | BORACAY_SEAN</title>
+    <title>액티비티 | BORACAY_SEAN</title>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
         body { background: #fdfdfd; }
-        .essential-hero {
+        .activities-hero {
             padding: 160px 20px 60px;
             text-align: center;
-            background: linear-gradient(to bottom, #fff5eb, #fff);
+            background: linear-gradient(to bottom, #ebfaff, #fff);
         }
-        .essential-hero h1 { font-size: clamp(32px, 5vw, 48px); font-weight: 900; color: #111; margin-bottom: 15px; letter-spacing: -1.5px; }
-        .essential-hero p { font-size: 18px; color: #666; font-weight: 500; }
+        .activities-hero h1 { font-size: clamp(32px, 5vw, 48px); font-weight: 900; color: #111; margin-bottom: 15px; letter-spacing: -1.5px; }
+        .activities-hero p { font-size: 18px; color: #666; font-weight: 500; }
 
         .tour-grid {
             max-width: 1200px;
@@ -40,8 +40,8 @@
 
         .tour-card:hover {
             transform: translateY(-15px);
-            box-shadow: 0 30px 60px rgba(255,106,0,0.15);
-            border-color: rgba(255,106,0,0.2);
+            box-shadow: 0 30px 60px rgba(0,153,255,0.15);
+            border-color: rgba(0,153,255,0.2);
         }
 
         .card-img-wrap {
@@ -83,20 +83,25 @@
             word-break: keep-all;
         }
 
-        .price-tag {
+        .view-details-btn {
             display: inline-block;
             margin-top: 20px;
-            color: #ff6a00;
-            font-weight: 900;
-            font-size: 18px;
+            padding: 12px 30px;
+            background: #111;
+            color: white;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 14px;
+            transition: 0.3s;
         }
+        .tour-card:hover .view-details-btn { background: #0099ff; }
 
         @media (max-width: 1024px) {
             .tour-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
         @media (max-width: 768px) {
-            .essential-hero { padding-top: 120px; }
+            .activities-hero { padding-top: 120px; }
             .tour-grid { grid-template-columns: 1fr; gap: 20px; }
             .card-img-wrap { aspect-ratio: 16 / 9; }
         }
@@ -109,7 +114,7 @@
     <a href="index.html">홈으로</a>
     <a href="mypage.html">마이페이지 (예약확인)</a>
     <a href="essential-tours.html">보라카이 필수투어</a>
-    <a href="#">액티비티</a>
+    <a href="activities.html">액티비티</a>
     <a href="#">마사지</a>
     <a href="price-list.html" target="_blank">한눈에 요금표</a>
     <a href="cart.html">장바구니 확인</a>
@@ -127,8 +132,8 @@
     </div>
 
     <div class="menu">
-        <a href="essential-tours.html" class="tab-link active">보라카이 필수투어</a>
-        <a href="activities.html" class="tab-link">액티비티</a>
+        <a href="essential-tours.html" class="tab-link">보라카이 필수투어</a>
+        <a href="activities.html" class="tab-link active">액티비티</a>
         <a href="#" class="tab-link">마사지</a>
     </div>
 
@@ -139,45 +144,44 @@
     </div>
 </div>
 
-<section class="essential-hero">
-    <h1>BORACAY ESSENTIALS</h1>
-    <p>보라카이 여행에서 결코 빠질 수 없는 필수 코스</p>
+<section class="activities-hero">
+    <h1>BORACAY ACTIVITIES</h1>
+    <p>보라카이의 에메랄드빛 바다를 즐기는 가장 완벽한 방법</p>
 </section>
 
 <section class="tour-grid">
-    <!-- 픽업샌딩 -->
-    <a href="pickup-sending.html" class="tour-card">
+    <!-- Island Tour -->
+    <a href="island-tour.html" class="tour-card">
         <div class="card-img-wrap">
-            <img src="pickup.jpg" alt="픽업샌딩">
+            <img src="hop1.jpg" alt="아일랜드 투어">
         </div>
         <div class="card-body">
-            <h3>공항 왕복 픽업샌딩</h3>
-            <p>칼리보 공항부터 숙소 현관 앞까지,<br>가장 안전하고 편안한 이동의 시작</p>
-            <div class="price-tag">₩ 40,000 ~</div>
+            <h3>Island Tour</h3>
+            <p>보라카이 주변의 아름다운 섬들을 탐험하고<br>프라이빗한 해변에서 힐링을 즐기세요.</p>
+            <div class="view-details-btn">View Details</div>
         </div>
     </a>
 
-    <!-- 호핑투어 -->
-    <a href="hopping-tour.html" class="tour-card">
+    <!-- 추가 액티비티 예시 (필요시 추가) -->
+    <a href="#" class="tour-card">
         <div class="card-img-wrap">
-            <img src="hopping.jpg" alt="호핑투어">
+            <img src="hop2.jpg" alt="스쿠버 다이빙">
         </div>
         <div class="card-body">
-            <h3>블랙펄 요트 호핑투어</h3>
-            <p>보라카이 최고의 럭셔리 요트 위에서<br>즐기는 환상적인 선셋과 스노클링 파티</p>
-            <div class="price-tag">₩ 65,000 ~</div>
+            <h3>Scuba Diving</h3>
+            <p>환상적인 보라카이 수중 세계를<br>전문 강사와 함께 안전하게 체험하세요.</p>
+            <div class="view-details-btn">View Details</div>
         </div>
     </a>
 
-    <!-- 말룸파티 -->
-    <a href="malumpati.html" class="tour-card">
+    <a href="#" class="tour-card">
         <div class="card-img-wrap">
-            <img src="malum1.jpg" alt="말룸파티">
+            <img src="hop3.jpg" alt="파라세일링">
         </div>
         <div class="card-body">
-            <h3>시크릿가든 말룸파티</h3>
-            <p>에메랄드빛 천연 수영장 블루라군에서<br>즐기는 짜릿한 다이빙과 튜브 트레킹</p>
-            <div class="price-tag">₩ 55,000 ~</div>
+            <h3>Parasailing</h3>
+            <p>하늘 높이 날아올라 보라카이의<br>전경을 한눈에 담는 짜릿한 경험.</p>
+            <div class="view-details-btn">View Details</div>
         </div>
     </a>
 </section>

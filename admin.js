@@ -17,12 +17,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginContainer = document.getElementById('login-container');
     const adminContainer = document.getElementById('admin-container');
     const loginForm = document.getElementById('login-form');
+    
     const tableBody = document.getElementById('admin-table-body');
+    const settleTableBody = document.getElementById('settlement-table-body');
     const scheduleList = document.getElementById('today-schedule-list');
+    
+    const salesView = document.getElementById('sales-view');
+    const settlementView = document.getElementById('settlement-view');
 
     let allReservations = [];
-    let currentMode = 'sales'; // sales, settlement, statistics
-    let currentTab = '신규'; // 신규, 예약완료, 확정
+    let currentMode = 'sales'; 
+    let currentTab = '신규'; 
 
     // --- Authentication ---
     if (sessionStorage.getItem('isAdminLoggedIn') === 'true') { showAdminPanel(); }
@@ -36,64 +41,51 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        logoutBtn.onclick = () => {
-            sessionStorage.removeItem('isAdminLoggedIn');
-            location.reload();
-        };
-    }
+    document.getElementById('logout-btn').onclick = () => {
+        sessionStorage.removeItem('isAdminLoggedIn');
+        location.reload();
+    };
 
     function showAdminPanel() {
-        if (loginContainer) loginContainer.style.display = 'none';
-        if (adminContainer) adminContainer.style.display = 'flex';
+        loginContainer.style.display = 'none';
+        adminContainer.style.display = 'flex';
         initNavigation();
         fetchReservations();
+        document.getElementById('today-date-label').textContent = getTodayStr().replace(/-/g, '.');
     }
 
     // --- Navigation ---
     function initNavigation() {
-        // Sidebar Buttons
+        // Main Mode Switch (Sales vs Settlement)
         document.querySelectorAll('.sidebar-btn').forEach(btn => {
             if (btn.classList.contains('logout-trigger')) return;
             btn.onclick = () => {
                 document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                
                 currentMode = btn.dataset.mode;
-                if (btn.dataset.tab) {
-                    currentTab = btn.dataset.tab;
-                    // Sync summary card active state
-                    document.querySelectorAll('.summary-card').forEach(sc => {
-                        sc.classList.toggle('active', sc.dataset.tab === currentTab);
-                    });
-                }
+                
+                salesView.style.display = (currentMode === 'sales') ? 'block' : 'none';
+                settlementView.style.display = (currentMode === 'settlement') ? 'block' : 'none';
+                document.getElementById('view-title').textContent = btn.textContent.trim();
                 
                 renderAll();
             };
         });
 
-        // Summary Cards (Dashboard)
+        // Sales Sub-tabs
         document.querySelectorAll('.summary-card').forEach(card => {
             if (!card.dataset.tab) return;
             card.onclick = () => {
+                document.querySelectorAll('.summary-card').forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
                 currentTab = card.dataset.tab;
-                currentMode = 'sales';
-                
-                // Sync sidebar active state
-                document.querySelectorAll('.sidebar-btn').forEach(b => {
-                    b.classList.toggle('active', b.dataset.tab === currentTab);
-                });
-                
-                renderAll();
+                document.getElementById('table-sub-title').textContent = `${currentTab} 내역`;
+                renderMainTable();
             };
         });
 
-        // Search Logic
-        const searchInput = document.getElementById('res-search');
-        if (searchInput) {
-            searchInput.oninput = () => renderMainTable(searchInput.value.toLowerCase());
-        }
+        // Search
+        document.getElementById('res-search').oninput = (e) => renderMainTable(e.target.value.toLowerCase());
     }
 
     // --- Data Fetching ---
@@ -109,16 +101,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function useFallback() {
-        const products = ["공항 왕복 픽업샌딩", "블랙펄 요트호핑", "말룸파티 투어", "파라세일링"];
+        const products = ["왕복 픽업샌딩", "블랙펄 요트호핑", "말룸파티 투어", "파라세일링"];
         const names = ["김철수", "이영희", "박지민", "최현우", "정다은"];
         const statuses = ["신규", "예약완료", "확정", "취소"];
-        allReservations = Array.from({length: 15}).map((_, i) => ({
-            id: `BK-${1000+i}`,
+        allReservations = Array.from({length: 12}).map((_, i) => ({
+            id: `BK-${240300 + i}`,
             customerKorName: names[i % names.length],
             contact: "010-1234-5678",
-            items: [{name: products[i % products.length], date: getTodayStr()}],
-            totalPrice: 150000 + (i * 1000),
-            status: statuses[i % statuses.length],
+            items: [{name: products[i % products.length], date: getTodayStr(), time: "10:00"}],
+            totalPrice: 150000 + (i * 5000),
+            status: statuses[i % 3], // 신규, 예약완료, 확정 위주
             createdAt: {seconds: (Date.now()/1000) - (i * 3600)}
         }));
         renderAll();
@@ -129,6 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCounters();
         renderMainTable();
         renderDailySchedule();
+        renderSettlementTable();
         updateAlerts();
     }
 
@@ -138,39 +131,21 @@ document.addEventListener('DOMContentLoaded', () => {
             예약완료: allReservations.filter(r => r.status === '예약완료').length,
             확정: allReservations.filter(r => r.status === '확정').length
         };
-        if (document.getElementById('cnt-new')) document.getElementById('cnt-new').textContent = counts.신규;
-        if (document.getElementById('cnt-completed')) document.getElementById('cnt-completed').textContent = counts.예약완료;
-        if (document.getElementById('cnt-confirmed')) document.getElementById('cnt-confirmed').textContent = counts.확정;
-
-        // 정산 금액 계산
-        const settleTotal = allReservations.filter(r => r.status === '확정').reduce((acc, curr) => acc + curr.totalPrice, 0);
-        if (document.getElementById('settle-amount')) {
-            document.getElementById('settle-amount').textContent = `₩ ${settleTotal.toLocaleString()}`;
-        }
+        document.getElementById('cnt-new').textContent = counts.신규;
+        document.getElementById('cnt-completed').textContent = counts.예약완료;
+        document.getElementById('cnt-confirmed').textContent = counts.확정;
+        
+        const totalSettle = allReservations.filter(r => r.status === '확정').reduce((acc, c) => acc + (c.totalPrice || 0), 0);
+        document.getElementById('total-settle-amount').textContent = `₩ ${totalSettle.toLocaleString()}`;
     }
 
     function renderMainTable(searchTerm = '') {
         if (!tableBody) return;
         tableBody.innerHTML = '';
         
-        let filtered = allReservations;
-        
-        if (currentMode === 'sales') {
-            filtered = allReservations.filter(r => r.status === currentTab);
-            document.getElementById('view-title').textContent = `${currentTab} 내역`;
-        } else if (currentMode === 'settlement') {
-            filtered = allReservations.filter(r => r.status === '확정');
-            document.getElementById('view-title').textContent = `정산 대상 내역`;
-        } else if (currentMode === 'statistics') {
-            filtered = allReservations.filter(r => r.status !== '취소');
-            document.getElementById('view-title').textContent = `전체 매출 통계`;
-        }
-
+        let filtered = allReservations.filter(r => r.status === currentTab);
         if (searchTerm) {
-            filtered = filtered.filter(r => 
-                r.customerKorName?.toLowerCase().includes(searchTerm) || 
-                r.id?.toLowerCase().includes(searchTerm)
-            );
+            filtered = filtered.filter(r => r.customerKorName.includes(searchTerm));
         }
 
         filtered.forEach(res => {
@@ -184,9 +159,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td><span class="ss-badge ss-badge-${res.status}">${res.status}</span></td>
                 <td>
                     <div style="display:flex; gap:5px; justify-content:center;">
-                        ${res.status === '신규' ? `<button class="ss-btn-action" onclick="updateStatus('${res.id}', '예약완료')">예약완료</button>` : ''}
+                        ${res.status === '신규' ? `<button class="ss-btn-action" onclick="updateStatus('${res.id}', '예약완료')">예약완료 처리</button>` : ''}
+                        ${res.status === '예약완료' ? `<button class="ss-btn-action" onclick="showDetail('${res.id}')">상세 일정</button>` : ''}
                         ${res.status === '예약완료' ? `<button class="ss-btn-action" onclick="updateStatus('${res.id}', '확정')">구매확정</button>` : ''}
-                        <button class="ss-btn-action" style="color:var(--ss-danger)" onclick="updateStatus('${res.id}', '취소')">취소</button>
+                        ${res.status === '확정' ? `<button class="ss-btn-action" style="color:red" onclick="updateStatus('${res.id}', '취소')">취소/환불</button>` : ''}
                     </div>
                 </td>
             `;
@@ -199,18 +175,61 @@ document.addEventListener('DOMContentLoaded', () => {
         const today = getTodayStr();
         const todays = allReservations.filter(res => (res.items?.[0]?.date === today) && res.status !== '취소');
         
-        scheduleList.innerHTML = todays.length ? '' : '<p class="empty-msg-v2">오늘 예정된 스케줄이 없습니다.</p>';
-        todays.sort((a,b) => (a.time || '00:00').localeCompare(b.time || '00:00')).forEach(res => {
-            const item = document.createElement('div');
-            item.className = 'schedule-item-v2';
-            item.innerHTML = `
-                <div class="time-tag">${res.time || '종일'}</div>
-                <div class="info">
-                    <b>${res.customerKorName}</b><br>
-                    <span style="color:#888; font-size:12px;">${res.items?.[0]?.name}</span>
-                </div>
+        if (!todays.length) {
+            scheduleList.innerHTML = '<p class="empty-msg-v2">오늘 예정된 스케줄이 없습니다.</p>';
+            return;
+        }
+
+        // Group by category
+        const categories = {
+            "픽업/샌딩": todays.filter(r => r.items[0].name.includes('픽업')),
+            "호핑투어": todays.filter(r => r.items[0].name.includes('호핑')),
+            "말룸파티": todays.filter(r => r.items[0].name.includes('말룸')),
+            "액티비티/기타": todays.filter(r => !r.items[0].name.includes('픽업') && !r.items[0].name.includes('호핑') && !r.items[0].name.includes('말룸'))
+        };
+
+        scheduleList.innerHTML = '';
+        for (const [cat, list] of Object.entries(categories)) {
+            if (list.length === 0) continue;
+            const group = document.createElement('div');
+            group.className = 'schedule-group';
+            group.innerHTML = `<div class="schedule-group-title">${cat} (${list.length})</div>`;
+            list.forEach(res => {
+                const item = document.createElement('div');
+                item.className = 'schedule-item-v2';
+                item.innerHTML = `
+                    <div class="time-tag">${res.items[0].time || '종일'}</div>
+                    <div class="info"><b>${res.customerKorName}</b> | ${res.items[0].name}</div>
+                `;
+                group.appendChild(item);
+            });
+            scheduleList.appendChild(group);
+        }
+    }
+
+    function renderSettlementTable() {
+        if (!settleTableBody) return;
+        settleTableBody.innerHTML = '';
+        
+        const confirmed = allReservations.filter(r => r.status === '확정');
+        const groupedByDate = {};
+
+        confirmed.forEach(r => {
+            const date = r.items?.[0]?.date || '미정';
+            if (!groupedByDate[date]) groupedByDate[date] = { count: 0, amount: 0 };
+            groupedByDate[date].count++;
+            groupedByDate[date].amount += (r.totalPrice || 0);
+        });
+
+        Object.keys(groupedByDate).sort().reverse().forEach(date => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><b>${date}</b></td>
+                <td>${groupedByDate[date].count}건</td>
+                <td style="color:var(--ss-green); font-weight:800;">₩ ${groupedByDate[date].amount.toLocaleString()}</td>
+                <td><span style="font-size:12px; color:#999;">정산 대기</span></td>
             `;
-            scheduleList.appendChild(item);
+            settleTableBody.appendChild(row);
         });
     }
 
@@ -218,20 +237,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const newCount = allReservations.filter(r => r.status === '신규').length;
         const alertBox = document.getElementById('new-order-alert');
         const noAlert = document.getElementById('no-alert-msg');
-        
         if (newCount > 0) {
-            if (alertBox) alertBox.style.display = 'block';
-            if (noAlert) noAlert.style.display = 'none';
-            const alertCntEl = document.getElementById('alert-cnt');
-            if (alertCntEl) alertCntEl.textContent = newCount;
+            alertBox.style.display = 'block';
+            noAlert.style.display = 'none';
         } else {
-            if (alertBox) alertBox.style.display = 'none';
-            if (noAlert) noAlert.style.display = 'block';
+            alertBox.style.display = 'none';
+            noAlert.style.display = 'block';
         }
     }
 
+    // --- Global Functions ---
     window.updateStatus = async (id, newStatus) => {
-        if (!confirm(`[${newStatus}] 상태로 변경할까요?`)) return;
+        if (!confirm(`[${newStatus}] 상태로 변경하시겠습니까?`)) return;
         if (db && !id.startsWith('BK-')) {
             await updateDoc(doc(db, "reservations", id), { status: newStatus });
         } else {
@@ -240,9 +257,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    window.showDetail = (id) => {
+        const res = allReservations.find(r => r.id === id);
+        if (!res) return;
+        const modal = document.getElementById('res-detail-modal');
+        const body = document.getElementById('modal-body');
+        
+        body.innerHTML = `
+            <div class="detail-row"><span class="label">예약자명</span><span class="val">${res.customerKorName}</span></div>
+            <div class="detail-row"><span class="label">연락처</span><span class="val">${res.contact || '-'}</span></div>
+            <div class="detail-row"><span class="label">상품명</span><span class="val">${res.items[0].name}</span></div>
+            <div class="detail-row"><span class="label">이용 일자</span><span class="val">${res.items[0].date}</span></div>
+            <div class="detail-row"><span class="label">이용 시간</span><span class="val">${res.items[0].time || '정보 없음'}</span></div>
+            <div class="detail-row"><span class="label">결제 금액</span><span class="val">₩ ${res.totalPrice.toLocaleString()}</span></div>
+            <hr style="border:none; border-top:1px solid #eee; margin:20px 0;">
+            <p style="font-size:12px; color:#888;">* 세부 픽업 정보 및 요청 사항은 Firebase 실시간 데이터에서 로드됩니다.</p>
+        `;
+        modal.style.display = 'flex';
+    };
+
+    window.closeModal = () => document.getElementById('res-detail-modal').style.display = 'none';
     window.goToNewOrders = () => {
-        const newBtn = document.querySelector('[data-tab="신규"]');
-        if (newBtn) newBtn.click();
+        const salesBtn = document.querySelector('[data-mode="sales"]');
+        if (salesBtn) salesBtn.click();
+        const newTab = document.querySelector('[data-tab="신규"]');
+        if (newTab) newTab.click();
     };
 
     function getTodayStr() { return new Date().toISOString().split('T')[0]; }

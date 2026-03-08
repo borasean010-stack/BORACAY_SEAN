@@ -1,89 +1,261 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BORACAY_SEAN | 보라카이션</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/12.10.0/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/12.10.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/12.10.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/12.10.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/12.10.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/12.10.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/12.10.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/12.10.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/12.10.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/12.10.0/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
+    <!-- SNS 썸네일 설정 (강제 갱신 버전) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="보라카이션 | BORACAY_SEAN">
+    <meta property="og:description" content="가장 완벽한 보라카이 여행의 시작, 보라카이션과 함께하세요.">
+    <meta property="og:image" content="https://boracay-sean.page/og-image.png?v=1.2">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:url" content="https://boracay-sean.page">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <style>
     </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+</head>
+<body>
+
+<div class="side-menu-overlay" id="overlay"></div>
+<div class="side-menu" id="sideMenu">
+    <a href="index.html">홈으로</a>
+    <a href="mypage.html">마이페이지 (예약확인)</a>
+    <a href="pickup-sending.html" target="_blank">공항 왕복 픽업샌딩</a>
+    <a href="hopping-tour.html" target="_blank">블랙펄 요트호핑투어</a>
+    <a href="#">시크릿가든 말룸파티</a>
+    <a href="price-list.html" target="_blank">한눈에 요금표</a>
+    <a href="cart.html">장바구니 확인</a>
+</div>
+
+<div class="top-bar">
+    <div class="header-left">
+        <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
+        <div class="logo">
+            <a href="index.html">
+                <img src="logo.png" class="logo-img" alt="로고">
+                BORACAY_SEAN
+            </a>
+        </div>
     </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+    <div class="menu">
+        <a href="essential-tours.html" class="tab-link" data-category="essential">보라카이 필수투어</a>
+        <a href="activities.html" class="tab-link" data-category="activity">액티비티</a>
+        <a href="massage.html" class="tab-link" data-category="massage">마사지</a>
+        <a href="price-list.html" class="tab-link">한눈에 요금표</a>
+        <a href="cart.html" class="tab-link">장바구니</a>
+    </div>
 
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
-        }
-      });
-    </script>
-  </body>
+    <div class="header-right">
+        <a href="mypage.html" class="mypage-btn">마이페이지</a>
+        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페 바로가기</a>
+    </div>
+</div>
+
+<!-- 🔥 사용자 지정 DJI 스타일 HERO 완벽 고정 -->
+<section class="hero">
+    <div class="video-background">
+        <video autoplay muted loop playsinline id="hero-video" class="loaded">
+            <source src="hero-video.mp4" type="video/mp4">
+        </video>
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1>BORACAY<br>SEAN</h1>
+        <p>가장 완벽한 보라카이 여행의 시작, 보라카이션</p>
+    </div>
+    <div class="scroll-indicator"><div class="mouse"></div></div>
+</section>
+
+<!-- 🔥 이벤트 섹션 타이틀 -->
+<div class="event-section-title">이벤트</div>
+
+<!-- 🔥 메인 배너 슬라이더 -->
+<section class="banner-slider">
+    <div class="banner-wrapper" id="bannerWrapper">
+        <div class="banner-slide">
+            <img src="banner1.png" alt="배너 1">
+        </div>
+        <div class="banner-slide">
+            <img src="banner2.png" alt="배너 2">
+        </div>
+    </div>
+
+    <!-- ◀️▶️ 화살표 네비게이션 -->
+    <div class="slider-arrow arrow-left" onclick="moveSlide(-1)">❮</div>
+    <div class="slider-arrow arrow-right" onclick="moveSlide(1)">❯</div>
+
+    <div class="slider-dots" id="sliderDots">
+        <!-- Dots will be dynamically generated in main.js -->
+    </div>
+</section>
+
+<!-- 🔥 왜 '보라카이션'인가? 섹션 -->
+<section class="why-choose-us">
+    <div class="section-header">
+        <p>Why Boracay Sean?</p>
+        <h2>보라카이 자유여행 1위 여행사</h2>
+    </div>
+    
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="f-icon"><span>🏆</span></div>
+            <h3>15년+ 운영 경력</h3>
+            <p>신용도 최상, 오랜 노하우의 자유여행사</p>
+        </div>
+        <div class="feature-card">
+            <div class="f-icon"><span>💰</span></div>
+            <h3>원가 수준 견적</h3>
+            <p>거품을 뺀 저렴하고 투명한 견적 제공</p>
+        </div>
+        <div class="feature-card">
+            <div class="f-icon"><span>🏨</span></div>
+            <h3>호텔 특가 & 프로모션</h3>
+            <p>다양한 제휴 호텔 단독 특가 혜택</p>
+        </div>
+        <div class="feature-card">
+            <div class="f-icon"><span>🎧</span></div>
+            <h3>최고 수준 CS</h3>
+            <p>여행업계 최고 수준의 고객 만족 서비스</p>
+        </div>
+        <div class="feature-card">
+            <div class="f-icon"><span>⚡</span></div>
+            <h3>현지 문제 즉시 해결</h3>
+            <p>발생 즉시 대응하는 현지 케어 시스템</p>
+        </div>
+        <div class="feature-card">
+            <div class="f-icon"><span>📝</span></div>
+            <h3>간편한 견적 & 예약</h3>
+            <p>누구나 쉽고 빠르게 확인하는 예약 시스템</p>
+        </div>
+        <div class="feature-card">
+            <div class="f-icon"><span>💎</span></div>
+            <h3>다이아 회원제 혜택</h3>
+            <p>등급별 제공되는 차별화된 프리미엄 혜택</p>
+        </div>
+        <div class="feature-card">
+            <div class="f-icon"><span>🗺️</span></div>
+            <h3>자유여행 상품 예약</h3>
+            <p>내 맘대로 조합하는 맞춤형 상품 구성</p>
+        </div>
+    </div>
+
+    <!-- 🔥 자세히 보기 버튼 (모달 트리거로 변경) -->
+    <div style="margin-top: 60px;">
+        <button onclick="openIntroModal()" class="view-details-btn" style="border:none; cursor:pointer;">보라카이션의 특별함 자세히 보기 ➔</button>
+    </div>
+</section>
+
+<!-- 🖼️ 상세 보기 모달(Popup) 구조 추가 -->
+<div id="introModal" class="modal-overlay" onclick="closeIntroModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-close" onclick="closeIntroModal()">✕</div>
+        <div class="modal-body">
+            <h2>무조건 '보라카이션'이어야만 하는 이유</h2>
+            
+            <div class="modal-item">
+                <h3><span>01</span> 15년 이상의 자유여행사 운영 경력</h3>
+                <p>고객님들을 위해 여러 국제 위기 상황에도 저희 보라카이션은 쓰러지지 않고 최선을 다해 운영 중에 있습니다. 신뢰를 바탕으로 앞으로도 고객님들의 즐거운 여행의 동반자가 되겠습니다.</p>
+            </div>
+
+            <div class="modal-item">
+                <h3><span>02</span> 원가 수준의 저렴한 견적</h3>
+                <p>업계 최저 수수료만 남기고 예약 대행 진행을 하고 있으며, 마케팅 비용 최소화로 고객님들께 365일 저렴한 가격을 제공하고 있습니다. 또한, 타 업체와 달리 차량 및 투어 대부분 상품을 자체 운영하고 있어 중간 유통 마진이 없습니다.</p>
+            </div>
+
+            <div class="modal-item">
+                <h3><span>03</span> 호텔 특가 및 다양한 프로모션 제공</h3>
+                <p>보라카이 내 주요 리조트 및 호텔과의 직거래를 통해 단독 특가 요금을 확보하고 있습니다. 시즌별로 진행되는 다양한 프로모션을 통해 더욱 합리적인 가격으로 프리미엄 숙소를 이용하실 수 있습니다.</p>
+            </div>
+
+            <div class="modal-item">
+                <h3><span>04</span> 여행업 최고 수준의 CS</h3>
+                <p>체계적인 CS 운영체제로 전문성이 뛰어난 상담사와 세분화된 상담채널 운영으로 고객 만족을 실현하고 있습니다. 예약 전부터 여행이 끝나는 순간까지 세심하게 케어해 드립니다.</p>
+            </div>
+
+            <div class="modal-item">
+                <h3><span>05</span> 현지 문제 발생 시 즉시 해결</h3>
+                <p>각 지역별로 현지 지사를 직접 운영 중에 있어, 현지에서 문제 발생 시 빠른 응대와 안심하고 여행을 할 수 있도록 현지 전담 팀이 즉각적으로 도움을 드리고 있습니다.</p>
+            </div>
+
+            <div class="modal-item">
+                <h3><span>06</span> 간편한 견적 확인 및 예약</h3>
+                <p>자사 홈페이지를 운영하고 있어 항공/숙소/차량/투어 상품을 한눈에 볼 수 있어 편리하고, 간편하게 견적 확인과 예약 접수가 가능합니다. 또한, 타사와 달리 카드 결제가 가능하고(무이자 할부), 실시간 계좌이체도 가능하여 편리함을 더했습니다.</p>
+            </div>
+
+            <div class="modal-item">
+                <h3><span>07</span> 다이아 회원제와 다양한 혜택 제공</h3>
+                <p>네이버 대표 카페를 통해 회원제를 운영하며 등급별 특별 혜택을 제공합니다. 숙소/항공 이용 고객께는 카페 내 VIP 전용 VIP 카드를 발급해 드리며, 이를 통해 현지 제휴처 및 식당에서 최대 10% 할인 등 필수 혜택을 누리실 수 있습니다.</p>
+            </div>
+
+            <div class="modal-item">
+                <h3><span>08</span> 자유여행 상품 예약 가능</h3>
+                <p>항공, 호텔, 투어, 차량, 마사지, 티켓/패스 등 여행에 필요한 모든 상품을 여러 업체 비교하는 번거로움 없이 한곳에서 편리하게 통합 예약이 가능합니다.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 🔥 BEST TOUR 섹션 (메인 전용 고정) -->
+<section class="section-header" style="margin-top: 100px; margin-bottom: 40px;">
+    <p>Premium Recommendations</p>
+    <h2>BEST TOUR</h2>
+</section>
+
+<section class="products">
+    <div class="product" onclick="location.href='pickup-sending.html'">
+        <div class="img-container"><img src="pickup.jpg"></div>
+        <h3>공항 왕복 픽업샌딩</h3>
+    </div>
+    <div class="product" onclick="location.href='hopping-tour.html'">
+        <div class="img-container"><img src="hopping.jpg"></div>
+        <h3>블랙펄 요트호핑투어</h3>
+    </div>
+    <div class="product" onclick="location.href='malumpati.html'">
+        <div class="img-container"><img src="malum1.jpg"></div>
+        <h3>시크릿가든 말룸파티</h3>
+    </div>
+    <div class="product" onclick="location.href='price-list.html'">
+        <div class="img-container"><img src="price.png"></div>
+        <h3>한눈에 요금표</h3>
+    </div>
+</section>
+
+<!-- 🔥 보라카이션 비디오 매거진 섹션 -->
+<section class="magazine-section">
+    <div class="section-header">
+        <p>Boracay Travel Guide</p>
+        <h2>보라카이 다 알려드립니다 !</h2>
+    </div>
+
+    <div class="video-container">
+        <iframe 
+            src="https://www.youtube.com/embed/QEGWM2V_cj4" 
+            title="YouTube video player" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+        </iframe>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="footer-left">
+        <b class="important">상호 : 보라카이션 | 대표 : 윤오현</b><br>
+        서울특별시 중랑구 상봉로 16길 25-3<br>
+        사업자번호 : 498-31-00593<br>
+        daemit@naver.com
+    </div>
+    <div class="footer-right">
+        <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-banner"><div class="kb-text"><span>무엇이든 물어보세요!</span><b>실시간 카톡 상담하기</b></div></a>
+        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-banner"><div class="nb-text"><span>정보가 가득!</span><b>보라카이션 카페 바로가기</b></div></a>
+    </div>
+</footer>
+
+<script src="main.js"></script>
+</body>
 </html>

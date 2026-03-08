@@ -24,7 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('reservation-search');
     const statusFilter = document.getElementById('status-filter');
 
-    const correctPassword = 'password123';
+    // 변경된 계정 정보
+    const correctUsername = 'luca';
+    const correctPassword = 'luca1';
+
     let allReservations = [];
 
     // Check if logged in
@@ -34,12 +37,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
+        const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
-        if (password === correctPassword) {
+
+        if (username === correctUsername && password === correctPassword) {
             sessionStorage.setItem('isAdminLoggedIn', 'true');
             showAdminPanel();
         } else {
-            alert('비밀번호가 일치하지 않습니다.');
+            alert('아이디 또는 비밀번호가 일치하지 않습니다.');
         }
     });
 
@@ -47,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionStorage.removeItem('isAdminLoggedIn');
         loginContainer.style.display = 'flex';
         adminContainer.style.display = 'none';
+        document.getElementById('username').value = '';
         document.getElementById('password').value = '';
     });
 
@@ -59,7 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function fetchReservations() {
         const q = query(collection(db, "reservations"), orderBy("createdAt", "desc"));
         
-        // Real-time listener
         onSnapshot(q, (snapshot) => {
             allReservations = [];
             snapshot.forEach((doc) => {
@@ -170,7 +175,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (chartInstance) chartInstance.destroy();
 
-        // Simple day counting logic
         const days = ['일', '월', '화', '수', '목', '금', '토'];
         const counts = [0, 0, 0, 0, 0, 0, 0];
         
@@ -181,7 +185,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Reorder to Mon-Sun
         const reorderedLabels = ['월', '화', '수', '목', '금', '토', '일'];
         const reorderedCounts = [counts[1], counts[2], counts[3], counts[4], counts[5], counts[6], counts[0]];
 

@@ -59,8 +59,21 @@ body {
     letter-spacing: -0.3px;
     transition: 0.3s ease;
     white-space: nowrap;
+    position: relative;
 }
 .menu a:hover { color: white; transform: translateY(-1px); }
+.menu a.active { color: white; }
+.menu a.active::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 3px;
+    background: white;
+    border-radius: 2px;
+}
 
 .header-right { display: flex; align-items: center; gap: 8px; }
 .mypage-btn { background: rgba(255, 255, 255, 0.2); color: white; padding: 10px 22px; border-radius: 30px; text-decoration: none; font-weight: 700; font-size: 13px; border: 1px solid rgba(255, 255, 255, 0.4); transition: 0.3s; }

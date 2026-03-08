@@ -11,6 +11,97 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- 상품 데이터 정의 ---
+    const productData = {
+        essential: [
+            { title: "공항 왕복 픽업샌딩", img: "pickup.jpg", url: "pickup-sending.html" },
+            { title: "블랙펄 요트호핑투어", img: "hopping.jpg", url: "hopping-tour.html" },
+            { title: "시크릿가든 말룸파티", img: "malumpati.jpg", url: "#" },
+            { title: "한눈에 요금표", img: "price.png", url: "price-list.html" }
+        ],
+        activity: [
+            { title: "스쿠버 다이빙", img: "hop1.jpg", url: "#" },
+            { title: "파라세일링", img: "hop2.jpg", url: "#" },
+            { title: "헬멧 다이빙", img: "hop3.jpg", url: "#" },
+            { title: "선셋 세일링", img: "hop4.jpg", url: "#" }
+        ],
+        massage: [
+            { title: "프리미엄 힐링 스파", img: "hop5.jpg", url: "#" },
+            { title: "럭셔리 전신 마사지", img: "pickup2.jpg", url: "#" },
+            { title: "오가닉 아로마 테라피", img: "pickup3.jpg", url: "#" },
+            { title: "태반 마사지 패키지", img: "pickup4.jpg", url: "#" }
+        ]
+    };
+
+    // --- 탭 전환 및 상품 렌더링 ---
+    const tabLinks = document.querySelectorAll('.tab-link');
+    const productsContainer = document.querySelector('.products');
+    const bestTitle = document.querySelector('.best-title');
+
+    function renderProducts(category) {
+        if (!productsContainer) return;
+        
+        // 컨테이너 초기화
+        productsContainer.innerHTML = '';
+        
+        // 데이터 가져오기
+        const products = productData[category] || [];
+        
+        // 타이틀 업데이트
+        if (bestTitle) {
+            const categoryNames = {
+                essential: "보라카이 필수투어",
+                activity: "액티비티",
+                massage: "마사지"
+            };
+            bestTitle.textContent = categoryNames[category] || "BEST TOUR";
+        }
+
+        // 상품 카드 생성
+        products.forEach(p => {
+            const productDiv = document.createElement('div');
+            productDiv.className = 'product';
+            productDiv.onclick = () => {
+                if (p.url && p.url !== '#') window.open(p.url, '_blank');
+                else alert('상품 상세 페이지 준비 중입니다.');
+            };
+            
+            productDiv.innerHTML = `
+                <div class="img-container">
+                    <img src="${p.img}" alt="${p.title}">
+                </div>
+                <h3>${p.title}</h3>
+            `;
+            productsContainer.appendChild(productDiv);
+        });
+
+        // 애니메이션 효과 (선택 사항)
+        productsContainer.style.opacity = '0';
+        setTimeout(() => {
+            productsContainer.style.opacity = '1';
+            productsContainer.style.transition = 'opacity 0.5s ease';
+        }, 50);
+    }
+
+    if (tabLinks.length > 0) {
+        tabLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // 활성 상태 변경
+                tabLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                
+                // 상품 렌더링
+                const category = link.getAttribute('data-category');
+                renderProducts(category);
+            });
+        });
+
+        // 초기 렌더링 (첫 번째 탭)
+        renderProducts('essential');
+    }
+
     // --- 로그인 상태 확인 및 헤더 UI 업데이트 ---
     updateAuthUI();
 

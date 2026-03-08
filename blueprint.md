@@ -30,21 +30,12 @@ Boracay Sean is a premium travel agency website specializing in Boracay tours an
 - [x] Black Pearl Yacht Hopping Tour detail page (`hopping-tour.html`)
 - [x] Shopping cart functionality (`cart.html`)
 - [x] Booking form and completion pages (`booking-form.html`, `booking-complete.html`)
+- [x] Interactive Tab Navigation for Product Categories (New)
 
-## Roadmap & Tasks (March 3, 2026)
+## Roadmap & Tasks (March 8, 2026)
 
-### 1. Airport Pick-up and Sending Service Implementation
-- [ ] Create `pickup-sending.html` detailing the airport transfer service.
-- [ ] Integrate `pickup.jpg` and relevant information (pricing, car types, process).
-- [ ] Link the new page from `index.html` and the side menu.
-- [ ] Ensure the booking logic (calendar, count, cart) is consistent with existing tours.
-
-### 2. Secret Garden Malumpati Tour (Planned)
-- [ ] Create detail page for Malumpati tour.
-
-### 5. Main Banner Slider Enhancements
-- [x] Add left/right navigation arrows to the banner slider.
-- [x] Implement a floating "SPECIAL EVENT" tag on the banner. (Fixed: Dynamic Dot Generation & Navigation)
-- [x] Add manual navigation logic (moveSlide) and pause auto-slide on hover.
-- [x] Apply Glassmorphism effect to slider arrows for a premium look.
-- [x] Remove "Power Link" behavior and fix dual-banner slide issues.
+### 1. Dynamic Tab-based Product Selection
+- [ ] Replace static top menu links with category tabs: "보라카이 필수투어", "액티비티", "마사지".
+- [ ] Implement a dynamic product selection area that updates based on the active tab.
+- [ ] Add product thumbnails and descriptions for "보라카이 필수투어" (Pick-up/Sending, Black Pearl Yacht Hopping, Malumpati).
+- [ ] Ensure consistent design and responsiveness for the new tab system.

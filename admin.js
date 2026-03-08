@@ -1,8 +1,6 @@
-// Firebase SDK (using ES modules from CDN)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// FIXME: Replace this with your actual Firebase config from the Firebase Console
 const firebaseConfig = {
     apiKey: "AIzaSyD-PLEASE-REPLACE-WITH-REAL-KEY", 
     authDomain: "boracay-sean.firebaseapp.com",
@@ -13,49 +11,27 @@ const firebaseConfig = {
 };
 
 let db = null;
-try {
-    const app = initializeApp(firebaseConfig);
-    db = getFirestore(app);
-} catch (e) {
-    console.warn("Firebase initialization failed.");
-}
+try { const app = initializeApp(firebaseConfig); db = getFirestore(app); } catch (e) {}
 
 document.addEventListener('DOMContentLoaded', () => {
     const loginContainer = document.getElementById('login-container');
     const adminContainer = document.getElementById('admin-container');
     const loginForm = document.getElementById('login-form');
-    const logoutBtn = document.getElementById('logout-btn');
     const reservationsBody = document.getElementById('reservations-body');
-    const searchInput = document.getElementById('reservation-search');
-    const statusFilter = document.getElementById('status-filter');
-
-    const correctUsername = 'luca';
-    const correctPassword = 'luca1';
+    const dateSelector = document.getElementById('date-selector');
+    const dateResList = document.getElementById('date-res-list');
 
     let allReservations = [];
 
-    if (sessionStorage.getItem('isAdminLoggedIn') === 'true') {
-        showAdminPanel();
-    }
-
+    // --- Authentication ---
+    if (sessionStorage.getItem('isAdminLoggedIn') === 'true') { showAdminPanel(); }
     if (loginForm) {
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            if (username === correctUsername && password === correctPassword) {
+            if (document.getElementById('username').value === 'luca' && document.getElementById('password').value === 'luca1') {
                 sessionStorage.setItem('isAdminLoggedIn', 'true');
                 showAdminPanel();
-            } else {
-                alert('아이디 또는 비밀번호가 일치하지 않습니다.');
-            }
-        });
-    }
-
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            sessionStorage.removeItem('isAdminLoggedIn');
-            location.reload();
+            } else { alert('인증 실패'); }
         });
     }
 
@@ -63,132 +39,126 @@ document.addEventListener('DOMContentLoaded', () => {
         loginContainer.style.display = 'none';
         adminContainer.style.display = 'flex';
         fetchReservations();
+        setupSidebar();
     }
 
-    function fetchReservations() {
-        // 로컬 스토리지에서 최근 예약 1개 가져오기 (테스트용)
-        const lastLocal = JSON.parse(localStorage.getItem('last_booking_info') || 'null');
-        
-        if (db) {
-            const q = query(collection(db, "reservations"), orderBy("createdAt", "desc"));
-            onSnapshot(q, (snapshot) => {
-                allReservations = [];
-                snapshot.forEach((doc) => {
-                    allReservations.push({ id: doc.id, ...doc.data() });
-                });
-                // 만약 DB가 비어있고 로컬 정보가 있다면 합치기
-                if (allReservations.length === 0 && lastLocal) {
-                    allReservations.push({ id: 'local-temp', ...lastLocal });
-                }
-                filterAndSearch();
-                updateDashboardStats();
-            }, (error) => {
-                console.error("Firestore Listen Error:", error);
-                useFallback(lastLocal);
+    // --- Sidebar & Tab UI ---
+    function setupSidebar() {
+        const menuItems = document.querySelectorAll('.menu-item.has-sub');
+        menuItems.forEach(item => {
+            item.querySelector('a').addEventListener('click', (e) => {
+                e.preventDefault();
+                item.classList.toggle('active');
             });
-        } else {
-            useFallback(lastLocal);
-        }
+        });
     }
 
-    function useFallback(lastLocal) {
-        allReservations = [
-            { id: 'sample-1', customerKorName: '홍길동(샘플)', contact: '010-1234-5678', items: [{name: '블랙펄 요트호핑'}], totalPrice: 120000, status: '신규', createdAt: {seconds: Date.now()/1000} }
-        ];
-        if (lastLocal) {
-            allReservations.unshift({ id: 'local-recent', ...lastLocal });
-        }
-        filterAndSearch();
+    // --- Data Fetching ---
+    function fetchReservations() {
+        if (!db) { useFallback(); return; }
+        const q = query(collection(db, "reservations"), orderBy("createdAt", "desc"));
+        onSnapshot(q, (snapshot) => {
+            allReservations = [];
+            snapshot.forEach((doc) => allReservations.push({ id: doc.id, ...doc.data() }));
+            renderAll();
+        }, () => useFallback());
+    }
+
+    function useFallback() {
+        const lastLocal = JSON.parse(localStorage.getItem('last_booking_info') || 'null');
+        allReservations = [{ id: 'sample-1', customerKorName: '홍길동(샘플)', contact: '010-1234-5678', items: [{name: '블랙펄 요트호핑'}], totalPrice: 120000, status: '신규', createdAt: {seconds: Date.now()/1000} }];
+        if (lastLocal) allReservations.unshift({ id: 'local-temp', ...lastLocal });
+        renderAll();
+    }
+
+    function renderAll() {
+        renderMainTable(allReservations);
         updateDashboardStats();
+        renderDateList();
     }
 
+    // --- Main Dashboard Logic ---
     function updateDashboardStats() {
         const counts = {
-            신규: allReservations.filter(r => r.status === '신규').length,
-            대기: allReservations.filter(r => r.status === '대기').length,
-            확정: allReservations.filter(r => r.status === '확정').length,
-            완료: allReservations.filter(r => r.status === '완료').length,
-            취소: allReservations.filter(r => r.status === '취소').length
+            new: allReservations.filter(r => r.status === '신규').length,
+            confirmed: allReservations.filter(r => r.status === '확정').length,
+            settled: allReservations.filter(r => r.status === '정산완료').length,
+            cancelled: allReservations.filter(r => r.status === '취소' || r.status === '환불완료').length
         };
-        if(document.getElementById('count-new')) document.getElementById('count-new').textContent = counts.신규;
-        if(document.getElementById('count-pending')) document.getElementById('count-pending').textContent = counts.대기;
-        if(document.getElementById('count-confirmed')) document.getElementById('count-confirmed').textContent = counts.확정;
-        if(document.getElementById('count-completed')) document.getElementById('count-completed').textContent = counts.완료;
-        if(document.getElementById('count-cancelled')) document.getElementById('count-cancelled').textContent = counts.취소;
+        if(document.getElementById('count-new')) document.getElementById('count-new').textContent = counts.new;
+        if(document.getElementById('count-confirmed')) document.getElementById('count-confirmed').textContent = counts.confirmed;
+        if(document.getElementById('count-settled')) document.getElementById('count-settled').textContent = counts.settled;
+        if(document.getElementById('count-cancelled')) document.getElementById('count-cancelled').textContent = counts.cancelled;
     }
 
-    function renderReservations(data) {
+    function renderMainTable(data) {
         if (!reservationsBody) return;
         reservationsBody.innerHTML = '';
-        if (data.length === 0) {
-            reservationsBody.innerHTML = '<tr><td colspan="6" style="padding:40px; color:#999;">표시할 예약 내역이 없습니다.</td></tr>';
-            return;
-        }
         data.forEach(res => {
-            let dateStr = '진행중';
-            if (res.createdAt) {
-                const dateObj = res.createdAt.seconds ? new Date(res.createdAt.seconds * 1000) : new Date(res.createdAt);
-                dateStr = dateObj.toLocaleString('ko-KR');
-            }
-            const itemsSummary = res.items ? res.items.map(i => i.name).join(', ') : '정보 없음';
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${dateStr}</td>
-                <td>
-                    <div class="res-name">${res.customerKorName}</div>
-                    <div class="res-contact">${res.contact}</div>
-                </td>
-                <td><strong>${itemsSummary}</strong><br><small>₩ ${res.totalPrice?.toLocaleString()}</small></td>
-                <td>${res.items?.[0]?.date || '-'}</td>
+                <td>${formatDate(res.createdAt)}</td>
+                <td><b>${res.customerKorName}</b><br><small>${res.contact}</small></td>
+                <td>${res.items?.[0]?.name || '상품정보없음'}</td>
+                <td>₩ ${res.totalPrice?.toLocaleString()}</td>
                 <td><span class="status-badge badge-${getStatusKey(res.status)}">${res.status}</span></td>
                 <td>
                     <button class="btn-sm" onclick="updateStatus('${res.id}', '확정')">확정</button>
-                    <button class="btn-sm" onclick="updateStatus('${res.id}', '취소')">취소</button>
+                    <button class="btn-sm btn-refund" onclick="updateStatus('${res.id}', '취소')">취소/환불</button>
+                    <button class="btn-sm" onclick="updateStatus('${res.id}', '정산완료')">정산</button>
                 </td>
             `;
             reservationsBody.appendChild(row);
         });
     }
 
-    function getStatusKey(status) {
-        if (status === '신규') return 'new-res';
-        if (status === '대기') return 'pending';
-        if (status === '확정') return 'confirmed';
-        if (status === '취소') return 'cancelled';
-        return 'pending';
+    // --- Right Panel: Date Specific ---
+    dateSelector?.addEventListener('change', renderDateList);
+    function renderDateList() {
+        if (!dateResList || !dateSelector.value) return;
+        const selectedDate = dateSelector.value; // YYYY-MM-DD
+        const filtered = allReservations.filter(res => {
+            // 상품별 이용일자 또는 생성일자로 비교
+            const resDate = res.items?.[0]?.date || formatDate(res.createdAt, true);
+            return resDate === selectedDate;
+        });
+
+        dateResList.innerHTML = filtered.length ? '' : '<p class="empty-msg">해당 날짜에 예약이 없습니다.</p>';
+        filtered.forEach(res => {
+            const div = document.createElement('div');
+            div.className = 'date-res-item';
+            div.innerHTML = `
+                <div class="time">${res.status}</div>
+                <div class="name">${res.customerKorName} (${res.contact})</div>
+                <div class="tour">${res.items?.[0]?.name}</div>
+            `;
+            dateResList.appendChild(div);
+        });
     }
 
+    // --- Utils ---
     window.updateStatus = async (id, newStatus) => {
-        if (!db || id.startsWith('local') || id.startsWith('sample')) { 
-            // DB 미연동 시 로컬 상태만 변경 (화면 갱신용)
-            const idx = allReservations.findIndex(r => r.id === id);
-            if (idx !== -1) {
-                allReservations[idx].status = newStatus;
-                filterAndSearch();
-                updateDashboardStats();
-            }
-            return; 
-        }
         if (confirm(`상태를 '${newStatus}'(으)로 변경하시겠습니까?`)) {
-            try {
+            if (db && !id.includes('sample') && !id.includes('local')) {
                 await updateDoc(doc(db, "reservations", id), { status: newStatus });
-            } catch (error) { console.error("Error updating:", error); }
+            } else {
+                const idx = allReservations.findIndex(r => r.id === id);
+                if (idx !== -1) { allReservations[idx].status = newStatus; renderAll(); }
+            }
         }
     };
 
-    function filterAndSearch() {
-        const searchTerm = searchInput?.value.toLowerCase() || "";
-        const statusValue = statusFilter?.value || "all";
-        const filtered = allReservations.filter(res => {
-            const name = res.customerKorName || "";
-            const contact = res.contact || "";
-            const matchesSearch = name.toLowerCase().includes(searchTerm) || contact.toLowerCase().includes(searchTerm);
-            const matchesStatus = statusValue === 'all' || res.status === statusValue;
-            return matchesSearch && matchesStatus;
-        });
-        renderReservations(filtered);
+    function formatDate(ts, onlyDate = false) {
+        if (!ts) return '-';
+        const d = ts.seconds ? new Date(ts.seconds * 1000) : new Date(ts);
+        if (onlyDate) return d.toISOString().split('T')[0];
+        return d.toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
     }
 
-    if(searchInput) searchInput.addEventListener('input', filterAndSearch);
-    if(statusFilter) statusFilter.addEventListener('change', filterAndSearch);
+    function getStatusKey(status) {
+        if (status === '신규') return 'new-res';
+        if (status === '확정') return 'confirmed';
+        if (status === '정산완료') return 'settled';
+        return 'cancelled';
+    }
 });

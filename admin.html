@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 센터 - Boracay Sean</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin.css">
+    <!-- Google Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Chart.js for statistics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="smartstore-admin">
+    <!-- Login Screen -->
+    <div id="login-container" class="login-wrapper">
+        <div class="login-box">
+            <div class="login-logo">
+                <img src="logo.png" alt="Logo">
+                <h2>판매자 센터</h2>
+            </div>
+            <form id="login-form">
+                <div class="input-row">
+                    <input type="password" id="password" placeholder="관리자 비밀번호를 입력하세요" required>
+                </div>
+                <button type="submit" class="btn-login">로그인</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Admin Layout -->
+    <div id="admin-container" class="admin-layout" style="display: none;">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="logo.png" alt="Logo" class="sidebar-logo">
+                <span class="store-name">Boracay Sean</span>
+            </div>
+            <div class="sidebar-profile">
+                <div class="profile-icon"><span class="material-icons">storefront</span></div>
+                <div class="profile-info">
+                    <span class="seller-name">최고 관리자</span>
+                    <span class="seller-level">파워 등급</span>
+                </div>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="active"><a href="#"><span class="material-icons">dashboard</span> 대시보드</a></li>
+                <li><a href="#"><span class="material-icons">list_alt</span> 예약 관리</a></li>
+                <li><a href="#"><span class="material-icons">inventory_2</span> 상품(투어) 관리</a></li>
+                <li><a href="#"><span class="material-icons">people</span> 고객 관리</a></li>
+                <li><a href="#"><span class="material-icons">bar_chart</span> 통계</a></li>
+                <li><a href="#"><span class="material-icons">settings</span> 스토어 설정</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                <div class="header-left">
+                    <button class="menu-toggle"><span class="material-icons">menu</span></button>
+                    <h2>대시보드</h2>
+                </div>
+                <div class="header-right">
+                    <a href="index.html" target="_blank" class="header-btn"><span class="material-icons">open_in_new</span> 내 스토어 보기</a>
+                    <div class="header-divider"></div>
+                    <button class="header-icon"><span class="material-icons">notifications</span><span class="badge-dot"></span></button>
+                    <button id="logout-btn" class="header-btn text-danger">로그아웃</button>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <main class="dashboard-wrap">
+                
+                <!-- Status Board (SmartStore style) -->
+                <section class="panel status-panel">
+                    <div class="panel-header">
+                        <h3>예약/결제 현황 <small>(최근 1개월)</small></h3>
+                    </div>
+                    <div class="status-funnel">
+                        <div class="status-step">
+                            <span class="step-title">신규 예약</span>
+                            <span class="step-count text-primary" id="count-new">0</span>
+                        </div>
+                        <div class="status-divider"><span class="material-icons">chevron_right</span></div>
+                        <div class="status-step">
+                            <span class="step-title">입금 대기</span>
+                            <span class="step-count" id="count-pending">0</span>
+                        </div>
+                        <div class="status-divider"><span class="material-icons">chevron_right</span></div>
+                        <div class="status-step">
+                            <span class="step-title">예약 확정</span>
+                            <span class="step-count text-success" id="count-confirmed">0</span>
+                        </div>
+                        <div class="status-divider"><span class="material-icons">chevron_right</span></div>
+                        <div class="status-step">
+                            <span class="step-title">이용 완료</span>
+                            <span class="step-count" id="count-completed">0</span>
+                        </div>
+                        <div class="status-divider divider-vertical"></div>
+                        <div class="status-step side-step">
+                            <div class="sub-step">
+                                <span>취소/환불</span>
+                                <span class="text-danger" id="count-cancelled">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="dashboard-grid">
+                    <!-- Recent Reservations -->
+                    <section class="panel table-panel">
+                        <div class="panel-header">
+                            <h3>최근 접수된 예약</h3>
+                            <div class="panel-actions">
+                                <select id="status-filter" class="form-select">
+                                    <option value="all">전체 상태</option>
+                                    <option value="신규">신규</option>
+                                    <option value="대기">대기</option>
+                                    <option value="확정">확정</option>
+                                </select>
+                                <div class="search-input">
+                                    <input type="text" id="reservation-search" placeholder="예약자명 검색">
+                                    <span class="material-icons">search</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>예약일시</th>
+                                        <th>예약자명</th>
+                                        <th>상품명(투어)</th>
+                                        <th>이용일자</th>
+                                        <th>상태</th>
+                                        <th>관리</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reservations-body">
+                                    <!-- JS Render -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Notice / Mini Chart -->
+                    <div class="side-panels">
+                        <section class="panel">
+                            <div class="panel-header">
+                                <h3>공지사항</h3>
+                                <a href="#" class="btn-more">더보기</a>
+                            </div>
+                            <ul class="notice-list">
+                                <li><a href="#"><span class="badge-new">N</span>[안내] 보라카이 환경세 인상 안내</a></li>
+                                <li><a href="#">[점검] 예약 시스템 서버 점검 안내 (3/10)</a></li>
+                                <li><a href="#">[이벤트] 봄맞이 호핑투어 리뷰 이벤트</a></li>
+                            </ul>
+                        </section>
+
+                        <section class="panel chart-panel">
+                            <div class="panel-header">
+                                <h3>주간 예약 추이</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="weeklyChart"></canvas>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

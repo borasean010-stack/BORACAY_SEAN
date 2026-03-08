@@ -124,7 +124,23 @@
     </div>
 </div>
 
-<script>
+    // Firebase SDK (using ES modules from CDN)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // FIXME: Replace this with your actual Firebase config from the Firebase Console
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "boracay-sean.firebaseapp.com",
+        projectId: "boracay-sean",
+        storageBucket: "boracay-sean.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
     let hasPickup = false;
     let cartData = [];
     let selectedPayment = '';
@@ -152,35 +168,62 @@
         window.scrollTo(0, 0);
     };
 
-    function selectMethod(el, method) {
+    window.selectMethod = function(el, method) {
         document.querySelectorAll('.method-card').forEach(c => c.classList.remove('selected'));
         el.classList.add('selected');
         selectedPayment = method;
-    }
+    };
 
-    function goBack() {
+    window.goBack = function() {
         document.getElementById('info-section').style.display = 'block';
         document.getElementById('payment-section').style.display = 'none';
         document.getElementById('step2-bar').classList.remove('active');
-    }
+    };
 
-    function submitFinal() {
+    window.submitFinal = async function() {
         if (!selectedPayment) { alert('결제 수단을 선택해 주세요.'); return; }
         
         const btn = document.getElementById('pay-btn');
-        btn.innerText = '결제 요청 중...';
+        btn.innerText = '예약 저장 중...';
         btn.disabled = true;
 
-        const bookingData = {
-            customerKorName: document.getElementById('kor-name').value,
-            contact: document.getElementById('contact').value,
-            paymentMethod: selectedPayment,
-            timestamp: new Date().getTime()
-        };
+        try {
+            // Collect all form data
+            const bookingData = {
+                customerKorName: document.getElementById('kor-name').value,
+                contact: document.getElementById('contact').value,
+                paymentMethod: selectedPayment,
+                items: cartData,
+                totalPrice: cartData.reduce((acc, curr) => acc + (curr.price * curr.count), 0),
+                status: '신규',
+                createdAt: serverTimestamp(),
+                // Optional pickup fields
+                engName: document.getElementById('eng-name').value || '',
+                pickupFlight: document.getElementById('pickup-flight').value || '',
+                pickupResort: document.getElementById('pickup-resort').value || '',
+                sendingFlight: document.getElementById('sending-flight').value || '',
+                sendingResort: document.getElementById('sending-resort').value || ''
+            };
 
-        localStorage.setItem('last_booking_info', JSON.stringify(bookingData));
-        location.href = 'booking-complete.html';
-    }
+            // Save to Firestore
+            const docRef = await addDoc(collection(db, "reservations"), bookingData);
+            console.log("Document written with ID: ", docRef.id);
+
+            localStorage.setItem('last_booking_info', JSON.stringify({ ...bookingData, id: docRef.id }));
+            
+            // Clear cart after successful booking
+            localStorage.removeItem('cart');
+            sessionStorage.removeItem('directBuyItem');
+
+            location.href = 'booking-complete.html';
+        } catch (error) {
+            console.error("Error adding document: ", error);
+            alert('예약 저장 중 오류가 발생했습니다. 다시 시도해 주세요.');
+            btn.innerText = '결제 및 예약 완료';
+            btn.disabled = false;
+        }
+    };
 </script>
+
 </body>
 </html>

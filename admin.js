@@ -1,3 +1,20 @@
+// Firebase SDK (using ES modules from CDN)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+// FIXME: Replace this with your actual Firebase config from the Firebase Console
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "boracay-sean.firebaseapp.com",
+    projectId: "boracay-sean",
+    storageBucket: "boracay-sean.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 document.addEventListener('DOMContentLoaded', () => {
     const loginContainer = document.getElementById('login-container');
     const adminContainer = document.getElementById('admin-container');
@@ -8,16 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusFilter = document.getElementById('status-filter');
 
     const correctPassword = 'password123';
-
-    // Mock Data Store
-    let reservations = [
-        { id: 101, created: '2024-03-08 10:30', name: '김태형', email: 'kim@naver.com', contact: '010-1111-2222', tour: '보라카이 호핑투어', date: '2024-03-15', status: '신규' },
-        { id: 102, created: '2024-03-08 09:15', name: '이민지', email: 'lee@gmail.com', contact: '010-3333-4444', tour: '체험 다이빙', date: '2024-03-16', status: '대기' },
-        { id: 103, created: '2024-03-07 18:20', name: '박준호', email: 'park@kakao.com', contact: '010-5555-6666', tour: '파라세일링', date: '2024-03-12', status: '확정' },
-        { id: 104, created: '2024-03-07 14:00', name: '최유진', email: 'choi@daum.net', contact: '010-7777-8888', tour: '말룸파티 투어', date: '2024-03-20', status: '취소' },
-        { id: 105, created: '2024-03-06 11:11', name: '정수빈', email: 'jung@naver.com', contact: '010-9999-0000', tour: '선셋 세일링', date: '2024-03-10', status: '완료' },
-        { id: 106, created: '2024-03-06 08:45', name: '강동원', email: 'kang@gmail.com', contact: '010-1234-5678', tour: '보라카이 호핑투어', date: '2024-03-18', status: '신규' }
-    ];
+    let allReservations = [];
 
     // Check if logged in
     if (sessionStorage.getItem('isAdminLoggedIn') === 'true') {
@@ -45,17 +53,30 @@ document.addEventListener('DOMContentLoaded', () => {
     function showAdminPanel() {
         loginContainer.style.display = 'none';
         adminContainer.style.display = 'flex';
-        renderReservations(reservations);
-        updateDashboardStats();
-        initChart();
+        fetchReservations();
+    }
+
+    function fetchReservations() {
+        const q = query(collection(db, "reservations"), orderBy("createdAt", "desc"));
+        
+        // Real-time listener
+        onSnapshot(q, (snapshot) => {
+            allReservations = [];
+            snapshot.forEach((doc) => {
+                allReservations.push({ id: doc.id, ...doc.data() });
+            });
+            filterAndSearch();
+            updateDashboardStats();
+            initChart(allReservations);
+        });
     }
 
     function updateDashboardStats() {
-        document.getElementById('count-new').textContent = reservations.filter(r => r.status === '신규').length;
-        document.getElementById('count-pending').textContent = reservations.filter(r => r.status === '대기').length;
-        document.getElementById('count-confirmed').textContent = reservations.filter(r => r.status === '확정').length;
-        document.getElementById('count-completed').textContent = reservations.filter(r => r.status === '완료').length;
-        document.getElementById('count-cancelled').textContent = reservations.filter(r => r.status === '취소').length;
+        document.getElementById('count-new').textContent = allReservations.filter(r => r.status === '신규').length;
+        document.getElementById('count-pending').textContent = allReservations.filter(r => r.status === '대기').length;
+        document.getElementById('count-confirmed').textContent = allReservations.filter(r => r.status === '확정').length;
+        document.getElementById('count-completed').textContent = allReservations.filter(r => r.status === '완료').length;
+        document.getElementById('count-cancelled').textContent = allReservations.filter(r => r.status === '취소').length;
     }
 
     function getStatusBadgeClass(status) {
@@ -64,41 +85,61 @@ document.addEventListener('DOMContentLoaded', () => {
             case '대기': return 'badge-pending';
             case '확정': return 'badge-confirmed';
             case '취소': return 'badge-cancelled';
-            case '완료': return 'badge-pending'; // using pending style for completion for now
+            case '완료': return 'badge-pending'; 
             default: return 'badge-pending';
         }
     }
 
     function renderReservations(data) {
         reservationsBody.innerHTML = '';
+        if (data.length === 0) {
+            reservationsBody.innerHTML = '<tr><td colspan="6" style="padding:40px; color:#999;">표시할 예약 내역이 없습니다.</td></tr>';
+            return;
+        }
+
         data.forEach(res => {
+            const dateStr = res.createdAt ? new Date(res.createdAt.seconds * 1000).toLocaleString() : '진행중';
+            const itemsSummary = res.items ? res.items.map(i => i.name).join(', ') : '정보 없음';
+            
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${res.created.split(' ')[0]}<br><small style="color:#999">${res.created.split(' ')[1]}</small></td>
+                <td>${dateStr.split('. ')[0] + '.' + dateStr.split('. ')[1] + '.' + dateStr.split('. ')[2]}<br><small style="color:#999">${dateStr.split(' ')[4] || ''}</small></td>
                 <td>
-                    <div class="res-name">${res.name}</div>
+                    <div class="res-name">${res.customerKorName}</div>
                     <div class="res-contact">${res.contact}</div>
                 </td>
-                <td><strong>${res.tour}</strong></td>
-                <td>${res.date}</td>
+                <td><strong>${itemsSummary}</strong><br><small>₩ ${res.totalPrice?.toLocaleString()}</small></td>
+                <td>${res.items?.[0]?.date || '-'}</td>
                 <td><span class="status-badge ${getStatusBadgeClass(res.status)}">${res.status}</span></td>
                 <td>
-                    <button class="btn-sm" onclick="updateStatus(${res.id}, '확정')">확정</button>
-                    <button class="btn-sm" onclick="updateStatus(${res.id}, '취소')">취소</button>
+                    <button class="btn-sm" onclick="updateStatus('${res.id}', '확정')">확정</button>
+                    <button class="btn-sm" onclick="updateStatus('${res.id}', '취소')">취소</button>
+                    <button class="btn-sm text-danger" onclick="deleteReservation('${res.id}')">삭제</button>
                 </td>
             `;
             reservationsBody.appendChild(row);
         });
     }
 
-    // Global function for inline buttons
-    window.updateStatus = (id, newStatus) => {
-        const index = reservations.findIndex(r => r.id === id);
-        if (index !== -1) {
-            if (confirm(`예약자 '${reservations[index].name}'의 상태를 '${newStatus}'(으)로 변경하시겠습니까?`)) {
-                reservations[index].status = newStatus;
-                filterAndSearch();
-                updateDashboardStats();
+    window.updateStatus = async (id, newStatus) => {
+        if (confirm(`상태를 '${newStatus}'(으)로 변경하시겠습니까?`)) {
+            try {
+                const docRef = doc(db, "reservations", id);
+                await updateDoc(docRef, { status: newStatus });
+            } catch (error) {
+                console.error("Error updating document: ", error);
+                alert('상태 변경 중 오류가 발생했습니다.');
+            }
+        }
+    };
+
+    window.deleteReservation = async (id) => {
+        if (confirm('정말 이 예약을 삭제하시겠습니까? 데이터가 완전히 사라집니다.')) {
+            try {
+                await deleteDoc(doc(db, "reservations", id));
+            } catch (error) {
+                console.error("Error deleting document: ", error);
+                alert('삭제 중 오류가 발생했습니다.');
             }
         }
     };
@@ -107,9 +148,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const searchTerm = searchInput.value.toLowerCase();
         const statusValue = statusFilter.value;
 
-        const filtered = reservations.filter(res => {
-            const matchesSearch = res.name.toLowerCase().includes(searchTerm) || 
-                                res.contact.toLowerCase().includes(searchTerm);
+        const filtered = allReservations.filter(res => {
+            const name = res.customerKorName || "";
+            const contact = res.contact || "";
+            const matchesSearch = name.toLowerCase().includes(searchTerm) || 
+                                contact.toLowerCase().includes(searchTerm);
             const matchesStatus = statusValue === 'all' || res.status === statusValue;
             return matchesSearch && matchesStatus;
         });
@@ -120,23 +163,35 @@ document.addEventListener('DOMContentLoaded', () => {
     if(searchInput) searchInput.addEventListener('input', filterAndSearch);
     if(statusFilter) statusFilter.addEventListener('change', filterAndSearch);
 
-    // Chart.js Initialization
     let chartInstance = null;
-    function initChart() {
+    function initChart(data) {
         const ctx = document.getElementById('weeklyChart');
         if (!ctx) return;
         
-        if (chartInstance) {
-            chartInstance.destroy();
-        }
+        if (chartInstance) chartInstance.destroy();
+
+        // Simple day counting logic
+        const days = ['일', '월', '화', '수', '목', '금', '토'];
+        const counts = [0, 0, 0, 0, 0, 0, 0];
+        
+        data.forEach(res => {
+            if (res.createdAt) {
+                const dayIdx = new Date(res.createdAt.seconds * 1000).getDay();
+                counts[dayIdx]++;
+            }
+        });
+
+        // Reorder to Mon-Sun
+        const reorderedLabels = ['월', '화', '수', '목', '금', '토', '일'];
+        const reorderedCounts = [counts[1], counts[2], counts[3], counts[4], counts[5], counts[6], counts[0]];
 
         chartInstance = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['월', '화', '수', '목', '금', '토', '일'],
+                labels: reorderedLabels,
                 datasets: [{
                     label: '예약 건수',
-                    data: [12, 19, 15, 22, 28, 35, 30],
+                    data: reorderedCounts,
                     backgroundColor: '#00c73c',
                     borderRadius: 4
                 }]
@@ -144,9 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false }
-                },
+                plugins: { legend: { display: false } },
                 scales: {
                     y: { beginAtZero: true, grid: { borderDash: [2, 4] } },
                     x: { grid: { display: false } }

@@ -42,7 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setupSidebar();
     }
 
-    // --- Sidebar & Tab UI ---
     function setupSidebar() {
         const menuItems = document.querySelectorAll('.menu-item.has-sub');
         menuItems.forEach(item => {
@@ -60,14 +59,42 @@ document.addEventListener('DOMContentLoaded', () => {
         onSnapshot(q, (snapshot) => {
             allReservations = [];
             snapshot.forEach((doc) => allReservations.push({ id: doc.id, ...doc.data() }));
-            renderAll();
+            if (allReservations.length === 0) useFallback();
+            else renderAll();
         }, () => useFallback());
     }
 
     function useFallback() {
+        // 모든 상품에 대한 대량 가상 데이터 생성
+        const products = [
+            "공항 왕복 픽업샌딩", "블랙펄 요트호핑투어", "시크릿가든 말룸파티",
+            "프리다이빙 체험", "보라카이 랜드투어", "JL 스냅사진 촬영",
+            "보라아재 호핑투어", "파라세일링", "체험 다이빙", "헬멧 다이빙",
+            "제트스키", "비치 아일랜드 투어", "선셋 세일링",
+            "아유르베다 스파", "에스파 (S-SPA)", "포세이돈 스파",
+            "마리스 스파", "카바얀 스파", "루나 스파", "보라스파", "헬리오스 스파"
+        ];
+        
+        const names = ["김철수", "이영희", "박지민", "최현우", "정다은", "강민경", "윤도현", "송중기", "한소희", "유재석"];
+        const statuses = ["신규", "확정", "정산완료", "취소"];
+        
+        allReservations = products.map((prod, i) => {
+            const status = statuses[i % statuses.length];
+            return {
+                id: `mock-${i}`,
+                customerKorName: names[i % names.length],
+                contact: `010-${1000+i}-${2000+i}`,
+                items: [{name: prod, date: "2024-03-15"}],
+                totalPrice: 50000 + (i * 10000),
+                status: status,
+                createdAt: {seconds: (Date.now()/1000) - (i * 3600)}
+            };
+        });
+
+        // 사용자가 방금 직접 예약한 정보가 있다면 상단에 추가
         const lastLocal = JSON.parse(localStorage.getItem('last_booking_info') || 'null');
-        allReservations = [{ id: 'sample-1', customerKorName: '홍길동(샘플)', contact: '010-1234-5678', items: [{name: '블랙펄 요트호핑'}], totalPrice: 120000, status: '신규', createdAt: {seconds: Date.now()/1000} }];
         if (lastLocal) allReservations.unshift({ id: 'local-temp', ...lastLocal });
+
         renderAll();
     }
 
@@ -77,7 +104,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderDateList();
     }
 
-    // --- Main Dashboard Logic ---
     function updateDashboardStats() {
         const counts = {
             new: allReservations.filter(r => r.status === '신규').length,
@@ -112,13 +138,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Right Panel: Date Specific ---
     dateSelector?.addEventListener('change', renderDateList);
     function renderDateList() {
         if (!dateResList || !dateSelector.value) return;
-        const selectedDate = dateSelector.value; // YYYY-MM-DD
+        const selectedDate = dateSelector.value;
         const filtered = allReservations.filter(res => {
-            // 상품별 이용일자 또는 생성일자로 비교
             const resDate = res.items?.[0]?.date || formatDate(res.createdAt, true);
             return resDate === selectedDate;
         });
@@ -136,10 +160,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Utils ---
     window.updateStatus = async (id, newStatus) => {
         if (confirm(`상태를 '${newStatus}'(으)로 변경하시겠습니까?`)) {
-            if (db && !id.includes('sample') && !id.includes('local')) {
+            if (db && !id.includes('mock') && !id.includes('local')) {
                 await updateDoc(doc(db, "reservations", id), { status: newStatus });
             } else {
                 const idx = allReservations.findIndex(r => r.id === id);

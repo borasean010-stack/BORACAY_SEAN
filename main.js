@@ -105,13 +105,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (tabLinks.length > 0) {
-        // 메인 페이지(index.html 또는 /)에서는 탭 링크(top bar) 클릭 시 페이지 이동을 기본으로 함
-        // 단, 현재 카테고리 초기 렌더링은 수행
-        const isHomePage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname === '';
+        // 메인 페이지(index.html 또는 /)에서는 동적 렌더링을 하지 않음 (사용자가 고정한 BEST TOUR 유지)
+        const isHomePage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname === '' || window.location.pathname.split('/').pop() === '';
         
-        if (isHomePage) {
-            renderProducts('essential');
-        } else {
+        if (!isHomePage) {
             // 서브 페이지에서는 활성 탭 기반 렌더링
             const activeTab = document.querySelector('.tab-link.active');
             const initialCategory = activeTab ? activeTab.getAttribute('data-category') : 'essential';

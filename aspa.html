@@ -150,10 +150,11 @@
         <!-- 마사지 종류 선택 -->
         <div class="selection-container">
             <span class="selection-label">마사지 종류 선택</span>
-            <div class="selection-tabs" id="type-tabs" style="grid-template-columns: 1fr;">
-                <div class="selection-tab active" onclick="selectType('허니스톤 마사지', this)">허니스톤 마사지</div>
-                <div class="selection-tab" onclick="selectType('코코스파', this)">코코스파</div>
-                <div class="selection-tab" onclick="selectType('허니스톤+코코스파', this)">허니스톤+코코스파</div>
+            <div class="selection-tabs" id="type-tabs" style="grid-template-columns: 1fr 1fr;">
+                <div class="selection-tab active" onclick="selectType('태반마사지', this)">태반마사지</div>
+                <div class="selection-tab" onclick="selectType('스톤마사지', this)">스톤마사지</div>
+                <div class="selection-tab" onclick="selectType('골든링마사지', this)">골든링마사지</div>
+                <div class="selection-tab" onclick="selectType('아유르베다 스파', this)">아유르베다 스파</div>
             </div>
         </div>
 
@@ -194,7 +195,7 @@
     let adultCount = 1;
     let currentDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
-    let selectedType = '허니스톤 마사지';
+    let selectedType = '태반마사지';
     let selectedTime = '12:30';
 
     function selectType(type, el) {

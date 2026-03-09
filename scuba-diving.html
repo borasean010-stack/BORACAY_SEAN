@@ -101,7 +101,7 @@
 
     <div class="menu">
         <a href="essential-tours.html" class="tab-link" data-category="essential">보라카이 필수투어</a>
-        <a href="activities.html" class="tab-link active" data-category="activity">액티비티</a>
+        <a href="activities.html" class="tab-link" data-category="activity">액티비티</a>
         <a href="massage.html" class="tab-link" data-category="massage">마사지</a>
         <a href="price-list.html" class="tab-link">한눈에 요금표</a>
         <a href="cart.html" class="tab-link">장바구니</a>
@@ -179,6 +179,19 @@
             </div>
             <div class="calendar-grid" id="pc-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
         </div>
+
+        <!-- 이용 시간 선택 -->
+        <div class="selection-container">
+            <span class="selection-label">이용 가능 시간 선택</span>
+            <div class="selection-tabs" id="time-tabs">
+                <div class="selection-tab active" onclick="selectTime('09:00', this)">09:00</div>
+                <div class="selection-tab" onclick="selectTime('10:00', this)">10:00</div>
+                <div class="selection-tab" onclick="selectTime('11:00', this)">11:00</div>
+                <div class="selection-tab" onclick="selectTime('13:00', this)">13:00</div>
+                <div class="selection-tab" onclick="selectTime('14:00', this)">14:00</div>
+            </div>
+        </div>
+
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding:15px; background:#fcfcfc; border-radius:15px; border:1px solid #f0f0f0;">
             <span style="font-weight:700; font-size:15px;">인원 (성인)</span>
             <div class="counter">
@@ -205,7 +218,15 @@
     let adultCount = 1;
     let currentDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
-    
+    let selectedTime = '09:00';
+
+    function selectTime(time, el) {
+        selectedTime = time;
+        const tabs = document.querySelectorAll('#time-tabs .selection-tab');
+        tabs.forEach(tab => tab.classList.remove('active'));
+        el.classList.add('active');
+    }
+
     function updateCount(delta) {
         adultCount = Math.max(1, adultCount + delta);
         document.getElementById('pc-count').innerText = adultCount;
@@ -244,12 +265,12 @@
         }
     }
     function handleBuy() {
-        const item = { name: "체험 다이빙", price: 50000, count: adultCount, date: selectedDate };
+        const item = { name: "체험 다이빙", price: 50000, count: adultCount, date: selectedDate, time: selectedTime };
         sessionStorage.setItem('directBuyItem', JSON.stringify(item));
         window.open('booking-form.html', '_blank');
     }
     function addToCart() {
-        const item = { name: "체험 다이빙", price: 50000, count: adultCount, date: selectedDate };
+        const item = { name: "체험 다이빙", price: 50000, count: adultCount, date: selectedDate, time: selectedTime };
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         cart.push(item);
         localStorage.setItem('cart', JSON.stringify(cart));

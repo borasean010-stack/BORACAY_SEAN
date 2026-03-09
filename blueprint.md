@@ -16,13 +16,14 @@ This project is a reservation website for tours and activities in Boracay. It al
 
 ### 1. Activity & Spa Reservation Options
 * **Time Selection:** Added specialized time selection tabs for activities and spas to ensure accurate scheduling.
-    * Activities (Parasailing, Helmet Diving, Jet Ski): 09:00, 10:00, 11:00, 13:00, 14:00.
+    * Activities (Parasailing, Helmet Diving, Jet Ski, Introductory Diving): 09:00, 10:00, 11:00, 13:00, 14:00.
     * Spas (Luna, Bora, S-SPA, Helios, Ayurveda): 12:30, 14:30, 16:30, 19:30.
 * **Massage Type Selection:** Added product type selection for spa services to allow users to choose specific programs.
     * Luna Spa: Placenta, Stone, Noni Seed Oil, Tiger Oil massages.
     * Bora Spa: Honey, Placenta massages.
     * S-SPA (에스파): Pure Oil, Placenta, Stone, Hilot, Four-hand massages.
-    * Helios & Ayurveda Spas: Honey Stone, Coco Spa, Honey Stone + Coco Spa.
+    * Helios Spa: Honey Stone, Coco Spa, Honey Stone + Coco Spa.
+    * Ayurveda Spa: Placenta, Stone, Golden Ring, Ayurveda Spa.
 
 ### 2. UI/UX Improvements
 * **Sophisticated Counter Design:** Redesigned the quantity selection buttons (+/-) with a modern, clean aesthetic using better spacing, subtle shadows, and responsive feedback.

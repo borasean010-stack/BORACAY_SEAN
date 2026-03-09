@@ -184,6 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${res.status === '신규' ? `<button class="ss-btn-action" style="background:var(--ss-blue); color:white; border:none;" onclick="updateStatus('${res.id}', '예약완료')">완료</button>` : ''}
                         ${res.status === '예약완료' ? `<button class="ss-btn-action" style="background:var(--ss-green); color:white; border:none;" onclick="confirmPurchase('${res.id}')">확정</button>` : ''}
                         ${res.status === '확정' ? `<button class="ss-btn-action" style="color:red" onclick="updateStatus('${res.id}', '취소')">취소</button>` : ''}
+                        ${(res.status === '취소' || res.status === '취소요청') ? `<button class="ss-btn-action" style="background:#666; color:white; border:none;" onclick="updateStatus('${res.id}', '신규')">복구</button>` : ''}
                     </div>
                 </td>
             `;

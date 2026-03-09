@@ -38,10 +38,22 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loginForm) {
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            if (document.getElementById('username').value === 'luca' && document.getElementById('password').value === 'luca1') {
+            const id = document.getElementById('username').value;
+            const pw = document.getElementById('password').value;
+
+            const admins = {
+                'luca': 'luca1',
+                'daemit': 'nimo@dori0902',
+                'windy': 'windy1'
+            };
+
+            if (admins[id] && admins[id] === pw) {
                 sessionStorage.setItem('isAdminLoggedIn', 'true');
+                sessionStorage.setItem('adminId', id);
                 showAdminPanel();
-            } else { alert('인증 실패'); }
+            } else { 
+                alert('아이디 또는 비밀번호가 일치하지 않습니다.'); 
+            }
         });
     }
 

@@ -179,6 +179,8 @@
         btn.innerText = '예약 처리 중...';
         btn.disabled = true;
 
+        const pickupItem = cartData.find(i => i.name.includes('픽업샌딩'));
+        
         const bookingData = {
             customerKorName: document.getElementById('kor-name').value,
             contact: document.getElementById('contact').value,
@@ -188,6 +190,8 @@
             status: '신규',
             createdAt: serverTimestamp ? serverTimestamp() : new Date(),
             engName: document.getElementById('eng-name').value || '',
+            pickupDate: pickupItem ? pickupItem.pickupDate : '',
+            sendingDate: pickupItem ? pickupItem.sendingDate : '',
             pickupFlight: document.getElementById('pickup-flight').value || '',
             pickupResort: document.getElementById('pickup-resort').value || '',
             sendingFlight: document.getElementById('sending-flight').value || '',

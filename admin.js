@@ -67,7 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.classList.add('active');
                 
                 currentMode = btn.dataset.mode;
-                // Only filter by tab if explicitly from sidebar 'confirmed' or 'canceled'
                 currentTab = btn.dataset.tab || 'all';
                 
                 if (salesView) salesView.style.display = (currentMode === 'sales') ? 'block' : 'none';
@@ -86,9 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         });
 
-        // Summary cards are now stat-only (no click logic)
-
-        // Search
         const searchInput = document.getElementById('res-search');
         if (searchInput) {
             searchInput.oninput = (e) => renderMainTable(e.target.value.toLowerCase());
@@ -170,15 +166,16 @@ document.addEventListener('DOMContentLoaded', () => {
         filtered.forEach(res => {
             const row = document.createElement('tr');
             const item = res.items?.[0] || {};
-            // 픽업일은 상품명에 '픽업샌딩'이 포함된 경우 이용일과 동일하게 표시 (혹은 별도 필드)
-            const pickupDate = res.items?.some(i => i.name.includes('픽업')) ? item.date : '-';
+            // 이용일 처리 (item.date가 없으면 res.pickupDate 또는 res.date 시도)
+            const usageDate = item.date || res.pickupDate || res.date || '-';
+            const pickupDisplayDate = res.pickupDate || '-';
             
             row.innerHTML = `
                 <td>${res.id.slice(-6)}</td>
                 <td><b>${res.customerKorName}</b></td>
                 <td>${item.name}${res.items?.length > 1 ? ` 외 ${res.items.length-1}` : ''}</td>
-                <td>${item.date || '-'}</td>
-                <td>${pickupDate}</td>
+                <td>${usageDate}</td>
+                <td>${pickupDisplayDate}</td>
                 <td>₩ ${res.totalPrice?.toLocaleString()}</td>
                 <td><span class="ss-badge ss-badge-${res.status}">${res.status === '신규' ? '신규주문' : res.status}</span></td>
                 <td>
@@ -197,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderDailySchedule() {
         if (!scheduleList) return;
         const today = getTodayStr();
-        const todays = allReservations.filter(res => res.items?.some(i => i.date === today) && res.status !== '취소');
+        const todays = allReservations.filter(res => (res.items?.some(i => i.date === today) || res.pickupDate === today || res.sendingDate === today) && res.status !== '취소');
         
         if (!todays.length) {
             scheduleList.innerHTML = '<p class="empty-msg-v2">오늘 예정된 스케줄이 없습니다.</p>';
@@ -205,10 +202,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const categories = {
-            "픽업/샌딩": todays.filter(r => r.items.some(i => i.name.includes('픽업'))),
-            "호핑투어": todays.filter(r => r.items.some(i => i.name.includes('호핑'))),
-            "말룸파티": todays.filter(r => r.items.some(i => i.name.includes('말룸'))),
-            "액티비티/기타": todays.filter(r => r.items.some(i => !i.name.includes('픽업') && !i.name.includes('호핑') && !i.name.includes('말룸')))
+            "픽업/샌딩": todays.filter(r => r.items?.some(i => i.name.includes('픽업')) || r.pickupDate === today || r.sendingDate === today),
+            "호핑투어": todays.filter(r => r.items?.some(i => i.name.includes('호핑'))),
+            "말룸파티": todays.filter(r => r.items?.some(i => i.name.includes('말룸'))),
+            "액티비티/기타": todays.filter(r => r.items?.some(i => !i.name.includes('픽업') && !i.name.includes('호핑') && !i.name.includes('말룸')))
         };
 
         scheduleList.innerHTML = '';
@@ -221,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const item = document.createElement('div');
                 item.className = 'schedule-item-v2';
                 const statusColor = res.status === '확정' ? '#888' : 'var(--ss-text-main)';
-                const resItem = res.items.find(i => i.date === today) || res.items[0];
+                const resItem = res.items?.find(i => i.date === today) || res.items?.[0] || { name: '예약상품', time: '종일' };
                 item.innerHTML = `
                     <div class="time-tag">${resItem.time || '종일'}</div>
                     <div class="info" style="color:${statusColor}">
@@ -241,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const confirmed = allReservations.filter(r => r.status === '확정');
         const groupedByDate = {};
         confirmed.forEach(r => {
-            const date = r.items?.[0]?.date || '미정';
+            const date = r.items?.[0]?.date || r.pickupDate || '미정';
             if (!groupedByDate[date]) groupedByDate[date] = { count: 0, amount: 0 };
             groupedByDate[date].count++;
             groupedByDate[date].amount += (r.totalPrice || 0);
@@ -301,19 +298,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!res) return;
         const modal = document.getElementById('res-detail-modal');
         const body = document.getElementById('modal-body');
-        const itemsHtml = res.items.map(item => `
+        const itemsHtml = res.items?.map(item => `
             <div style="background:#f8f9fa; padding:15px; border-radius:12px; margin-bottom:10px; border:1px solid #eee;">
                 <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
                     <b style="color:#ff6a00; font-size:16px;">${item.name}</b>
                     <span style="font-weight:800;">${item.count}명</span>
                 </div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:14px; color:#666;">
-                    <div>📅 이용일: <b>${item.date}</b></div>
+                    <div>📅 이용일: <b>${item.date || '-'}</b></div>
                     <div>⏰ 시간: <b>${item.time || '정보없음'}</b></div>
                     ${item.type ? `<div style="grid-column: span 2; margin-top:5px; padding-top:5px; border-top:1px dashed #ddd;">✨ 선택종류: <b style="color:#333;">${item.type}</b></div>` : ''}
                 </div>
             </div>
-        `).join('');
+        `).join('') || '예약 상품 정보가 없습니다.';
 
         body.innerHTML = `
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:25px;">
@@ -327,10 +324,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div>
                     <h4 style="margin-bottom:15px; border-left:4px solid #ff6a00; padding-left:10px; color:#333;">✈️ 픽업/샌딩 상세</h4>
-                    <div class="detail-row"><span class="label">픽업 항공편</span><span class="val">${res.pickupFlight || '-'}</span></div>
-                    <div class="detail-row"><span class="label">픽업 호텔</span><span class="val">${res.pickupResort || '-'}</span></div>
-                    <div class="detail-row"><span class="label">샌딩 항공편</span><span class="val">${res.sendingFlight || '-'}</span></div>
-                    <div class="detail-row"><span class="label">샌딩 호텔</span><span class="val">${res.sendingResort || '-'}</span></div>
+                    <div style="background:#fffcf5; padding:15px; border-radius:12px; border:1px solid #ffedcc;">
+                        <div class="detail-row"><span class="label">픽업날짜</span><span class="val" style="color:#ff6a00;">${res.pickupDate || '-'}</span></div>
+                        <div class="detail-row"><span class="label">픽업항공</span><span class="val">${res.pickupFlight || '-'}</span></div>
+                        <div class="detail-row"><span class="label">픽업호텔</span><span class="val">${res.pickupResort || '-'}</span></div>
+                        <hr style="margin:10px 0; border:none; border-top:1px dashed #ddd;">
+                        <div class="detail-row"><span class="label">샌딩날짜</span><span class="val" style="color:#007aff;">${res.sendingDate || '-'}</span></div>
+                        <div class="detail-row"><span class="label">샌딩항공</span><span class="val">${res.sendingFlight || '-'}</span></div>
+                        <div class="detail-row"><span class="label">샌딩호텔</span><span class="val">${res.sendingResort || '-'}</span></div>
+                    </div>
                 </div>
             </div>
             <div style="margin-top:30px;">
@@ -353,7 +355,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.goToNewOrders = () => {
-        // Now just search for new orders or stay on all
         const searchInput = document.getElementById('res-search');
         if (searchInput) {
             searchInput.value = '';

@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let allReservations = [];
     let currentMode = 'sales'; 
-    let currentTab = '신규'; 
+    let currentTab = 'all'; // Always show 'all' by default for the main table
 
     // --- Authentication ---
     if (sessionStorage.getItem('isAdminLoggedIn') === 'true') { showAdminPanel(); }
@@ -57,7 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Navigation ---
     function initNavigation() {
-        // Main Mode Switch (Sales vs Settlement) - FIXED
         document.querySelectorAll('.sidebar-btn').forEach(btn => {
             if (btn.classList.contains('logout-trigger')) return;
             if (btn.id === 'logout-btn') return;
@@ -68,19 +67,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.classList.add('active');
                 
                 currentMode = btn.dataset.mode;
-                if (btn.dataset.tab) {
-                    currentTab = btn.dataset.tab;
-                }
+                // Only filter by tab if explicitly from sidebar 'confirmed' or 'canceled'
+                currentTab = btn.dataset.tab || 'all';
                 
                 if (salesView) salesView.style.display = (currentMode === 'sales') ? 'block' : 'none';
                 if (settlementView) settlementView.style.display = (currentMode === 'settlement') ? 'block' : 'none';
                 
                 const viewTitle = document.getElementById('view-title');
-                if (viewTitle) viewTitle.textContent = (currentMode === 'sales' && currentTab === 'all') ? '주문 통합검색' : btn.textContent.trim();
+                if (viewTitle) viewTitle.textContent = btn.textContent.trim();
                 
                 const subTitle = document.getElementById('table-sub-title');
                 if (subTitle) {
-                    if (currentTab === 'all') subTitle.textContent = '전체 주문 내역';
+                    if (currentTab === 'all') subTitle.textContent = '전체 예약 내역';
                     else subTitle.textContent = `${currentTab} 내역`;
                 }
 
@@ -88,27 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         });
 
-        // Sales Sub-tabs (Top Counters)
-        document.querySelectorAll('.summary-card').forEach(card => {
-            if (!card.dataset.tab) return;
-            card.onclick = () => {
-                document.querySelectorAll('.summary-card').forEach(c => c.classList.remove('active'));
-                card.classList.add('active');
-                currentTab = card.dataset.tab;
-                const subTitle = document.getElementById('table-sub-title');
-                if (subTitle) subTitle.textContent = `${currentTab} 내역`;
-                
-                // Sidebar also sync
-                document.querySelectorAll('.sidebar-btn').forEach(b => {
-                    b.classList.remove('active');
-                    if (b.dataset.mode === 'sales' && b.dataset.tab === (currentTab === '확정' ? '확정' : 'all')) {
-                        b.classList.add('active');
-                    }
-                });
-
-                renderMainTable();
-            };
-        });
+        // Summary cards are now stat-only (no click logic)
 
         // Search
         const searchInput = document.getElementById('res-search');
@@ -124,20 +102,13 @@ document.addEventListener('DOMContentLoaded', () => {
             useFallback(); 
             return; 
         }
-        
-        // 정렬(orderBy)을 제거하여 인덱스 생성 전에도 데이터가 보이도록 함
         const q = query(collection(db, "reservations")); 
-        
         onSnapshot(q, (snapshot) => {
-            console.log("실시간 데이터 수신:", snapshot.size, "건");
             allReservations = [];
             snapshot.forEach((doc) => {
                 allReservations.push({ id: doc.id, ...doc.data() });
             });
-            
-            // 데이터 수신 후 클라이언트 측에서 정렬
             allReservations.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-            
             renderAll();
         }, (error) => {
             console.error("데이터 로드 중 오류 발생:", error);
@@ -192,26 +163,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (filtered.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="7" class="empty-msg-v2">조회된 내역이 없습니다.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="8" class="empty-msg-v2">조회된 내역이 없습니다.</td></tr>';
             return;
         }
 
         filtered.forEach(res => {
             const row = document.createElement('tr');
+            const item = res.items?.[0] || {};
+            // 픽업일은 상품명에 '픽업샌딩'이 포함된 경우 이용일과 동일하게 표시 (혹은 별도 필드)
+            const pickupDate = res.items?.some(i => i.name.includes('픽업')) ? item.date : '-';
+            
             row.innerHTML = `
-                <td>${res.id}</td>
-                <td>${res.items?.[0]?.date || '-'}</td>
+                <td>${res.id.slice(-6)}</td>
                 <td><b>${res.customerKorName}</b></td>
-                <td>${res.items?.[0]?.name}</td>
+                <td>${item.name}${res.items?.length > 1 ? ` 외 ${res.items.length-1}` : ''}</td>
+                <td>${item.date || '-'}</td>
+                <td>${pickupDate}</td>
                 <td>₩ ${res.totalPrice?.toLocaleString()}</td>
-                <td><span class="ss-badge ss-badge-${res.status}">${res.status}</span></td>
+                <td><span class="ss-badge ss-badge-${res.status}">${res.status === '신규' ? '신규주문' : res.status}</span></td>
                 <td>
                     <div style="display:flex; gap:5px; justify-content:center;">
-                        ${res.status === '신규' ? `<button class="ss-btn-action" onclick="updateStatus('${res.id}', '예약완료')">예약완료 처리</button>` : ''}
-                        ${(res.status === '예약완료' || res.status === '확정') ? `<button class="ss-btn-action" onclick="showDetail('${res.id}')">상세 정보</button>` : ''}
-                        ${res.status === '예약완료' ? `<button class="ss-btn-action" onclick="confirmPurchase('${res.id}')">구매확정</button>` : ''}
-                        ${res.status === '확정' ? `<button class="ss-btn-action" style="color:red" onclick="updateStatus('${res.id}', '취소')">취소/환불</button>` : ''}
-                        ${res.status === '취소' ? `<button class="ss-btn-action" onclick="updateStatus('${res.id}', '신규')">재주문 처리</button>` : ''}
+                        <button class="ss-btn-action" onclick="showDetail('${res.id}')">상세</button>
+                        ${res.status === '신규' ? `<button class="ss-btn-action" style="background:var(--ss-blue); color:white; border:none;" onclick="updateStatus('${res.id}', '예약완료')">완료</button>` : ''}
+                        ${res.status === '예약완료' ? `<button class="ss-btn-action" style="background:var(--ss-green); color:white; border:none;" onclick="confirmPurchase('${res.id}')">확정</button>` : ''}
+                        ${res.status === '확정' ? `<button class="ss-btn-action" style="color:red" onclick="updateStatus('${res.id}', '취소')">취소</button>` : ''}
                     </div>
                 </td>
             `;
@@ -222,9 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderDailySchedule() {
         if (!scheduleList) return;
         const today = getTodayStr();
-        
-        // FIXED: 구매 확정(확정) 상태도 포함하여 필터링 (취소만 제외)
-        const todays = allReservations.filter(res => (res.items?.[0]?.date === today) && res.status !== '취소');
+        const todays = allReservations.filter(res => res.items?.some(i => i.date === today) && res.status !== '취소');
         
         if (!todays.length) {
             scheduleList.innerHTML = '<p class="empty-msg-v2">오늘 예정된 스케줄이 없습니다.</p>';
@@ -232,10 +205,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const categories = {
-            "픽업/샌딩": todays.filter(r => r.items[0].name.includes('픽업')),
-            "호핑투어": todays.filter(r => r.items[0].name.includes('호핑')),
-            "말룸파티": todays.filter(r => r.items[0].name.includes('말룸')),
-            "액티비티/기타": todays.filter(r => !r.items[0].name.includes('픽업') && !r.items[0].name.includes('호핑') && !r.items[0].name.includes('말룸'))
+            "픽업/샌딩": todays.filter(r => r.items.some(i => i.name.includes('픽업'))),
+            "호핑투어": todays.filter(r => r.items.some(i => i.name.includes('호핑'))),
+            "말룸파티": todays.filter(r => r.items.some(i => i.name.includes('말룸'))),
+            "액티비티/기타": todays.filter(r => r.items.some(i => !i.name.includes('픽업') && !i.name.includes('호핑') && !i.name.includes('말룸')))
         };
 
         scheduleList.innerHTML = '';
@@ -247,12 +220,12 @@ document.addEventListener('DOMContentLoaded', () => {
             list.forEach(res => {
                 const item = document.createElement('div');
                 item.className = 'schedule-item-v2';
-                // 상태 표시 추가하여 확정된 건인지 구분 가능하게 함
                 const statusColor = res.status === '확정' ? '#888' : 'var(--ss-text-main)';
+                const resItem = res.items.find(i => i.date === today) || res.items[0];
                 item.innerHTML = `
-                    <div class="time-tag">${res.items[0].time || '종일'}</div>
+                    <div class="time-tag">${resItem.time || '종일'}</div>
                     <div class="info" style="color:${statusColor}">
-                        <b>${res.customerKorName}</b> | ${res.items[0].name}
+                        <b>${res.customerKorName}</b> | ${resItem.name}
                         ${res.status === '확정' ? ' <small>(확정)</small>' : ''}
                     </div>
                 `;
@@ -265,23 +238,19 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderSettlementTable() {
         if (!settleTableBody) return;
         settleTableBody.innerHTML = '';
-        
         const confirmed = allReservations.filter(r => r.status === '확정');
         const groupedByDate = {};
-
         confirmed.forEach(r => {
             const date = r.items?.[0]?.date || '미정';
             if (!groupedByDate[date]) groupedByDate[date] = { count: 0, amount: 0 };
             groupedByDate[date].count++;
             groupedByDate[date].amount += (r.totalPrice || 0);
         });
-
         const dates = Object.keys(groupedByDate).sort().reverse();
         if (dates.length === 0) {
             settleTableBody.innerHTML = '<tr><td colspan="4" class="empty-msg-v2">정산 데이터가 없습니다.</td></tr>';
             return;
         }
-
         dates.forEach(date => {
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -316,7 +285,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const idx = allReservations.findIndex(r => r.id === id);
             if (idx !== -1) { 
                 allReservations[idx].status = newStatus; 
-                // 캐시 업데이트
                 localStorage.setItem('admin_reservations_cache', JSON.stringify(allReservations));
                 renderAll(); 
             }
@@ -326,10 +294,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.confirmPurchase = async (id) => {
         if (!confirm('구매확정 처리하시겠습니까?')) return;
         await window.updateStatus(id, '확정');
-        
-        // 구매확정 관리(확정) 탭으로 자동 이동
-        const confirmCard = document.querySelector('.summary-card[data-tab="확정"]');
-        if (confirmCard) confirmCard.click();
     };
 
     window.showDetail = (id) => {
@@ -337,8 +301,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!res) return;
         const modal = document.getElementById('res-detail-modal');
         const body = document.getElementById('modal-body');
-        
-        // 예약 상품 목록 구성 (마사지 종류/타입 포함)
         const itemsHtml = res.items.map(item => `
             <div style="background:#f8f9fa; padding:15px; border-radius:12px; margin-bottom:10px; border:1px solid #eee;">
                 <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
@@ -391,9 +353,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.goToNewOrders = () => {
-        // Find '신규' summary card and click it
-        const newCard = document.querySelector('.summary-card[data-tab="신규"]');
-        if (newCard) newCard.click();
+        // Now just search for new orders or stay on all
+        const searchInput = document.getElementById('res-search');
+        if (searchInput) {
+            searchInput.value = '';
+            renderMainTable();
+        }
     };
 
     function getTodayStr() { return new Date().toISOString().split('T')[0]; }

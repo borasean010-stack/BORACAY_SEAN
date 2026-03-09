@@ -78,17 +78,17 @@
             <!-- Mode: Sales Management -->
             <div id="sales-view">
                 <div class="dashboard-summary">
-                    <div class="summary-card active" data-tab="신규">
+                    <div class="summary-card stat-card" id="stat-new">
                         <span class="label">신규 주문</span>
                         <span class="value" id="cnt-new">0</span>
                     </div>
                     <div class="status-arrow-v2"><span class="material-icons">chevron_right</span></div>
-                    <div class="summary-card" data-tab="예약완료">
+                    <div class="summary-card stat-card" id="stat-completed">
                         <span class="label">예약 완료</span>
                         <span class="value" id="cnt-completed">0</span>
                     </div>
                     <div class="status-arrow-v2"><span class="material-icons">chevron_right</span></div>
-                    <div class="summary-card" data-tab="확정">
+                    <div class="summary-card stat-card" id="stat-confirmed">
                         <span class="label">구매 확정</span>
                         <span class="value" id="cnt-confirmed">0</span>
                     </div>
@@ -97,7 +97,7 @@
                 <main class="content-grid">
                     <section class="main-section">
                         <div class="section-header">
-                            <h3 id="table-sub-title">신규 주문 내역</h3>
+                            <h3 id="table-sub-title">전체 예약 내역</h3>
                             <div class="search-box">
                                 <span class="material-icons">search</span>
                                 <input type="text" id="res-search" placeholder="예약자명 검색...">
@@ -108,10 +108,11 @@
                                 <thead>
                                     <tr>
                                         <th>예약번호</th>
-                                        <th>이용일자</th>
                                         <th>예약자</th>
-                                        <th>상품명</th>
-                                        <th>결제금액</th>
+                                        <th>상품</th>
+                                        <th>이용일</th>
+                                        <th>픽업일</th>
+                                        <th>금액</th>
                                         <th>상태</th>
                                         <th>관리</th>
                                     </tr>

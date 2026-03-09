@@ -338,38 +338,48 @@ document.addEventListener('DOMContentLoaded', () => {
         const modal = document.getElementById('res-detail-modal');
         const body = document.getElementById('modal-body');
         
-        // 예약 상품 목록 구성
+        // 예약 상품 목록 구성 (마사지 종류/타입 포함)
         const itemsHtml = res.items.map(item => `
-            <div style="background:#f8f9fa; padding:10px; border-radius:8px; margin-bottom:5px;">
-                <b style="color:#ff6a00;">${item.name}</b> (${item.count}명)<br>
-                <small>날짜: ${item.date} | 시간: ${item.time || '정보없음'}</small>
+            <div style="background:#f8f9fa; padding:15px; border-radius:12px; margin-bottom:10px; border:1px solid #eee;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                    <b style="color:#ff6a00; font-size:16px;">${item.name}</b>
+                    <span style="font-weight:800;">${item.count}명</span>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:14px; color:#666;">
+                    <div>📅 이용일: <b>${item.date}</b></div>
+                    <div>⏰ 시간: <b>${item.time || '정보없음'}</b></div>
+                    ${item.type ? `<div style="grid-column: span 2; margin-top:5px; padding-top:5px; border-top:1px dashed #ddd;">✨ 선택종류: <b style="color:#333;">${item.type}</b></div>` : ''}
+                </div>
             </div>
         `).join('');
 
         body.innerHTML = `
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:25px;">
                 <div>
-                    <h4 style="margin-bottom:10px; border-bottom:2px solid #eee; padding-bottom:5px;">👤 고객 정보</h4>
-                    <div class="detail-row"><span class="label">예약자명</span><span class="val">${res.customerKorName}</span></div>
-                    <div class="detail-row"><span class="label">영문명</span><span class="val">${res.engName || '-'}</span></div>
-                    <div class="detail-row"><span class="label">연락처</span><span class="val">${res.contact || '-'}</span></div>
+                    <h4 style="margin-bottom:15px; border-left:4px solid #ff6a00; padding-left:10px; color:#333;">👤 예약자 정보</h4>
+                    <div class="detail-row"><span class="label">한글 성함</span><span class="val">${res.customerKorName}</span></div>
+                    <div class="detail-row"><span class="label">영문 성함</span><span class="val">${res.engName || '-'}</span></div>
+                    <div class="detail-row"><span class="label">연락처/ID</span><span class="val">${res.contact || '-'}</span></div>
                     <div class="detail-row"><span class="label">결제수단</span><span class="val">${res.paymentMethod || '-'}</span></div>
-                    <div class="detail-row"><span class="label">총 결제액</span><span class="val" style="color:#ff6a00; font-weight:800;">₩ ${res.totalPrice.toLocaleString()}</span></div>
+                    <div class="detail-row"><span class="label">총 결제금액</span><span class="val" style="color:#ff6a00; font-weight:900; font-size:18px;">₩ ${res.totalPrice?.toLocaleString()}</span></div>
                 </div>
                 <div>
-                    <h4 style="margin-bottom:10px; border-bottom:2px solid #eee; padding-bottom:5px;">✈️ 픽업/샌딩 정보</h4>
-                    <div class="detail-row"><span class="label">픽업항공</span><span class="val">${res.pickupFlight || '-'}</span></div>
-                    <div class="detail-row"><span class="label">픽업호텔</span><span class="val">${res.pickupResort || '-'}</span></div>
-                    <div class="detail-row"><span class="label">샌딩항공</span><span class="val">${res.sendingFlight || '-'}</span></div>
-                    <div class="detail-row"><span class="label">샌딩호텔</span><span class="val">${res.sendingResort || '-'}</span></div>
+                    <h4 style="margin-bottom:15px; border-left:4px solid #ff6a00; padding-left:10px; color:#333;">✈️ 픽업/샌딩 상세</h4>
+                    <div class="detail-row"><span class="label">픽업 항공편</span><span class="val">${res.pickupFlight || '-'}</span></div>
+                    <div class="detail-row"><span class="label">픽업 호텔</span><span class="val">${res.pickupResort || '-'}</span></div>
+                    <div class="detail-row"><span class="label">샌딩 항공편</span><span class="val">${res.sendingFlight || '-'}</span></div>
+                    <div class="detail-row"><span class="label">샌딩 호텔</span><span class="val">${res.sendingResort || '-'}</span></div>
                 </div>
             </div>
-            <div style="margin-top:20px;">
-                <h4 style="margin-bottom:10px; border-bottom:2px solid #eee; padding-bottom:5px;">🛒 예약 상품</h4>
-                ${itemsHtml}
+            <div style="margin-top:30px;">
+                <h4 style="margin-bottom:15px; border-left:4px solid #ff6a00; padding-left:10px; color:#333;">🛒 예약 상품 상세</h4>
+                <div style="display:grid; grid-template-columns: 1fr; gap:10px;">
+                    ${itemsHtml}
+                </div>
             </div>
-            <div style="margin-top:15px; font-size:12px; color:#999; text-align:right;">
-                예약 ID: ${res.id} | 접수일시: ${res.createdAt?.toDate ? res.createdAt.toDate().toLocaleString() : '-'}
+            <div style="margin-top:20px; padding-top:15px; border-top:1px solid #eee; font-size:12px; color:#bbb; display:flex; justify-content:space-between;">
+                <span>예약 ID: ${res.id}</span>
+                <span>접수일시: ${res.createdAt?.toDate ? res.createdAt.toDate().toLocaleString() : (res.createdAt || '-')}</span>
             </div>
         `;
         if (modal) modal.style.display = 'flex';

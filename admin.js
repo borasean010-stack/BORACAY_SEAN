@@ -14,6 +14,10 @@ let db = null;
 try { const app = initializeApp(firebaseConfig); db = getFirestore(app); } catch (e) {}
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 🔥 기존 브라우저 캐시 강제 삭제 (테스트 데이터 찌꺼기 제거)
+    localStorage.removeItem('admin_reservations_cache');
+    localStorage.removeItem('last_booking_info');
+
     const loginContainer = document.getElementById('login-container');
     const adminContainer = document.getElementById('admin-container');
     const loginForm = document.getElementById('login-form');
@@ -27,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let allReservations = [];
     let currentMode = 'sales'; 
-    let currentTab = 'all'; // Always show 'all' by default for the main table
+    let currentTab = 'all'; 
 
     // --- Authentication ---
     if (sessionStorage.getItem('isAdminLoggedIn') === 'true') { showAdminPanel(); }
@@ -95,7 +99,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function fetchReservations() {
         if (!db) { 
             console.error("Firebase DB 객체가 없습니다.");
-            useFallback(); 
+            allReservations = [];
+            renderAll();
             return; 
         }
         const q = query(collection(db, "reservations")); 
@@ -108,13 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
             renderAll();
         }, (error) => {
             console.error("데이터 로드 중 오류 발생:", error);
-            useFallback();
+            allReservations = [];
+            renderAll();
         });
-    }
-
-    function useFallback() {
-        allReservations = [];
-        renderAll();
     }
 
     // --- Rendering ---
@@ -166,7 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
         filtered.forEach(res => {
             const row = document.createElement('tr');
             const item = res.items?.[0] || {};
-            // 이용일 처리 (item.date가 없으면 res.pickupDate 또는 res.date 시도)
             const usageDate = item.date || res.pickupDate || res.date || '-';
             const pickupDisplayDate = res.pickupDate || '-';
             
@@ -276,15 +276,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Global Functions ---
     window.updateStatus = async (id, newStatus) => {
         if (!confirm(`[${newStatus}] 상태로 변경하시겠습니까?`)) return;
-        if (db && !id.startsWith('BK-')) {
+        if (db) {
             await updateDoc(doc(db, "reservations", id), { status: newStatus });
-        } else {
-            const idx = allReservations.findIndex(r => r.id === id);
-            if (idx !== -1) { 
-                allReservations[idx].status = newStatus; 
-                localStorage.setItem('admin_reservations_cache', JSON.stringify(allReservations));
-                renderAll(); 
-            }
         }
     };
 

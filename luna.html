@@ -146,6 +146,29 @@
             </div>
             <div class="calendar-grid" id="pc-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
         </div>
+
+        <!-- 마사지 종류 선택 -->
+        <div class="selection-container">
+            <span class="selection-label">마사지 종류 선택</span>
+            <div class="selection-tabs" id="type-tabs" style="grid-template-columns: 1fr 1fr;">
+                <div class="selection-tab active" onclick="selectType('태반 마사지', this)">태반 마사지</div>
+                <div class="selection-tab" onclick="selectType('스톤마사지', this)">스톤마사지</div>
+                <div class="selection-tab" onclick="selectType('노니씨드 오일 마사지', this)">노니씨드 오일</div>
+                <div class="selection-tab" onclick="selectType('타이거 오일 마사지', this)">타이거 오일</div>
+            </div>
+        </div>
+
+        <!-- 이용 시간 선택 -->
+        <div class="selection-container">
+            <span class="selection-label">이용 가능 시간 선택</span>
+            <div class="selection-tabs" id="time-tabs">
+                <div class="selection-tab active" onclick="selectTime('12:30', this)">12:30</div>
+                <div class="selection-tab" onclick="selectTime('14:30', this)">14:30</div>
+                <div class="selection-tab" onclick="selectTime('16:30', this)">16:30</div>
+                <div class="selection-tab" onclick="selectTime('19:30', this)">19:30</div>
+            </div>
+        </div>
+
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding:15px; background:#fcfcfc; border-radius:15px; border:1px solid #f0f0f0;">
             <span style="font-weight:700; font-size:15px;">인원 (성인)</span>
             <div class="counter">
@@ -172,7 +195,23 @@
     let adultCount = 1;
     let currentDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
-    
+    let selectedType = '태반 마사지';
+    let selectedTime = '12:30';
+
+    function selectType(type, el) {
+        selectedType = type;
+        const tabs = document.querySelectorAll('#type-tabs .selection-tab');
+        tabs.forEach(tab => tab.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    function selectTime(time, el) {
+        selectedTime = time;
+        const tabs = document.querySelectorAll('#time-tabs .selection-tab');
+        tabs.forEach(tab => tab.classList.remove('active'));
+        el.classList.add('active');
+    }
+
     function updateCount(delta) {
         adultCount = Math.max(1, adultCount + delta);
         document.getElementById('pc-count').innerText = adultCount;
@@ -211,12 +250,12 @@
         }
     }
     function handleBuy() {
-        const item = { name: "루나 스파", price: 50000, count: adultCount, date: selectedDate };
+        const item = { name: "루나 스파", type: selectedType, time: selectedTime, price: 50000, count: adultCount, date: selectedDate };
         sessionStorage.setItem('directBuyItem', JSON.stringify(item));
         window.open('booking-form.html', '_blank');
     }
     function addToCart() {
-        const item = { name: "루나 스파", price: 50000, count: adultCount, date: selectedDate };
+        const item = { name: "루나 스파", type: selectedType, time: selectedTime, price: 50000, count: adultCount, date: selectedDate };
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         cart.push(item);
         localStorage.setItem('cart', JSON.stringify(cart));

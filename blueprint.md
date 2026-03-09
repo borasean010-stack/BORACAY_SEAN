@@ -12,26 +12,29 @@ This project is a reservation website for tours and activities in Boracay. It al
 * `admin.js`: Logic for the admin panel.
 * `login.html`: The user login page (Luxurious design).
 
-## Current Plan: Admin & Login Redesign
+## Features & UI Enhancements
+
+### 1. Activity & Spa Reservation Options
+* **Time Selection:** Added specialized time selection tabs for activities and spas to ensure accurate scheduling.
+    * Activities (Parasailing, Helmet Diving, Jet Ski): 09:00, 10:00, 11:00, 13:00, 14:00.
+    * Spas (Luna, Bora, S-SPA, Helios, Ayurveda): 12:30, 14:30, 16:30, 19:30.
+* **Massage Type Selection:** Added product type selection for spa services to allow users to choose specific programs.
+    * Luna Spa: Placenta, Stone, Noni Seed Oil, Tiger Oil massages.
+    * Bora Spa: Honey, Placenta massages.
+    * S-SPA (에스파): Pure Oil, Placenta, Stone, Hilot, Four-hand massages.
+    * Helios & Ayurveda Spas: Honey Stone, Coco Spa, Honey Stone + Coco Spa.
+
+### 2. UI/UX Improvements
+* **Sophisticated Counter Design:** Redesigned the quantity selection buttons (+/-) with a modern, clean aesthetic using better spacing, subtle shadows, and responsive feedback.
+* **Selection Tabs:** Implemented a reusable "Selection Tab" UI component across all detail pages for a consistent and intuitive user experience.
+* **Booking Integration:** Updated the purchase and cart logic to capture the selected time and product type, ensuring all reservation data is passed to the booking form.
+
+## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (Luxurious & Centered)
 * **Objective:** Transform the login page into a high-end, visually appealing entry point.
-* **Design Strategy:**
-    * Center the logo prominently.
-    * Use a sophisticated color palette (gold/black or deep blue/white).
-    * Apply premium visual effects (glassmorphism, soft deep shadows, elegant typography).
-    * Remove distracting navigation elements during the login process.
+* **Design Strategy:** Prominent centered logo, glassmorphism effects, and elegant typography.
 
 ### 2. Admin Site Redesign (Naver Smart Store Style)
 * **Objective:** Reorganize the admin interface to match the Naver Smart Store Seller Center layout.
-* **Structural Changes:**
-    * Move navigation from the top to a left-side vertical sidebar.
-    * Implement a dashboard-first view with key metrics (New Orders, Completed, etc.).
-    * Use Naver's signature green (`#00c73c`) as the primary accent color.
-    * Maintain existing functionality (Firebase integration, reservation management) while changing the UI.
-
-### 3. Implementation Steps
-1. **Update `login.html` and related styles** for the luxurious look.
-2. **Restructure `admin.html`** to include a sidebar and main content area.
-3. **Overhaul `admin.css`** to implement the sidebar layout and Smart Store aesthetics.
-4. **Adjust `admin.js`** to ensure navigation logic works with the new sidebar structure.
+* **Structural Changes:** Left-side vertical sidebar, green accent color (`#00c73c`), and a dashboard-first view.

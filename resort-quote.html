@@ -3,214 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>리조트 견적 요청 | BORACAY_SEAN</title>
+    <title>리조트 실시간 견적 | BORACAY_SEAN</title>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
-        body { background: #fcfcfc; padding-bottom: 100px; color: #111; }
+        body { background: #f4f6f8; color: #111; padding-bottom: 120px; }
         
-        .quote-container { 
-            max-width: 1100px; 
-            margin: 120px auto 50px; 
-            padding: 0 20px; 
-        }
-
-        /* 헤더 스타일 강화 */
-        .page-header { text-align: center; margin-bottom: 60px; }
-        .page-header p { font-size: 14px; font-weight: 800; color: #ff6a00; letter-spacing: 2px; margin-bottom: 10px; }
-        .page-header h1 { font-size: 42px; font-weight: 900; letter-spacing: -2px; }
-
-        /* 통합 상단 카드 */
-        .top-selection-card {
+        /* 상단 검색바 영역 (Sticky) */
+        .search-filter-bar {
             background: white;
-            border-radius: 32px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.04);
-            border: 1px solid #f0f0f0;
-            display: grid;
-            grid-template-columns: 1.2fr 1fr;
-            gap: 40px;
+            padding: 20px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 80px; /* top-bar 아래 고정 */
+            z-index: 100;
             margin-bottom: 40px;
-            position: relative;
-            overflow: hidden;
         }
-        .top-selection-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 6px; height: 100%;
-            background: linear-gradient(to bottom, #ff6a00, #ff9d4d);
-        }
-
-        .section-title { 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            margin-bottom: 30px; 
-        }
-        .section-title .icon-circle {
-            background: #fff5eb;
-            color: #ff6a00;
-            width: 48px;
-            height: 48px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: 900;
-        }
-        .section-title h2 { font-size: 22px; font-weight: 800; margin: 0; }
-
-        /* 날짜 입력 스타일 */
-        .date-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .input-wrapper { display: flex; flex-direction: column; gap: 8px; }
-        .input-wrapper label { font-size: 14px; font-weight: 700; color: #888; padding-left: 5px; }
-        .input-wrapper input { 
-            padding: 18px 20px; 
-            border: 2px solid #f5f5f5; 
-            border-radius: 18px; 
-            font-size: 16px; 
-            font-family: inherit; 
-            background: #fafafa; 
-            transition: 0.3s;
-            color: #111;
-            font-weight: 600;
-        }
-        .input-wrapper input:focus { outline: none; border-color: #ff6a00; background: white; box-shadow: 0 10px 20px rgba(255,106,0,0.05); }
-
-        /* 인원 선택 스타일 */
-        .guest-grid { display: flex; flex-direction: column; gap: 15px; }
-        .counter-row { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 15px 25px; 
-            background: #fafafa; 
-            border-radius: 20px; 
-            border: 2px solid #f5f5f5;
-            transition: 0.3s;
-        }
-        .counter-row:hover { border-color: #eee; background: #f8f8f8; }
-        .label-group b { font-size: 17px; font-weight: 800; display: block; }
-        .label-group span { font-size: 12px; color: #999; }
-
-        /* 소인 나이 입력 스타일 */
-        #child-ages-container {
-            margin-top: 20px;
+        .filter-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 12px;
-        }
-        .age-card {
-            background: #fff9f2;
-            padding: 15px;
-            border-radius: 18px;
-            border: 1px solid #ffe0d1;
-            animation: fadeIn 0.4s ease;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .age-card label { font-size: 12px; font-weight: 800; color: #ff6a00; display: block; margin-bottom: 8px; }
-        .age-card select { 
-            width: 100%; 
-            padding: 10px; 
-            border: 1px solid #ddd; 
-            border-radius: 10px; 
-            font-size: 14px; 
-            background: white;
-            font-family: inherit;
-            cursor: pointer;
-        }
-
-        /* 리조트 목록 스타일 강화 */
-        .resort-selection-card {
-            background: white;
-            border-radius: 32px;
-            padding: 45px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.04);
-            border: 1px solid #f0f0f0;
-        }
-        .resort-list-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 35px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #f5f5f5;
-        }
-        .resort-list-header h2 { font-size: 24px; font-weight: 900; margin: 0; display: flex; align-items: center; gap: 12px; }
-        .resort-list-header .count-badge { background: #ff6a00; color: white; padding: 4px 12px; border-radius: 50px; font-size: 13px; font-weight: 800; }
-
-        .resort-v-list {
-            display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr 1fr auto;
             gap: 15px;
-            max-height: 550px;
-            overflow-y: auto;
-            padding-right: 15px;
+            align-items: end;
         }
-        .resort-v-list::-webkit-scrollbar { width: 6px; }
-        .resort-v-list::-webkit-scrollbar-track { background: #f9f9f9; border-radius: 10px; }
-        .resort-v-list::-webkit-scrollbar-thumb { background: #eee; border-radius: 10px; }
-        .resort-v-list::-webkit-scrollbar-thumb:hover { background: #ff6a00; }
-
-        .resort-row {
+        .filter-group { display: flex; flex-direction: column; gap: 8px; }
+        .filter-group label { font-size: 13px; font-weight: 800; color: #ff6a00; margin-left: 5px; }
+        .filter-input-box {
+            background: #f8f9fa;
+            border: 1.5px solid #eee;
+            border-radius: 12px;
             display: flex;
             align-items: center;
-            padding: 20px;
-            background: #fafafa;
-            border-radius: 24px;
-            border: 2px solid transparent;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            gap: 25px;
+            padding: 0 15px;
+            height: 54px;
+            transition: 0.3s;
         }
-        .resort-row:hover { transform: scale(1.01); background: #fefefe; border-color: #eee; }
-        .resort-row.selected { background: #fff5eb; border-color: #ff6a00; box-shadow: 0 10px 25px rgba(255,106,0,0.08); }
+        .filter-input-box:focus-within { border-color: #ff6a00; background: white; box-shadow: 0 0 0 4px rgba(255,106,0,0.05); }
+        .filter-input-box input { 
+            border: none; background: transparent; width: 100%; height: 100%; 
+            font-family: inherit; font-size: 15px; font-weight: 600; outline: none;
+        }
+        .guest-trigger { cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: space-between; font-size: 15px; font-weight: 600; }
+
+        /* 리조트 리스트 레이아웃 */
+        .main-content { max-width: 1100px; margin: 0 auto; padding: 0 20px; display: grid; grid-template-columns: 1fr; gap: 20px; }
         
-        .resort-img-box { position: relative; width: 120px; height: 90px; flex-shrink: 0; }
-        .resort-img-box img { width: 100%; height: 100%; border-radius: 16px; object-fit: cover; }
-        
-        .resort-name-box { flex: 1; }
-        .resort-name-box b { font-size: 19px; font-weight: 800; color: #111; letter-spacing: -0.5px; }
-        
-        .selection-indicator {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 2px solid #ddd;
+        .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .list-header h2 { font-size: 22px; font-weight: 900; }
+        .list-header span { color: #888; font-size: 14px; }
+
+        /* 보홀트래블 스타일 리조트 카드 */
+        .resort-horizontal-card {
+            background: white;
+            border-radius: 24px;
+            display: grid;
+            grid-template-columns: 300px 1fr 180px;
+            overflow: hidden;
+            border: 1px solid #eee;
+            transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+        }
+        .resort-horizontal-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.08); border-color: #ffe0d1; }
+        .resort-horizontal-card.selected { border: 2.5px solid #ff6a00; background: #fffcfb; }
+
+        .card-img-area { position: relative; height: 100%; min-height: 200px; }
+        .card-img-area img { width: 100%; height: 100%; object-fit: cover; }
+        .badge-popular { position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.6); color: white; padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; backdrop-filter: blur(4px); }
+
+        .card-info-area { padding: 30px; display: flex; flex-direction: column; justify-content: space-between; }
+        .resort-cat { font-size: 13px; color: #ff6a00; font-weight: 800; margin-bottom: 8px; }
+        .resort-title { font-size: 24px; font-weight: 900; margin-bottom: 12px; letter-spacing: -0.5px; }
+        .resort-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+        .tag { background: #f0f2f5; color: #666; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+
+        .card-action-area { 
+            padding: 30px; 
+            border-left: 1px solid #f5f5f5; 
+            background: #fafafa; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 15px;
+        }
+        .select-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1.5px solid #ddd;
+            background: white;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: white;
-            transition: 0.3s;
+            gap: 8px;
         }
-        .selection-indicator i { font-size: 14px; font-weight: 900; color: white; display: none; }
-        .resort-row.selected .selection-indicator { background: #ff6a00; border-color: #ff6a00; }
-        .resort-row.selected .selection-indicator i { display: block; }
+        .resort-horizontal-card.selected .select-btn {
+            background: #ff6a00;
+            border-color: #ff6a00;
+            color: white;
+        }
+        .price-info { text-align: center; }
+        .price-info span { font-size: 12px; color: #999; display: block; margin-bottom: 4px; }
+        .price-info b { font-size: 18px; color: #ff6a00; font-weight: 900; }
 
-        .submit-section { text-align: center; margin-top: 60px; }
-        .submit-btn { 
-            width: 100%;
-            max-width: 500px;
-            padding: 25px; 
-            background: #111; 
-            color: white; 
-            border: none; 
-            border-radius: 24px; 
-            font-size: 20px; 
-            font-weight: 900; 
-            cursor: pointer; 
-            transition: 0.4s; 
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        /* 하단 고정 견적 바 */
+        .floating-quote-bar {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #111;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0;
+            visibility: hidden;
         }
-        .submit-btn:hover { background: #ff6a00; transform: translateY(-5px); box-shadow: 0 20px 40px rgba(255,106,0,0.3); }
+        .floating-quote-bar.active { opacity: 1; visibility: visible; bottom: 40px; }
+        .quote-count-info b { color: #ff6a00; font-size: 20px; }
+        .final-submit-btn {
+            background: #ff6a00;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: 900;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .final-submit-btn:hover { background: #e65f00; transform: scale(1.05); }
+
+        /* 인원 선택 팝오버 */
+        .guest-popover {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            padding: 25px;
+            width: 320px;
+            display: none;
+            border: 1px solid #eee;
+        }
+        .guest-popover.active { display: block; animation: popIn 0.3s ease; }
+        @keyframes popIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 900px) {
-            .top-selection-card { grid-template-columns: 1fr; gap: 30px; padding: 30px; }
-            .page-header h1 { font-size: 32px; }
-            .resort-row { gap: 15px; padding: 15px; }
-            .resort-img-box { width: 90px; height: 70px; }
-            .resort-name-box b { font-size: 16px; }
+            .filter-container { grid-template-columns: 1fr; }
+            .resort-horizontal-card { grid-template-columns: 1fr; }
+            .card-img-area { height: 200px; }
+            .card-action-area { border-left: none; border-top: 1px solid #f5f5f5; flex-direction: row; justify-content: space-between; }
+            .search-filter-bar { top: 70px; }
         }
     </style>
 </head>
@@ -247,75 +205,66 @@
     </div>
 </div>
 
-<div class="quote-container">
-    <header class="page-header">
-        <p>PREMIUM RESORT SERVICE</p>
-        <h1>보라카이 리조트 견적</h1>
-    </header>
-    
-    <div class="top-selection-card">
-        <!-- 1. 여행 날짜 -->
-        <div class="selection-group">
-            <div class="section-title">
-                <div class="icon-circle">📅</div>
-                <h2>여행 일정</h2>
-            </div>
-            <div class="date-grid">
-                <div class="input-wrapper">
-                    <label>체크인</label>
-                    <input type="date" id="checkin-date">
-                </div>
-                <div class="input-wrapper">
-                    <label>체크아웃</label>
-                    <input type="date" id="checkout-date">
-                </div>
+<!-- 🔍 상단 필터바 (보홀트래블 스타일) -->
+<div class="search-filter-bar">
+    <div class="filter-container">
+        <div class="filter-group">
+            <label>여행 일정 (Check-in / Out)</label>
+            <div class="filter-input-box" style="gap:10px;">
+                <input type="date" id="checkin-date">
+                <span style="color:#ddd;">|</span>
+                <input type="date" id="checkout-date">
             </div>
         </div>
-
-        <!-- 2. 인원 선택 -->
-        <div class="selection-group">
-            <div class="section-title">
-                <div class="icon-circle">👥</div>
-                <h2>인원 구성</h2>
+        <div class="filter-group" style="position:relative;">
+            <label>여행 인원 (Guests)</label>
+            <div class="filter-input-box guest-trigger" onclick="toggleGuestPopover()">
+                <span id="guest-display">성인 2, 소인 0</span>
+                <span style="color:#ff6a00;">▼</span>
             </div>
-            <div class="guest-grid">
-                <div class="counter-row">
+            
+            <!-- 인원 선택 팝오버 -->
+            <div class="guest-popover" id="guest-popover">
+                <div class="counter-row" style="margin-bottom:15px; background:none; border:none; padding:0;">
                     <div class="label-group"><b>성인</b><span>Adults</span></div>
                     <div class="counter">
-                        <button class="count-btn" onclick="updateCount('adult', -1)">-</button>
+                        <button class="count-btn" onclick="updateCount('adult', -1); event.stopPropagation();">-</button>
                         <strong id="adult-count">2</strong>
-                        <button class="count-btn" onclick="updateCount('adult', 1)">+</button>
+                        <button class="count-btn" onclick="updateCount('adult', 1); event.stopPropagation();">+</button>
                     </div>
                 </div>
-                <div class="counter-row">
-                    <div class="label-group"><b>소인</b><span>Children (만 나이 기준)</span></div>
+                <div class="counter-row" style="margin-bottom:15px; background:none; border:none; padding:0;">
+                    <div class="label-group"><b>소인</b><span>Children (만 나이)</span></div>
                     <div class="counter">
-                        <button class="count-btn" onclick="updateCount('child', -1)">-</button>
+                        <button class="count-btn" onclick="updateCount('child', -1); event.stopPropagation();">-</button>
                         <strong id="child-count">0</strong>
-                        <button class="count-btn" onclick="updateCount('child', 1)">+</button>
+                        <button class="count-btn" onclick="updateCount('child', 1); event.stopPropagation();">+</button>
                     </div>
                 </div>
+                <div id="child-ages-container" style="max-height:150px; overflow-y:auto; margin-bottom:15px;"></div>
+                <button class="select-btn" style="background:#111; color:white; border:none; width:100%;" onclick="toggleGuestPopover(); event.stopPropagation();">적용하기</button>
             </div>
-            <div id="child-ages-container"></div>
         </div>
+        <div class="filter-group">
+            <button class="final-submit-btn" style="height:54px; border-radius:12px; width:120px;" onclick="scrollToResorts()">검색</button>
+        </div>
+    </div>
+</div>
+
+<div class="main-content" id="resort-section">
+    <div class="list-header">
+        <h2>보라카이 추천 리조트 <span>(<span id="total-resort-count">0</span>)</span></h2>
+        <div style="font-size:13px; color:#ff6a00; font-weight:800;">✨ 원하는 리조트를 선택하고 견적을 요청하세요!</div>
     </div>
 
-    <!-- 3. 리조트 선택 -->
-    <div class="resort-selection-card">
-        <div class="resort-list-header">
-            <h2><div class="icon-circle" style="width:36px; height:36px; font-size:18px;">🏨</div> 리조트 선택 <span class="count-badge" id="selected-resort-count">0개 선택됨</span></h2>
-            <span style="font-size:14px; color:#ff6a00; font-weight:800;">원하시는 리조트를 모두 선택해 주세요!</span>
-        </div>
-        
-        <div class="resort-v-list" id="resort-list">
-            <!-- Resorts will be populated by JS -->
-        </div>
-    </div>
+    <!-- 리조트 리스트가 JS로 생성됩니다 -->
+    <div id="resort-list" style="display:grid; gap:20px;"></div>
+</div>
 
-    <div class="submit-section">
-        <button class="submit-btn" onclick="requestQuote()">맞춤 견적 요청하기 ➔</button>
-        <p style="margin-top:20px; color:#888; font-size:14px;">요청하신 견적은 영업일 기준 24시간 이내에 답변해 드립니다.</p>
-    </div>
+<!-- 📦 하단 고정 견적 바 -->
+<div class="floating-quote-bar" id="floating-bar">
+    <div class="quote-count-info">총 <b id="selected-count">0</b>개의 리조트가 선택되었습니다.</div>
+    <button class="final-submit-btn" onclick="requestQuote()">실시간 견적 요청하기 ➔</button>
 </div>
 
 <footer class="footer">
@@ -329,19 +278,19 @@
 <script src="main.js"></script>
 <script>
     const resorts = [
-        { name: "샹그릴라 보라카이 리조트", img: "Golf1.jpg" },
-        { name: "모벤픽 리조트 & 스파", img: "Golf2.jpg" },
-        { name: "크림슨 리조트 & 스파", img: "Golf3.jpg" },
-        { name: "만다린 베이 리조트", img: "Golf4.jpg" },
-        { name: "만다린 네스트", img: "beach1.jpg" },
-        { name: "만다린 아일랜드", img: "beach2.jpg" },
-        { name: "헤난 프라임 비치", img: "beach3.jpg" },
-        { name: "헤난 크리스탈 샌즈 리조트", img: "Golf1.jpg" },
-        { name: "헤난 가든 리조트", img: "Golf2.jpg" },
-        { name: "헤난 팜비치 리조트", img: "Golf3.jpg" },
-        { name: "헤난 리젠시 리조트", img: "Golf4.jpg" },
-        { name: "헤난 파크 리조트", img: "beach1.jpg" },
-        { name: "헤난 라군 리조트", img: "beach2.jpg" }
+        { name: "샹그릴라 보라카이 리조트", cat: "스테이션 0 | 럭셔리", img: "Golf1.jpg", tags: ["프라이빗비치", "풀빌라", "가족여행"] },
+        { name: "모벤픽 리조트 & 스파", cat: "스테이션 0 | 프리미엄", img: "Golf2.jpg", tags: ["화이트비치", "수영장", "조식맛집"] },
+        { name: "크림슨 리조트 & 스파", cat: "스테이션 0 | 모던", img: "Golf3.jpg", tags: ["인피니티풀", "인생샷", "커플"] },
+        { name: "만다린 베이 리조트", cat: "스테이션 2 | 신축", img: "Golf4.jpg", tags: ["중심가위치", "고급시설", "접근성"] },
+        { name: "헤난 크리스탈 샌즈", cat: "스테이션 2 | 인기", img: "beach1.jpg", tags: ["스카이풀", "해변앞", "인기만점"] },
+        { name: "헤난 가든 리조트", cat: "스테이션 2 | 가성비", img: "beach2.jpg", tags: ["대형수영장", "실속파", "가족단위"] },
+        { name: "헤난 팜비치 리조트", cat: "스테이션 2 | 오션뷰", img: "beach3.jpg", tags: ["야자수뷰", "비치프론트", "휴양"] },
+        { name: "헤난 리젠시 리조트", cat: "스테이션 2 | 클래식", img: "Golf1.jpg", tags: ["원조인기", "넓은객실", "서비스최고"] },
+        { name: "헤난 프라임 비치", cat: "스테이션 1 | 조용함", img: "Golf2.jpg", tags: ["윌리스락", "고운모래", "여유로운"] },
+        { name: "헤난 파크 리조트", cat: "스테이션 2 | 신축", img: "Golf3.jpg", tags: ["모던디자인", "쇼핑몰가까움", "깨끗함"] },
+        { name: "헤난 라군 리조트", cat: "스테이션 2 | 수영장", img: "Golf4.jpg", tags: ["라군풀", "가성비최고", "편안함"] },
+        { name: "만다린 네스트", cat: "스테이션 2 | 유니크", img: "beach1.jpg", tags: ["감성디자인", "새로운경험", "커플"] },
+        { name: "만다린 아일랜드", cat: "스테이션 2 | 전통", img: "beach2.jpg", tags: ["정통스파", "해변중심", "친절함"] }
     ];
 
     let selectedResorts = [];
@@ -349,16 +298,35 @@
 
     function initResorts() {
         const container = document.getElementById('resort-list');
+        document.getElementById('total-resort-count').innerText = resorts.length;
         resorts.forEach(resort => {
-            const row = document.createElement('div');
-            row.className = 'resort-row';
-            row.innerHTML = `
-                <div class="resort-img-box"><img src="${resort.img}" alt="${resort.name}"></div>
-                <div class="resort-name-box"><b>${resort.name}</b></div>
-                <div class="selection-indicator"><i>✓</i></div>
+            const card = document.createElement('div');
+            card.className = 'resort-horizontal-card';
+            card.innerHTML = `
+                <div class="card-img-area">
+                    <div class="badge-popular">실시간 예약 1위</div>
+                    <img src="${resort.img}" alt="${resort.name}">
+                </div>
+                <div class="card-info-area">
+                    <div>
+                        <div class="resort-cat">${resort.cat}</div>
+                        <div class="resort-title">${resort.name}</div>
+                        <div class="resort-tags">
+                            ${resort.tags.map(t => `<span class="tag"># ${t}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div style="font-size:13px; color:#666;">보라카이션 전용 특가 적용 가능 리조트입니다.</div>
+                </div>
+                <div class="card-action-area">
+                    <div class="price-info">
+                        <span>실시간 최저가</span>
+                        <b>별도 문의</b>
+                    </div>
+                    <button class="select-btn">선택하기</button>
+                </div>
             `;
-            row.onclick = () => toggleResort(resort.name, row);
-            container.appendChild(row);
+            card.onclick = () => toggleResort(resort.name, card);
+            container.appendChild(card);
         });
     }
 
@@ -367,16 +335,27 @@
         if (index > -1) {
             selectedResorts.splice(index, 1);
             element.classList.remove('selected');
+            element.querySelector('.select-btn').innerText = '선택하기';
         } else {
             selectedResorts.push(name);
             element.classList.add('selected');
+            element.querySelector('.select-btn').innerText = '선택됨 ✓';
         }
-        document.getElementById('selected-resort-count').innerText = `${selectedResorts.length}개 선택됨`;
+        
+        const floatingBar = document.getElementById('floating-bar');
+        document.getElementById('selected-count').innerText = selectedResorts.length;
+        if (selectedResorts.length > 0) floatingBar.classList.add('active');
+        else floatingBar.classList.remove('active');
+    }
+
+    function toggleGuestPopover() {
+        document.getElementById('guest-popover').classList.toggle('active');
     }
 
     function updateCount(type, delta) {
         counts[type] = Math.max(type === 'adult' ? 1 : 0, counts[type] + delta);
         document.getElementById(`${type}-count`).innerText = counts[type];
+        document.getElementById('guest-display').innerText = `성인 ${counts.adult}, 소인 ${counts.child}`;
         if (type === 'child') renderChildAgeInputs();
     }
 
@@ -387,6 +366,7 @@
             for (let i = currentInputs + 1; i <= counts.child; i++) {
                 const ageDiv = document.createElement('div');
                 ageDiv.className = 'age-card';
+                ageDiv.style.marginBottom = '10px';
                 ageDiv.id = `child-age-box-${i}`;
                 ageDiv.innerHTML = `
                     <label>소인 ${i} 나이</label>
@@ -402,6 +382,13 @@
                 if (el) el.remove();
             }
         }
+    }
+
+    function scrollToResorts() {
+        window.scrollTo({
+            top: document.getElementById('resort-section').offsetTop - 150,
+            behavior: 'smooth'
+        });
     }
 
     function requestQuote() {
@@ -437,6 +424,15 @@
         document.getElementById('checkin-date').value = today.toISOString().split('T')[0];
         document.getElementById('checkout-date').value = tomorrow.toISOString().split('T')[0];
     };
+
+    // Close popover when clicking outside
+    document.addEventListener('click', (e) => {
+        const popover = document.getElementById('guest-popover');
+        const trigger = document.querySelector('.guest-trigger');
+        if (!popover.contains(e.target) && !trigger.contains(e.target)) {
+            popover.classList.remove('active');
+        }
+    });
 </script>
 </body>
 </html>

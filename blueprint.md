@@ -54,8 +54,9 @@ This project is a reservation website for tours and activities in Boracay. It al
 * **Features:** 
     * Check-in/Check-out date selection.
     * Guest count selection (Adults/Children).
-    * Horizontal scrolling card UI for resort selection.
-    * Quote request submission logic.
+    * Dynamic "Child Age" input fields that appear when children are added.
+    * Premium vertical scrolling card UI for resort selection with large icons.
+    * Quote request submission logic: Bypasses the payment method selection in `booking-form.html` for a direct request.
 
 ## Previous Milestone: Admin & Login Redesign
 

@@ -153,10 +153,19 @@
 
     document.getElementById('info-form').onsubmit = function(e) {
         e.preventDefault();
-        document.getElementById('info-section').style.display = 'none';
-        document.getElementById('payment-section').style.display = 'block';
-        document.getElementById('step2-bar').classList.add('active');
-        window.scrollTo(0, 0);
+        
+        // 리조트 견적인 경우 결제 수단 선택 없이 바로 완료 처리 시도
+        const isResortQuote = cartData.some(item => item.name.includes('리조트 견적'));
+        
+        if (isResortQuote) {
+            selectedPayment = '견적요청';
+            submitFinal();
+        } else {
+            document.getElementById('info-section').style.display = 'none';
+            document.getElementById('payment-section').style.display = 'block';
+            document.getElementById('step2-bar').classList.add('active');
+            window.scrollTo(0, 0);
+        }
     };
 
     window.selectMethod = function(el, method) {

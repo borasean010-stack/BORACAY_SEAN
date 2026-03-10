@@ -100,7 +100,7 @@
 <div class="resort-detail-container">
     <!-- 메인 히어로 -->
     <div class="resort-hero">
-        <img src="beach1.jpg" alt="헤난 크리스탈 샌즈 리조트">
+        <img src="henann_sands1.png" alt="헤난 크리스탈 샌즈 리조트">
         <div class="hero-overlay">
             <p>STATION 2 | BEACH FRONT ICON</p>
             <h1>헤난 크리스탈 샌즈 리조트</h1>
@@ -121,7 +121,15 @@
                 </ul>
             </div>
             <div class="facility-img-box">
-                <img src="beach2.jpg" alt="수영장">
+                <div class="slider-container" id="lobby-slider" style="aspect-ratio: auto; height: 350px;">
+                    <div class="slider-wrapper">
+                        <img src="henann_sands_resort_robby1.png" style="object-fit: cover;">
+                        <img src="henann_sands_resort_robby2.png" style="object-fit: cover;">
+                        <img src="henann_sands_resort_robby3.png" style="object-fit: cover;">
+                    </div>
+                    <button class="slider-btn prev-btn" onclick="moveSlider('lobby-slider', -1)">❮</button>
+                    <button class="slider-btn next-btn" onclick="moveSlider('lobby-slider', 1)">❯</button>
+                </div>
             </div>
         </div>
     </div>
@@ -131,7 +139,14 @@
         <div class="section-title">Restaurant & Bar</div>
         <div class="facility-content reverse">
             <div class="facility-img-box">
-                <img src="beach3.jpg" alt="레스토랑">
+                <div class="slider-container" id="rest-slider" style="aspect-ratio: auto; height: 350px;">
+                    <div class="slider-wrapper">
+                        <img src="henann_sands_restaurant_bar1.png" style="object-fit: cover;">
+                        <img src="henann_sands1.png" style="object-fit: cover;">
+                    </div>
+                    <button class="slider-btn prev-btn" onclick="moveSlider('rest-slider', -1)">❮</button>
+                    <button class="slider-btn next-btn" onclick="moveSlider('rest-slider', 1)">❯</button>
+                </div>
             </div>
             <div class="facility-text">
                 <h3>다채로운 미식의 즐거움</h3>
@@ -165,8 +180,9 @@
             <div class="room-card">
                 <div class="slider-container" id="deluxe-slider">
                     <div class="slider-wrapper">
-                        <img src="beach1.jpg">
-                        <img src="beach2.jpg">
+                        <img src="henann_sands_deluxe1.png">
+                        <img src="henann_sands_deluxe2.png">
+                        <img src="henann_sands_deluxe3.png">
                     </div>
                     <button class="slider-btn prev-btn" onclick="moveSlider('deluxe-slider', -1)">❮</button>
                     <button class="slider-btn next-btn" onclick="moveSlider('deluxe-slider', 1)">❯</button>
@@ -183,8 +199,10 @@
             <div class="room-card">
                 <div class="slider-container" id="premier-slider">
                     <div class="slider-wrapper">
-                        <img src="beach3.jpg">
-                        <img src="Golf1.jpg">
+                        <img src="henann_sands_premier_1.png">
+                        <img src="henann_sands_premier_2.png">
+                        <img src="henann_sands_premier_pool_access1.png">
+                        <img src="henann_sands_premier_pool_access2.png">
                     </div>
                     <button class="slider-btn prev-btn" onclick="moveSlider('premier-slider', -1)">❮</button>
                     <button class="slider-btn next-btn" onclick="moveSlider('premier-slider', 1)">❯</button>
@@ -201,8 +219,9 @@
             <div class="room-card">
                 <div class="slider-container" id="seaview-slider">
                     <div class="slider-wrapper">
-                        <img src="Golf2.jpg">
-                        <img src="Golf3.jpg">
+                        <img src="henann_sands_premier_sea_view1.png">
+                        <img src="henann_sands_premier_sea_view2.png">
+                        <img src="henann_sands_premier_sea_view3.png">
                     </div>
                     <button class="slider-btn prev-btn" onclick="moveSlider('seaview-slider', -1)">❮</button>
                     <button class="slider-btn next-btn" onclick="moveSlider('seaview-slider', 1)">❯</button>

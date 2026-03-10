@@ -243,9 +243,9 @@
         <div class="logo"><a href="index.html"><img src="logo.png" class="logo-img">BORACAY_SEAN</a></div>
     </div>
     <div class="menu">
-        <a href="essential-tours.html" class="tab-link">보라카이 필수투어</a>
-        <a href="activities.html" class="tab-link">액티비티</a>
-        <a href="massage.html" class="tab-link">마사지</a>
+        <a href="essential-tours.html" class="tab-link" data-category="essential">보라카이 필수투어</a>
+        <a href="activities.html" class="tab-link" data-category="activity">액티비티</a>
+        <a href="massage.html" class="tab-link" data-category="massage">마사지</a>
         <a href="price-list.html" class="tab-link">한눈에 요금표</a>
         <a href="resort-quote.html" class="tab-link active">리조트 견적</a>
         <a href="cart.html" class="tab-link">장바구니</a>
@@ -360,6 +360,12 @@
         resorts.forEach(resort => {
             const card = document.createElement('div');
             card.className = 'resort-horizontal-card';
+            
+            // 샹그릴라의 경우 상세 페이지 링크 추가
+            const detailLink = resort.name.includes('샹그릴라') 
+                ? `<a href="shangrila-resort.html" class="tag" style="background:#111; color:white; text-decoration:none;" onclick="event.stopPropagation();">상세보기 ➔</a>` 
+                : '';
+
             card.innerHTML = `
                 <div class="card-img-area">
                     <div class="badge-popular">보라카이션 추천</div>
@@ -368,7 +374,10 @@
                 <div class="card-info-area">
                     <div>
                         <div class="resort-cat">${resort.cat}</div>
-                        <div class="resort-title">${resort.name}</div>
+                        <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
+                            <div class="resort-title" style="margin-bottom:0;">${resort.name}</div>
+                            ${detailLink}
+                        </div>
                         <div class="resort-tags">
                             ${resort.tags.map(t => `<span class="tag"># ${t}</span>`).join('')}
                         </div>

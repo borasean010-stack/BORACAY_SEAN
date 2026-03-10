@@ -13,6 +13,7 @@ This project is a reservation website for tours and activities in Boracay. It al
 * `login.html`: The user login page (Luxurious design).
 * `golf.html`: Detail page for Fairway Golf Club activity.
 * `resort-quote.html`: Page for requesting resort accommodation quotes.
+* `shangrila-resort.html`: Detailed introduction page for Shangri-La Boracay Resort.
 
 ## Features & UI Enhancements
 
@@ -56,6 +57,7 @@ This project is a reservation website for tours and activities in Boracay. It al
     * Guest count selection (Adults/Children).
     * Dynamic "Child Age" input fields that appear when children are added.
     * Premium vertical scrolling card UI for resort selection with large icons.
+    * **Resort Detail Pages:** Added dedicated introduction pages for resorts (e.g., Shangri-La) providing comprehensive info on facilities and room types.
     * Quote request submission logic: Bypasses the payment method selection in `booking-form.html` for a direct request.
 
 ## Previous Milestone: Admin & Login Redesign

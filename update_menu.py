@@ -7,7 +7,8 @@ files_to_update = [
     'parasailing.html', 'land-tour.html', 'hopping-tour.html', 'pickup-sending.html', 'malumpati.html',
     'spa.html', 'poseidon.html', 'maris.html', 'kabayan.html', 'luna.html', 'boraspa.html',
     'helios.html', 'aspa.html', 'about-us.html', 'booking-complete.html', 'booking-form.html',
-    'cart.html', 'login.html', 'mypage.html', 'price-list.html', 'golf.html', 'jl-snap.html', 'resort-quote.html'
+    'cart.html', 'login.html', 'mypage.html', 'price-list.html', 'golf.html', 'jl-snap.html', 'resort-quote.html',
+    'shangrila-resort.html'
 ]
 
 mapping = {
@@ -15,7 +16,7 @@ mapping = {
     'activity': ['activities.html', 'freediving.html', 'land-tour.html', 'jl-snap.html', 'bora-ajae-hopping.html', 'parasailing.html', 'scuba-diving.html', 'helmet-diving.html', 'jetski.html', 'island-tour.html', 'golf.html'],
     'massage': ['massage.html', 'aspa.html', 'spa.html', 'poseidon.html', 'maris.html', 'kabayan.html', 'luna.html', 'boraspa.html', 'helios.html'],
     'price-list': ['price-list.html'],
-    'resort-quote': ['resort-quote.html'],
+    'resort-quote': ['resort-quote.html', 'shangrila-resort.html'],
     'cart': ['cart.html']
 }
 

@@ -31,7 +31,11 @@ This project is a reservation website for tours and activities in Boracay. It al
 * **Selection Tabs:** Implemented a reusable "Selection Tab" UI component across all detail pages for a consistent and intuitive user experience.
 * **Booking Integration:** Updated the purchase and cart logic to capture the selected time and product type, ensuring all reservation data is passed to the booking form.
 
-## Current Milestone: Product Management
+### 3. Menu Structure Update
+* **Navigation Bar:** Added "리조트 견적" (Resort Quote) menu item between "한눈에 요금표" and "장바구니" for easier access to resort pricing.
+* **Side Menu:** Updated the mobile side menu to include "리조트 견적" for consistency across all platforms.
+
+## Current Milestone: Product Management & Navigation
 
 ### 1. New Activity & Updates: Fairway Golf Club (페어웨이 골프클럽)
 * **Objective:** Add a new golf activity and keep it updated.

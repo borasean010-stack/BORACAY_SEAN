@@ -72,6 +72,10 @@
             }
             .m-btn-cart { flex: 1; height: 55px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 15px; font-size: 15px; font-weight: 800; }
             .m-btn-buy { flex: 2; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; }
+            
+            /* 📱 모바일 옵션 시트 */
+            .option-sheet.active { transform: translateY(0) !important; }
+            .option-sheet-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; }
         }
     </style>
 </head>
@@ -84,7 +88,8 @@
     <a href="essential-tours.html">보라카이 필수투어</a>
     <a href="activities.html">액티비티</a>
     <a href="massage.html">마사지</a>
-    <a href="price-list.html" target="_blank">한눈에 요금표</a>
+    <a href="price-list.html">한눈에 요금표</a>
+    <a href="#">리조트 견적</a>
     <a href="cart.html">장바구니 확인</a>
 </div>
 
@@ -101,9 +106,10 @@
 
     <div class="menu">
         <a href="essential-tours.html" class="tab-link" data-category="essential">보라카이 필수투어</a>
-        <a href="activities.html" class="tab-link" data-category="activity">액티비티</a>
+        <a href="activities.html" class="tab-link active" data-category="activity">액티비티</a>
         <a href="massage.html" class="tab-link" data-category="massage">마사지</a>
         <a href="price-list.html" class="tab-link">한눈에 요금표</a>
+        <a href="#" class="tab-link">리조트 견적</a>
         <a href="cart.html" class="tab-link">장바구니</a>
     </div>
 
@@ -205,6 +211,49 @@
     </div>
 </div>
 
+<!-- 📱 모바일 예약 바 -->
+<div class="mobile-bottom-bar">
+    <button class="m-btn-cart" onclick="addToCart()">장바구니</button>
+    <button class="m-btn-buy" onclick="openOptionSheet()">구매하기</button>
+</div>
+
+<!-- 📱 모바일 옵션 시트 -->
+<div class="option-sheet-overlay" id="sheetOverlay" onclick="closeOptionSheet()"></div>
+<div class="option-sheet" id="optionSheet" style="position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-radius: 25px 25px 0 0; z-index: 10005; padding: 30px 20px 40px; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); max-height: 80vh; overflow-y: auto;">
+    <h3 style="font-weight:900; margin-bottom:20px; font-size:20px;">예약 옵션 선택</h3>
+    
+    <div class="calendar-wrap" style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 15px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800;">&lt;</button>
+            <strong id="m-month">2026년 3월</strong>
+            <button onclick="changeMonth(1)" style="border:none; background:none; color:#ff6a00; font-weight:800;">&gt;</button>
+        </div>
+        <div class="calendar-grid" id="m-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
+    </div>
+
+    <!-- 이용 시간 선택 (모바일) -->
+    <div class="selection-container">
+        <span class="selection-label">이용 가능 시간 선택</span>
+        <div class="selection-tabs" id="m-time-tabs">
+            <div class="selection-tab active" onclick="selectTime('09:00', this)">09:00</div>
+            <div class="selection-tab" onclick="selectTime('10:00', this)">10:00</div>
+            <div class="selection-tab" onclick="selectTime('11:00', this)">11:00</div>
+            <div class="selection-tab" onclick="selectTime('13:00', this)">13:00</div>
+            <div class="selection-tab" onclick="selectTime('14:00', this)">14:00</div>
+        </div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:#fcfcfc; border-radius:15px; margin-bottom:20px; border:1px solid #f0f0f0;">
+        <span style="font-weight:700;">인원 (성인)</span>
+        <div class="counter">
+            <button class="count-btn" onclick="updateCount(-1)">-</button>
+            <strong id="m-count">1</strong>
+            <button class="count-btn" onclick="updateCount(1)">+</button>
+        </div>
+    </div>
+    <button class="btn-buy" onclick="handleBuy()" style="background:#ff6a00;">선택 완료 / 구매하기</button>
+</div>
+
 <footer class="footer">
     <div class="footer-left">
         <b class="important">상호 : 보라카이션 | 대표 : 윤오현</b><br>
@@ -220,24 +269,33 @@
     let selectedDate = '2026-03-02';
     let selectedTime = '09:00';
 
+    function openOptionSheet() { document.getElementById('sheetOverlay').style.display = 'block'; document.getElementById('optionSheet').classList.add('active'); }
+    function closeOptionSheet() { document.getElementById('sheetOverlay').style.display = 'none'; document.getElementById('optionSheet').classList.remove('active'); }
+
     function selectTime(time, el) {
         selectedTime = time;
-        const tabs = document.querySelectorAll('#time-tabs .selection-tab');
-        tabs.forEach(tab => tab.classList.remove('active'));
-        el.classList.add('active');
+        const tabs = document.querySelectorAll('.selection-tab');
+        tabs.forEach(tab => {
+            if(tab.innerText === time) tab.classList.add('active');
+            else tab.classList.remove('active');
+        });
     }
 
     function updateCount(delta) {
         adultCount = Math.max(1, adultCount + delta);
         document.getElementById('pc-count').innerText = adultCount;
+        const mCount = document.getElementById('m-count');
+        if(mCount) mCount.innerText = adultCount;
     }
     function changeMonth(delta) {
         currentDate.setMonth(currentDate.getMonth() + delta);
         renderCalendar('pc-days', 'pc-month');
+        renderCalendar('m-days', 'm-month');
     }
     function renderCalendar(cid, tid) {
         const container = document.getElementById(cid);
         const title = document.getElementById(tid);
+        if(!container || !title) return;
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth();
         title.innerText = `${year}년 ${month + 1}월`;
@@ -256,8 +314,10 @@
                 div.className = 'day' + (dateStr === selectedDate ? ' selected' : '');
                 div.onclick = function() {
                     selectedDate = dateStr;
-                    document.getElementById('pc-date-display').innerText = dateStr;
+                    const pcDisp = document.getElementById('pc-date-display');
+                    if(pcDisp) pcDisp.innerText = dateStr;
                     renderCalendar('pc-days', 'pc-month');
+                    renderCalendar('m-days', 'm-month');
                 };
             }
             div.innerText = i;
@@ -276,7 +336,7 @@
         localStorage.setItem('cart', JSON.stringify(cart));
         if(confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) { window.location.assign('cart.html'); }
     }
-    window.onload = () => { renderCalendar('pc-days', 'pc-month'); };
+    window.onload = () => { renderCalendar('pc-days', 'pc-month'); renderCalendar('m-days', 'm-month'); };
 </script>
 </body>
 </html>

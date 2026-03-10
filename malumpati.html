@@ -168,7 +168,20 @@
     </div>
 
     <div class="reservation-box">
-        <div style="font-size:28px; font-weight:900; color:#ff6a00; margin-bottom:20px; letter-spacing: -1px;">₩ 99,000 (성인) / ₩ 90,000 (소인)</div>
+        <div class="price-styled-header" style="margin-bottom:25px; padding-bottom:20px; border-bottom:1px solid #f0f0f0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <span style="font-size:14px; color:#888; font-weight:700;">성인 1인</span>
+                <b style="font-size:16px; color:#333;">₩ 99,000</b>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <span style="font-size:14px; color:#888; font-weight:700;">소인 1인</span>
+                <b style="font-size:16px; color:#333;">₩ 90,000</b>
+            </div>
+            <div style="font-size:28px; font-weight:900; color:#ff6a00; letter-spacing: -1.5px; text-align:right;">
+                <span style="font-size:14px; vertical-align:middle; margin-right:5px;">총 합계</span>
+                <span id="display-total-price">₩ 99,000</span>
+            </div>
+        </div>
         
         <div class="date-tabs">
             <div class="date-tab active">투어 날짜 선택<span id="pc-date-display" class="date-display">2026-03-02</span></div>
@@ -182,14 +195,33 @@
             </div>
             <div class="calendar-grid" id="pc-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding:15px; background:#fcfcfc; border-radius:15px; border:1px solid #f0f0f0;">
-            <span style="font-weight:700; font-size:15px;">인원 (성인)</span>
-            <div class="counter">
-                <button class="count-btn" onclick="updateCount(-1)">-</button>
-                <strong id="pc-count">1</strong>
-                <button class="count-btn" onclick="updateCount(1)">+</button>
+
+        <!-- 인원 선택 섹션 -->
+        <div style="background:#fcfcfc; border-radius:20px; border:1px solid #f0f0f0; padding:20px; margin-bottom:25px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <div>
+                    <b style="display:block; font-size:15px;">성인 인원</b>
+                    <small style="color:#999; font-size:12px;">중1학년 ~ 성인</small>
+                </div>
+                <div class="counter">
+                    <button class="count-btn" onclick="updateAdultCount(-1)">-</button>
+                    <strong id="pc-adult-count">1</strong>
+                    <button class="count-btn" onclick="updateAdultCount(1)">+</button>
+                </div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <b style="display:block; font-size:15px;">소인 인원</b>
+                    <small style="color:#999; font-size:12px;">36개월 ~ 초6학년</small>
+                </div>
+                <div class="counter">
+                    <button class="count-btn" onclick="updateChildCount(-1)">-</button>
+                    <strong id="pc-child-count">0</strong>
+                    <button class="count-btn" onclick="updateChildCount(1)">+</button>
+                </div>
             </div>
         </div>
+
         <button class="btn-buy" onclick="handleBuy()">구매하기</button>
         <button class="btn-cart" onclick="addToCart()" style="margin-top:10px;">장바구니 담기</button>
     </div>
@@ -216,14 +248,27 @@
         </div>
         <div class="calendar-grid" id="m-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
     </div>
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:#fcfcfc; border-radius:15px; margin-bottom:20px; border:1px solid #f0f0f0;">
-        <span style="font-weight:700;">인원 (성인)</span>
-        <div class="counter">
-            <button class="count-btn" onclick="updateCount(-1)">-</button>
-            <strong id="m-count">1</strong>
-            <button class="count-btn" onclick="updateCount(1)">+</button>
+
+    <!-- 모바일 인원 선택 -->
+    <div style="background:#fcfcfc; border-radius:20px; border:1px solid #f0f0f0; padding:20px; margin-bottom:25px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <b style="font-size:15px;">성인 인원 (중1~성인)</b>
+            <div class="counter">
+                <button class="count-btn" onclick="updateAdultCount(-1)">-</button>
+                <strong id="m-adult-count">1</strong>
+                <button class="count-btn" onclick="updateAdultCount(1)">+</button>
+            </div>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <b style="font-size:15px;">소인 인원 (36개월~초6)</b>
+            <div class="counter">
+                <button class="count-btn" onclick="updateChildCount(-1)">-</button>
+                <strong id="m-child-count">0</strong>
+                <button class="count-btn" onclick="updateChildCount(1)">+</button>
+            </div>
         </div>
     </div>
+
     <button class="btn-buy" onclick="handleBuy()" style="background:#ff6a00;">선택 완료 / 구매하기</button>
 </div>
 
@@ -242,15 +287,35 @@
 <script src="main.js"></script>
 <script>
     let adultCount = 1;
+    let childCount = 0;
+    const ADULT_PRICE = 99000;
+    const CHILD_PRICE = 90000;
+    
     let currentDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
+
     function openOptionSheet() { document.getElementById('sheetOverlay').style.display = 'block'; document.getElementById('optionSheet').classList.add('active'); }
     function closeOptionSheet() { document.getElementById('sheetOverlay').style.display = 'none'; document.getElementById('optionSheet').classList.remove('active'); }
-    function updateCount(delta) {
-        adultCount = Math.max(1, adultCount + delta);
-        document.getElementById('pc-count').innerText = adultCount;
-        document.getElementById('m-count').innerText = adultCount;
+    
+    function updateTotalPrice() {
+        const total = (adultCount * ADULT_PRICE) + (childCount * CHILD_PRICE);
+        document.getElementById('display-total-price').innerText = '₩ ' + total.toLocaleString();
     }
+
+    function updateAdultCount(delta) {
+        adultCount = Math.max(1, adultCount + delta);
+        document.getElementById('pc-adult-count').innerText = adultCount;
+        document.getElementById('m-adult-count').innerText = adultCount;
+        updateTotalPrice();
+    }
+
+    function updateChildCount(delta) {
+        childCount = Math.max(0, childCount + delta);
+        document.getElementById('pc-child-count').innerText = childCount;
+        document.getElementById('m-child-count').innerText = childCount;
+        updateTotalPrice();
+    }
+
     function changeMonth(delta) {
         currentDate.setMonth(currentDate.getMonth() + delta);
         renderCalendar('pc-days', 'pc-month');
@@ -294,17 +359,27 @@
     }
     
     function handleBuy() {
-        try {
-            const item = { name: "시크릿가든 말룸파티 투어", price: 99000, count: adultCount, date: selectedDate };
-            sessionStorage.setItem('directBuyItem', JSON.stringify(item));
-            window.open('booking-form.html', '_blank');
-        } catch (e) {
-            window.open('booking-form.html', '_blank');
-        }
+        const total = (adultCount * ADULT_PRICE) + (childCount * CHILD_PRICE);
+        const item = { 
+            name: "시크릿가든 말룸파티 투어", 
+            price: total, 
+            count: adultCount + childCount, 
+            date: selectedDate,
+            details: `성인 ${adultCount}, 소인 ${childCount}`
+        };
+        sessionStorage.setItem('directBuyItem', JSON.stringify(item));
+        window.open('booking-form.html', '_blank');
     }
 
     function addToCart() {
-        const item = { name: "시크릿가든 말룸파티 투어", price: 99000, count: adultCount, date: selectedDate };
+        const total = (adultCount * ADULT_PRICE) + (childCount * CHILD_PRICE);
+        const item = { 
+            name: "시크릿가든 말룸파티 투어", 
+            price: total, 
+            count: adultCount + childCount, 
+            date: selectedDate,
+            details: `성인 ${adultCount}, 소인 ${childCount}`
+        };
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         cart.push(item);
         localStorage.setItem('cart', JSON.stringify(cart));
@@ -312,7 +387,7 @@
             window.location.assign('cart.html');
         }
     }
-    window.onload = () => { renderCalendar('pc-days', 'pc-month'); renderCalendar('m-days', 'm-month'); };
+    window.onload = () => { renderCalendar('pc-days', 'pc-month'); renderCalendar('m-days', 'm-month'); updateTotalPrice(); };
 
     document.addEventListener('DOMContentLoaded', function() {
         const t = document.getElementById('menuToggle');

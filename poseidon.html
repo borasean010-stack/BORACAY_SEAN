@@ -118,15 +118,15 @@
 
         <div class="section-title">서비스 이용 안내</div>
         <p style="color:#666; line-height:1.8; font-size:16px;">
-            보라카이의 정취를 느끼며 즐기는 최고의 힐링 타임. 포세이돈 스파만의 고품격 테라피스트들이 지친 몸과 마음을 정성껏 치유해 드립니다.
+            최고급 시설에서 제공하는 프리미엄 테라피 서비스. 포세이돈 스파만의 프라이빗한 공간에서 품격 있는 휴식을 만끽하세요.
         </p>
 
         <div class="section-title">포함 사항</div>
         <p style="color:#666; line-height:1.8; font-size:16px; margin-bottom: 40px;">
             - 웰컴 드링크 제공<br>
-            - 고품격 테라피스트 마사지<br>
-            - 샤워 시설 이용 가능<br>
-            - 무료 와이파이 제공
+            - 최고급 테라피 서비스<br>
+            - 프라이빗 스파 룸 & 자쿠지 이용<br>
+            - 수영장 시설 이용 가능
         </p>
 
         <div class="section-title">환불 규정</div>
@@ -134,7 +134,7 @@
     </div>
 
     <div class="reservation-box">
-        <div style="font-size:28px; font-weight:900; color:#ff6a00; margin-bottom:20px; letter-spacing: -1px;">₩ 60,000</div>
+        <div id="display-price" style="font-size:28px; font-weight:900; color:#ff6a00; margin-bottom:20px; letter-spacing: -1px;">₩ 105,000</div>
         
         <div class="date-tabs">
             <div class="date-tab active">예약 날짜 선택<span id="pc-date-display" class="date-display">2026-03-02</span></div>
@@ -148,6 +148,30 @@
             </div>
             <div class="calendar-grid" id="pc-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
         </div>
+
+        <!-- 마사지 종류 선택 -->
+        <div class="selection-container">
+            <span class="selection-label">마사지 종류 선택</span>
+            <div class="selection-tabs" id="type-tabs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div class="selection-tab active" onclick="selectType('VIP', 105000, this)">VIP</div>
+                <div class="selection-tab" onclick="selectType('VVIP', 119000, this)">VVIP</div>
+                <div class="selection-tab" onclick="selectType('성장 마사지(2시간30분)', 55000, this)">성장(2.5시간)</div>
+                <div class="selection-tab" onclick="selectType('성장 마사지 (1시간)', 42000, this)">성장(1시간)</div>
+                <div class="selection-tab" onclick="selectType('성장 마사지 (2시간)', 55000, this)">성장(2시간)</div>
+            </div>
+        </div>
+
+        <!-- 이용 시간 선택 -->
+        <div class="selection-container">
+            <span class="selection-label">이용 가능 시간 선택</span>
+            <div class="selection-tabs" id="time-tabs">
+                <div class="selection-tab active" onclick="selectTime('12:30', this)">12:30</div>
+                <div class="selection-tab" onclick="selectTime('14:30', this)">14:30</div>
+                <div class="selection-tab" onclick="selectTime('16:30', this)">16:30</div>
+                <div class="selection-tab" onclick="selectTime('19:30', this)">19:30</div>
+            </div>
+        </div>
+
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding:15px; background:#fcfcfc; border-radius:15px; border:1px solid #f0f0f0;">
             <span style="font-weight:700; font-size:15px;">인원 (성인)</span>
             <div class="counter">
@@ -174,7 +198,26 @@
     let adultCount = 1;
     let currentDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
-    
+    let selectedType = 'VIP';
+    let selectedPrice = 105000;
+    let selectedTime = '12:30';
+
+    function selectType(type, price, el) {
+        selectedType = type;
+        selectedPrice = price;
+        document.getElementById('display-price').innerText = '₩ ' + price.toLocaleString();
+        const tabs = document.querySelectorAll('#type-tabs .selection-tab');
+        tabs.forEach(tab => tab.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    function selectTime(time, el) {
+        selectedTime = time;
+        const tabs = document.querySelectorAll('#time-tabs .selection-tab');
+        tabs.forEach(tab => tab.classList.remove('active'));
+        el.classList.add('active');
+    }
+
     function updateCount(delta) {
         adultCount = Math.max(1, adultCount + delta);
         document.getElementById('pc-count').innerText = adultCount;
@@ -213,12 +256,12 @@
         }
     }
     function handleBuy() {
-        const item = { name: "포세이돈 스파", price: 60000, count: adultCount, date: selectedDate };
+        const item = { name: "포세이돈 - " + selectedType, price: selectedPrice, count: adultCount, date: selectedDate, time: selectedTime };
         sessionStorage.setItem('directBuyItem', JSON.stringify(item));
         window.open('booking-form.html', '_blank');
     }
     function addToCart() {
-        const item = { name: "포세이돈 스파", price: 60000, count: adultCount, date: selectedDate };
+        const item = { name: "포세이돈 - " + selectedType, price: selectedPrice, count: adultCount, date: selectedDate, time: selectedTime };
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         cart.push(item);
         localStorage.setItem('cart', JSON.stringify(cart));

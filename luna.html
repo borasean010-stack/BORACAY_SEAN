@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>루나 스파 | BORACAY_SEAN</title>
+    <title>루나스파 | BORACAY_SEAN</title>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
@@ -109,7 +109,7 @@
 
 <div class="tour-detail-container">
     <div class="tour-content">
-        <h1>루나 스파 (Luna Spa)</h1>
+        <h1>루나스파 (Luna Spa)</h1>
         <div class="section-title">스파 갤러리</div>
         <div class="itinerary">
             <div class="itinerary-img"><img src="luna1.jpg"></div>
@@ -118,15 +118,15 @@
 
         <div class="section-title">서비스 이용 안내</div>
         <p style="color:#666; line-height:1.8; font-size:16px;">
-            보라카이의 정취를 느끼며 즐기는 최고의 힐링 타임. 루나 스파만의 차별화된 프로그램으로 완벽한 휴식을 경험하세요.
+            차별화된 프로그램과 정성스러운 테라피. 루나스파에서 일상의 스트레스를 해소하고 진정한 휴식을 경험하세요.
         </p>
 
         <div class="section-title">포함 사항</div>
         <p style="color:#666; line-height:1.8; font-size:16px; margin-bottom: 40px;">
-            - 웰컴 드링크 제공<br>
-            - 전문 테라피스트 마사지<br>
-            - 샤워 및 편의 시설<br>
-            - 무료 와이파이
+            - 웰컴 드링크<br>
+            - 전문 테라피스트 케어<br>
+            - 샤워 시설 완비<br>
+            - 세탁 서비스 (가능 시)
         </p>
 
         <div class="section-title">환불 규정</div>
@@ -134,7 +134,7 @@
     </div>
 
     <div class="reservation-box">
-        <div style="font-size:28px; font-weight:900; color:#ff6a00; margin-bottom:20px; letter-spacing: -1px;">₩ 50,000</div>
+        <div id="display-price" style="font-size:28px; font-weight:900; color:#ff6a00; margin-bottom:20px; letter-spacing: -1px;">₩ 55,000</div>
         
         <div class="date-tabs">
             <div class="date-tab active">예약 날짜 선택<span id="pc-date-display" class="date-display">2026-03-02</span></div>
@@ -152,11 +152,13 @@
         <!-- 마사지 종류 선택 -->
         <div class="selection-container">
             <span class="selection-label">마사지 종류 선택</span>
-            <div class="selection-tabs" id="type-tabs" style="grid-template-columns: 1fr 1fr;">
-                <div class="selection-tab active" onclick="selectType('태반 마사지', this)">태반 마사지</div>
-                <div class="selection-tab" onclick="selectType('스톤마사지', this)">스톤마사지</div>
-                <div class="selection-tab" onclick="selectType('노니씨드 오일 마사지', this)">노니씨드 오일</div>
-                <div class="selection-tab" onclick="selectType('타이거 오일 마사지', this)">타이거 오일</div>
+            <div class="selection-tabs" id="type-tabs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div class="selection-tab active" onclick="selectType('태반 마사지', 55000, this)">태반 마사지</div>
+                <div class="selection-tab" onclick="selectType('스톤 마사지', 55000, this)">스톤 마사지</div>
+                <div class="selection-tab" onclick="selectType('노니씨드 오일 마사지', 70000, this)">노니씨드 오일</div>
+                <div class="selection-tab" onclick="selectType('타이거 오일 마사지', 77000, this)">타이거 오일</div>
+                <div class="selection-tab" onclick="selectType('성장 마사지 (1시간)', 42000, this)">성장(1시간)</div>
+                <div class="selection-tab" onclick="selectType('성장 마사지 (2시간)', 55000, this)">성장(2시간)</div>
             </div>
         </div>
 
@@ -198,10 +200,13 @@
     let currentDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
     let selectedType = '태반 마사지';
+    let selectedPrice = 55000;
     let selectedTime = '12:30';
 
-    function selectType(type, el) {
+    function selectType(type, price, el) {
         selectedType = type;
+        selectedPrice = price;
+        document.getElementById('display-price').innerText = '₩ ' + price.toLocaleString();
         const tabs = document.querySelectorAll('#type-tabs .selection-tab');
         tabs.forEach(tab => tab.classList.remove('active'));
         el.classList.add('active');
@@ -252,12 +257,12 @@
         }
     }
     function handleBuy() {
-        const item = { name: "루나 스파", type: selectedType, time: selectedTime, price: 50000, count: adultCount, date: selectedDate };
+        const item = { name: "루나스파 - " + selectedType, price: selectedPrice, count: adultCount, date: selectedDate, time: selectedTime };
         sessionStorage.setItem('directBuyItem', JSON.stringify(item));
         window.open('booking-form.html', '_blank');
     }
     function addToCart() {
-        const item = { name: "루나 스파", type: selectedType, time: selectedTime, price: 50000, count: adultCount, date: selectedDate };
+        const item = { name: "루나스파 - " + selectedType, price: selectedPrice, count: adultCount, date: selectedDate, time: selectedTime };
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         cart.push(item);
         localStorage.setItem('cart', JSON.stringify(cart));

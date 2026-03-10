@@ -33,13 +33,16 @@ This project is a reservation website for tours and activities in Boracay. It al
 
 ## Current Milestone: Product Management
 
-### 1. New Activity: Fairway Golf Club (페어웨이 골프클럽)
-* **Objective:** Add a new golf activity to the product list.
-* **Implementation:** Create `golf.html` and register it in `main.js`. Use `beach1.jpg` as a temporary placeholder image.
+### 1. New Activity & Updates: Fairway Golf Club (페어웨이 골프클럽)
+* **Objective:** Add a new golf activity and keep it updated.
+* **Implementation:** Created `golf.html` and registered it in `main.js`. 
+* **Updates:** 
+    * Updated thumbnail to `golf1.jpg`.
+    * Updated `golf.html` gallery to use `golf1.jpg` through `golf4.jpg`.
 
-### 2. Product Deletion: Sunset Sailing (선셋 세일링)
-* **Objective:** Remove the "Sunset Sailing" product from the activity list.
-* **Implementation:** Remove its entry from `main.js`.
+### 2. Product Deletion: Sunset Sailing (선셋 세일링) & Beach Island Tour (비치 아일랜드 투어)
+* **Objective:** Remove outdated products from the activity list.
+* **Implementation:** Removed entries for "Sunset Sailing" and "Beach Island Tour" from `main.js`.
 
 ## Previous Milestone: Admin & Login Redesign
 

@@ -119,6 +119,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!headerRight) return;
         headerRight.innerHTML = `
             <a href="mypage.html" class="mypage-btn">마이페이지</a>
+            <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">
+                <svg class="kakao-icon" viewBox="0 0 24 24" fill="currentColor" style="width:18px; height:18px;"><path d="M12 3c-4.97 0-9 3.185-9 7 0 3.26 2.854 6.01 6.741 6.775l-1.081 3.99c-.076.28.206.51.436.353l4.746-3.185c.387.04.781.067 1.158.067 4.97 0 9-3.185 9-7s-4.03-7-9-7z"/></svg>
+                카카오톡 상담
+            </a>
             <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페 바로가기</a>
         `;
     };

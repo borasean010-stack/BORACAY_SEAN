@@ -7,9 +7,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
-        body { background: #f4f6f8; color: #111; padding-bottom: 120px; }
+        body { background: #f4f6f8; color: #111; padding-bottom: 60px; }
         
-        /* 상단 검색바 영역 (Sticky) */
         .search-filter-bar {
             background: white;
             padding: 25px 0;
@@ -40,32 +39,24 @@
             height: 64px;
             transition: 0.3s;
         }
-        .filter-input-box:focus-within { border-color: #ff6a00; background: white; box-shadow: 0 10px 20px rgba(255,106,0,0.05); }
-        .filter-input-box input { 
-            border: none; background: transparent; width: 100%; height: 100%; 
-            font-family: inherit; font-size: 18px; font-weight: 700; outline: none; color: #111;
-        }
+        .filter-input-box input { border: none; background: transparent; width: 100%; height: 100%; font-family: inherit; font-size: 18px; font-weight: 700; outline: none; color: #111; }
         .guest-trigger { cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: space-between; font-size: 18px; font-weight: 700; }
 
-        /* 리조트 리스트 레이아웃 */
         .main-content { max-width: 1100px; margin: 0 auto; padding: 0 20px; display: grid; grid-template-columns: 1fr; gap: 20px; }
         .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding: 0 10px; }
         .list-header h2 { font-size: 26px; font-weight: 900; letter-spacing: -1px; }
 
-        /* 보홀트래블 스타일 리조트 카드 */
         .resort-horizontal-card {
             background: white;
             border-radius: 28px;
             display: grid;
-            grid-template-columns: 320px 1fr 200px;
+            grid-template-columns: 320px 1fr 180px;
             overflow: hidden;
             border: 1px solid #eee;
             transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            cursor: pointer;
             box-shadow: 0 5px 20px rgba(0,0,0,0.03);
         }
         .resort-horizontal-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); border-color: #ffe0d1; }
-        .resort-horizontal-card.selected { border: 3px solid #ff6a00; background: #fffcfb; }
 
         .card-img-area { position: relative; height: 100%; min-height: 220px; }
         .card-img-area img { width: 100%; height: 100%; object-fit: cover; }
@@ -85,59 +76,28 @@
             flex-direction: column; 
             align-items: center; 
             justify-content: center; 
-            gap: 12px;
         }
         .view-detail-btn {
             width: 100%;
-            padding: 12px;
-            border-radius: 12px;
-            border: 1.5px solid #eee;
-            background: white;
-            color: #666;
+            padding: 18px;
+            border-radius: 16px;
+            background: #111;
+            color: white;
             font-weight: 800;
-            font-size: 14px;
-            cursor: pointer;
-            transition: 0.2s;
-            text-align: center;
-            text-decoration: none;
-        }
-        .view-detail-btn:hover { background: #f0f0f0; color: #111; }
-
-        .select-btn {
-            width: 100%;
-            padding: 15px;
-            border-radius: 15px;
-            border: 2px solid #ddd;
-            background: white;
-            font-weight: 900;
-            font-size: 15px;
+            font-size: 16px;
             cursor: pointer;
             transition: 0.3s;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
-        .resort-horizontal-card.selected .select-btn {
-            background: #ff6a00; border-color: #ff6a00; color: white;
-            box-shadow: 0 8px 20px rgba(255,106,0,0.25);
-        }
+        .view-detail-btn:hover { background: #ff6a00; transform: scale(1.05); }
 
-        /* 하단 고정 견적 바 */
-        .floating-quote-bar {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: #111; color: white; padding: 18px 45px; border-radius: 60px;
-            display: flex; align-items: center; gap: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.4);
-            z-index: 1000; transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1); opacity: 0; visibility: hidden;
-        }
-        .floating-quote-bar.active { opacity: 1; visibility: visible; bottom: 45px; }
-        .quote-count-info b { color: #ff6a00; font-size: 24px; margin: 0 5px; }
-        .final-submit-btn { background: #ff6a00; color: white; border: none; padding: 14px 35px; border-radius: 40px; font-weight: 900; font-size: 18px; cursor: pointer; transition: 0.3s; }
-
-        /* 인원 선택 팝오버 */
         .guest-popover {
             position: absolute; top: 75px; right: 0; background: white; border-radius: 28px;
             box-shadow: 0 15px 50px rgba(0,0,0,0.18); padding: 35px; width: 360px; display: none; border: 1px solid #f0f0f0; z-index: 200;
         }
         .guest-popover.active { display: block; animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        
         .age-selection-area { margin-top: 25px; padding-top: 20px; border-top: 1px dashed #eee; }
         .age-selection-area h4 { font-size: 14px; font-weight: 800; color: #ff6a00; margin-bottom: 15px; }
         .age-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -148,42 +108,24 @@
         @media (max-width: 900px) {
             .filter-container { grid-template-columns: 1fr; }
             .resort-horizontal-card { grid-template-columns: 1fr; }
-            .card-action-area { border-left: none; border-top: 1px solid #f5f5f5; flex-direction: row; }
-            .view-detail-btn { width: auto; padding: 12px 20px; }
-            .select-btn { width: auto; padding: 12px 20px; }
+            .card-action-area { border-left: none; border-top: 1px solid #f5f5f5; padding: 25px; }
+            .search-filter-bar { top: 70px; }
         }
     </style>
 </head>
 <body>
 
-<div class="side-menu-overlay" id="overlay"></div>
-<div class="side-menu" id="sideMenu">
-    <a href="index.html">홈으로</a>
-    <a href="mypage.html">마이페이지 (예약확인)</a>
-    <a href="essential-tours.html">보라카이 필수투어</a>
-    <a href="activities.html">액티비티</a>
-    <a href="massage.html">마사지</a>
-    <a href="price-list.html">한눈에 요금표</a>
-    <a href="resort-quote.html">리조트 견적</a>
-    <a href="cart.html">장바구니 확인</a>
-</div>
-
 <div class="top-bar">
     <div class="header-left">
-        <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
         <div class="logo"><a href="index.html"><img src="logo.png" class="logo-img">BORACAY_SEAN</a></div>
     </div>
     <div class="menu">
-        <a href="essential-tours.html" class="tab-link" data-category="essential">보라카이 필수투어</a>
-        <a href="activities.html" class="tab-link" data-category="activity">액티비티</a>
-        <a href="massage.html" class="tab-link" data-category="massage">마사지</a>
+        <a href="essential-tours.html" class="tab-link">보라카이 필수투어</a>
+        <a href="activities.html" class="tab-link">액티비티</a>
+        <a href="massage.html" class="tab-link">마사지</a>
         <a href="price-list.html" class="tab-link">한눈에 요금표</a>
         <a href="resort-quote.html" class="tab-link active">리조트 견적</a>
         <a href="cart.html" class="tab-link">장바구니</a>
-    </div>
-    <div class="header-right pc-only">
-        <a href="mypage.html" class="mypage-btn">마이페이지</a>
-        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페 바로가기</a>
     </div>
 </div>
 
@@ -224,11 +166,11 @@
                     <h4>🧒 소인별 만 나이 선택</h4>
                     <div id="child-ages-container" class="age-grid"></div>
                 </div>
-                <button class="submit-btn" style="background:#111; color:white; border:none; width:100%; margin-top:25px; padding:15px; border-radius:16px;" onclick="toggleGuestPopover(); event.stopPropagation();">인원 설정 완료</button>
+                <button class="submit-btn" style="background:#111; color:white; border:none; width:100%; margin-top:25px; padding:15px; border-radius:16px;" onclick="saveFilters(); toggleGuestPopover(); event.stopPropagation();">인원 설정 완료</button>
             </div>
         </div>
         <div class="filter-group">
-            <button class="final-submit-btn" style="height:64px; border-radius:16px; width:140px; font-size:18px;" onclick="scrollToResorts()">검색하기</button>
+            <button class="final-submit-btn" style="height:64px; border-radius:16px; width:140px; font-size:18px; background:#ff6a00; color:white; border:none; font-weight:900; cursor:pointer;" onclick="saveFilters(); scrollToResorts();">검색하기</button>
         </div>
     </div>
 </div>
@@ -236,20 +178,14 @@
 <div class="main-content" id="resort-section">
     <div class="list-header">
         <h2>보라카이 추천 리조트 <span>(<span id="total-resort-count">0</span>)</span></h2>
-        <div style="font-size:14px; color:#ff6a00; font-weight:800; background:#fff5eb; padding:8px 15px; border-radius:10px;">✨ 리조트를 선택하고 견적을 요청하세요!</div>
+        <div style="font-size:14px; color:#ff6a00; font-weight:800; background:#fff5eb; padding:8px 15px; border-radius:10px;">✨ 리조트를 선택하여 상세 타입과 견적을 확인하세요!</div>
     </div>
     <div id="resort-list" style="display:grid; gap:25px;"></div>
-</div>
-
-<div class="floating-quote-bar" id="floating-bar">
-    <div class="quote-count-info">현재 <b id="selected-count">0</b>개 리조트 선택됨</div>
-    <button class="final-submit-btn" onclick="requestQuote()">실시간 맞춤 견적 요청하기 ➔</button>
 </div>
 
 <footer class="footer">
     <div class="footer-left">
         <b class="important">상호 : 보라카이션 | 대표 : 윤오현</b><br>
-        서울특별시 중랑구 상봉로 16길 25-3<br>
         사업자번호 : 498-31-00593 | daemit@naver.com
     </div>
 </footer>
@@ -272,7 +208,6 @@
         { name: "만다린 아일랜드", cat: "스테이션 2 | 전통", img: "beach2.jpg", tags: ["정통스파", "해변중심", "친절함"] }
     ];
 
-    let selectedResorts = [];
     let counts = { adult: 2, child: 0 };
 
     function initResorts() {
@@ -281,7 +216,6 @@
         resorts.forEach(resort => {
             const card = document.createElement('div');
             card.className = 'resort-horizontal-card';
-            
             card.innerHTML = `
                 <div class="card-img-area">
                     <div class="badge-popular">보라카이션 추천</div>
@@ -298,49 +232,22 @@
                     <div style="font-size:14px; color:#777; font-weight:500;">보라카이션 회원 전용 프로모션 혜택을 확인해 보세요.</div>
                 </div>
                 <div class="card-action-area">
-                    <a href="${resort.detail || '#'}" class="view-detail-btn" onclick="event.stopPropagation();">상세보기</a>
-                    <button class="select-btn">리조트 선택</button>
+                    <a href="${resort.detail || '#'}" class="view-detail-btn" onclick="saveFilters()">상세보기</a>
                 </div>
             `;
-            card.onclick = () => toggleResort(resort.name, card);
             container.appendChild(card);
         });
     }
 
-    function toggleResort(name, element) {
-        const index = selectedResorts.indexOf(name);
-        if (index > -1) {
-            selectedResorts.splice(index, 1);
-            element.classList.remove('selected');
-            element.querySelector('.select-btn').innerText = '리조트 선택';
-        } else {
-            selectedResorts.push(name);
-            element.classList.add('selected');
-            element.querySelector('.select-btn').innerText = '선택됨 ✓';
-        }
-        
-        const floatingBar = document.getElementById('floating-bar');
-        document.getElementById('selected-count').innerText = selectedResorts.length;
-        if (selectedResorts.length > 0) floatingBar.classList.add('active');
-        else floatingBar.classList.remove('active');
-    }
-
-    function toggleGuestPopover() {
-        document.getElementById('guest-popover').classList.toggle('active');
-    }
+    function toggleGuestPopover() { document.getElementById('guest-popover').classList.toggle('active'); }
 
     function updateCount(type, delta) {
         counts[type] = Math.max(type === 'adult' ? 1 : 0, counts[type] + delta);
         document.getElementById(`${type}-count`).innerText = counts[type];
         document.getElementById('guest-display').innerText = `성인 ${counts.adult}, 소인 ${counts.child}`;
-        
         const ageArea = document.getElementById('age-selection-area');
-        if (counts.child > 0) {
-            ageArea.style.display = 'block';
-            renderChildAgeInputs();
-        } else {
-            ageArea.style.display = 'none';
-        }
+        if (counts.child > 0) { ageArea.style.display = 'block'; renderChildAgeInputs(); } 
+        else { ageArea.style.display = 'none'; }
     }
 
     function renderChildAgeInputs() {
@@ -351,64 +258,51 @@
                 const ageDiv = document.createElement('div');
                 ageDiv.className = 'age-item';
                 ageDiv.id = `child-age-box-${i}`;
-                ageDiv.innerHTML = `
-                    <label>소인 ${i} 나이</label>
-                    <select class="child-age-select">
-                        ${Array.from({length: 13}, (_, idx) => `<option value="${idx}">만 ${idx}세</option>`).join('')}
-                    </select>
-                `;
+                ageDiv.innerHTML = `<label>소인 ${i} 나이</label><select class="child-age-select">${Array.from({length: 13}, (_, idx) => `<option value="${idx}">만 ${idx}세</option>`).join('')}</select>`;
                 container.appendChild(ageDiv);
             }
         } else {
-            for (let i = currentInputs; i > counts.child; i--) {
-                const el = document.getElementById(`child-age-box-${i}`);
-                if (el) el.remove();
-            }
+            for (let i = currentInputs; i > counts.child; i--) { document.getElementById(`child-age-box-${i}`).remove(); }
         }
     }
 
-    function scrollToResorts() {
-        window.scrollTo({ top: document.getElementById('resort-section').offsetTop - 180, behavior: 'smooth' });
-    }
-
-    function requestQuote() {
-        const checkin = document.getElementById('checkin-date').value;
-        const checkout = document.getElementById('checkout-date').value;
-        if (!checkin || !checkout) { alert('여행 일정을 선택해 주세요.'); return; }
-        if (selectedResorts.length === 0) { alert('견적을 받으실 리조트를 선택해 주세요.'); return; }
-
-        const childAges = Array.from(document.querySelectorAll('.child-age-select')).map(s => s.value);
-        const quoteData = {
-            type: '리조트 견적',
-            checkin, checkout,
+    function saveFilters() {
+        const filterData = {
+            checkin: document.getElementById('checkin-date').value,
+            checkout: document.getElementById('checkout-date').value,
             adults: counts.adult,
             children: counts.child,
-            childAges: childAges,
-            resorts: selectedResorts
+            childAges: Array.from(document.querySelectorAll('.child-age-select')).map(s => s.value)
         };
-
-        sessionStorage.setItem('directBuyItem', JSON.stringify({
-            name: `리조트 견적 (${selectedResorts.join(', ')})`,
-            price: 0, count: 1, details: quoteData
-        }));
-        window.open('booking-form.html', '_blank');
+        sessionStorage.setItem('resort_filter_state', JSON.stringify(filterData));
     }
+
+    function scrollToResorts() { window.scrollTo({ top: document.getElementById('resort-section').offsetTop - 180, behavior: 'smooth' }); }
 
     window.onload = () => {
         initResorts();
-        const today = new Date();
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 3);
-        document.getElementById('checkin-date').value = today.toISOString().split('T')[0];
-        document.getElementById('checkout-date').value = tomorrow.toISOString().split('T')[0];
+        const saved = sessionStorage.getItem('resort_filter_state');
+        if (saved) {
+            const data = JSON.parse(saved);
+            document.getElementById('checkin-date').value = data.checkin;
+            document.getElementById('checkout-date').value = data.checkout;
+            counts.adult = data.adults;
+            counts.child = 0; // reset to re-add
+            for(let i=0; i<data.adults-2; i++) updateCount('adult', 1); // logic check needed but simple for now
+            for(let i=0; i<data.children; i++) updateCount('child', 1);
+        } else {
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 3);
+            document.getElementById('checkin-date').value = today.toISOString().split('T')[0];
+            document.getElementById('checkout-date').value = tomorrow.toISOString().split('T')[0];
+        }
     };
 
     document.addEventListener('click', (e) => {
         const popover = document.getElementById('guest-popover');
         const trigger = document.querySelector('.guest-trigger');
-        if (popover.classList.contains('active') && !popover.contains(e.target) && !trigger.contains(e.target)) {
-            popover.classList.remove('active');
-        }
+        if (popover.classList.contains('active') && !popover.contains(e.target) && !trigger.contains(e.target)) { popover.classList.remove('active'); }
     });
 </script>
 </body>

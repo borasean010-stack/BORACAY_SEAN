@@ -10,6 +10,7 @@
         body { background: #fdfdfd; padding-bottom: 100px; color: #111; }
         .resort-detail-container { max-width: 1100px; margin: 120px auto 50px; padding: 0 20px; }
         
+        /* 히어로 섹션 */
         .resort-hero { position: relative; border-radius: 32px; overflow: hidden; height: 500px; margin-bottom: 50px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
         .resort-hero img { width: 100%; height: 100%; object-fit: cover; }
         .hero-overlay { position: absolute; bottom: 0; left: 0; width: 100%; padding: 60px 40px; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); color: white; }
@@ -19,36 +20,46 @@
         .section-title { font-size: 24px; font-weight: 900; margin-bottom: 30px; color: #ff6a00; display: flex; align-items: center; gap: 12px; }
         .section-title::after { content: ''; flex: 1; height: 1px; background: #eee; }
 
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
-        .facility-img { width: 100%; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        /* 부대시설 스타일 */
+        .info-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; align-items: center; }
+        .info-list { list-style: none; padding: 0; }
+        .info-item { display: flex; gap: 15px; margin-bottom: 15px; font-size: 16px; line-height: 1.6; }
+        .info-item b { color: #ff6a00; min-width: 20px; }
+        .facility-img { width: 100%; border-radius: 24px; box-shadow: 0 15px 30px rgba(0,0,0,0.08); }
 
-        .room-policy { background: #fff5eb; padding: 25px; border-radius: 20px; border: 1px solid #ffe0d1; margin-bottom: 40px; font-size: 15px; font-weight: 700; color: #d35400; line-height: 1.6; }
+        /* 투숙 규정 스타일 */
+        .room-policy-box { background: #fff9f2; padding: 30px; border-radius: 24px; border: 1px solid #ffe0d1; margin-bottom: 50px; }
+        .room-policy-box h4 { font-size: 18px; font-weight: 800; color: #d35400; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .room-policy-box p { font-size: 15px; color: #666; margin-bottom: 10px; line-height: 1.7; font-weight: 600; }
 
-        /* 룸 슬라이더 스타일 */
-        .room-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(450px, 1fr)); gap: 30px; }
-        .room-card { background: white; border-radius: 28px; overflow: hidden; border: 1px solid #eee; transition: 0.3s; }
+        /* 룸 타입 그리드 & 슬라이더 */
+        .room-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(480px, 1fr)); gap: 35px; }
+        .room-card { background: white; border-radius: 32px; overflow: hidden; border: 1px solid #eee; transition: 0.3s; }
+        .room-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
         
-        .slider-container { position: relative; width: 100%; height: 300px; overflow: hidden; }
-        .slider-wrapper { display: flex; transition: transform 0.5s ease; height: 100%; }
+        .slider-container { position: relative; width: 100%; height: 320px; overflow: hidden; background: #eee; }
+        .slider-wrapper { display: flex; transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); height: 100%; }
         .slider-wrapper img { width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; }
         
-        .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.8); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .prev-btn { left: 15px; }
-        .next-btn { right: 15px; }
+        .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.9); border: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: 0.2s; }
+        .slider-btn:hover { background: #ff6a00; color: white; }
+        .prev-btn { left: 20px; }
+        .next-btn { right: 20px; }
         
-        .room-info { padding: 30px; }
-        .room-info h3 { font-size: 22px; font-weight: 900; margin-bottom: 15px; }
-        .room-spec-item { font-size: 14px; color: #777; display: flex; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid #f5f5f5; margin-bottom: 10px; }
-        .room-spec-item b { color: #333; }
+        .room-info { padding: 35px; }
+        .room-info h3 { font-size: 24px; font-weight: 900; margin-bottom: 20px; color: #111; }
+        .room-spec-item { font-size: 15px; color: #777; display: flex; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid #f5f5f5; margin-bottom: 12px; }
+        .room-spec-item b { color: #333; font-weight: 800; }
 
-        .btn-quote-link { display: block; width: 100%; padding: 18px; background: #111; color: white; text-align: center; border-radius: 16px; font-weight: 800; text-decoration: none; transition: 0.3s; margin-top: 20px; }
-        .btn-quote-link:hover { background: #ff6a00; transform: translateY(-3px); }
+        .btn-quote-link { display: block; width: 100%; padding: 20px; background: #111; color: white; text-align: center; border-radius: 18px; font-weight: 800; text-decoration: none; transition: 0.3s; margin-top: 25px; font-size: 17px; }
+        .btn-quote-link:hover { background: #ff6a00; box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
 
         @media (max-width: 768px) {
             .info-grid { grid-template-columns: 1fr; }
             .room-grid { grid-template-columns: 1fr; }
             .resort-hero { height: 350px; }
             .hero-overlay h1 { font-size: 32px; }
+            .section-card { padding: 30px 20px; }
         }
     </style>
 </head>
@@ -59,9 +70,9 @@
         <div class="logo"><a href="index.html"><img src="logo.png" class="logo-img">BORACAY_SEAN</a></div>
     </div>
     <div class="menu">
-        <a href="essential-tours.html" class="tab-link" data-category="essential">보라카이 필수투어</a>
-        <a href="activities.html" class="tab-link" data-category="activity">액티비티</a>
-        <a href="massage.html" class="tab-link" data-category="massage">마사지</a>
+        <a href="essential-tours.html" class="tab-link">보라카이 필수투어</a>
+        <a href="activities.html" class="tab-link">액티비티</a>
+        <a href="massage.html" class="tab-link">마사지</a>
         <a href="price-list.html" class="tab-link">한눈에 요금표</a>
         <a href="resort-quote.html" class="tab-link active">리조트 견적</a>
         <a href="cart.html" class="tab-link">장바구니</a>
@@ -69,6 +80,7 @@
 </div>
 
 <div class="resort-detail-container">
+    <!-- 메인 히어로 -->
     <div class="resort-hero">
         <img src="shangrila1.png" alt="샹그릴라 보라카이">
         <div class="hero-overlay">
@@ -76,27 +88,57 @@
         </div>
     </div>
 
+    <!-- 로비 & 부대시설 -->
     <div class="section-card">
         <div class="section-title">리조트 로비 & 부대시설</div>
         <div class="info-grid">
             <div class="info-list">
-                <div class="info-item"><b>호텔 체크인</b><span>체크인 15:00 / 체크아웃 12:00</span></div>
-                <div class="info-item"><b>수영장</b><span>10:00 - 22:00 (무료 이용)</span></div>
-                <div class="info-item"><b>전용시설</b><span>샹그릴라 전용 선착장 운영</span></div>
+                <div class="info-item"><b>▶</b><span>호텔 체크인 : 15:00 / 체크아웃 12:00 (24시간 가능)</span></div>
+                <div class="info-item"><b>▶</b><span>수영장 : 10:00 - 22:00 (투숙객 무료이용)</span></div>
+                <div class="info-item"><b>▶</b><span>헬스장 : 10:00 - 22:00</span></div>
+                <div class="info-item"><b>▶</b><span>놀이방, 테니스장, 당구장 : 이용 시 호텔 개별문의</span></div>
+                <div class="info-item"><b>▶</b><span>회의실 & 연회장 : 이용 시 호텔 개별문의</span></div>
+                <div class="info-item"><b>▶</b><span>샹그릴라 전용 선착장 운영</span></div>
             </div>
-            <img src="shangrila_resort_lobby1.png" class="facility-img">
+            <img src="shangrila_resort_lobby1.png" class="facility-img" alt="로비">
         </div>
     </div>
 
+    <!-- 레스토랑 & 스파 -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+        <div class="section-card" style="margin-bottom: 0;">
+            <div class="section-title">Restaurant & Bar</div>
+            <div class="info-list">
+                <div class="info-item"><b>▶</b><span>조식 시간 : 06:00 - 10:00</span></div>
+                <div class="info-item"><b>▶</b><span>총 4개의 레스토랑 : 호텔 체크인 시 이용문의</span></div>
+            </div>
+            <img src="shangrila_restaurant_bar1.png" class="facility-img" style="margin-top: 20px;">
+        </div>
+        <div class="section-card" style="margin-bottom: 0;">
+            <div class="section-title">Chi Spa (치 스파)</div>
+            <div class="info-list">
+                <div class="info-item"><b>▶</b><span>치 스파 : 호텔 체크인 시 이용문의</span></div>
+            </div>
+            <img src="shangrila_chi_spa1.png" class="facility-img" style="margin-top: 20px;">
+        </div>
+    </div>
+
+    <!-- 투숙 규정 -->
+    <div class="room-policy-box">
+        <h4>※ 투숙 및 인원 추가 규정 (필독)</h4>
+        <p>• 유아 - 만 4세 미만 / 아동 - 만 9세 미만 (체크인 날짜 기준)</p>
+        <p>• 성인 2명 투숙 시 : 유아는 추가 가능하지만 성인 및 아동 추가 불가능</p>
+        <p>• 성인 3명 투숙 시 : 성인 및 아동 포함 최대 3명까지 가능</p>
+        <p>• 성인 3 + 아동 1 투숙 시 : 엑스트라 베드 및 아동 조식 요금 필수 포함</p>
+        <p style="color: #e67e22;">(유아는 인원에 포함되지 않으며 FOC 적용되어 인원 제한 없이 추가 가능합니다.)</p>
+    </div>
+
+    <!-- 모든 객실 타입 -->
     <div class="section-card">
         <div class="section-title">호텔 객실 타입 (Room Type)</div>
-        <div class="room-policy">
-            ※ 유아: 만 4세 미만 / 아동: 만 9세 미만 기준<br>
-            ※ 성인 3인 투숙 시 아동 포함 총 3명까지 가능
-        </div>
-
+        
         <div class="room-grid">
-            <!-- 디럭스룸 슬라이더 -->
+            <!-- 1. 디럭스룸 -->
             <div class="room-card">
                 <div class="slider-container" id="deluxe-slider">
                     <div class="slider-wrapper">
@@ -113,11 +155,12 @@
                 <div class="room-info">
                     <h3>디럭스룸 (Deluxe Room)</h3>
                     <div class="room-spec-item">객실 크기 <b>63m²</b></div>
-                    <a href="resort-quote.html" class="btn-quote-link">견적 문의하기</a>
+                    <div class="room-spec-item">최대 인원 <b>성인 2명</b></div>
+                    <a href="resort-quote.html" class="btn-quote-link">실시간 견적 문의</a>
                 </div>
             </div>
 
-            <!-- 디럭스 씨뷰 슬라이더 -->
+            <!-- 2. 디럭스 씨뷰 -->
             <div class="room-card">
                 <div class="slider-container" id="seaview-slider">
                     <div class="slider-wrapper">
@@ -131,13 +174,74 @@
                     <button class="slider-btn next-btn" onclick="moveSlider('seaview-slider', 1)">❯</button>
                 </div>
                 <div class="room-info">
-                    <h3>디럭스 씨뷰 (Sea View)</h3>
+                    <h3>디럭스 씨뷰 (Deluxe Sea View)</h3>
                     <div class="room-spec-item">객실 크기 <b>63m²</b></div>
-                    <a href="resort-quote.html" class="btn-quote-link">견적 문의하기</a>
+                    <div class="room-spec-item">최대 인원 <b>성인 2명</b></div>
+                    <a href="resort-quote.html" class="btn-quote-link">실시간 견적 문의</a>
                 </div>
             </div>
 
-            <!-- 트리하우스 빌라 슬라이더 -->
+            <!-- 3. 프리미어 씨뷰 -->
+            <div class="room-card">
+                <div class="slider-container" id="premier-seaview-slider">
+                    <div class="slider-wrapper">
+                        <img src="shangrila_premier_seaview1.png">
+                        <img src="shangrila_premier_seaview_2.png">
+                        <img src="shangrila_premier_seaview_3.png">
+                        <img src="shangrila_premier_seaview_4.png">
+                        <img src="shangrila_premier_seaview_5.png">
+                    </div>
+                    <button class="slider-btn prev-btn" onclick="moveSlider('premier-seaview-slider', -1)">❮</button>
+                    <button class="slider-btn next-btn" onclick="moveSlider('premier-seaview-slider', 1)">❯</button>
+                </div>
+                <div class="room-info">
+                    <h3>프리미어 씨뷰 (Premier Sea View)</h3>
+                    <div class="room-spec-item">객실 크기 <b>63m²</b></div>
+                    <div class="room-spec-item">최대 인원 <b>성인 2명</b></div>
+                    <a href="resort-quote.html" class="btn-quote-link">실시간 견적 문의</a>
+                </div>
+            </div>
+
+            <!-- 4. 프리미어 패밀리 씨뷰 -->
+            <div class="room-card">
+                <div class="slider-container" id="family-seaview-slider">
+                    <div class="slider-wrapper">
+                        <img src="shangrila_premier_family_seaview1.png">
+                        <img src="shangrila_premier_family_seaview_2.png">
+                    </div>
+                    <button class="slider-btn prev-btn" onclick="moveSlider('family-seaview-slider', -1)">❮</button>
+                    <button class="slider-btn next-btn" onclick="moveSlider('family-seaview-slider', 1)">❯</button>
+                </div>
+                <div class="room-info">
+                    <h3>프리미어 패밀리 씨뷰 (Premier Family Sea View)</h3>
+                    <div class="room-spec-item">객실 크기 <b>66m²</b></div>
+                    <div class="room-spec-item">최대 인원 <b>성인 2명</b></div>
+                    <a href="resort-quote.html" class="btn-quote-link">실시간 견적 문의</a>
+                </div>
+            </div>
+
+            <!-- 5. 주니어 스위트룸 -->
+            <div class="room-card">
+                <div class="slider-container" id="junior-suite-slider">
+                    <div class="slider-wrapper">
+                        <img src="shangrila_junior_suite_room1.png">
+                        <img src="shangrila_junior_suite_room_2.png">
+                        <img src="shangrila_junior_suite_room_3.png">
+                        <img src="shangrila_junior_suite_room_4.png">
+                        <img src="shangrila_junior_suite_room_5.png">
+                    </div>
+                    <button class="slider-btn prev-btn" onclick="moveSlider('junior-suite-slider', -1)">❮</button>
+                    <button class="slider-btn next-btn" onclick="moveSlider('junior-suite-slider', 1)">❯</button>
+                </div>
+                <div class="room-info">
+                    <h3>주니어 스위트룸 (Junior Suite Room)</h3>
+                    <div class="room-spec-item">객실 크기 <b>127m²</b></div>
+                    <div class="room-spec-item">최대 인원 <b>성인 2명</b></div>
+                    <a href="resort-quote.html" class="btn-quote-link">실시간 견적 문의</a>
+                </div>
+            </div>
+
+            <!-- 6. 트리하우스 빌라 -->
             <div class="room-card">
                 <div class="slider-container" id="treehouse-slider">
                     <div class="slider-wrapper">
@@ -157,11 +261,34 @@
                 <div class="room-info">
                     <h3>트리하우스 빌라 (Treehouse Villa)</h3>
                     <div class="room-spec-item">객실 크기 <b>216m²</b></div>
-                    <a href="resort-quote.html" class="btn-quote-link">견적 문의하기</a>
+                    <div class="room-spec-item">최대 인원 <b>성인 2명</b></div>
+                    <a href="resort-quote.html" class="btn-quote-link">실시간 견적 문의</a>
                 </div>
             </div>
 
-            <!-- 1베드룸 풀빌라 슬라이더 -->
+            <!-- 7. 로프트 가든 -->
+            <div class="room-card">
+                <div class="slider-container" id="loft-garden-slider">
+                    <div class="slider-wrapper">
+                        <img src="shangrila_loft_garden1.png">
+                        <img src="shangrila_loft_garden_2.png">
+                        <img src="shangrila_loft_garden_3.png">
+                        <img src="shangrila_loft_garden_4.png">
+                        <img src="shangrila_loft_garden_5.png">
+                        <img src="shangrila_loft_garden_6.png">
+                    </div>
+                    <button class="slider-btn prev-btn" onclick="moveSlider('loft-garden-slider', -1)">❮</button>
+                    <button class="slider-btn next-btn" onclick="moveSlider('loft-garden-slider', 1)">❯</button>
+                </div>
+                <div class="room-info">
+                    <h3>로프트 가든 (Loft Garden)</h3>
+                    <div class="room-spec-item">객실 크기 <b>216m²</b></div>
+                    <div class="room-spec-item">최대 인원 <b>성인 2명</b></div>
+                    <a href="resort-quote.html" class="btn-quote-link">실시간 견적 문의</a>
+                </div>
+            </div>
+
+            <!-- 8. 1베드룸 풀빌라 -->
             <div class="room-card">
                 <div class="slider-container" id="poolvilla-slider">
                     <div class="slider-wrapper">
@@ -177,9 +304,32 @@
                     <button class="slider-btn next-btn" onclick="moveSlider('poolvilla-slider', 1)">❯</button>
                 </div>
                 <div class="room-info">
-                    <h3>1베드룸 풀빌라 (Pool Villa)</h3>
+                    <h3>1베드룸 풀빌라 (One Bed Room Poolvilla)</h3>
                     <div class="room-spec-item">객실 크기 <b>266m²</b></div>
-                    <a href="resort-quote.html" class="btn-quote-link">견적 문의하기</a>
+                    <div class="room-spec-item">최대 인원 <b>성인 2명</b></div>
+                    <a href="resort-quote.html" class="btn-quote-link">실시간 견적 문의</a>
+                </div>
+            </div>
+
+            <!-- 9. 로프트 빌라 -->
+            <div class="room-card">
+                <div class="slider-container" id="loft-villa-slider">
+                    <div class="slider-wrapper">
+                        <img src="shangrila_lof_villa1.png">
+                        <img src="shangrila_lof_villa_2.png">
+                        <img src="shangrila_lof_villa_3.png">
+                        <img src="shangrila_lof_villa_4.png">
+                        <img src="shangrila_lof_villa_5.png">
+                        <img src="shangrila_lof_villa_6.png">
+                    </div>
+                    <button class="slider-btn prev-btn" onclick="moveSlider('loft-villa-slider', -1)">❮</button>
+                    <button class="slider-btn next-btn" onclick="moveSlider('loft-villa-slider', 1)">❯</button>
+                </div>
+                <div class="room-info">
+                    <h3>로프트 빌라 (Loft Villa)</h3>
+                    <div class="room-spec-item">객실 크기 <b>216m²</b></div>
+                    <div class="room-spec-item">최대 인원 <b>성인 2명</b></div>
+                    <a href="resort-quote.html" class="btn-quote-link">실시간 견적 문의</a>
                 </div>
             </div>
         </div>

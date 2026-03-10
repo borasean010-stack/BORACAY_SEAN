@@ -253,12 +253,12 @@
         }
     }
     function handleBuy() {
-        const item = { name: "에스파", type: selectedType, time: selectedTime, price: 45000, count: adultCount, date: selectedDate };
+        const item = { name: "에스파", price: selectedPrice, count: adultCount, date: selectedDate };
         sessionStorage.setItem('directBuyItem', JSON.stringify(item));
         window.open('booking-form.html', '_blank');
     }
     function addToCart() {
-        const item = { name: "에스파", type: selectedType, time: selectedTime, price: 45000, count: adultCount, date: selectedDate };
+        const item = { name: "에스파", price: selectedPrice, count: adultCount, date: selectedDate };
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         cart.push(item);
         localStorage.setItem('cart', JSON.stringify(cart));

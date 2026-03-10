@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>리조트 견적 요청 | BORACAY_SEAN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background: #fdfdfd; padding-bottom: 100px; }
+        .quote-container { 
+            max-width: 900px; 
+            margin: 120px auto 50px; 
+            padding: 0 20px; 
+        }
+        .quote-card { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 28px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.03); 
+            border: 1px solid #f5f5f5;
+            margin-bottom: 30px;
+        }
+        .quote-card h2 { font-size: 24px; font-weight: 900; margin-bottom: 25px; color: #111; display: flex; align-items: center; gap: 10px; }
+        .quote-card h2 span { background: #ff6a00; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+
+        .date-input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .input-item { display: flex; flex-direction: column; gap: 8px; }
+        .input-item label { font-size: 14px; font-weight: 700; color: #666; margin-left: 5px; }
+        .input-item input { padding: 16px; border: 1.5px solid #eee; border-radius: 16px; font-size: 16px; font-family: inherit; background: #fafafa; transition: 0.3s; }
+        .input-item input:focus { outline: none; border-color: #ff6a00; background: white; box-shadow: 0 0 0 4px rgba(255,106,0,0.1); }
+
+        .people-select { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .counter-box { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 15px 20px; 
+            background: #fafafa; 
+            border-radius: 18px; 
+            border: 1.5px solid #eee;
+        }
+        .counter-label { font-weight: 700; font-size: 15px; }
+        .counter-label span { display: block; font-size: 12px; color: #999; font-weight: 400; }
+
+        .resort-scroll-container { 
+            display: flex; 
+            gap: 15px; 
+            overflow-x: auto; 
+            padding: 10px 5px 20px; 
+            scrollbar-width: none; /* Firefox */
+        }
+        .resort-scroll-container::-webkit-scrollbar { display: none; /* Chrome, Safari */ }
+        
+        .resort-card { 
+            flex: 0 0 200px; 
+            background: white; 
+            border-radius: 20px; 
+            overflow: hidden; 
+            border: 2px solid #eee; 
+            cursor: pointer; 
+            transition: 0.3s;
+            position: relative;
+        }
+        .resort-card.selected { border-color: #ff6a00; transform: translateY(-5px); box-shadow: 0 10px 20px rgba(255,106,0,0.1); }
+        .resort-card img { width: 100%; height: 140px; object-fit: cover; }
+        .resort-info { padding: 15px; text-align: center; }
+        .resort-info b { font-size: 15px; font-weight: 800; color: #333; }
+        .resort-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff6a00;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 900;
+        }
+
+        .submit-btn { 
+            width: 100%; 
+            padding: 22px; 
+            background: #111; 
+            color: white; 
+            border: none; 
+            border-radius: 20px; 
+            font-size: 19px; 
+            font-weight: 900; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .submit-btn:hover { background: #ff6a00; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(255,106,0,0.2); }
+
+        @media (max-width: 768px) {
+            .quote-container { margin-top: 90px; }
+            .date-input-group, .people-select { grid-template-columns: 1fr; }
+            .resort-card { flex: 0 0 160px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="side-menu-overlay" id="overlay"></div>
+<div class="side-menu" id="sideMenu">
+    <a href="index.html">홈으로</a>
+    <a href="mypage.html">마이페이지 (예약확인)</a>
+    <a href="essential-tours.html">보라카이 필수투어</a>
+    <a href="activities.html">액티비티</a>
+    <a href="massage.html">마사지</a>
+    <a href="price-list.html">한눈에 요금표</a>
+    <a href="resort-quote.html">리조트 견적</a>
+    <a href="cart.html">장바구니 확인</a>
+</div>
+
+<div class="top-bar">
+    <div class="header-left">
+        <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
+        <div class="logo">
+            <a href="index.html">
+                <img src="logo.png" class="logo-img" alt="로고">
+                BORACAY_SEAN
+            </a>
+        </div>
+    </div>
+
+    <div class="menu">
+        <a href="essential-tours.html" class="tab-link" data-category="essential">보라카이 필수투어</a>
+        <a href="activities.html" class="tab-link" data-category="activity">액티비티</a>
+        <a href="massage.html" class="tab-link" data-category="massage">마사지</a>
+        <a href="price-list.html" class="tab-link">한눈에 요금표</a>
+        <a href="resort-quote.html" class="tab-link active">리조트 견적</a>
+        <a href="cart.html" class="tab-link">장바구니</a>
+    </div>
+
+    <div class="header-right">
+        <a href="mypage.html" class="mypage-btn">마이페이지</a>
+        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페 바로가기</a>
+        <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카톡 바로가기</a>
+    </div>
+</div>
+
+<section class="section-header" style="margin-top: 140px; margin-bottom: 20px; text-align: center;">
+    <p>BORACAY RESORT QUOTE</p>
+    <h2 style="font-size: 36px; font-weight: 900; letter-spacing: -1.5px;">보라카이 리조트 견적</h2>
+</section>
+
+<div class="quote-container">
+    <!-- 1. 여행 날짜 -->
+    <div class="quote-card">
+        <h2><span>1</span> 여행 날짜 선택</h2>
+        <div class="date-input-group">
+            <div class="input-item">
+                <label>체크인 날짜</label>
+                <input type="date" id="checkin-date">
+            </div>
+            <div class="input-item">
+                <label>체크아웃 날짜</label>
+                <input type="date" id="checkout-date">
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. 인원 선택 -->
+    <div class="quote-card">
+        <h2><span>2</span> 인원 선택</h2>
+        <div class="people-select">
+            <div class="counter-box">
+                <div class="counter-label">성인</div>
+                <div class="counter">
+                    <button class="count-btn" onclick="updateCount('adult', -1)">-</button>
+                    <strong id="adult-count">2</strong>
+                    <button class="count-btn" onclick="updateCount('adult', 1)">+</button>
+                </div>
+            </div>
+            <div class="counter-box">
+                <div class="counter-label">소인<span>만 나이 기준</span></div>
+                <div class="counter">
+                    <button class="count-btn" onclick="updateCount('child', -1)">-</button>
+                    <strong id="child-count">0</strong>
+                    <button class="count-btn" onclick="updateCount('child', 1)">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. 리조트 선택 -->
+    <div class="quote-card">
+        <h2><span>3</span> 리조트 선택</h2>
+        <p style="font-size: 14px; color: #888; margin-bottom: 15px;">문의를 원하시는 리조트를 선택해 주세요. (중복 선택 가능)</p>
+        <div class="resort-scroll-container" id="resort-list">
+            <!-- Resorts will be populated by JS -->
+        </div>
+    </div>
+
+    <button class="submit-btn" onclick="requestQuote()">실시간 견적 요청하기</button>
+</div>
+
+<footer class="footer">
+    <div class="footer-left">
+        <b class="important">상호 : 보라카이션 | 대표 : 윤오현</b><br>
+        서울특별시 중랑구 상봉로 16길 25-3<br>
+        사업자번호 : 498-31-00593 | daemit@naver.com
+    </div>
+</footer>
+
+<script src="main.js"></script>
+<script>
+    const resorts = [
+        { name: "샹그릴라", img: "beach1.jpg" },
+        { name: "모벤픽", img: "beach2.jpg" },
+        { name: "크림슨", img: "beach3.jpg" },
+        { name: "만다린 베이", img: "beach1.jpg" },
+        { name: "만다린 네스트", img: "beach2.jpg" },
+        { name: "만다린 아일랜드", img: "beach3.jpg" },
+        { name: "헤난 프라임", img: "beach1.jpg" },
+        { name: "헤난 크리스탈 샌즈", img: "beach2.jpg" },
+        { name: "헤난 가든", img: "beach3.jpg" },
+        { name: "헤난 팜비치", img: "beach1.jpg" },
+        { name: "헤난 리젠시", img: "beach2.jpg" },
+        { name: "헤난 파크", img: "beach3.jpg" },
+        { name: "헤난 라군", img: "beach1.jpg" }
+    ];
+
+    let selectedResorts = [];
+    let counts = { adult: 2, child: 0 };
+
+    function initResorts() {
+        const container = document.getElementById('resort-list');
+        resorts.forEach(resort => {
+            const card = document.createElement('div');
+            card.className = 'resort-card';
+            card.innerHTML = `
+                <img src="${resort.img}" alt="${resort.name}">
+                <div class="resort-info"><b>${resort.name}</b></div>
+            `;
+            card.onclick = () => toggleResort(resort.name, card);
+            container.appendChild(card);
+        });
+    }
+
+    function toggleResort(name, element) {
+        const index = selectedResorts.indexOf(name);
+        if (index > -1) {
+            selectedResorts.splice(index, 1);
+            element.classList.remove('selected');
+        } else {
+            selectedResorts.push(name);
+            element.classList.add('selected');
+        }
+    }
+
+    function updateCount(type, delta) {
+        counts[type] = Math.max(type === 'adult' ? 1 : 0, counts[type] + delta);
+        document.getElementById(`${type}-count`).innerText = counts[type];
+    }
+
+    function requestQuote() {
+        const checkin = document.getElementById('checkin-date').value;
+        const checkout = document.getElementById('checkout-date').value;
+
+        if (!checkin || !checkout) {
+            alert('여행 날짜를 선택해 주세요.');
+            return;
+        }
+        if (selectedResorts.length === 0) {
+            alert('견적을 원하시는 리조트를 하나 이상 선택해 주세요.');
+            return;
+        }
+
+        const quoteData = {
+            type: '리조트 견적',
+            checkin,
+            checkout,
+            adults: counts.adult,
+            children: counts.child,
+            resorts: selectedResorts
+        };
+
+        sessionStorage.setItem('directBuyItem', JSON.stringify({
+            name: `리조트 견적 (${selectedResorts.join(', ')})`,
+            price: 0,
+            count: 1,
+            details: quoteData
+        }));
+
+        window.open('booking-form.html', '_blank');
+    }
+
+    window.onload = () => {
+        initResorts();
+        
+        // Set default dates (today and tomorrow)
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        document.getElementById('checkin-date').value = today.toISOString().split('T')[0];
+        document.getElementById('checkout-date').value = tomorrow.toISOString().split('T')[0];
+    };
+</script>
+</body>
+</html>

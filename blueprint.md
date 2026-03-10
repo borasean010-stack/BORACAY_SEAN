@@ -12,6 +12,7 @@ This project is a reservation website for tours and activities in Boracay. It al
 * `admin.js`: Logic for the admin panel.
 * `login.html`: The user login page (Luxurious design).
 * `golf.html`: Detail page for Fairway Golf Club activity.
+* `resort-quote.html`: Page for requesting resort accommodation quotes.
 
 ## Features & UI Enhancements
 
@@ -32,7 +33,7 @@ This project is a reservation website for tours and activities in Boracay. It al
 * **Booking Integration:** Updated the purchase and cart logic to capture the selected time and product type, ensuring all reservation data is passed to the booking form.
 
 ### 3. Menu Structure Update
-* **Navigation Bar:** Added "리조트 견적" (Resort Quote) menu item between "한눈에 요금표" and "장바구니" for easier access to resort pricing.
+* **Navigation Bar:** Added "리조트 견적" (Resort Quote) menu item between "한눈에 요금표" and "장바구니" for easier access to resort pricing. Points to `resort-quote.html`.
 * **Side Menu:** Updated the mobile side menu to include "리조트 견적" for consistency across all platforms.
 
 ## Current Milestone: Product Management & Navigation
@@ -47,6 +48,14 @@ This project is a reservation website for tours and activities in Boracay. It al
 ### 2. Product Deletion: Sunset Sailing (선셋 세일링) & Beach Island Tour (비치 아일랜드 투어)
 * **Objective:** Remove outdated products from the activity list.
 * **Implementation:** Removed entries for "Sunset Sailing" and "Beach Island Tour" from `main.js`.
+
+### 3. Resort Quote System (리조트 견적)
+* **Objective:** Implement a specialized form for users to request resort accommodation quotes.
+* **Features:** 
+    * Check-in/Check-out date selection.
+    * Guest count selection (Adults/Children).
+    * Horizontal scrolling card UI for resort selection.
+    * Quote request submission logic.
 
 ## Previous Milestone: Admin & Login Redesign
 

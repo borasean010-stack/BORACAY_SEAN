@@ -158,7 +158,7 @@
     </div>
 
     <div class="reservation-box">
-        <div style="font-size:28px; font-weight:900; color:#ff6a00; margin-bottom:20px; letter-spacing: -1px;">₩ 45,000</div>
+        <div style="font-size:28px; font-weight:900; color:#ff6a00; margin-bottom:20px; letter-spacing: -1px;">₩ 42,000 ($30)</div>
         
         <div class="date-tabs">
             <div class="date-tab active">투어 날짜 선택<span id="pc-date-display" class="date-display">2026-03-02</span></div>
@@ -247,13 +247,13 @@
     }
     
     function handleBuy() {
-        const item = { name: "비치 아일랜드 투어", price: 45000, count: adultCount, date: selectedDate };
+        const item = { name: "비치 아일랜드 투어", price: 42000, count: adultCount, date: selectedDate };
         sessionStorage.setItem('directBuyItem', JSON.stringify(item));
         window.open('booking-form.html', '_blank');
     }
 
     function addToCart() {
-        const item = { name: "비치 아일랜드 투어", price: 45000, count: adultCount, date: selectedDate };
+        const item = { name: "비치 아일랜드 투어", price: 42000, count: adultCount, date: selectedDate };
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         cart.push(item);
         localStorage.setItem('cart', JSON.stringify(cart));

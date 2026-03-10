@@ -79,7 +79,21 @@ body {
 .mypage-btn { background: rgba(255, 255, 255, 0.2); color: white; padding: 10px 22px; border-radius: 30px; text-decoration: none; font-weight: 700; font-size: 13px; border: 1px solid rgba(255, 255, 255, 0.4); transition: 0.3s; }
 .mypage-btn:hover { background: white; color: #ff6a00; }
 .naver-btn { background: #03c75a; color: white; padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: 700; font-size: 13px; }
-.kakao-btn { background: #fee500; color: #3c1e1e; padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: 800; font-size: 13px; }
+.kakao-btn { 
+    background: #fee500; 
+    color: #3c1e1e; 
+    padding: 8px 18px; 
+    border-radius: 30px; 
+    text-decoration: none; 
+    font-weight: 800; 
+    font-size: 13px; 
+    display: flex; 
+    align-items: center; 
+    gap: 6px;
+    transition: 0.3s;
+}
+.kakao-btn:hover { background: #fada00; transform: translateY(-2px); }
+.kakao-icon { width: 18px; height: 18px; }
 
 /* 🔥 공통 투어 카드 스타일 (필수투어, 액티비티, 마사지 공용) */
 .tour-grid, .products {

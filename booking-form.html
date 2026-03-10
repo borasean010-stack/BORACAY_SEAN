@@ -205,7 +205,7 @@
             paymentMethod: selectedPayment,
             items: cartData,
             totalPrice: cartData.reduce((acc, curr) => acc + (curr.price * curr.count), 0),
-            status: '신규',
+            status: isResortQuote ? '견적' : '신규',
             createdAt: serverTimestamp ? serverTimestamp() : new Date(),
             engName: document.getElementById('eng-name').value || '',
             pickupDate: pickupItem ? pickupItem.pickupDate : '',

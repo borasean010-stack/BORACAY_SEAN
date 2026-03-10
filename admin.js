@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // 리조트 견적인 경우 체크인/아웃 날짜 우선 표시
             let usageDate = item.date || res.pickupDate || res.date || '-';
-            const isResortQuote = res.items?.some(i => i.name.includes('리조트 견적'));
+            const isResortQuote = res.items?.some(i => i.name.includes('리조트 견적')) || res.status === '견적';
             
             if (isResortQuote && item.details) {
                 usageDate = `${item.details.checkin} ~ ${item.details.checkout}`;
@@ -197,11 +197,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${usageDate}</td>
                 <td>${pickupDisplayDate}</td>
                 <td>₩ ${res.totalPrice?.toLocaleString()}</td>
-                <td><span class="ss-badge ss-badge-${res.status}">${res.status === '신규' ? '신규주문' : res.status}</span></td>
+                <td><span class="ss-badge ss-badge-${res.status}">${res.status === '신규' ? '신규주문' : (res.status === '견적' ? '견적신청' : res.status)}</span></td>
                 <td>
                     <div style="display:flex; gap:5px; justify-content:center;">
                         <button class="ss-btn-action" onclick="showDetail('${res.id}')">상세</button>
-                        ${res.status === '신규' ? `<button class="ss-btn-action" style="background:var(--ss-blue); color:white; border:none;" onclick="updateStatus('${res.id}', '예약완료')">완료</button>` : ''}
+                        ${(res.status === '신규' || res.status === '견적') ? `<button class="ss-btn-action" style="background:var(--ss-blue); color:white; border:none;" onclick="updateStatus('${res.id}', '예약완료')">완료</button>` : ''}
                         ${res.status === '예약완료' ? `<button class="ss-btn-action" style="background:var(--ss-green); color:white; border:none;" onclick="confirmPurchase('${res.id}')">확정</button>` : ''}
                         ${res.status === '확정' ? `<button class="ss-btn-action" style="color:red" onclick="updateStatus('${res.id}', '취소')">취소</button>` : ''}
                         ${(res.status === '취소' || res.status === '취소요청') ? `<button class="ss-btn-action" style="background:#666; color:white; border:none;" onclick="updateStatus('${res.id}', '신규')">복구</button>` : ''}
@@ -215,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderDailySchedule() {
         if (!scheduleList) return;
         const today = getTodayStr();
-        const todays = allReservations.filter(res => (res.items?.some(i => i.date === today) || res.pickupDate === today || res.sendingDate === today) && res.status !== '취소');
+        const todays = allReservations.filter(res => (res.items?.some(i => i.date === today) || res.pickupDate === today || res.sendingDate === today) && res.status !== '취소' && res.status !== '견적');
         
         if (!todays.length) {
             scheduleList.innerHTML = '<p class="empty-msg-v2">오늘 예정된 스케줄이 없습니다.</p>';
@@ -282,11 +282,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateAlerts() {
-        const newCount = allReservations.filter(r => r.status === '신규').length;
+        const newCount = allReservations.filter(r => r.status === '신규' || r.status === '견적').length;
         const alertBox = document.getElementById('new-order-alert');
         const noAlert = document.getElementById('no-alert-msg');
         if (newCount > 0) {
-            if (alertBox) alertBox.style.display = 'block';
+            if (alertBox) {
+                alertBox.style.display = 'block';
+                const quoteCount = allReservations.filter(r => r.status === '견적').length;
+                const newOrderCount = allReservations.filter(r => r.status === '신규').length;
+                let alertText = '신규 내역이 발생했습니다!';
+                if (newOrderCount > 0 && quoteCount > 0) alertText = `신규 주문 ${newOrderCount}건, 견적 ${quoteCount}건 발생!`;
+                else if (quoteCount > 0) alertText = `신규 견적 ${quoteCount}건이 발생했습니다!`;
+                else alertText = `신규 주문 ${newOrderCount}건이 발생했습니다!`;
+                alertBox.querySelector('p').innerText = alertText;
+            }
             if (noAlert) noAlert.style.display = 'none';
         } else {
             if (alertBox) alertBox.style.display = 'none';

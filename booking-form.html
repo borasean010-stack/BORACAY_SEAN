@@ -149,6 +149,15 @@
             list.innerHTML += `<div class="order-item"><span>${item.name} (${item.count}명)</span><b>₩ ${(item.price * item.count).toLocaleString()}</b></div>`;
         });
         if (hasPickup) document.getElementById('pickup-sending-fields').style.display = 'block';
+
+        // 리조트 견적인 경우 UI 변경
+        const isResortQuote = cartData.some(item => item.name.includes('리조트 견적'));
+        if (isResortQuote) {
+            document.querySelector('#info-section h2').innerText = '견적 신청 정보 입력';
+            document.querySelector('#info-section .next-btn').innerText = '견적 신청하기';
+            document.getElementById('step2-bar').style.display = 'none';
+            document.getElementById('step1-bar').querySelector('span').innerText = '견적 신청';
+        }
     });
 
     document.getElementById('info-form').onsubmit = function(e) {

@@ -44,8 +44,8 @@
 <div class="complete-container">
     <div class="complete-card">
         <div class="success-icon">✅</div>
-        <h1>예약 신청 완료!</h1>
-        <p class="msg">성공적으로 예약 정보가 접수되었습니다.<br><b>최종 예약 확정</b>을 위해 아래 버튼을 눌러주세요.</p>
+        <h1 id="complete-title">예약 신청 완료!</h1>
+        <p class="msg" id="complete-msg">성공적으로 예약 정보가 접수되었습니다.<br><b>최종 예약 확정</b>을 위해 아래 버튼을 눌러주세요.</p>
         
         <div class="booking-details" id="booking-details">
             <div class="detail-row"><span>예약자명</span><b id="res-name">-</b></div>
@@ -55,13 +55,13 @@
 
         <div class="btn-group">
             <!-- 요청하신 문구로 변경 및 새 탭(target="_blank") 설정 -->
-            <a href="https://pf.kakao.com/_zBArM" target="_blank" class="kakao-confirm-btn">
+            <a href="https://pf.kakao.com/_zBArM" target="_blank" class="kakao-confirm-btn" id="kakao-btn">
                 예약 확정 안내문 받기
             </a>
             <a href="index.html" class="home-btn">홈으로 돌아가기</a>
         </div>
 
-        <div class="notice-box">
+        <div class="notice-box" id="notice-box">
             * 버튼 클릭 시 보라카이션 카카오톡 채널로 연결됩니다.<br>
             * 상담원에게 성함을 말씀해 주시면 빠른 확정이 가능합니다.
         </div>
@@ -76,6 +76,15 @@
                 document.getElementById('res-name').innerText = lastBooking.customerKorName;
                 document.getElementById('res-contact').innerText = lastBooking.contact;
                 document.getElementById('res-total').innerText = '₩ ' + (lastBooking.totalPrice || 0).toLocaleString();
+
+                // 리조트 견적인 경우 문구 변경
+                const isQuote = lastBooking.items && lastBooking.items.some(item => item.name.includes('리조트 견적'));
+                if (isQuote) {
+                    document.getElementById('complete-title').innerText = '견적 신청 완료!';
+                    document.getElementById('complete-msg').innerHTML = '성공적으로 리조트 견적 신청이 접수되었습니다.<br><b>견적 확정 안내문</b>을 받기 위해 아래 버튼을 눌러주세요.';
+                    document.getElementById('kakao-btn').innerText = '견적 확정 안내문 받기';
+                    document.getElementById('notice-box').innerHTML = '* 버튼 클릭 시 보라카이션 카카오톡 채널로 연결됩니다.<br>* 상담원에게 성함을 말씀해 주시면 빠른 견적 안내가 가능합니다.';
+                }
             }
         } catch(e) {
             console.error("Data load error", e);

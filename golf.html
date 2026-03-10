@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>페어웨이 골프클럽 | BORACAY_SEAN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background: #fdfdfd; padding-bottom: 100px; }
+        .tour-detail-container { 
+            max-width: 1100px; 
+            margin: 120px auto 50px; 
+            display: grid; 
+            grid-template-columns: 1fr 360px; 
+            gap: 40px; 
+            padding: 0 20px; 
+        }
+        .tour-content { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 28px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.03); 
+            border: 1px solid #f5f5f5;
+        }
+        .tour-content h1 { font-size: 32px; font-weight: 900; margin-bottom: 30px; letter-spacing: -1.5px; }
+        .section-title { 
+            font-size: 20px; 
+            font-weight: 800; 
+            margin: 40px 0 20px; 
+            padding-bottom: 12px; 
+            border-bottom: 2px solid #fff5eb; 
+            color: #ff6a00; 
+        }
+        .itinerary-img { width: 100%; margin-bottom: 30px; }
+        .itinerary-img img { width: 100%; border-radius: 20px; display: block; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        
+        .date-tabs { display: flex; gap: 5px; margin-bottom: 15px; background: #f8f9fa; padding: 5px; border-radius: 12px; }
+        .date-tab { flex: 1; padding: 12px 5px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 10px; transition: 0.2s; color: #888; border: 1px solid transparent; }
+        .date-tab.active { background: white; color: #ff6a00; border-color: #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .date-display { font-size: 12px; display: block; margin-top: 4px; color: #ff6a00; font-weight: 800; }
+
+        .reservation-box { 
+            background: white; 
+            border-radius: 28px; 
+            padding: 30px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.08); 
+            position: sticky; 
+            top: 100px; 
+            border: 1px solid #f0f0f0; 
+            height: fit-content;
+        }
+        
+        .day { padding: 10px 0; cursor: pointer; border-radius: 8px; font-size: 13px; font-weight: 600; }
+        .day:hover { background: #fff1e6; }
+        .day.selected { background: #ff6a00 !important; color: white !important; font-weight: 800; }
+
+        .btn-buy { width: 100%; padding: 20px; background: #111; color: white; border: none; border-radius: 16px; font-size: 17px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-cart { width: 100%; padding: 18px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 16px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-buy:hover { background: #ff6a00; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
+        .btn-cart:hover { background: #fff5eb; }
+
+        .mobile-bottom-bar { display: none; }
+
+        @media (max-width: 1024px) {
+            .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
+            .reservation-box { display: none; }
+            .mobile-bottom-bar { 
+                display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
+                background: white; padding: 15px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); 
+                z-index: 9000; align-items: center; gap: 10px;
+            }
+            .m-btn-cart { flex: 1; height: 55px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 15px; font-size: 15px; font-weight: 800; }
+            .m-btn-buy { flex: 2; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="side-menu-overlay" id="overlay"></div>
+<div class="side-menu" id="sideMenu">
+    <a href="index.html">홈으로</a>
+    <a href="mypage.html">마이페이지 (예약확인)</a>
+    <a href="essential-tours.html">보라카이 필수투어</a>
+    <a href="activities.html">액티비티</a>
+    <a href="massage.html">마사지</a>
+    <a href="price-list.html" target="_blank">한눈에 요금표</a>
+    <a href="cart.html">장바구니 확인</a>
+</div>
+
+<div class="top-bar">
+    <div class="header-left">
+        <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
+        <div class="logo">
+            <a href="index.html">
+                <img src="logo.png" class="logo-img" alt="로고">
+                BORACAY_SEAN
+            </a>
+        </div>
+    </div>
+
+    <div class="menu">
+        <a href="essential-tours.html" class="tab-link" data-category="essential">보라카이 필수투어</a>
+        <a href="activities.html" class="tab-link active" data-category="activity">액티비티</a>
+        <a href="massage.html" class="tab-link" data-category="massage">마사지</a>
+        <a href="price-list.html" class="tab-link">한눈에 요금표</a>
+        <a href="cart.html" class="tab-link">장바구니</a>
+    </div>
+
+    <div class="header-right">
+        <a href="mypage.html" class="mypage-btn">마이페이지</a>
+        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페 바로가기</a>
+        <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카톡 바로가기</a>
+    </div>
+</div>
+
+<div class="tour-detail-container">
+    <div class="tour-content">
+        <h1>페어웨이 골프클럽 (Fairway Golf Club)</h1>
+        <div class="section-title">코스 갤러리</div>
+        <div class="itinerary">
+            <div class="itinerary-img"><img src="beach1.jpg"></div>
+            <div class="itinerary-img"><img src="beach2.jpg"></div>
+            <div class="itinerary-img"><img src="beach3.jpg"></div>
+        </div>
+
+        <div class="section-title">서비스 이용 절차</div>
+        <ul class="process-list" style="list-style: none; padding: 0;">
+            <li class="process-item" style="display: flex; align-items: flex-start; margin-bottom: 20px; gap: 15px;">
+                <div class="process-num" style="background: #ff6a00; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; margin-top: 2px;">1</div>
+                <div class="process-text">
+                    <b style="display: block; font-size: 18px; margin-bottom: 5px;">클럽 하우스 도착 및 체크인</b>
+                    <p style="color: #666; font-size: 15px; margin: 0; line-height: 1.5;">예약 시간에 맞춰 페어웨이 클럽 하우스에 도착하여 예약을 확인합니다.</p>
+                </div>
+            </li>
+            <li class="process-item" style="display: flex; align-items: flex-start; margin-bottom: 20px; gap: 15px;">
+                <div class="process-num" style="background: #ff6a00; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; margin-top: 2px;">2</div>
+                <div class="process-text">
+                    <b style="display: block; font-size: 18px; margin-bottom: 5px;">장비 렌탈 및 준비</b>
+                    <p style="color: #666; font-size: 15px; margin: 0; line-height: 1.5;">필요 시 골프 클럽 및 슈즈를 렌탈하고 라운딩을 준비합니다.</p>
+                </div>
+            </li>
+            <li class="process-item" style="display: flex; align-items: flex-start; margin-bottom: 20px; gap: 15px;">
+                <div class="process-num" style="background: #ff6a00; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; margin-top: 2px;">3</div>
+                <div class="process-text">
+                    <b style="display: block; font-size: 18px; margin-bottom: 5px;">18홀 라운딩</b>
+                    <p style="color: #666; font-size: 15px; margin: 0; line-height: 1.5;">보라카이의 아름다운 풍경을 배경으로 환상적인 골프 라운딩을 즐깁니다.</p>
+                </div>
+            </li>
+        </ul>
+
+        <div class="section-title">포함 사항</div>
+        <p style="color:#666; line-height:1.8; font-size:16px; margin-bottom: 40px;">
+            - 18홀 그린피<br>
+            - 보험 및 기본 시설 이용료<br>
+            - 전문 캐디 서비스 (팁 별도)<br>
+            - 골프 카트 이용료
+        </p>
+
+        <div class="section-title">환불 규정</div>
+        <img src="refund.png" style="width:100%; border-radius:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+    </div>
+
+    <div class="reservation-box">
+        <div style="font-size:28px; font-weight:900; color:#ff6a00; margin-bottom:20px; letter-spacing: -1px;">₩ 150,000</div>
+        
+        <div class="date-tabs">
+            <div class="date-tab active">예약 날짜 선택<span id="pc-date-display" class="date-display">2026-03-02</span></div>
+        </div>
+
+        <div class="calendar-wrap" style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 15px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&lt;</button>
+                <strong id="pc-month">2026년 3월</strong>
+                <button onclick="changeMonth(1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&gt;</button>
+            </div>
+            <div class="calendar-grid" id="pc-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
+        </div>
+
+        <div class="selection-container">
+            <span class="selection-label">티오프 시간 선택</span>
+            <div class="selection-tabs" id="time-tabs">
+                <div class="selection-tab active" onclick="selectTime('08:00', this)">08:00</div>
+                <div class="selection-tab" onclick="selectTime('09:00', this)">09:00</div>
+                <div class="selection-tab" onclick="selectTime('10:00', this)">10:00</div>
+                <div class="selection-tab" onclick="selectTime('11:00', this)">11:00</div>
+                <div class="selection-tab" onclick="selectTime('12:00', this)">12:00</div>
+            </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding:15px; background:#fcfcfc; border-radius:15px; border:1px solid #f0f0f0;">
+            <span style="font-weight:700; font-size:15px;">인원 (성인)</span>
+            <div class="counter">
+                <button class="count-btn" onclick="updateCount(-1)">-</button>
+                <strong id="pc-count">1</strong>
+                <button class="count-btn" onclick="updateCount(1)">+</button>
+            </div>
+        </div>
+        <button class="btn-buy" onclick="handleBuy()">구매하기</button>
+        <button class="btn-cart" onclick="addToCart()" style="margin-top:10px;">장바구니 담기</button>
+    </div>
+</div>
+
+<div class="mobile-bottom-bar">
+    <button class="m-btn-cart" onclick="addToCart()">장바구니</button>
+    <button class="m-btn-buy" onclick="openOptionSheet()">구매하기</button>
+</div>
+
+<div class="option-sheet-overlay" id="sheetOverlay" onclick="closeOptionSheet()"></div>
+<div class="option-sheet" id="optionSheet" style="position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-radius: 25px 25px 0 0; z-index: 10005; padding: 30px 20px 40px; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); max-height: 80vh; overflow-y: auto;">
+    <h3 style="font-weight:900; margin-bottom:20px; font-size:20px;">예약 옵션 선택</h3>
+    
+    <div class="calendar-wrap" style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 15px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800;">&lt;</button>
+            <strong id="m-month">2026년 3월</strong>
+            <button onclick="changeMonth(1)" style="border:none; background:none; color:#ff6a00; font-weight:800;">&gt;</button>
+        </div>
+        <div class="calendar-grid" id="m-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
+    </div>
+
+    <div class="selection-container">
+        <span class="selection-label">티오프 시간 선택</span>
+        <div class="selection-tabs" id="m-time-tabs">
+            <div class="selection-tab active" onclick="selectTime('08:00', this)">08:00</div>
+            <div class="selection-tab" onclick="selectTime('09:00', this)">09:00</div>
+            <div class="selection-tab" onclick="selectTime('10:00', this)">10:00</div>
+            <div class="selection-tab" onclick="selectTime('11:00', this)">11:00</div>
+            <div class="selection-tab" onclick="selectTime('12:00', this)">12:00</div>
+        </div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:#fcfcfc; border-radius:15px; margin-bottom:20px; border:1px solid #f0f0f0;">
+        <span style="font-weight:700;">인원 (성인)</span>
+        <div class="counter">
+            <button class="count-btn" onclick="updateCount(-1)">-</button>
+            <strong id="m-count">1</strong>
+            <button class="count-btn" onclick="updateCount(1)">+</button>
+        </div>
+    </div>
+    <button class="btn-buy" onclick="handleBuy()" style="background:#ff6a00;">선택 완료 / 구매하기</button>
+</div>
+
+<footer class="footer">
+    <div class="footer-left">
+        <b class="important">상호 : 보라카이션 | 대표 : 윤오현</b><br>
+        서울특별시 중랑구 상봉로 16길 25-3<br>
+        사업자번호 : 498-31-00593 | daemit@naver.com
+    </div>
+</footer>
+
+<script src="main.js"></script>
+<script>
+    let adultCount = 1;
+    let currentDate = new Date(2026, 2, 1);
+    let selectedDate = '2026-03-02';
+    let selectedTime = '08:00';
+
+    function openOptionSheet() { document.getElementById('sheetOverlay').style.display = 'block'; document.getElementById('optionSheet').classList.add('active'); }
+    function closeOptionSheet() { document.getElementById('sheetOverlay').style.display = 'none'; document.getElementById('optionSheet').classList.remove('active'); }
+
+    function selectTime(time, el) {
+        selectedTime = time;
+        const tabs = document.querySelectorAll('.selection-tab');
+        tabs.forEach(tab => {
+            if(tab.innerText === time) tab.classList.add('active');
+            else tab.classList.remove('active');
+        });
+    }
+
+    function updateCount(delta) {
+        adultCount = Math.max(1, adultCount + delta);
+        document.getElementById('pc-count').innerText = adultCount;
+        const mCount = document.getElementById('m-count');
+        if(mCount) mCount.innerText = adultCount;
+    }
+    function changeMonth(delta) {
+        currentDate.setMonth(currentDate.getMonth() + delta);
+        renderCalendar('pc-days', 'pc-month');
+        renderCalendar('m-days', 'm-month');
+    }
+    function renderCalendar(cid, tid) {
+        const container = document.getElementById(cid);
+        const title = document.getElementById(tid);
+        if(!container || !title) return;
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        title.innerText = `${year}년 ${month + 1}월`;
+        container.innerHTML = '';
+        ['일','월','화','수','목','금','토'].forEach(d => container.innerHTML += `<div style="color:#bbb; font-weight:800; font-size:12px;">${d}</div>`);
+        const firstDay = new Date(year, month, 1).getDay();
+        const lastDate = new Date(year, month + 1, 0).getDate();
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        for (let i = 0; i < firstDay; i++) container.appendChild(document.createElement('div'));
+        for (let i = 1; i <= lastDate; i++) {
+            const dateStr = `${year}-${(month+1).toString().padStart(2,'0')}-${i.toString().padStart(2,'0')}`;
+            const targetDate = new Date(year, month, i);
+            const div = document.createElement('div');
+            if (targetDate < today) { div.className = 'day disabled'; }
+            else {
+                div.className = 'day' + (dateStr === selectedDate ? ' selected' : '');
+                div.onclick = function() {
+                    selectedDate = dateStr;
+                    const pcDisp = document.getElementById('pc-date-display');
+                    if(pcDisp) pcDisp.innerText = dateStr;
+                    renderCalendar('pc-days', 'pc-month');
+                    renderCalendar('m-days', 'm-month');
+                };
+            }
+            div.innerText = i;
+            container.appendChild(div);
+        }
+    }
+    function handleBuy() {
+        const item = { name: "페어웨이 골프클럽", price: 150000, count: adultCount, date: selectedDate, time: selectedTime };
+        sessionStorage.setItem('directBuyItem', JSON.stringify(item));
+        window.open('booking-form.html', '_blank');
+    }
+    function addToCart() {
+        const item = { name: "페어웨이 골프클럽", price: 150000, count: adultCount, date: selectedDate, time: selectedTime };
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        cart.push(item);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        if(confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) { window.location.assign('cart.html'); }
+    }
+    window.onload = () => { renderCalendar('pc-days', 'pc-month'); renderCalendar('m-days', 'm-month'); };
+</script>
+</body>
+</html>

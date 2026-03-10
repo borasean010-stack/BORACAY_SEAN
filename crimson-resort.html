@@ -74,7 +74,6 @@
 
 <div class="top-bar">
     <div class="header-left">
-        <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
         <div class="logo">
             <a href="index.html">
                 <img src="logo.png" class="logo-img" alt="로고">
@@ -101,7 +100,7 @@
 <div class="resort-detail-container">
     <!-- 메인 히어로 -->
     <div class="resort-hero">
-        <img src="Golf3.jpg" alt="크림슨 리조트 & 스파">
+        <img src="Crimson1.png" alt="크림슨 리조트 & 스파">
         <div class="hero-overlay">
             <p>THE MODERN LUXURY IN BORACAY</p>
             <h1>크림슨 리조트 & 스파</h1>
@@ -124,7 +123,16 @@
                 </ul>
             </div>
             <div class="facility-img-box">
-                <img src="beach1.jpg" alt="로비">
+                <div class="slider-container" id="lobby-slider" style="aspect-ratio: auto; height: 350px;">
+                    <div class="slider-wrapper">
+                        <img src="Crimson_resort_lobby1.png" style="object-fit: cover;">
+                        <img src="Crimson_resort_lobby2.png" style="object-fit: cover;">
+                        <img src="Crimson_resort_lobby3.png" style="object-fit: cover;">
+                        <img src="Crimson_resort_lobby4.png" style="object-fit: cover;">
+                    </div>
+                    <button class="slider-btn prev-btn" onclick="moveSlider('lobby-slider', -1)">❮</button>
+                    <button class="slider-btn next-btn" onclick="moveSlider('lobby-slider', 1)">❯</button>
+                </div>
             </div>
         </div>
     </div>
@@ -134,7 +142,15 @@
         <div class="section-title">Restaurant & Bar</div>
         <div class="facility-content reverse">
             <div class="facility-img-box">
-                <img src="beach2.jpg" alt="레스토랑">
+                <div class="slider-container" id="rest-slider" style="aspect-ratio: auto; height: 350px;">
+                    <div class="slider-wrapper">
+                        <img src="Crimson_restaurant_bar1.png" style="object-fit: cover;">
+                        <img src="Crimson_restaurant_bar2.png" style="object-fit: cover;">
+                        <img src="Crimson_restaurant_bar3.png" style="object-fit: cover;">
+                    </div>
+                    <button class="slider-btn prev-btn" onclick="moveSlider('rest-slider', -1)">❮</button>
+                    <button class="slider-btn next-btn" onclick="moveSlider('rest-slider', 1)">❯</button>
+                </div>
             </div>
             <div class="facility-text">
                 <h3>세련된 다이닝 경험</h3>
@@ -167,8 +183,9 @@
             <div class="room-card">
                 <div class="slider-container" id="deluxe-garden-slider">
                     <div class="slider-wrapper">
-                        <img src="beach3.jpg">
-                        <img src="Golf1.jpg">
+                        <img src="Crimson_deluxe_garden_view___hill_view1.png">
+                        <img src="Crimson_deluxe_garden_view___hill_view2.png">
+                        <img src="Crimson_deluxe_garden_view___hill_view3.png">
                     </div>
                     <button class="slider-btn prev-btn" onclick="moveSlider('deluxe-garden-slider', -1)">❮</button>
                     <button class="slider-btn next-btn" onclick="moveSlider('deluxe-garden-slider', 1)">❯</button>
@@ -185,8 +202,8 @@
             <div class="room-card">
                 <div class="slider-container" id="deluxe-seaview-slider">
                     <div class="slider-wrapper">
-                        <img src="Golf2.jpg">
-                        <img src="Golf4.jpg">
+                        <img src="Crimson_deluxe_sea_view1.png">
+                        <img src="Crimson_deluxe_sea_view2.png">
                     </div>
                     <button class="slider-btn prev-btn" onclick="moveSlider('deluxe-seaview-slider', -1)">❮</button>
                     <button class="slider-btn next-btn" onclick="moveSlider('deluxe-seaview-slider', 1)">❯</button>
@@ -203,8 +220,8 @@
             <div class="room-card">
                 <div class="slider-container" id="deluxe-premier-slider">
                     <div class="slider-wrapper">
-                        <img src="beach1.jpg">
-                        <img src="beach2.jpg">
+                        <img src="Crimson_deluxe_premier1.png">
+                        <img src="Crimson_deluxe_premier2.png">
                     </div>
                     <button class="slider-btn prev-btn" onclick="moveSlider('deluxe-premier-slider', -1)">❮</button>
                     <button class="slider-btn next-btn" onclick="moveSlider('deluxe-premier-slider', 1)">❯</button>
@@ -221,8 +238,10 @@
             <div class="room-card">
                 <div class="slider-container" id="suite-slider">
                     <div class="slider-wrapper">
-                        <img src="beach3.jpg">
-                        <img src="Golf3.jpg">
+                        <img src="Crimson_suite_room1.png">
+                        <img src="Crimson_suite_room2.png">
+                        <img src="Crimson_suite_room3.png">
+                        <img src="Crimson_suite_room4.png">
                     </div>
                     <button class="slider-btn prev-btn" onclick="moveSlider('suite-slider', -1)">❮</button>
                     <button class="slider-btn next-btn" onclick="moveSlider('suite-slider', 1)">❯</button>
@@ -239,8 +258,11 @@
             <div class="room-card">
                 <div class="slider-container" id="suite-plunge-slider">
                     <div class="slider-wrapper">
-                        <img src="Golf1.jpg">
-                        <img src="Golf4.jpg">
+                        <img src="Crimson_suite_with_plunge_pool1.png">
+                        <img src="Crimson_suite_with_plunge_pool2.png">
+                        <img src="Crimson_suite_with_plunge_pool3.png">
+                        <img src="Crimson_suite_with_plunge_pool4.png">
+                        <img src="Crimson_suite_with_plunge_pool5.png">
                     </div>
                     <button class="slider-btn prev-btn" onclick="moveSlider('suite-plunge-slider', -1)">❮</button>
                     <button class="slider-btn next-btn" onclick="moveSlider('suite-plunge-slider', 1)">❯</button>
@@ -257,8 +279,11 @@
             <div class="room-card">
                 <div class="slider-container" id="seaview-suite-slider">
                     <div class="slider-wrapper">
-                        <img src="beach2.jpg">
-                        <img src="Golf2.jpg">
+                        <img src="Crimson_sea_view_suite_with_pool_access1.png">
+                        <img src="Crimson_sea_view_suite_with_pool_access2.png">
+                        <img src="Crimson_sea_view_suite_with_pool_access3.png">
+                        <img src="Crimson_sea_view_suite_with_pool_access4.png">
+                        <img src="Crimson_sea_view_suite_with_pool_access5.png">
                     </div>
                     <button class="slider-btn prev-btn" onclick="moveSlider('seaview-suite-slider', -1)">❮</button>
                     <button class="slider-btn next-btn" onclick="moveSlider('seaview-suite-slider', 1)">❯</button>
@@ -275,8 +300,11 @@
             <div class="room-card">
                 <div class="slider-container" id="villa-slider">
                     <div class="slider-wrapper">
-                        <img src="Golf3.jpg">
-                        <img src="beach1.jpg">
+                        <img src="Crimson_villa1.png">
+                        <img src="Crimson_villa2.png">
+                        <img src="Crimson_villa3.png">
+                        <img src="Crimson_villa4.png">
+                        <img src="Crimson_villa5.png">
                     </div>
                     <button class="slider-btn prev-btn" onclick="moveSlider('villa-slider', -1)">❮</button>
                     <button class="slider-btn next-btn" onclick="moveSlider('villa-slider', 1)">❯</button>

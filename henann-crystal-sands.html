@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>헤난 크리스탈 샌즈 리조트 | BORACAY_SEAN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background: #fdfdfd; padding-bottom: 100px; color: #111; }
+        .resort-detail-container { max-width: 1100px; margin: 120px auto 50px; padding: 0 20px; }
+        
+        /* 히어로 섹션 */
+        .resort-hero { position: relative; border-radius: 32px; overflow: hidden; height: 550px; margin-bottom: 60px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .resort-hero img { width: 100%; height: 100%; object-fit: cover; }
+        .hero-overlay { position: absolute; bottom: 0; left: 0; width: 100%; padding: 80px 40px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); color: white; }
+        .hero-overlay h1 { font-size: 54px; font-weight: 900; margin-bottom: 10px; letter-spacing: -2px; }
+        .hero-overlay p { font-size: 20px; opacity: 0.9; font-weight: 500; }
+
+        /* 공통 섹션 카드 */
+        .section-card { background: white; border-radius: 32px; padding: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid #f0f0f0; margin-bottom: 40px; }
+        .section-title { font-size: 28px; font-weight: 900; margin-bottom: 35px; color: #ff6a00; display: flex; align-items: center; gap: 15px; }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: #eee; }
+
+        /* 부대시설 상세 스타일 */
+        .facility-content { display: grid; grid-template-columns: 1fr 1.2fr; gap: 50px; align-items: flex-start; margin-bottom: 60px; }
+        .facility-content.reverse { grid-template-columns: 1.2fr 1fr; }
+        .facility-text h3 { font-size: 24px; font-weight: 800; margin-bottom: 20px; color: #333; }
+        .facility-info-list { list-style: none; padding: 0; }
+        .facility-info-list li { display: flex; gap: 12px; margin-bottom: 15px; font-size: 17px; line-height: 1.6; color: #555; }
+        .facility-info-list li b { color: #ff6a00; min-width: 20px; }
+        .facility-img-box { width: 100%; border-radius: 28px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+        .facility-img-box img { width: 100%; display: block; transition: 0.5s; }
+        .facility-img-box:hover img { transform: scale(1.05); }
+
+        /* 투숙 규정 스타일 */
+        .policy-banner { background: #fff5eb; padding: 40px; border-radius: 28px; border: 1px solid #ffe0d1; margin-bottom: 60px; }
+        .policy-banner h4 { font-size: 20px; font-weight: 900; color: #d35400; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .policy-list { list-style: none; padding: 0; }
+        .policy-list li { font-size: 16px; color: #666; margin-bottom: 12px; font-weight: 600; line-height: 1.6; padding-left: 20px; position: relative; }
+        .policy-list li::before { content: '•'; position: absolute; left: 0; color: #ff6a00; font-weight: 900; }
+
+        /* 룸 타입 그리드 & 슬라이더 */
+        .room-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .room-card { background: white; border-radius: 32px; overflow: hidden; border: 1px solid #eee; transition: 0.3s; display: flex; flex-direction: column; }
+        .room-card:hover { transform: translateY(-12px); box-shadow: 0 25px 50px rgba(0,0,0,0.12); }
+        
+        .slider-container { position: relative; width: 100%; aspect-ratio: 16 / 10; overflow: hidden; background: #111; }
+        .slider-wrapper { display: flex; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); height: 100%; }
+        .slider-wrapper img { width: 100%; height: 100%; object-fit: contain; flex-shrink: 0; }
+        
+        .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.9); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: 0.2s; margin: 0 10px; }
+        .next-btn { right: 0; }
+        .slider-btn:hover { background: #ff6a00; color: white; }
+        
+        .room-info { padding: 30px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .room-info h3 { font-size: 22px; font-weight: 900; margin-bottom: 20px; color: #111; border-left: 5px solid #ff6a00; padding-left: 15px; min-height: 2.4em; display: flex; align-items: center; }
+        .room-spec-item { font-size: 15px; color: #777; display: flex; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid #f5f5f5; margin-bottom: 12px; }
+        .room-spec-item b { color: #333; font-weight: 800; font-size: 16px; }
+
+        .btn-quote-submit { display: block; width: 100%; padding: 18px; background: #111; color: white; text-align: center; border-radius: 16px; font-weight: 900; text-decoration: none; transition: 0.3s; margin-top: 15px; font-size: 16px; cursor: pointer; border: none; font-family: inherit; }
+        .btn-quote-submit:hover { background: #ff6a00; box-shadow: 0 15px 30px rgba(255,106,0,0.3); transform: scale(1.02); }
+
+        @media (max-width: 768px) {
+            .facility-content, .facility-content.reverse { grid-template-columns: 1fr; gap: 30px; }
+            .room-grid { grid-template-columns: 1fr; }
+            .resort-hero { height: 380px; }
+            .hero-overlay h1 { font-size: 36px; }
+            .section-card { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <div class="header-left">
+        <div class="logo">
+            <a href="index.html">
+                <img src="logo.png" class="logo-img" alt="로고">
+                BORACAY_SEAN
+            </a>
+        </div>
+    </div>
+
+    <div class="menu">
+        <a href="essential-tours.html" class="tab-link" data-category="essential">보라카이 필수투어</a>
+        <a href="activities.html" class="tab-link" data-category="activity">액티비티</a>
+        <a href="massage.html" class="tab-link" data-category="massage">마사지</a>
+        <a href="price-list.html" class="tab-link">한눈에 요금표</a>
+        <a href="resort-quote.html" class="tab-link active">리조트 견적</a>
+        <a href="cart.html" class="tab-link">장바구니</a>
+    </div>
+
+    <div class="header-right pc-only">
+        <a href="mypage.html" class="mypage-btn">마이페이지</a>
+        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페 바로가기</a>
+    </div>
+</div>
+
+<div class="resort-detail-container">
+    <!-- 메인 히어로 -->
+    <div class="resort-hero">
+        <img src="beach1.jpg" alt="헤난 크리스탈 샌즈 리조트">
+        <div class="hero-overlay">
+            <p>STATION 2 | BEACH FRONT ICON</p>
+            <h1>헤난 크리스탈 샌즈 리조트</h1>
+        </div>
+    </div>
+
+    <!-- 1. 리조트 부대시설 -->
+    <div class="section-card">
+        <div class="section-title">리조트 부대시설</div>
+        <div class="facility-content">
+            <div class="facility-text">
+                <h3>화이트비치의 중심, 최고의 접근성</h3>
+                <ul class="facility-info-list">
+                    <li><b>▶</b> 호텔 체크인 : 15:00 / 체크아웃 12:00 (24시간 가능)</li>
+                    <li><b>▶</b> 수영장 : 10:00 - 22:00 (투숙객 무료이용)</li>
+                    <li><b>▶</b> 헬스장 : 07:00 - 10:00 / 14:00 - 17:00 (2시간 300페소)</li>
+                    <li><b>▶</b> 회의실 & 연회장 : 추가금액 발생 이용시 호텔 개별문의</li>
+                </ul>
+            </div>
+            <div class="facility-img-box">
+                <img src="beach2.jpg" alt="수영장">
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. 레스토랑 & 바 -->
+    <div class="section-card">
+        <div class="section-title">Restaurant & Bar</div>
+        <div class="facility-content reverse">
+            <div class="facility-img-box">
+                <img src="beach3.jpg" alt="레스토랑">
+            </div>
+            <div class="facility-text">
+                <h3>다채로운 미식의 즐거움</h3>
+                <ul class="facility-info-list">
+                    <li><b>▶</b> 조식 시간 : 06:00 - 10:00 (4세 이하 무료)</li>
+                    <li><b>▶</b> 디너 뷔페 : 18:00 - 20:00 (성인 1,099페소, 소인 683페소)</li>
+                    <li><b>▶</b> 호텔 체크인 시 상세 이용 문의 가능</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 투숙 규정 배너 -->
+    <div class="policy-banner">
+        <h4><span style="font-size:24px;">⚠</span> 투숙 및 인원 추가 규정 (필독)</h4>
+        <ul class="policy-list">
+            <li>유아 - 만 4세 이하 / 아동 - 만 9세 이하 (체크인 날짜 기준)</li>
+            <li>성인 2명 투숙 시 : 유아는 추가 가능하지만 성인 및 아동 추가는 불가능합니다.</li>
+            <li>성인 3명 투숙 시 : 성인 및 아동 포함 최대 3명까지 가능합니다.</li>
+            <li>성인 3 + 아동 1 투숙 시 : 엑스트라 베드 및 아동 조식 요금이 필수 포함됩니다.</li>
+            <li style="color: #e67e22; border-top: 1px dashed #ffd8a8; padding-top: 10px; margin-top: 10px;">(유아는 인원에 포함되지 않으며, FOC 적용으로 인원 제한 없이 추가 가능합니다.)</li>
+        </ul>
+    </div>
+
+    <!-- 호텔 객실 타입 -->
+    <div class="section-card">
+        <div class="section-title">호텔 객실 타입 (Room Type)</div>
+        
+        <div class="room-grid">
+            <!-- 1. 디럭스룸 -->
+            <div class="room-card">
+                <div class="slider-container" id="deluxe-slider">
+                    <div class="slider-wrapper">
+                        <img src="beach1.jpg">
+                        <img src="beach2.jpg">
+                    </div>
+                    <button class="slider-btn prev-btn" onclick="moveSlider('deluxe-slider', -1)">❮</button>
+                    <button class="slider-btn next-btn" onclick="moveSlider('deluxe-slider', 1)">❯</button>
+                </div>
+                <div class="room-info">
+                    <h3>디럭스룸 (Deluxe Room)</h3>
+                    <div class="room-spec-item">객실 크기 <b>34m²</b></div>
+                    <div class="room-spec-item">최대 인원 <b>성인 2명</b></div>
+                    <button class="btn-quote-submit" onclick="requestResortQuote('헤난 크리스탈 샌즈', '디럭스룸')">이 룸으로 견적 요청하기</button>
+                </div>
+            </div>
+
+            <!-- 2. 프리미어 / 프리미어 풀억세스 -->
+            <div class="room-card">
+                <div class="slider-container" id="premier-slider">
+                    <div class="slider-wrapper">
+                        <img src="beach3.jpg">
+                        <img src="Golf1.jpg">
+                    </div>
+                    <button class="slider-btn prev-btn" onclick="moveSlider('premier-slider', -1)">❮</button>
+                    <button class="slider-btn next-btn" onclick="moveSlider('premier-slider', 1)">❯</button>
+                </div>
+                <div class="room-info">
+                    <h3>프리미어 / 프리미어 풀억세스룸</h3>
+                    <div class="room-spec-item">객실 크기 <b>40m² ~ 42m²</b></div>
+                    <div class="room-spec-item">최대 인원 <b>성인 3명 + 아동 1명</b></div>
+                    <button class="btn-quote-submit" onclick="requestResortQuote('헤난 크리스탈 샌즈', '프리미어/풀억세스')">이 룸으로 견적 요청하기</button>
+                </div>
+            </div>
+
+            <!-- 3. 프리미어 씨 뷰 -->
+            <div class="room-card">
+                <div class="slider-container" id="seaview-slider">
+                    <div class="slider-wrapper">
+                        <img src="Golf2.jpg">
+                        <img src="Golf3.jpg">
+                    </div>
+                    <button class="slider-btn prev-btn" onclick="moveSlider('seaview-slider', -1)">❮</button>
+                    <button class="slider-btn next-btn" onclick="moveSlider('seaview-slider', 1)">❯</button>
+                </div>
+                <div class="room-info">
+                    <h3>프리미어 씨 뷰 (Premier Sea View)</h3>
+                    <div class="room-spec-item">객실 크기 <b>48m²</b></div>
+                    <div class="room-spec-item">최대 인원 <b>성인 3명 + 아동 1명</b></div>
+                    <button class="btn-quote-submit" onclick="requestResortQuote('헤난 크리스탈 샌즈', '프리미어 씨 뷰')">이 룸으로 견적 요청하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="footer-left">
+        <b class="important">상호 : 보라카이션 | 대표 : 윤오현</b><br>
+        서울특별시 중랑구 상봉로 16길 25-3<br>
+        사업자번호 : 498-31-00593<br>
+        daemit@naver.com
+    </div>
+    <div class="footer-right">
+        <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-banner"><div class="kb-text"><span>무엇이든 물어보세요!</span><b>실시간 카톡 상담하기</b></div></a>
+        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-banner"><div class="nb-text"><span>정보가 가득!</span><b>보라카이션 카페 바로가기</b></div></a>
+    </div>
+</footer>
+
+<script>
+    const sliderStates = {};
+    function moveSlider(id, direction) {
+        if (!sliderStates[id]) sliderStates[id] = 0;
+        const wrapper = document.querySelector(`#${id} .slider-wrapper`);
+        const slides = wrapper.querySelectorAll('img');
+        sliderStates[id] = (sliderStates[id] + direction + slides.length) % slides.length;
+        wrapper.style.transform = `translateX(-${sliderStates[id] * 100}%)`;
+    }
+
+    function requestResortQuote(resortName, roomType) {
+        const filterState = JSON.parse(sessionStorage.getItem('resort_filter_state') || '{}');
+        if (!filterState.checkin) {
+            alert('여행 일정을 먼저 선택해 주세요. 견적 페이지로 이동합니다.');
+            location.href = 'resort-quote.html';
+            return;
+        }
+        const quoteData = {
+            name: `[리조트 견적] ${resortName} - ${roomType}`,
+            price: 0,
+            count: filterState.adults + filterState.children,
+            details: { ...filterState, resort: resortName, roomType: roomType }
+        };
+        sessionStorage.setItem('directBuyItem', JSON.stringify(quoteData));
+        window.open('booking-form.html', '_blank');
+    }
+</script>
+<script src="main.js"></script>
+</body>
+</html>

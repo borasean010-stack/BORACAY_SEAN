@@ -179,7 +179,15 @@ document.addEventListener('DOMContentLoaded', () => {
         filtered.forEach(res => {
             const row = document.createElement('tr');
             const item = res.items?.[0] || {};
-            const usageDate = item.date || res.pickupDate || res.date || '-';
+            
+            // 리조트 견적인 경우 체크인/아웃 날짜 우선 표시
+            let usageDate = item.date || res.pickupDate || res.date || '-';
+            const isResortQuote = res.items?.some(i => i.name.includes('리조트 견적'));
+            
+            if (isResortQuote && item.details) {
+                usageDate = `${item.details.checkin} ~ ${item.details.checkout}`;
+            }
+
             const pickupDisplayDate = res.pickupDate || '-';
             
             row.innerHTML = `
@@ -304,19 +312,38 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!res) return;
         const modal = document.getElementById('res-detail-modal');
         const body = document.getElementById('modal-body');
-        const itemsHtml = res.items?.map(item => `
-            <div style="background:#f8f9fa; padding:15px; border-radius:12px; margin-bottom:10px; border:1px solid #eee;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                    <b style="color:#ff6a00; font-size:16px;">${item.name}</b>
-                    <span style="font-weight:800;">${item.count}명</span>
-                </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:14px; color:#666;">
+        const itemsHtml = res.items?.map(item => {
+            const isResortQuote = item.name.includes('리조트 견적');
+            let itemDetailsHtml = '';
+            
+            if (isResortQuote && item.details) {
+                itemDetailsHtml = `
+                    <div style="grid-column: span 2; margin-top:5px; padding-top:5px; border-top:1px dashed #ddd; font-size:14px;">
+                        <div>🏨 리조트: <b style="color:#ff6a00;">${item.details.resort}</b> | 룸타입: <b style="color:#333;">${item.details.roomType}</b></div>
+                        <div style="margin-top:5px;">📅 기간: <b>${item.details.checkin} ~ ${item.details.checkout}</b></div>
+                        <div style="margin-top:5px;">👥 인원: <b>성인 ${item.details.adults}명, 소인 ${item.details.children}명</b> ${item.details.childAges?.length > 0 ? `(소인 나이: ${item.details.childAges.join(', ')})` : ''}</div>
+                    </div>
+                `;
+            } else {
+                itemDetailsHtml = `
                     <div>📅 이용일: <b>${item.date || '-'}</b></div>
                     <div>⏰ 시간: <b>${item.time || '정보없음'}</b></div>
                     ${item.type ? `<div style="grid-column: span 2; margin-top:5px; padding-top:5px; border-top:1px dashed #ddd;">✨ 선택종류: <b style="color:#333;">${item.type}</b></div>` : ''}
+                `;
+            }
+
+            return `
+                <div style="background:#f8f9fa; padding:15px; border-radius:12px; margin-bottom:10px; border:1px solid #eee;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                        <b style="color:#ff6a00; font-size:16px;">${item.name}</b>
+                        <span style="font-weight:800;">${item.count}명</span>
+                    </div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:14px; color:#666;">
+                        ${itemDetailsHtml}
+                    </div>
                 </div>
-            </div>
-        `).join('') || '예약 상품 정보가 없습니다.';
+            `;
+        }).join('') || '예약 상품 정보가 없습니다.';
 
         body.innerHTML = `
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:25px;">

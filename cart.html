@@ -74,6 +74,7 @@
     </div>
 </footer>
 
+<script src="main.js"></script>
 <script>
     function checkoutCart() {
         try {
@@ -83,16 +84,6 @@
             window.location.href = 'login.html';
         }
     }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const toggle = document.getElementById('menuToggle');
-        const menu = document.getElementById('sideMenu');
-        const overlay = document.getElementById('overlay');
-        if(toggle && menu && overlay) {
-            toggle.onclick = function() { menu.classList.toggle('active'); overlay.classList.toggle('active'); };
-            overlay.onclick = function() { menu.classList.remove('active'); overlay.classList.remove('active'); };
-        }
-    });
 </script>
 <script>
     function loadCart() {
@@ -111,7 +102,7 @@
         document.getElementById('final-price').innerText = '₩ ' + total.toLocaleString();
     }
     function removeItem(index) { let cart = JSON.parse(localStorage.getItem('cart') || '[]'); cart.splice(index, 1); localStorage.setItem('cart', JSON.stringify(cart)); loadCart(); }
-    window.onload = loadCart;
+    window.addEventListener('DOMContentLoaded', loadCart);
 </script>
 </body>
 </html>

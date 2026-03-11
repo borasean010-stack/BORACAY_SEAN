@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: "체험 다이빙", img: "diving1.jpg", url: "scuba-diving.html", desc: "전문 강사와 함께하는 환상적인 수중 세계 탐험.", price: 55000 },
             { title: "헬멧 다이빙", img: "he1.jpg", url: "helmet-diving.html", desc: "머리 젖지 않고 바다 속을 걷는 신비로운 경험.", price: 44000 },
             { title: "제트스키", img: "ze1.jpg", url: "jetski.html", desc: "보라카이 바다 위를 시원하게 질주하는 짜릿한 속도감.", price: 55000 },
-            { title: "페어웨이 골프클럽", img: "Golf1.jpg", url: "golf.html", badge: "NEW", desc: "보라카이 유일의 18홀 골프 코스에서 즐기는 환상적인 라운딩.", price: 150000 }
+            { title: "페어웨이 골프클럽", img: "Golf1.jpg", url: "golf.html", badge: "NEW", desc: "보라카이 유일의 18홀 골프 코스에서 즐기는 환상적인 라운딩.", price: 192000 }
         ],
         massage: [
             { title: "아유르베다 스파", img: "aspa1.jpg", url: "aspa.html", desc: "고대 인도의 전통 치유 요법으로 즐기는 심신 안정 테라피.", price: 55000 },

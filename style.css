@@ -241,7 +241,7 @@ body {
 .menu-toggle span { width: 24px; height: 3px; background: white; border-radius: 2px; }
 
 /* 모바일 사이드 메뉴 */
-.side-menu { position: fixed; top: 0; left: 0; width: 300px; height: 100vh; background: rgba(255,255,255,0.98); backdrop-filter: blur(20px); z-index: 10010; padding: 100px 30px; transform: translateX(-100%); transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 20px 0 50px rgba(0,0,0,0.1); }
+.side-menu { position: fixed; top: 0; left: 0; width: 300px; height: 100vh; background: rgba(255,255,255,0.98); backdrop-filter: blur(20px); z-index: 10010; padding: 80px 30px; transform: translateX(-100%); transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 20px 0 50px rgba(0,0,0,0.1); }
 .side-menu.active { transform: translateX(0); }
 .side-menu a { display: block; font-size: 18px; font-weight: 800; color: #222; text-decoration: none; padding: 20px 0; border-bottom: 1px solid #eee; transition: 0.2s; }
 .side-menu a:hover { color: #ff6a00; padding-left: 10px; }
@@ -461,7 +461,7 @@ body {
 .footer { background: #ff6a00; color: #fff; padding: 80px clamp(20px, 5vw, 60px); display: flex; justify-content: space-between; align-items: flex-end; gap: 40px; flex-wrap: wrap; }
 .footer-left b.important { font-size: 22px; display: inline-block; margin-bottom: 12px; letter-spacing: -0.5px; }
 .footer-left { line-height: 1.8; font-size: 15px; opacity: 0.9; }
-.footer-right { display: flex; flex-direction: column; gap: 15px; min-width: 320px; }
+.footer-right { display: flex; flex-direction: column; gap: 10px; min-width: 320px; }
 .kakao-banner, .naver-banner { padding: 22px 30px; border-radius: 20px; text-decoration: none; display: flex; align-items: center; gap: 15px; box-shadow: 0 15px 30px rgba(0,0,0,0.15); transition: 0.3s; }
 .kakao-banner { background: #fee500; color: #3c1e1e; }
 .naver-banner { background: #03c75a; color: white; }
@@ -471,13 +471,33 @@ body {
 @media (max-width: 768px) {
     /* 1. 상단 바 고정 및 높이 조정 */
     .top-bar { 
-        height: 64px; 
+        height: 72px; 
         padding: 0 16px; 
         background: rgba(255, 106, 0, 0.98) !important; 
+        justify-content: space-between;
     }
+    
+    .header-left { flex: 1; justify-content: flex-start; gap: 0; }
+    .header-right { flex: 1; justify-content: flex-end; gap: 6px; }
+    
+    /* 햄버거 메뉴 모바일에서 표시 */
+    .menu-toggle { display: flex; flex-direction: column; gap: 5px; cursor: pointer; z-index: 10002; padding: 10px; }
+    .menu-toggle span { width: 24px; height: 3px; background: white; border-radius: 2px; }
+    
+    /* 로고 중앙 배치 */
+    .logo { position: absolute; left: 50%; transform: translateX(-50%); }
     .logo a { font-size: 18px; letter-spacing: -0.5px; }
     .logo-img { height: 28px; margin-right: 8px; }
     
+    /* 버튼 스타일 조정 */
+    .kakao-btn, .naver-btn, .mypage-btn {
+        height: 36px;
+        padding: 0 12px;
+        font-size: 11px;
+        border-radius: 12px;
+    }
+    .kakao-icon { width: 14px; height: 14px; }
+
     /* 2. 메인 히어로 섹션 */
     .hero { 
         height: 60vh !important; 
@@ -589,6 +609,25 @@ body {
     .info-grid { grid-template-columns: 1fr; gap: 15px; }
     .reserved-item { flex-direction: column; align-items: flex-start; gap: 10px; }
     .reserved-item .item-price { align-self: flex-end; }
+
+    /* 13. 리조트 견적 페이지 최적화 */
+    .search-filter-bar { top: 72px !important; }
+    #resort-list { grid-template-columns: 1fr !important; gap: 20px !important; padding: 0 16px; }
+    .resort-horizontal-card { 
+        grid-template-columns: 1fr !important; 
+        height: auto !important;
+        border-radius: 24px;
+    }
+    .card-img-area { height: 200px !important; min-height: 200px !important; }
+    .card-info-area { padding: 25px !important; }
+    .resort-title { font-size: 22px !important; margin-bottom: 10px !important; }
+    .card-action-area { 
+        padding: 15px 25px 25px !important; 
+        border-left: none !important; 
+        border-top: 1px solid #f5f5f5; 
+        background: #fff !important; 
+    }
+    .view-detail-btn { height: 54px; display: flex; align-items: center; justify-content: center; border-radius: 14px; width: 100%; }
 }
 /* 🔢 수량 조절 (Counter) & 선택 탭 (Selection Tabs) 고급화 */
 .counter { 

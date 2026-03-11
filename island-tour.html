@@ -76,41 +76,54 @@
     </style>
 </head>
 <body>
-
 <div class="side-menu-overlay" id="overlay"></div>
 <div class="side-menu" id="sideMenu">
-    <a href="index.html">홈으로</a>
-    <a href="mypage.html">마이페이지 (예약확인)</a>
-    <a href="essential-tours.html">보라카이 필수투어</a>
-    <a href="activities.html">액티비티</a>
-    <a href="massage.html">마사지</a>
-    <a href="price-list.html">한눈에 요금표</a>
-    <a href="resort-quote.html">리조트 견적</a>
-    <a href="cart.html">장바구니 확인</a>
+    <div class="side-menu-header">
+        <div class="side-logo">BORACAY_SEAN</div>
+        <div class="side-close" id="sideClose">✕</div>
+    </div>
+    <div class="side-menu-list">
+        <a href="essential-tours.html">보라카이 필수투어</a>
+        <a href="activities.html">액티비티</a>
+        <a href="massage.html">마사지</a>
+        <a href="price-list.html">한눈에 요금표</a>
+        <a href="resort-quote.html">리조트 견적</a>
+        <a href="cart.html">장바구니</a>
+        <a href="mypage.html" style="margin-top:20px; font-size:14px; opacity:0.6;">마이페이지 (예약확인)</a>
+    </div>
 </div>
-
 <div class="top-bar">
     <div class="header-left">
         <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
-        <div class="logo"><a href="index.html"><img src="logo.png" class="logo-img">BORACAY_SEAN</a></div>
+        <div class="logo pc-only">
+            <a href="index.html">
+                <img src="logo.png" class="logo-img" alt="로고">
+                BORACAY_SEAN
+            </a>
+        </div>
     </div>
-    <div class="menu">
+
+    <div class="logo mobile-only">
+        <a href="index.html">
+            <img src="logo.png" class="logo-img" alt="로고">
+            BORACAY_SEAN
+        </a>
+    </div>
+
+    <div class="menu pc-only">
         <a href="essential-tours.html" class="tab-link" data-category="essential">보라카이 필수투어</a>
-        <a href="activities.html" class="tab-link active" data-category="activity">액티비티</a>
+        <a href="activities.html" class="tab-link" data-category="activity">액티비티</a>
         <a href="massage.html" class="tab-link" data-category="massage">마사지</a>
         <a href="price-list.html" class="tab-link">한눈에 요금표</a>
         <a href="resort-quote.html" class="tab-link">리조트 견적</a>
         <a href="cart.html" class="tab-link">장바구니</a>
     </div>
-    <div class="header-right pc-only">
-        <a href="mypage.html" class="mypage-btn">마이페이지</a>
-        <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn"></a>
-        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페 바로가기</a>
+
+    <div class="header-right">
+        <!-- main.js에서 동적으로 버튼들이 삽입됩니다 -->
     </div>
 </div>
-
-<div class="tour-detail-container">
-    <div class="tour-content">
+<div class="tour-content">
         <h1>비치 아일랜드 투어 (Beach Island Tour)</h1>
         <div class="section-title">투어 일정</div>
         <div class="itinerary">

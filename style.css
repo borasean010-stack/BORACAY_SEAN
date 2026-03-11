@@ -735,7 +735,7 @@ body {
     height: 100%;
     background: rgba(0,0,0,0.7);
     z-index: 50000;
-    display: flex;
+    display: none; /* JS에서 flex로 변경 */
     align-items: center;
     justify-content: center;
     padding: 20px;
@@ -757,6 +757,12 @@ body {
     to { opacity: 1; transform: scale(1); }
 }
 
+.popup-slider-container {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
 .popup-slider {
     display: flex;
     transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
@@ -765,22 +771,27 @@ body {
 
 .popup-slide {
     flex: 0 0 100%;
+    width: 100%;
     cursor: pointer;
+    line-height: 0;
 }
 
 .popup-slide img {
     width: 100%;
+    height: auto;
     display: block;
 }
 
 .popup-controls {
     position: absolute;
-    bottom: 70px;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: 60px;
+    left: 0;
+    width: 100%;
     display: flex;
+    justify-content: center;
     gap: 8px;
     z-index: 10;
+    pointer-events: none;
 }
 
 .popup-dot {
@@ -790,6 +801,7 @@ body {
     background: rgba(255,255,255,0.5);
     cursor: pointer;
     transition: 0.3s;
+    pointer-events: auto;
 }
 
 .popup-dot.active {
@@ -803,6 +815,8 @@ body {
     justify-content: space-between;
     background: #111;
     padding: 15px 20px;
+    position: relative;
+    z-index: 20;
 }
 
 .popup-footer button {

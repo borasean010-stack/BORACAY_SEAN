@@ -187,4 +187,63 @@ document.addEventListener('DOMContentLoaded', () => {
     const introModal = document.getElementById('introModal');
     window.openIntroModal = () => { if (introModal) { introModal.style.display = 'flex'; document.body.style.overflow = 'hidden'; } };
     window.closeIntroModal = () => { if (introModal) { introModal.style.display = 'none'; document.body.style.overflow = 'auto'; } };
+
+    // --- 메인 팝업 로직 ---
+    const popup = document.getElementById('mainPopup');
+    const popupSlider = document.getElementById('popupSlider');
+    const popupDotsContainer = document.getElementById('popupDots');
+    const popupSlides = document.querySelectorAll('.popup-slide');
+    let currentPopupIdx = 0;
+
+    if (popup && popupSlides.length > 0) {
+        // 오늘 하루 보지 않기 체크
+        const popupClosedUntil = localStorage.getItem('mainPopupClosedUntil');
+        if (!popupClosedUntil || new Date().getTime() > parseInt(popupClosedUntil)) {
+            popup.style.display = 'flex';
+        }
+
+        // 팝업 도트 생성
+        if (popupDotsContainer) {
+            popupDotsContainer.innerHTML = '';
+            popupSlides.forEach((_, i) => {
+                const dot = document.createElement('div');
+                dot.className = 'popup-dot' + (i === 0 ? ' active' : '');
+                dot.onclick = () => goToPopupSlide(i);
+                popupDotsContainer.appendChild(dot);
+            });
+        }
+
+        window.goToPopupSlide = (idx) => {
+            currentPopupIdx = idx;
+            popupSlider.style.transform = `translateX(-${currentPopupIdx * 100}%)`;
+            const dots = document.querySelectorAll('.popup-dot');
+            dots.forEach((dot, i) => {
+                if (i === currentPopupIdx) dot.classList.add('active');
+                else dot.classList.remove('active');
+            });
+        };
+
+        window.closePopup = () => { popup.style.display = 'none'; };
+        window.closePopupToday = () => {
+            const tomorrow = new Date();
+            tomorrow.setHours(24, 0, 0, 0);
+            localStorage.setItem('mainPopupClosedUntil', tomorrow.getTime());
+            closePopup();
+        };
+
+        // 자동 슬라이드
+        let popupAutoSlide = setInterval(() => {
+            currentPopupIdx = (currentPopupIdx + 1) % popupSlides.length;
+            goToPopupSlide(currentPopupIdx);
+        }, 4000);
+
+        popup.onmouseenter = () => clearInterval(popupAutoSlide);
+        popup.onmouseleave = () => {
+            clearInterval(popupAutoSlide);
+            popupAutoSlide = setInterval(() => {
+                currentPopupIdx = (currentPopupIdx + 1) % popupSlides.length;
+                goToPopupSlide(currentPopupIdx);
+            }, 4000);
+        };
+    }
 });

@@ -241,6 +241,27 @@
     </div>
 </footer>
 
+<!-- 팝업 모달 -->
+<div id="mainPopup" class="popup-overlay" style="display:none;">
+    <div class="popup-content">
+        <div class="popup-slider" id="popupSlider">
+            <div class="popup-slide" onclick="location.href='price-list.html'">
+                <img src="main-popup1.png" alt="팝업 1">
+            </div>
+            <div class="popup-slide" onclick="location.href='spa.html'">
+                <img src="main-popup2.png" alt="팝업 2">
+            </div>
+        </div>
+        <div class="popup-controls">
+            <div class="popup-dots" id="popupDots"></div>
+        </div>
+        <div class="popup-footer">
+            <button onclick="closePopupToday()">오늘 하루 보지 않기</button>
+            <button onclick="closePopup()">닫기</button>
+        </div>
+    </div>
+</div>
+
 <script src="main.js"></script>
 </body>
 </html>

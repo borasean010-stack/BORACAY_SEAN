@@ -76,6 +76,11 @@ body {
 }
 
 .header-right { display: flex; align-items: center; gap: 8px; }
+
+/* PC/모바일 표시 제어 */
+.mobile-only { display: none !important; }
+.pc-only { display: flex !important; }
+
 .mypage-btn { background: rgba(255, 255, 255, 0.2); color: white; padding: 10px 22px; border-radius: 30px; text-decoration: none; font-weight: 700; font-size: 13px; border: 1px solid rgba(255, 255, 255, 0.4); transition: 0.3s; line-height: 1; display: inline-flex; align-items: center; justify-content: center; height: 38px; }
 .mypage-btn:hover { background: white; color: #ff6a00; }
 .naver-btn { background: #03c75a; color: white; padding: 10px 22px; border-radius: 30px; text-decoration: none; font-weight: 700; font-size: 13px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; height: 38px; }
@@ -477,6 +482,9 @@ body {
         justify-content: space-between;
     }
     
+    .pc-only { display: none !important; }
+    .mobile-only { display: flex !important; }
+    
     .header-left { flex: 1; justify-content: flex-start; gap: 0; }
     .header-right { flex: 1; justify-content: flex-end; gap: 6px; }
     
@@ -485,9 +493,17 @@ body {
     .menu-toggle span { width: 24px; height: 3px; background: white; border-radius: 2px; }
     
     /* 로고 중앙 배치 */
-    .logo { position: absolute; left: 50%; transform: translateX(-50%); }
-    .logo a { font-size: 18px; letter-spacing: -0.5px; }
-    .logo-img { height: 28px; margin-right: 8px; }
+    .logo { 
+        position: absolute; 
+        left: 50%; 
+        transform: translateX(-50%); 
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .logo a { font-size: 18px; letter-spacing: -0.5px; display: flex; align-items: center; }
+    .logo-img { height: 32px; width: auto; margin-right: 0; }
     
     /* 버튼 스타일 조정 */
     .kakao-btn, .naver-btn, .mypage-btn {

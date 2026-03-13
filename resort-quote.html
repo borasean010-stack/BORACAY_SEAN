@@ -231,10 +231,56 @@
         }
 
         @media (max-width: 900px) {
-            .filter-container { grid-template-columns: 1fr; }
-            .resort-horizontal-card { grid-template-columns: 1fr; }
-            .card-action-area { border-left: none; border-top: 1px solid #f5f5f5; padding: 25px; }
-            .search-filter-bar { top: 70px; }
+            .search-filter-bar { 
+                top: 64px !important; 
+                padding: 15px 0 !important;
+            }
+            .filter-container { 
+                grid-template-columns: 1fr !important; 
+                gap: 12px !important;
+            }
+            .filter-input-box {
+                height: 54px !important;
+            }
+            .final-submit-btn {
+                height: 54px !important;
+                width: 100% !important;
+            }
+            .filter-group label {
+                font-size: 14px !important;
+            }
+
+            .main-content {
+                padding: 0 16px !important;
+            }
+
+            #resort-list { 
+                grid-template-columns: 1fr !important; 
+                gap: 20px !important; 
+                padding: 0; 
+            }
+            .resort-horizontal-card { 
+                grid-template-columns: 1fr !important; 
+                height: auto !important;
+                border-radius: 24px;
+                display: flex !important;
+                flex-direction: column !important;
+            }
+            .card-img-area { 
+                height: 380px !important; /* Portrait, tall thumbnail */
+                min-height: 380px !important; 
+            }
+            .card-info-area { 
+                padding: 20px !important; 
+            }
+            .resort-title { font-size: 22px !important; margin-bottom: 8px !important; }
+            .card-action-area { 
+                padding: 15px 20px 20px !important; 
+                border-left: none !important; 
+                border-top: 1px solid #f5f5f5; 
+                background: #fff !important; 
+            }
+            .view-detail-btn { height: 50px !important; display: flex !important; align-items: center; justify-content: center; border-radius: 14px; width: 100%; }
         }
     </style>
 </head>

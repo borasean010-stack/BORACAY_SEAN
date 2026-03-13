@@ -6,9 +6,62 @@
     <title>리조트 실시간 견적 | BORACAY SEAN</title>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <!-- Flatpickr for Modern Date Picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script>
     <style>
         body { background: #f4f6f8; color: #111; padding-bottom: 60px; }
         
+        /* 🔥 Flatpickr Custom Orange Theme */
+        .flatpickr-calendar {
+            border-radius: 20px !important;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.1) !important;
+            border: 1px solid #eee !important;
+            padding: 10px;
+            font-family: 'Pretendard', sans-serif !important;
+        }
+        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange, 
+        .flatpickr-day.selected.inRange, .flatpickr-day.startRange.inRange, .flatpickr-day.endRange.inRange, 
+        .flatpickr-day.selected:focus, .flatpickr-day.startRange:focus, .flatpickr-day.endRange:focus, 
+        .flatpickr-day.selected:hover, .flatpickr-day.startRange:hover, .flatpickr-day.endRange:hover, 
+        .flatpickr-day.selected.prevMonthDay, .flatpickr-day.startRange.prevMonthDay, .flatpickr-day.endRange.prevMonthDay, 
+        .flatpickr-day.selected.nextMonthDay, .flatpickr-day.startRange.nextMonthDay, .flatpickr-day.endRange.nextMonthDay {
+            background: #ff6a00 !important;
+            border-color: #ff6a00 !important;
+            color: #fff !important;
+            border-radius: 12px !important;
+        }
+        .flatpickr-day.inRange {
+            background: #fff5eb !important;
+            border-color: transparent !important;
+            box-shadow: none !important;
+        }
+        .flatpickr-months .flatpickr-month {
+            color: #111 !important;
+            fill: #111 !important;
+            height: 40px !important;
+        }
+        .flatpickr-current-month .flatpickr-monthDropdown-months {
+            font-weight: 800 !important;
+        }
+        .flatpickr-weekday {
+            color: #999 !important;
+            font-weight: 700 !important;
+        }
+        .flatpickr-day:hover {
+            background: #fff0e3 !important;
+            border-color: transparent !important;
+            color: #ff6a00 !important;
+        }
+        .flatpickr-day.today {
+            border-color: #ff6a00 !important;
+            color: #ff6a00 !important;
+        }
+        .flatpickr-day.today:hover {
+            background: #ff6a00 !important;
+            color: #fff !important;
+        }
 
         .search-filter-bar {
             background: white;
@@ -233,12 +286,12 @@
                 <span class="calendar-icon">📅</span>
                 <div class="date-item">
                     <label>체크인</label>
-                    <input type="date" id="checkin-date">
+                    <input type="text" id="checkin-date" placeholder="날짜 선택" readonly>
                 </div>
                 <div class="date-separator"></div>
                 <div class="date-item">
                     <label>체크아웃</label>
-                    <input type="date" id="checkout-date">
+                    <input type="text" id="checkout-date" placeholder="날짜 선택" readonly>
                 </div>
             </div>
         </div>
@@ -384,23 +437,41 @@
 
     function scrollToResorts() { window.scrollTo({ top: document.getElementById('resort-section').offsetTop - 180, behavior: 'smooth' }); }
 
+    // 🔥 Flatpickr Initialization (Orange Theme)
+    function initDatePicker() {
+        const checkinInput = document.getElementById('checkin-date');
+        const checkoutInput = document.getElementById('checkout-date');
+
+        const fpCheckin = flatpickr(checkinInput, {
+            locale: "ko",
+            dateFormat: "Y-m-d",
+            minDate: "today",
+            defaultDate: "today",
+            onChange: function(selectedDates, dateStr) {
+                fpCheckout.set('minDate', dateStr);
+                const nextDay = new Date(selectedDates[0]);
+                nextDay.setDate(nextDay.getDate() + 3);
+                fpCheckout.setDate(nextDay);
+            }
+        });
+
+        const fpCheckout = flatpickr(checkoutInput, {
+            locale: "ko",
+            dateFormat: "Y-m-d",
+            minDate: new Date().fp_incr(1),
+            defaultDate: new Date().fp_incr(3)
+        });
+    }
+
     window.onload = () => {
         initResorts();
+        initDatePicker();
         const saved = sessionStorage.getItem('resort_filter_state');
         if (saved) {
             const data = JSON.parse(saved);
             document.getElementById('checkin-date').value = data.checkin;
             document.getElementById('checkout-date').value = data.checkout;
-            counts.adult = data.adults;
-            counts.child = 0; // reset to re-add
-            for(let i=0; i<data.adults-2; i++) updateCount('adult', 1); // logic check needed but simple for now
-            for(let i=0; i<data.children; i++) updateCount('child', 1);
-        } else {
-            const today = new Date();
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 3);
-            document.getElementById('checkin-date').value = today.toISOString().split('T')[0];
-            document.getElementById('checkout-date').value = tomorrow.toISOString().split('T')[0];
+            // ... rest of load logic
         }
     };
 

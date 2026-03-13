@@ -103,6 +103,18 @@
                         <div class="section-header">
                             <h3 id="table-sub-title">전체 예약 내역</h3>
                             <div class="search-box">
+                                <span class="material-icons">filter_list</span>
+                                <input type="date" id="res-date-filter" style="width:130px; border:none; background:transparent; font-family:inherit; font-size:14px; color:#666; outline:none; cursor:pointer;">
+                                <span style="margin:0 10px; color:#eee;">|</span>
+                                <select id="res-status-filter" style="border:none; background:transparent; font-family:inherit; font-size:14px; color:#666; outline:none; cursor:pointer;">
+                                    <option value="all">모든 상태</option>
+                                    <option value="예약접수">예약접수</option>
+                                    <option value="입금대기">입금대기</option>
+                                    <option value="예약확정">예약확정</option>
+                                    <option value="견적">견적신청</option>
+                                    <option value="취소">취소됨</option>
+                                </select>
+                                <span style="margin:0 10px; color:#eee;">|</span>
                                 <span class="material-icons">search</span>
                                 <input type="text" id="res-search" placeholder="예약자명 검색...">
                             </div>
@@ -114,9 +126,7 @@
                                         <th>예약번호</th>
                                         <th>예약자</th>
                                         <th>상품</th>
-                                        <th>이용일</th>
-                                        <th>픽업일</th>
-                                        <th>금액</th>
+                                        <th>예약일</th>
                                         <th>상태</th>
                                         <th>관리</th>
                                     </tr>

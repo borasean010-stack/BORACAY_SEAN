@@ -105,6 +105,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (searchInput) {
             searchInput.oninput = (e) => renderMainTable(e.target.value.toLowerCase());
         }
+
+        const dateFilter = document.getElementById('res-date-filter');
+        if (dateFilter) {
+            dateFilter.onchange = () => renderMainTable();
+        }
+
+        const statusFilter = document.getElementById('res-status-filter');
+        if (statusFilter) {
+            statusFilter.onchange = () => renderMainTable();
+        }
     }
 
     // --- Data Fetching ---
@@ -162,17 +172,30 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!tableBody) return;
         tableBody.innerHTML = '';
         
-        let filtered = allReservations;
-        if (currentTab !== 'all') {
-            filtered = allReservations.filter(r => r.status === currentTab);
-        }
+        const dateFilter = document.getElementById('res-date-filter')?.value;
+        const statusFilter = document.getElementById('res-status-filter')?.value || 'all';
 
+        let filtered = [...allReservations];
+
+        // 필터 적용
+        if (statusFilter !== 'all') {
+            filtered = filtered.filter(r => r.status === statusFilter);
+        }
+        if (dateFilter) {
+            filtered = filtered.filter(r => {
+                const itemDate = r.items?.[0]?.date || r.pickupDate || '';
+                return itemDate === dateFilter;
+            });
+        }
         if (searchTerm) {
             filtered = filtered.filter(r => r.customerKorName.toLowerCase().includes(searchTerm.toLowerCase()));
         }
 
+        // 예약번호 기준 정렬 (최신 날짜가 위로)
+        filtered.sort((a, b) => (b.reservationNumber || '').localeCompare(a.reservationNumber || ''));
+
         if (filtered.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="8" class="empty-msg-v2">조회된 내역이 없습니다.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="6" class="empty-msg-v2">조회된 내역이 없습니다.</td></tr>';
             return;
         }
 
@@ -180,37 +203,48 @@ document.addEventListener('DOMContentLoaded', () => {
             const row = document.createElement('tr');
             const item = res.items?.[0] || {};
             
-            // 리조트 견적인 경우 체크인/아웃 날짜 우선 표시
             let usageDate = item.date || res.pickupDate || res.date || '-';
-            const isResortQuote = res.items?.some(i => i.name.includes('리조트 견적')) || res.status === '견적';
+            const isResortQuote = res.status === '견적';
             
             if (isResortQuote && item.details) {
                 usageDate = `${item.details.checkin} ~ ${item.details.checkout}`;
             }
 
-            const pickupDisplayDate = res.pickupDate || '-';
-            
+            // 상태별 색상 클래스
+            let statusClass = 'ss-badge-신규';
+            if (res.status === '예약접수' || res.status === '입금대기') statusClass = 'ss-badge-입금대기'; // 빨강 (CSS에서 추가 필요)
+            if (res.status === '예약확정') statusClass = 'ss-badge-예약확정'; // 초록 (CSS에서 추가 필요)
+            if (res.status === '견적') statusClass = 'ss-badge-견적';
+
             row.innerHTML = `
-                <td>${res.id.slice(-6)}</td>
+                <td><b>${res.reservationNumber || '-'}</b></td>
                 <td><b>${res.customerKorName}</b></td>
-                <td>${item.name}${res.items?.length > 1 ? ` 외 ${res.items.length-1}` : ''}</td>
+                <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                    ${item.name}${res.items?.length > 1 ? ` 외 ${res.items.length-1}` : ''}
+                </td>
                 <td>${usageDate}</td>
-                <td>${pickupDisplayDate}</td>
-                <td>₩ ${res.totalPrice?.toLocaleString()}</td>
-                <td><span class="ss-badge ss-badge-${res.status}">${res.status === '신규' ? '신규주문' : (res.status === '견적' ? '견적신청' : res.status)}</span></td>
+                <td><span class="ss-badge ${statusClass}">${res.status}</span></td>
                 <td>
                     <div style="display:flex; gap:5px; justify-content:center;">
                         <button class="ss-btn-action" onclick="showDetail('${res.id}')">상세</button>
-                        ${(res.status === '신규' || res.status === '견적') ? `<button class="ss-btn-action" style="background:var(--ss-blue); color:white; border:none;" onclick="updateStatus('${res.id}', '예약완료')">완료</button>` : ''}
-                        ${res.status === '예약완료' ? `<button class="ss-btn-action" style="background:var(--ss-green); color:white; border:none;" onclick="confirmPurchase('${res.id}')">확정</button>` : ''}
-                        ${res.status === '확정' ? `<button class="ss-btn-action" style="color:red" onclick="updateStatus('${res.id}', '취소')">취소</button>` : ''}
-                        ${(res.status === '취소' || res.status === '취소요청') ? `<button class="ss-btn-action" style="background:#666; color:white; border:none;" onclick="updateStatus('${res.id}', '신규')">복구</button>` : ''}
+                        ${(res.status === '예약접수' || res.status === '입금대기') ? 
+                            `<button class="ss-btn-action" style="background:var(--ss-green); color:white; border:none;" onclick="confirmDeposit('${res.id}')">입금확인</button>` : ''}
+                        ${res.status === '견적' ? `<button class="ss-btn-action" style="background:var(--ss-blue); color:white; border:none;" onclick="updateStatus('${res.id}', '입금대기')">안내완료</button>` : ''}
+                        ${res.status !== '취소' ? `<button class="ss-btn-action" style="color:red" onclick="updateStatus('${res.id}', '취소')">취소</button>` : ''}
                     </div>
                 </td>
             `;
             tableBody.appendChild(row);
         });
     }
+
+    // 신규 함수: 입금 확인 시 바로 예약확정
+    window.confirmDeposit = async (id) => {
+        if (!confirm('입금이 확인되었습니까? 바로 [예약확정] 처리됩니다.')) return;
+        if (db) {
+            await updateDoc(doc(db, "reservations", id), { status: '예약확정' });
+        }
+    };
 
     function renderDailySchedule() {
         if (!scheduleList) return;

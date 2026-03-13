@@ -84,11 +84,12 @@ body.smartstore-admin {
 .btn-admin-login { width: 100%; padding: 18px; background: var(--lux-gold); border: none; border-radius: 16px; font-weight: 800; cursor: pointer; }
 
 .ss-badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; }
-.ss-badge-신규 { background: #e6f9ed; color: var(--ss-green); }
+.ss-badge-예약접수 { background: #eef4ff; color: var(--ss-blue); }
+.ss-badge-입금대기 { background: #fff1f0; color: var(--ss-danger); }
+.ss-badge-예약확정 { background: #e6f9ed; color: var(--ss-green); }
 .ss-badge-견적 { background: #fff7e6; color: #fa8c16; border: 1px solid #ffd591; }
-.ss-badge-예약완료 { background: #eef4ff; color: var(--ss-blue); }
-.ss-badge-확정 { background: #f0f2f5; color: #666; }
-.ss-badge-취소 { background: #fff1f0; color: var(--ss-danger); }
+.ss-badge-취소 { background: #f0f2f5; color: #999; }
+.ss-badge-신규 { background: #e6f9ed; color: var(--ss-green); }
 .ss-badge-all { background: #f5f5f5; color: #333; }
 
 .ss-alert-box { background: #fff8e6; border-radius: 16px; padding: 20px; text-align: center; border: 1px solid #ffeeba; }

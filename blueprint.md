@@ -22,8 +22,17 @@ This project is a reservation website for tours and activities in Boracay (BORAC
 * **Navigation Bar Logo:** Added "BORACAY SEAN" text next to the logo image in the PC fixed navigation bar.
 * **Consistent Styling:** Standardized title tags, side menu logos, and other branding elements to use the new name.
 * **Responsive Design:** Optimized logo text size and spacing for both PC (26px) and mobile (16px) views using CSS gap for better alignment.
+* **Mobile Visibility:** Wrapped logo text in `.logo-text` span and updated CSS to ensure visibility and 900 weight on mobile.
 
-### 2. Activity & Spa Reservation Options
+### 2. Main Popup Slider Fix
+* **Issue:** Only the first banner was visible in some environments.
+* **Fix:** Corrected the popup slider transition and flex layout in `style.css` and refined the sliding logic in `main.js`.
+* **Features:**
+    * Automatic sliding every 4 seconds.
+    * Interactive navigation dots for manual sliding.
+    * Pause-on-hover functionality to allow users to read the content.
+
+### 3. Activity & Spa Reservation Options
 * **Time Selection:** Added specialized time selection tabs for activities and spas to ensure accurate scheduling.
     * Activities (Parasailing, Helmet Diving, Jet Ski, Introductory Diving, Fairway Golf Club): 09:00, 10:00, 11:00, 13:00, 14:00.
     * Spas (Luna, Bora, S-SPA, Helios, Ayurveda): 12:30, 14:30, 16:30, 19:30.

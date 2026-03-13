@@ -233,16 +233,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 자동 슬라이드
         let popupAutoSlide = setInterval(() => {
-            currentPopupIdx = (currentPopupIdx + 1) % popupSlides.length;
-            goToPopupSlide(currentPopupIdx);
+            if (popupSlider && popupSlides.length > 0) {
+                currentPopupIdx = (currentPopupIdx + 1) % popupSlides.length;
+                goToPopupSlide(currentPopupIdx);
+            }
         }, 4000);
 
         popup.onmouseenter = () => clearInterval(popupAutoSlide);
         popup.onmouseleave = () => {
             clearInterval(popupAutoSlide);
             popupAutoSlide = setInterval(() => {
-                currentPopupIdx = (currentPopupIdx + 1) % popupSlides.length;
-                goToPopupSlide(currentPopupIdx);
+                if (popupSlider && popupSlides.length > 0) {
+                    currentPopupIdx = (currentPopupIdx + 1) % popupSlides.length;
+                    goToPopupSlide(currentPopupIdx);
+                }
             }, 4000);
         };
     }

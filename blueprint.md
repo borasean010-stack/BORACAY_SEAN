@@ -1,7 +1,7 @@
 # Blueprint: Boracay Reservation Website
 
 ## Overview
-This project is a reservation website for tours and activities in Boracay. It allows users to browse available activities, view details, and make reservations. The project also includes an admin panel for managing reservations.
+This project is a reservation website for tours and activities in Boracay (BORACAY SEAN). It allows users to browse available activities, view details, and make reservations. The project also includes an admin panel for managing reservations.
 
 ## Project Structure
 * `index.html`: The main landing page of the website.
@@ -17,7 +17,13 @@ This project is a reservation website for tours and activities in Boracay. It al
 
 ## Features & UI Enhancements
 
-### 1. Activity & Spa Reservation Options
+### 1. Logo & Branding Update
+* **Company Name:** Updated from "BORACAY_SEAN" to "BORACAY SEAN" across all platforms.
+* **Navigation Bar Logo:** Added "BORACAY SEAN" text next to the logo image in the PC fixed navigation bar.
+* **Consistent Styling:** Standardized title tags, side menu logos, and other branding elements to use the new name.
+* **Responsive Design:** Optimized logo text size and spacing for both PC (26px) and mobile (16px) views using CSS gap for better alignment.
+
+### 2. Activity & Spa Reservation Options
 * **Time Selection:** Added specialized time selection tabs for activities and spas to ensure accurate scheduling.
     * Activities (Parasailing, Helmet Diving, Jet Ski, Introductory Diving, Fairway Golf Club): 09:00, 10:00, 11:00, 13:00, 14:00.
     * Spas (Luna, Bora, S-SPA, Helios, Ayurveda): 12:30, 14:30, 16:30, 19:30.

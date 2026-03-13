@@ -41,12 +41,13 @@ body {
     font-weight: 900; 
     font-size: 26px; 
     letter-spacing: -1px; 
+    gap: 12px;
 }
 .logo-img {
     height: 44px; 
     width: auto;
     object-fit: contain;
-    margin-right: 12px;
+    margin-right: 0;
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
 }
 
@@ -502,8 +503,8 @@ body {
         align-items: center;
         justify-content: center;
     }
-    .logo a { font-size: 18px; letter-spacing: -0.5px; display: flex; align-items: center; }
-    .logo-img { height: 32px; width: auto; margin-right: 0; }
+    .logo a { font-size: 16px; letter-spacing: -0.5px; display: flex; align-items: center; gap: 6px; }
+    .logo-img { height: 28px; width: auto; margin-right: 0; }
     
     /* 버튼 스타일 조정 */
     .kakao-btn, .naver-btn, .mypage-btn {

@@ -1,6 +1,6 @@
 // main.js
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("BORACAY_SEAN JS Loaded");
+    console.log("BORACAY SEAN JS Loaded");
 
     // --- 상품 데이터 정의 (최저가 포함, 마사지 성장마사지 제외) ---
     const productData = {

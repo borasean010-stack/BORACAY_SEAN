@@ -223,6 +223,11 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         };
 
+        window.movePopupSlide = (step) => {
+            currentPopupIdx = (currentPopupIdx + step + popupSlides.length) % popupSlides.length;
+            goToPopupSlide(currentPopupIdx);
+        };
+
         window.closePopup = () => { popup.style.display = 'none'; };
         window.closePopupToday = () => {
             const tomorrow = new Date();
@@ -231,23 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
             closePopup();
         };
 
-        // 자동 슬라이드
-        let popupAutoSlide = setInterval(() => {
-            if (popupSlider && popupSlides.length > 0) {
-                currentPopupIdx = (currentPopupIdx + 1) % popupSlides.length;
-                goToPopupSlide(currentPopupIdx);
-            }
-        }, 4000);
-
-        popup.onmouseenter = () => clearInterval(popupAutoSlide);
-        popup.onmouseleave = () => {
-            clearInterval(popupAutoSlide);
-            popupAutoSlide = setInterval(() => {
-                if (popupSlider && popupSlides.length > 0) {
-                    currentPopupIdx = (currentPopupIdx + 1) % popupSlides.length;
-                    goToPopupSlide(currentPopupIdx);
-                }
-            }, 4000);
-        };
+        // 자동 슬라이드 제거 (사용자 요청: 수동으로 편하게 넘길 수 있게)
     }
 });

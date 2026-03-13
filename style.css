@@ -825,6 +825,34 @@ body {
     position: relative;
 }
 
+/* Popup Navigation Arrows */
+.popup-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border-radius: 50%;
+    color: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 30;
+    transition: 0.3s;
+    font-size: 16px;
+    user-select: none;
+}
+.popup-arrow:hover { background: #ff6a00; color: white; transform: translateY(-50%) scale(1.1); }
+.popup-arrow-left { left: 10px; }
+.popup-arrow-right { right: 10px; }
+
+@media (max-width: 768px) {
+    .popup-arrow { width: 32px; height: 32px; font-size: 14px; }
+}
+
 .popup-slider {
     display: flex;
     transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);

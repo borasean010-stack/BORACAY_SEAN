@@ -675,8 +675,48 @@ body {
         background: #fff !important; 
     }
     .view-detail-btn { height: 54px; display: flex; align-items: center; justify-content: center; border-radius: 14px; width: 100%; }
-}
-/* 🔢 수량 조절 (Counter) & 선택 탭 (Selection Tabs) 고급화 */
+
+    /* 15. 리조트 상세 룸 목록 - 네이버 쇼핑 스타일 (2열 그리드) */
+    .room-grid { 
+    grid-template-columns: repeat(2, 1fr) !important; 
+    gap: 10px !important; 
+    padding: 0 !important;
+    }
+    .room-card { 
+    border-radius: 16px !important; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+    transform: none !important;
+    }
+    .room-card:hover { transform: translateY(-5px) !important; }
+    .slider-container { 
+    aspect-ratio: 1 / 1 !important; /* 정사각형 썸네일 */
+    }
+    .room-info { 
+    padding: 12px !important; 
+    }
+    .room-info h3 { 
+    font-size: 14px !important; 
+    margin-bottom: 10px !important; 
+    border-left-width: 3px !important;
+    padding-left: 8px !important;
+    min-height: 2.8em !important;
+    line-height: 1.3 !important;
+    }
+    .room-spec-item { 
+    font-size: 11px !important; 
+    padding-bottom: 6px !important; 
+    margin-bottom: 6px !important;
+    }
+    .room-spec-item b { 
+    font-size: 12px !important; 
+    }
+    .btn-quote-submit { 
+    padding: 10px !important; 
+    font-size: 12px !important; 
+    border-radius: 10px !important;
+    margin-top: 8px !important;
+    }
+    }/* 🔢 수량 조절 (Counter) & 선택 탭 (Selection Tabs) 고급화 */
 .counter { 
     display: flex; 
     align-items: center; 

@@ -64,6 +64,17 @@
             .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
             .reservation-box { display: none; }
         }
+
+        .mobile-bottom-bar { display: none; }
+        @media (max-width: 1024px) {
+            .mobile-bottom-bar { 
+                display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
+                background: white; padding: 15px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); 
+                z-index: 9000; align-items: center; gap: 10px;
+            }
+            .m-btn-cart { flex: 1; height: 55px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 15px; font-size: 15px; font-weight: 800; }
+            .m-btn-buy { flex: 2; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; }
+        }
     </style>
 </head>
 <body>
@@ -190,6 +201,11 @@
         사업자번호 : 498-31-00593 | daemit@naver.com
     </div>
 </footer>
+
+<div class="mobile-bottom-bar">
+    <button class="m-btn-cart" onclick="addToCart()">장바구니</button>
+    <button class="m-btn-buy" onclick="handleBuy()">구매하기</button>
+</div>
 
 <script src="main.js"></script>
 <script>

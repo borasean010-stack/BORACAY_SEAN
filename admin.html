@@ -26,166 +26,120 @@
         </div>
     </div>
 
-    <!-- Main Admin Layout -->
-    <div id="admin-container" class="admin-layout-v2" style="display: none;">
-        <!-- Left Sidebar -->
-        <aside class="admin-sidebar">
-            <div class="sidebar-logo">
-                <img src="logo.png" alt="Logo">
-                <span>보라카이션</span>
+    <!-- Main Admin Layout (V3 Overhaul) -->
+    <div id="admin-container" class="admin-layout-v3" style="display: none;">
+        
+        <!-- 1. Top Bar -->
+        <header class="admin-top-nav">
+            <div class="header-left">
+                <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
+                <img src="logo.png" alt="Logo" class="admin-top-logo">
+                <span class="brand-text">SELLER CENTER</span>
             </div>
-            <nav class="sidebar-nav">
-                <div class="nav-group">
-                    <p class="group-title">판매 관리</p>
-                    <button class="sidebar-btn active" data-mode="sales" data-tab="all">
-                        <span class="material-icons">search</span> 주문 통합검색
-                    </button>
-                    <button class="sidebar-btn" data-mode="sales" data-tab="견적">
-                        <span class="material-icons">description</span> 견적 관리
-                    </button>
-                    <button class="sidebar-btn" data-mode="sales" data-tab="확정">
-                        <span class="material-icons">check_circle</span> 구매확정 관리
-                    </button>
-                    <button class="sidebar-btn" data-mode="sales" data-tab="취소">
-                        <span class="material-icons">cancel</span> 취소/환불 관리
-                    </button>
+            <div class="header-center">
+                <div class="global-search-container">
+                    <span class="material-icons">search</span>
+                    <input type="text" id="header-global-search" placeholder="예약번호 또는 고객명으로 검색">
                 </div>
-                <div class="nav-group">
-                    <p class="group-title">정산 관리</p>
-                    <button class="sidebar-btn" data-mode="settlement">
-                        <span class="material-icons">payments</span> 정산 내역
-                    </button>
-                </div>
-                <div class="nav-group">
-                    <p class="group-title">기타</p>
-                    <button class="sidebar-btn" onclick="location.reload()"><span class="material-icons">refresh</span> 새로고침</button>
-                    <button class="sidebar-btn logout-trigger" id="logout-btn"><span class="material-icons">logout</span> 로그아웃</button>
-                </div>
-            </nav>
-        </aside>
-
-        <!-- Main Body -->
-        <div class="admin-body">
-            <header class="body-header">
-                <div class="header-left">
-        <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
-                    <h2 id="view-title">판매 관리</h2>
-                </div>
-                <div class="header-right pc-only">
-        <a href="mypage.html" class="mypage-btn">마이페이지</a>
-        <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn"></a>
-        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페 바로가기</a>
-    </div>
-                </div>
-            </header>
-
-            <!-- Mode: Sales Management -->
-            <div id="sales-view">
-                <div class="dashboard-summary">
-                    <div class="summary-card stat-card" id="stat-new">
-                        <span class="label">신규 주문</span>
-                        <span class="value" id="cnt-new">0</span>
-                    </div>
-                    <div class="status-arrow-v2"><span class="material-icons">chevron_right</span></div>
-                    <div class="summary-card stat-card" id="stat-completed">
-                        <span class="label">예약 완료</span>
-                        <span class="value" id="cnt-completed">0</span>
-                    </div>
-                    <div class="status-arrow-v2"><span class="material-icons">chevron_right</span></div>
-                    <div class="summary-card stat-card" id="stat-confirmed">
-                        <span class="label">구매 확정</span>
-                        <span class="value" id="cnt-confirmed">0</span>
-                    </div>
-                </div>
-
-                <main class="content-grid">
-                    <section class="main-section">
-                        <div class="section-header">
-                            <h3 id="table-sub-title">전체 예약 내역</h3>
-                            <div class="search-box">
-                                <span class="material-icons">filter_list</span>
-                                <input type="date" id="res-date-filter" style="width:130px; border:none; background:transparent; font-family:inherit; font-size:14px; color:#666; outline:none; cursor:pointer;">
-                                <span style="margin:0 10px; color:#eee;">|</span>
-                                <select id="res-status-filter" style="border:none; background:transparent; font-family:inherit; font-size:14px; color:#666; outline:none; cursor:pointer;">
-                                    <option value="all">모든 상태</option>
-                                    <option value="예약접수">예약접수</option>
-                                    <option value="입금대기">입금대기</option>
-                                    <option value="예약확정">예약확정</option>
-                                    <option value="견적">견적신청</option>
-                                    <option value="취소">취소됨</option>
-                                </select>
-                                <span style="margin:0 10px; color:#eee;">|</span>
-                                <span class="material-icons">search</span>
-                                <input type="text" id="res-search" placeholder="예약자명 검색...">
-                            </div>
-                        </div>
-                        <div class="table-container">
-                            <table class="ss-table">
-                                <thead>
-                                    <tr>
-                                        <th>예약번호</th>
-                                        <th>예약자</th>
-                                        <th>상품</th>
-                                        <th>예약일</th>
-                                        <th>상태</th>
-                                        <th>관리</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="admin-table-body"></tbody>
-                            </table>
-                        </div>
-                    </section>
-
-                    <aside class="right-panel">
-                        <!-- Real-time Alert (Moved to TOP of right panel) -->
-                        <div class="panel-card alert-card">
-                            <div class="panel-header"><h3>📢 실시간 알림</h3></div>
-                            <div id="new-order-alert" class="ss-alert-box" style="display: none;">
-                                <span class="material-icons">notifications_active</span>
-                                <p>신규 주문이 발생했습니다!</p>
-                                <button onclick="goToNewOrders()">주문 확인</button>
-                            </div>
-                            <p id="no-alert-msg" class="empty-msg-v2">새로운 주문이 없습니다.</p>
-                        </div>
-
-                        <!-- Daily Schedule (Moved to BOTTOM of right panel) -->
-                        <div class="panel-card">
-                            <div class="panel-header"><h3>📅 <span id="today-date-label">2024.03.08</span> 스케줄</h3></div>
-                            <div id="today-schedule-list" class="mini-schedule-list"></div>
-                        </div>
-                    </aside>
-                </main>
             </div>
+            <div class="header-right">
+                <div class="header-icon-btn">
+                    <span class="material-icons">notifications</span>
+                    <span class="badge-n" id="new-res-count">0</span>
+                </div>
+                <div class="header-icon-btn pc-only">
+                    <span class="material-icons">apps</span>
+                </div>
+                <div class="admin-profile-menu">
+                    <span class="material-icons">account_circle</span>
+                    <span class="admin-name" id="display-admin-id">Admin</span>
+                    <span class="material-icons">expand_more</span>
+                </div>
+            </div>
+        </header>
 
-            <!-- Mode: Settlement Management (Restored Content) -->
-            <div id="settlement-view" style="display: none;">
-                <div class="dashboard-summary">
-                    <div class="summary-card highlight">
-                        <span class="label">정산 예정 금액 (전체)</span>
-                        <span class="value" id="total-settle-amount">₩ 0</span>
+        <div class="admin-content-wrapper">
+            <!-- 2. Left Sidebar Navigation -->
+            <aside class="admin-side-nav" id="sideMenu">
+                <nav class="side-menu-container">
+                    <div class="nav-section">
+                        <p class="section-label">운영 관리</p>
+                        <button class="nav-item active" data-view="reservations">
+                            <span class="material-icons">assignment</span> 예약 관리
+                        </button>
+                        <button class="nav-item" data-view="tours">
+                            <span class="material-icons">explore</span> 투어/액티비티
+                        </button>
+                        <button class="nav-item" data-view="resorts">
+                            <span class="material-icons">hotel</span> 리조트
+                        </button>
+                        <button class="nav-item" data-view="payments">
+                            <span class="material-icons">payments</span> 장바구니/결제 확인
+                        </button>
+                        <button class="nav-item" data-view="customers">
+                            <span class="material-icons">people</span> 고객 관리
+                        </button>
                     </div>
-                    <div class="summary-card">
-                        <span class="label">정산 주기</span>
-                        <span class="value">매주 정기 정산</span>
+
+                    <div class="nav-section filter-section">
+                        <p class="section-label">상세 필터</p>
+                        <div class="filter-group">
+                            <label>날짜별 보기</label>
+                            <input type="date" id="side-date-filter">
+                        </div>
+                        <div class="filter-group">
+                            <label>상태별 보기</label>
+                            <select id="side-status-filter">
+                                <option value="all">전체 상태</option>
+                                <option value="예약접수">예약접수</option>
+                                <option value="입금대기">입금대기</option>
+                                <option value="예약확정">예약확정</option>
+                                <option value="견적">견적신청</option>
+                                <option value="취소">취소됨</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="side-footer">
+                        <button class="side-footer-btn" onclick="location.reload()"><span class="material-icons">refresh</span></button>
+                        <button class="side-footer-btn logout-trigger" id="logout-btn"><span class="material-icons">logout</span> 로그아웃</button>
+                    </div>
+                </nav>
+            </aside>
+
+            <!-- 3. Central Content Area -->
+            <main class="admin-main-content">
+                <div class="view-header">
+                    <h2 id="current-view-title">예약 관리</h2>
+                    <div class="view-actions" id="bulk-actions" style="display:none;">
+                        <span class="selected-count">0개 선택됨</span>
+                        <button class="btn-bulk-confirm" onclick="bulkConfirmDeposit()">선택 입금확정</button>
+                        <button class="btn-bulk-delete" onclick="bulkCancel()">선택 취소</button>
                     </div>
                 </div>
-                <section class="main-section">
-                    <div class="section-header"><h3>일자별 정산 내역</h3></div>
-                    <div class="table-container">
-                        <table class="ss-table">
+
+                <!-- Unified Content Container -->
+                <div id="content-render-area" class="content-card">
+                    <div class="table-responsive">
+                        <table class="admin-data-table">
                             <thead>
                                 <tr>
-                                    <th>정산 예정일</th>
-                                    <th>완료 건수</th>
-                                    <th>정산 예정 금액</th>
+                                    <th width="40"><input type="checkbox" id="check-all"></th>
+                                    <th>예약번호</th>
+                                    <th>고객명</th>
+                                    <th>상품정보</th>
+                                    <th>예약일</th>
                                     <th>상태</th>
+                                    <th width="200">액션</th>
                                 </tr>
                             </thead>
-                            <tbody id="settlement-table-body"></tbody>
+                            <tbody id="admin-table-body">
+                                <!-- JS Rendered Rows -->
+                            </tbody>
                         </table>
                     </div>
-                </section>
-            </div>
+                </div>
+            </main>
         </div>
     </div>
 
@@ -200,10 +154,12 @@
                 <!-- JS Render -->
             </div>
             <div class="modal-footer">
-                <button class="btn-primary" onclick="closeModal()">확인</button>
+                <button class="btn-primary" onclick="closeModal()">닫기</button>
             </div>
         </div>
     </div>
+
+    <div class="side-menu-overlay" id="overlay"></div>
 
     <script type="module" src="admin.js"></script>
 </body>

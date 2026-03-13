@@ -86,6 +86,7 @@ body {
 /* PC/모바일 표시 제어 */
 .mobile-only { display: none !important; }
 .pc-only { display: flex !important; }
+.mobile-bottom-bar { display: none; }
 
 .mypage-btn { background: rgba(255, 255, 255, 0.2); color: white; padding: 10px 22px; border-radius: 30px; text-decoration: none; font-weight: 700; font-size: 13px; border: 1px solid rgba(255, 255, 255, 0.4); transition: 0.3s; line-height: 1; display: inline-flex; align-items: center; justify-content: center; height: 38px; }
 .mypage-btn:hover { background: white; color: #ff6a00; }
@@ -627,8 +628,8 @@ body {
         backdrop-filter: blur(10px);
         border-top: 1px solid #eee;
     }
-    .m-btn-cart { border-radius: 14px; height: 52px; font-size: 14px; flex: 1; }
-    .m-btn-buy { border-radius: 14px; height: 52px; font-size: 15px; flex: 2; }
+    .m-btn-cart { flex: 1; height: 52px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 14px; font-size: 14px; font-weight: 800; cursor: pointer; }
+    .m-btn-buy { flex: 2; height: 52px; background: #ff6a00; color: white; border: none; border-radius: 14px; font-size: 15px; font-weight: 800; cursor: pointer; }
 
     /* 10. 카테고리 네비게이션 */
     .category-nav { 

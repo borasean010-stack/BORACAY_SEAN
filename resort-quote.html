@@ -106,6 +106,77 @@
         .age-item label { font-size: 11px; font-weight: 800; color: #999; }
         .age-item select { border: none; background: transparent; font-size: 15px; font-weight: 800; color: #111; outline: none; font-family: inherit; }
 
+        /* 🔥 Modern Date Picker Styling (PC Focused) */
+        .date-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 25px !important;
+            background: #fff !important;
+            border-color: #eee !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            position: relative;
+        }
+        .date-group:hover { border-color: #ff6a00 !important; }
+
+        .date-item {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .date-item label {
+            font-size: 10px !important;
+            font-weight: 800;
+            color: #aaa !important;
+            text-transform: uppercase;
+            margin-bottom: 2px !important;
+            margin-left: 0 !important;
+            letter-spacing: 0.5px;
+        }
+
+        .date-item input[type="date"] {
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            font-weight: 900;
+            color: #111;
+            width: 100%;
+            outline: none;
+            padding: 0;
+            cursor: pointer;
+            font-family: 'Pretendard', sans-serif;
+            position: relative;
+        }
+
+        /* Hide default browser icon but keep clickable area */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%; height: 100%;
+            background: transparent;
+            color: transparent;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .date-separator {
+            width: 1px;
+            height: 28px;
+            background: #eee;
+            margin: 0 5px;
+        }
+
+        .calendar-icon {
+            font-size: 20px;
+            color: #ff6a00;
+            margin-right: 4px;
+            opacity: 0.9;
+        }
+
         @media (max-width: 900px) {
             .filter-container { grid-template-columns: 1fr; }
             .resort-horizontal-card { grid-template-columns: 1fr; }
@@ -158,10 +229,17 @@
     <div class="filter-container">
         <div class="filter-group">
             <label>여행 일정 선택</label>
-            <div class="filter-input-box" style="gap:15px;">
-                <input type="date" id="checkin-date">
-                <span style="color:#ddd;">|</span>
-                <input type="date" id="checkout-date">
+            <div class="filter-input-box date-group">
+                <span class="calendar-icon">📅</span>
+                <div class="date-item">
+                    <label>체크인</label>
+                    <input type="date" id="checkin-date">
+                </div>
+                <div class="date-separator"></div>
+                <div class="date-item">
+                    <label>체크아웃</label>
+                    <input type="date" id="checkout-date">
+                </div>
             </div>
         </div>
         <div class="filter-group" style="position:relative;">

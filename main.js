@@ -238,4 +238,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 자동 슬라이드 제거 (사용자 요청: 수동으로 편하게 넘길 수 있게)
     }
+
+    // 🔥 모바일 예약 드로어 제어 (Global)
+    window.openBookingDrawer = () => {
+        const drawer = document.querySelector('.reservation-box');
+        
+        // 오버레이 없으면 생성
+        let overlay = document.getElementById('drawer-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'drawer-overlay';
+            overlay.className = 'drawer-overlay';
+            overlay.onclick = window.closeBookingDrawer;
+            document.body.appendChild(overlay);
+        }
+
+        // 닫기 버튼 없으면 생성
+        if (drawer && !drawer.querySelector('.drawer-close')) {
+            const closeBtn = document.createElement('div');
+            closeBtn.className = 'drawer-close';
+            closeBtn.innerHTML = '✕';
+            closeBtn.onclick = window.closeBookingDrawer;
+            drawer.appendChild(closeBtn); // prepend instead of append if we want it top-right? CSS sets absolute pos.
+        }
+
+        if (drawer) {
+            drawer.classList.add('mobile-drawer');
+            setTimeout(() => drawer.classList.add('active'), 10); // Slight delay for transition
+        }
+        if (overlay) setTimeout(() => overlay.classList.add('active'), 10);
+        document.body.style.overflow = 'hidden'; // 스크롤 방지
+    };
+
+    window.closeBookingDrawer = () => {
+        const drawer = document.querySelector('.reservation-box');
+        const overlay = document.getElementById('drawer-overlay');
+        if (drawer) {
+            drawer.classList.remove('active');
+            setTimeout(() => drawer.classList.remove('mobile-drawer'), 400); // Wait for transition
+        }
+        if (overlay) {
+            overlay.classList.remove('active');
+            // setTimeout(() => overlay.remove(), 400); // Keep it for performance or remove? Better keep.
+        }
+        document.body.style.overflow = '';
+    };
 });

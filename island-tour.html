@@ -76,6 +76,7 @@
     </style>
 </head>
 <body>
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeBookingDrawer()"></div>
 <div class="side-menu-overlay" id="overlay"></div>
 <div class="side-menu" id="sideMenu">
     <div class="side-menu-header">
@@ -164,6 +165,7 @@
     </div>
 
     <div class="reservation-box">
+        <div class="drawer-close mobile-only" onclick="closeBookingDrawer()">✕</div>
         <div style="font-size:28px; font-weight:900; color:#ff6a00; margin-bottom:20px; letter-spacing: -1px;">₩ 42,000 ($30)</div>
         
         <div class="date-tabs">
@@ -205,7 +207,7 @@
 
 <div class="mobile-bottom-bar">
     <button class="m-btn-cart" onclick="addToCart()">장바구니</button>
-    <button class="m-btn-buy" onclick="handleBuy()">구매하기</button>
+    <button class="m-btn-buy" onclick="openBookingDrawer()">구매하기</button>
 </div>
 
 <script src="main.js"></script>

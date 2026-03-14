@@ -101,7 +101,10 @@
             <div class="bank-row"><span>은행명</span><b>국민은행</b></div>
             <div class="bank-row"><span>계좌번호</span><b>058137-04-003860</b></div>
             <div class="bank-row"><span>예금주</span><b>윤오현 (보라카이션)</b></div>
-            <div style="margin-top:20px; padding-top:15px; border-top:1px dashed #ffd8a8; font-size:14px; color:#d35400; font-weight:700; text-align:center;">
+            <div class="bank-row" style="margin-top:15px; padding-top:15px; border-top:1px dashed #ffd8a8;">
+                <span>총 입금 금액</span><b id="bank-total" style="color:#ff6a00; font-size:22px;">₩ 0</b>
+            </div>
+            <div style="margin-top:20px; font-size:14px; color:#d35400; font-weight:700; text-align:center;">
                 입금 시 입금자명을 <span class="res-no-highlight">대표자 한글 성함</span>으로 보내주세요.
             </div>
         </div>
@@ -109,11 +112,11 @@
         <div class="booking-details" id="booking-details">
             <div class="detail-row"><span>예약번호</span><b id="res-no-val">-</b></div>
             <div class="detail-row"><span>예약자명</span><b id="res-name">-</b></div>
-            <div class="detail-row"><span>총 금액</span><b id="res-total" style="color:#ff6a00; font-size:18px;">₩ 0</b></div>
+            <div class="detail-row"><span>신청 총액</span><b id="res-total" style="color:#ff6a00; font-size:18px;">₩ 0</b></div>
         </div>
 
         <div class="btn-group">
-            <a href="https://pf.kakao.com/_zBArM" target="_blank" class="kakao-confirm-btn" id="kakao-btn">
+            <a href="http://pf.kakao.com/_zBArM/chat" target="_blank" class="kakao-confirm-btn" id="kakao-btn">
                 입금 확인 요청하기
             </a>
             <a href="index.html" class="home-btn">홈으로 돌아가기</a>
@@ -132,18 +135,20 @@
             const lastBooking = JSON.parse(localStorage.getItem('last_booking_info') || '{}');
             if (lastBooking.customerKorName) {
                 const resNo = lastBooking.reservationNumber || '------';
-                document.getElementById('res-no-display').innerText = resNo;
+                const totalPriceStr = '₩ ' + (lastBooking.totalPrice || 0).toLocaleString();
+                
                 document.getElementById('res-no-val').innerText = resNo;
                 document.getElementById('res-name').innerText = lastBooking.customerKorName;
-                document.getElementById('res-total').innerText = '₩ ' + (lastBooking.totalPrice || 0).toLocaleString();
+                document.getElementById('res-total').innerText = totalPriceStr;
+                document.getElementById('bank-total').innerText = totalPriceStr;
 
                 // 리조트 견적인 경우 문구 변경
                 const isQuote = lastBooking.status === '견적';
                 if (isQuote) {
                     document.getElementById('complete-title').innerText = '견적 신청 완료!';
-                    document.getElementById('complete-msg').innerHTML = '성공적으로 리조트 견적 신청이 접수되었습니다.<br>상담 확인 후 순차적으로 안내해 드립니다.';
+                    document.getElementById('complete-msg').innerHTML = '성공적으로 리조트 견적 신청이 접수되었습니다.<br>상담원 확인 후 상세 견적을 안내해 드립니다.';
                     document.getElementById('bank-info').style.display = 'none';
-                    document.getElementById('kakao-btn').innerText = '견적 상담 연결하기';
+                    document.getElementById('kakao-btn').innerText = '카카오톡 견적 상담하기';
                     document.getElementById('notice-box').innerHTML = '* 버튼 클릭 시 보라카이션 카카오톡 채널로 연결됩니다.<br>* 상담원에게 성함을 말씀해 주시면 빠른 견적 안내가 가능합니다.';
                 }
             }

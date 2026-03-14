@@ -1,4 +1,4 @@
-// admin.js - Optimized for Top Layer Tabs
+// admin.js - SmartStore Style Logic with Sidebar
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
             sessionStorage.setItem('isAdminLoggedIn', 'true');
             sessionStorage.setItem('adminId', id);
             showAdminPanel();
-        } else { alert('로그인 실패'); }
+        } else { alert('아이디 또는 비밀번호가 올바르지 않습니다.'); }
     };
 
     document.getElementById('logout-btn').onclick = () => {
@@ -45,40 +45,33 @@ document.addEventListener('DOMContentLoaded', () => {
     function showAdminPanel() {
         loginContainer.style.display = 'none';
         adminContainer.style.display = 'flex';
-        document.getElementById('display-admin-id').innerText = sessionStorage.getItem('adminId');
+        document.getElementById('display-admin-id').innerText = sessionStorage.getItem('adminId') || '관리자';
         fetchData();
     }
 
-    // --- 2. Data Fetch & Counter ---
+    // --- 2. Data Handling ---
     function fetchData() {
         if (!db) return;
         const q = query(collection(db, "reservations"), orderBy("createdAt", "desc"));
         onSnapshot(q, (snapshot) => {
             allReservations = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            updateTabCounts();
             renderTable();
         });
     }
 
-    function updateTabCounts() {
-        const counts = {
-            new: allReservations.filter(r => r.status === '입금대기' || r.status === '예약접수').length,
-            confirmed: allReservations.filter(r => r.status === '예약확정').length,
-            resorts: allReservations.filter(r => r.status === '견적').length
-        };
-        document.getElementById('count-new').innerText = counts.new;
-        document.getElementById('count-confirmed').innerText = counts.confirmed;
-        document.getElementById('count-resorts').innerText = counts.resorts;
-    }
-
-    // --- 3. Tab Switching ---
+    // --- 3. Sidebar Filtering Logic ---
     window.switchAdminTab = (tab) => {
         activeTab = tab;
-        document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
-        document.getElementById(`tab-${tab}`).classList.add('active');
         
-        const titles = { 'new': '신규 예약 (입금대기)', 'confirmed': '예약 확정 목록', 'resorts': '리조트 견적 신청' };
-        document.getElementById('current-view-title').innerText = titles[tab];
+        // Update Sidebar UI
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        const activeMenu = document.getElementById(`menu-${tab}`);
+        if (activeMenu) activeMenu.classList.add('active');
+        
+        // Update Title
+        const titles = { 'new': '신규예약 관리', 'confirmed': '예약확정 내역', 'resorts': '리조트 견적 신청' };
+        document.getElementById('current-view-title').innerText = titles[tab] || '예약 관리';
+        
         renderTable();
     };
 
@@ -87,25 +80,24 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!tableBody) return;
         tableBody.innerHTML = '';
 
-        let filtered = [];
-        if (activeTab === 'new') {
-            filtered = allReservations.filter(r => r.status === '입금대기' || r.status === '예약접수');
-        } else if (activeTab === 'confirmed') {
-            filtered = allReservations.filter(r => r.status === '예약확정');
-        } else if (activeTab === 'resorts') {
-            filtered = allReservations.filter(r => r.status === '견적');
-        }
-
         const searchTerm = document.getElementById('header-global-search').value.toLowerCase();
-        if (searchTerm) {
-            filtered = filtered.filter(r => 
-                (r.customerKorName || '').toLowerCase().includes(searchTerm) || 
-                (r.reservationNumber || '').toLowerCase().includes(searchTerm)
-            );
-        }
+
+        let filtered = allReservations.filter(r => {
+            const name = (r.customerKorName || '').toLowerCase();
+            const resNo = (r.reservationNumber || '').toLowerCase();
+            const matchesSearch = name.includes(searchTerm) || resNo.includes(searchTerm);
+            
+            // Tab Filter Logic
+            let matchesTab = false;
+            if (activeTab === 'new') matchesTab = (r.status === '입금대기' || r.status === '예약접수');
+            else if (activeTab === 'confirmed') matchesTab = (r.status === '예약확정');
+            else if (activeTab === 'resorts') matchesTab = (r.status === '견적');
+            
+            return matchesSearch && matchesTab;
+        });
 
         if (filtered.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:100px; color:#ccc; font-size:14px;">데이터가 없습니다.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:100px; color:#ccc;">내역이 없습니다.</td></tr>';
             return;
         }
 
@@ -121,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 actionBtn = `<button class="btn-action-received" onclick="handleStatusUpdate('${res.id}', '예약확정')">입금 확인</button>`;
             } else if (status === '예약확정') {
                 badgeClass = 'badge-green';
-                actionBtn = `<span style="color:var(--n-green); font-weight:800; font-size:11px;">✅ 최종확정</span>`;
+                actionBtn = `<span style="color:var(--n-green); font-weight:800; font-size:11px;">최종확정</span>`;
             } else if (status === '견적') {
                 badgeClass = 'badge-blue';
                 actionBtn = `<button class="btn-action-outline" onclick="handleStatusUpdate('${res.id}', '입금대기')">상담완료</button>`;
@@ -132,11 +124,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             tr.innerHTML = `
                 <td><input type="checkbox" class="row-check" value="${res.id}"></td>
-                <td style="color:#999;">${filtered.length - index}</td>
+                <td style="color:#bbb;">${filtered.length - index}</td>
                 <td style="font-weight:700;">${res.reservationNumber || '-'}</td>
                 <td><b>${res.customerKorName || '미입력'}</b></td>
-                <td style="max-width:250px; overflow:hidden; text-overflow:ellipsis;">${itemsText}</td>
-                <td style="font-weight:800; color:#111;">₩ ${(res.totalPrice || 0).toLocaleString()}</td>
+                <td style="max-width:220px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${itemsText}</td>
+                <td style="font-weight:800;">₩ ${(res.totalPrice || 0).toLocaleString()}</td>
                 <td style="color:#888;">${dateStr}</td>
                 <td style="text-align:center;"><span class="n-badge ${badgeClass}">${status}</span></td>
                 <td>
@@ -149,6 +141,9 @@ document.addEventListener('DOMContentLoaded', () => {
             tableBody.appendChild(tr);
         });
     }
+
+    // Search input event
+    document.getElementById('header-global-search').oninput = renderTable;
 
     // --- 5. Actions ---
     window.handleStatusUpdate = async (id, newStatus) => {
@@ -164,26 +159,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const res = allReservations.find(r => r.id === id);
         if (!res) return;
         const modalBody = document.getElementById('modal-body');
-        const itemsHtml = res.items ? res.items.map(i => `
-            <div style="padding:12px; background:#f8f9fa; border-radius:4px; margin-bottom:8px; border:1px solid #eee;">
-                <div style="display:flex; justify-content:space-between;">
-                    <b style="color:var(--n-green);">${i.name}</b>
-                    <b>${i.count}명</b>
-                </div>
-                <div style="font-size:12px; color:#666; margin-top:5px;">${i.date || '-'} | ${i.time || '-'}</div>
-            </div>
-        `).join('') : '정보 없음';
-
         modalBody.innerHTML = `
             <div class="res-detail-grid">
-                <div class="detail-item"><label>고객명</label><div>${res.customerKorName} (${res.engName || '-'})</div></div>
+                <div class="detail-item"><label>예약자</label><div>${res.customerKorName} (${res.engName || '-'})</div></div>
                 <div class="detail-item"><label>연락처</label><div>${res.contact}</div></div>
                 <div class="detail-item"><label>예약번호</label><div>${res.reservationNumber}</div></div>
                 <div class="detail-item"><label>결제금액</label><div style="color:var(--n-green); font-size:16px;">₩ ${(res.totalPrice || 0).toLocaleString()}</div></div>
             </div>
-            <div style="margin-top:20px;">
-                <label style="font-size:11px; color:#999; font-weight:600;">🛒 예약 상품 상세</label>
-                ${itemsHtml}
+            <div style="margin-top:20px; font-size:12px; color:#666; line-height:1.6;">
+                <b style="color:#333;">상품 내역:</b><br>
+                ${res.items ? res.items.map(i => `- ${i.name} (${i.count}명) / ${i.date || '-'} ${i.time || '-'}`).join('<br>') : '내역 없음'}
             </div>
         `;
         document.getElementById('res-detail-modal').style.display = 'flex';

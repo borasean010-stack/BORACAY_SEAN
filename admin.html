@@ -13,9 +13,12 @@
     <!-- Admin Login -->
     <div id="login-container" class="admin-login-wrapper">
         <div class="admin-login-card">
-            <h1>판매자 센터 로그인</h1>
+            <div class="login-logo">
+                <img src="logo.png" alt="Logo">
+                <h1>판매자 센터</h1>
+            </div>
             <form id="login-form">
-                <input type="text" id="username" placeholder="아이디" required>
+                <input type="text" id="username" placeholder="관리자 아이디" required>
                 <input type="password" id="password" placeholder="비밀번호" required>
                 <button type="submit" class="btn-admin-login">로그인</button>
             </form>
@@ -24,7 +27,8 @@
 
     <!-- Main Layout -->
     <div id="admin-container" class="admin-layout-v3" style="display: none;">
-        <!-- 1. Header -->
+        
+        <!-- Header -->
         <header class="admin-top-nav">
             <div class="header-left">
                 <img src="logo.png" alt="Logo" class="admin-top-logo">
@@ -34,61 +38,48 @@
                 <div class="admin-user-info">
                     <span class="material-icons">account_circle</span>
                     <span id="display-admin-id">Admin</span>
-                    <button id="logout-btn">로그아웃</button>
+                    <button id="logout-btn" class="btn-logout">로그아웃</button>
                 </div>
             </div>
         </header>
 
         <div class="admin-content-wrapper">
-            <!-- 2. Sidebar (Sub Menu) -->
+            <!-- 📱 Left Sidebar Banner (Menu) -->
             <aside class="admin-side-nav">
                 <div class="nav-section">
-                    <p class="section-label">주문/배송 관리</p>
-                    <button class="nav-item active" onclick="location.reload()">
-                        <span class="material-icons">list_alt</span> 예약 현황 메인
+                    <p class="section-label">판매 관리</p>
+                    <button class="nav-item active" id="menu-new" onclick="switchAdminTab('new')">
+                        <span class="material-icons">fiber_new</span> 신규예약
+                    </button>
+                    <button class="nav-item" id="menu-confirmed" onclick="switchAdminTab('confirmed')">
+                        <span class="material-icons">check_circle</span> 예약확정
+                    </button>
+                    <button class="nav-item" id="menu-resorts" onclick="switchAdminTab('resorts')">
+                        <span class="material-icons">hotel</span> 리조트 견적
                     </button>
                 </div>
-                <div class="nav-section">
-                    <p class="section-label">고객 관리</p>
-                    <a href="http://pf.kakao.com/_zBArM/chat" target="_blank" class="nav-item" style="text-decoration:none;">
-                        <span class="material-icons">chat</span> 카톡 상담연결
-                    </a>
+                
+                <div class="nav-section footer-links">
+                    <p class="section-label">시스템</p>
+                    <a href="index.html" class="nav-item"><span class="material-icons">home</span> 홈페이지 바로가기</a>
                 </div>
             </aside>
 
-            <!-- 3. Main Content -->
+            <!-- Main Content Area -->
             <main class="admin-main-content">
-                <!-- Top Layer Tabs -->
-                <div class="admin-main-tabs">
-                    <div class="tab-item active" id="tab-new" onclick="switchAdminTab('new')">
-                        <div class="t-inner">
-                            <span class="t-label">신규 예약 (입금대기)</span>
-                            <span class="t-count" id="count-new">0</span>
-                        </div>
-                    </div>
-                    <div class="tab-item" id="tab-confirmed" onclick="switchAdminTab('confirmed')">
-                        <div class="t-inner">
-                            <span class="t-label">예약 확정</span>
-                            <span class="t-count" id="count-confirmed">0</span>
-                        </div>
-                    </div>
-                    <div class="tab-item" id="tab-resorts" onclick="switchAdminTab('resorts')">
-                        <div class="t-inner">
-                            <span class="t-label">리조트 견적</span>
-                            <span class="t-count" id="count-resorts">0</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Table Header Tools -->
                 <div class="view-header">
-                    <h2 id="current-view-title">신규 예약 목록</h2>
-                    <div class="table-tools">
-                        <input type="text" id="header-global-search" placeholder="고객명 또는 예약번호 검색">
+                    <h2 id="current-view-title">신규예약 관리</h2>
+                    <div class="header-tools">
+                        <input type="text" id="header-global-search" placeholder="고객명 또는 예약번호 검색" class="search-input">
                     </div>
                 </div>
 
-                <!-- Data Table -->
+                <!-- Summary Status (Top Layer style maintained but simplified) -->
+                <div class="admin-main-tabs" style="display: none;">
+                    <!-- Maintain compatibility with existing switch logic if needed -->
+                    <div id="tab-new"></div><div id="tab-confirmed"></div><div id="tab-resorts"></div>
+                </div>
+
                 <div class="content-card">
                     <div class="table-container">
                         <table class="admin-data-table">

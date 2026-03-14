@@ -1,79 +1,81 @@
-/* admin.css - SmartStore Final Refined Style */
+/* Naver Smart Store Center Style - Final Refined */
 :root {
     --n-green: #03c75a;
-    --n-green-dark: #02b350;
     --n-bg: #f4f7f8;
+    --n-sidebar-bg: #242424;
+    --n-sidebar-text: #adb5bd;
     --n-border: #e2e6e9;
     --n-text-main: #333;
     --n-text-sub: #666;
     --n-white: #fff;
+    --n-warning: #f0ad4e; /* 노란색: 예약 대기 / 입금대기 */
+    --n-orange: #ff8c00;  /* 주황색: 입금완료 */
+    --n-success: #03c75a; /* 초록색: 예약 완료 / 예약확정 */
+    --n-danger: #f5222d;  /* 빨간색: 취소 */
 }
 
 body.smartstore-admin { margin: 0; background: var(--n-bg); font-family: 'Pretendard', sans-serif; color: var(--n-text-main); }
 
-/* Top Nav */
-.admin-top-nav { height: 50px; background: #fff; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; sticky top: 0; z-index: 100; }
-.admin-top-logo { height: 20px; }
-.brand-text { font-weight: 800; font-size: 14px; color: var(--n-green); border-left: 1px solid #ddd; padding-left: 10px; margin-left: 8px; }
-
 /* Layout */
-.admin-content-wrapper { display: flex; min-height: calc(100vh - 50px); }
+.admin-top-nav { height: 45px; background: #fff; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; position: sticky; top: 0; z-index: 1000; }
+.admin-top-logo { height: 18px; }
+.brand-text { font-weight: 800; font-size: 13px; color: var(--n-green); border-left: 1px solid #ddd; padding-left: 10px; margin-left: 8px; }
+
+.admin-content-wrapper { display: flex; min-height: calc(100vh - 45px); }
 .admin-side-nav { width: 180px; background: #242424; flex-shrink: 0; padding-top: 10px; }
-.nav-section { margin-bottom: 15px; }
+
+/* Sidebar Menu */
+.nav-section { margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
 .section-label { font-size: 10px; color: #666; padding: 0 15px; margin-bottom: 5px; font-weight: 700; }
-.nav-item { width: 100%; display: flex; align-items: center; gap: 8px; padding: 10px 15px; border: none; background: none; color: #adb5bd; font-size: 12px; cursor: pointer; text-align: left; }
-.nav-item.active { background: rgba(3, 199, 90, 0.1); color: var(--n-green); font-weight: 700; }
+.nav-item { width: 100%; display: flex; align-items: center; gap: 8px; padding: 8px 15px; border: none; background: none; color: #adb5bd; font-size: 12px; cursor: pointer; text-align: left; }
+.nav-item:hover { background: #333; color: #fff; }
+.nav-item.active { background: rgba(3, 199, 90, 0.15); color: var(--n-green); font-weight: 700; border-right: 3px solid var(--n-green); }
+.nav-item .material-icons { font-size: 16px; }
 
-/* Main Content */
-.admin-main-content { flex: 1; padding: 20px; overflow-x: hidden; }
-
-/* Tab Layer */
-.admin-tab-layer { display: flex; gap: 10px; margin-bottom: 20px; }
-.tab-item { flex: 1; background: #fff; border: 1px solid #ddd; padding: 12px 15px; border-radius: 4px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
-.tab-item:hover { border-color: var(--n-green); }
-.tab-item.active { border: 2px solid var(--n-green); background: #f9fff9; }
-.tab-item .t-label { font-size: 12px; font-weight: 700; color: #666; }
-.tab-item .t-count { font-size: 18px; font-weight: 800; color: var(--n-green); }
-
-/* View Header */
+/* Main Content Area */
+.admin-main-content { flex: 1; padding: 15px; overflow-x: hidden; }
 .view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-.view-header h2 { font-size: 16px; font-weight: 800; margin: 0; }
+.view-header h2 { font-size: 17px; font-weight: 800; margin: 0; color: #111; }
 
-/* Table Compact */
+/* Table Compact Styling */
 .content-card { background: #fff; border: 1px solid #ddd; border-radius: 3px; overflow: hidden; }
 .admin-data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
 .admin-data-table th { background: #f9fafb; padding: 8px 10px; text-align: left; color: #666; border-bottom: 1px solid #eee; font-weight: 700; }
 .admin-data-table td { padding: 6px 10px; border-bottom: 1px solid #f1f1f1; vertical-align: middle; line-height: 1.4; }
 .admin-data-table tbody tr:hover { background: #fcfdfe; }
 
-/* Badges */
-.n-badge { padding: 2px 6px; border-radius: 2px; font-size: 11px; font-weight: 700; display: inline-block; }
-.badge-yellow { background: #fffbe6; color: #d48806; border: 1px solid #ffe58f; } /* 입금대기 */
+/* Status Badges - From Guidelines */
+.n-badge { padding: 2px 6px; border-radius: 2px; font-size: 11px; font-weight: 700; display: inline-block; text-align: center; min-width: 50px; }
+.badge-yellow { background: #fffbe6; color: #d48806; border: 1px solid #ffe58f; } /* 예약 대기 / 입금대기 */
 .badge-orange { background: #fff7e6; color: #ff8c00; border: 1px solid #ffd591; } /* 입금완료 */
-.badge-green { background: #e6f9ed; color: #03c75a; border: 1px solid #b7eb8f; }  /* 예약확정 */
-.badge-blue { background: #e6f7ff; color: #1890ff; border: 1px solid #91d5ff; }   /* 견적신청 */
+.badge-green { background: #e6f9ed; color: #03c75a; border: 1px solid #b7eb8f; }  /* 예약 완료 / 예약확정 */
+.badge-red { background: #fff1f0; color: #f5222d; border: 1px solid #ffa39e; }    /* 취소 */
 .badge-gray { background: #f5f5f5; color: #999; }
 
-/* Buttons */
-.btn-action-received { background: #ff8c00; color: #fff; border: none; padding: 4px 10px; border-radius: 2px; font-size: 11px; font-weight: 700; cursor: pointer; }
+/* Action Buttons */
+.btn-action-received { 
+    background: var(--n-orange); color: white; border: none; padding: 4px 10px; 
+    border-radius: 2px; font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.2s;
+}
+.btn-action-received:hover { background: #e67e00; }
 .btn-action-outline { background: #fff; border: 1px solid #ccc; padding: 3px 8px; border-radius: 2px; font-size: 11px; font-weight: 600; cursor: pointer; color: #555; }
-.btn-action-outline:hover { background: #f8f9fa; }
+.btn-action-more { background: #fff; border: 1px solid #ccc; padding: 2px; border-radius: 2px; font-size: 11px; }
 
 /* Login Screen */
-.admin-login-wrapper { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; display: flex; align-items: center; justify-content: center; z-index: 1000; }
-.admin-login-card { background: #fff; width: 350px; padding: 40px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; }
+.admin-login-wrapper { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; display: flex; align-items: center; justify-content: center; z-index: 2000; }
+.admin-login-card { background: #fff; width: 320px; padding: 40px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; }
 .admin-login-card h1 { font-size: 18px; color: var(--n-green); margin-bottom: 25px; font-weight: 800; }
-.admin-login-card input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 10px; box-sizing: border-box; }
-.btn-admin-login { width: 100%; padding: 12px; background: var(--n-green); color: #fff; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; }
+.admin-login-card input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 10px; box-sizing: border-box; font-size: 14px; }
+.btn-admin-login { width: 100%; padding: 12px; background: var(--n-green); color: #fff; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 15px; }
 
 /* Modal */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
 .modal-content { background: #fff; width: 90%; max-width: 600px; border-radius: 8px; overflow: hidden; }
 .modal-header { padding: 15px 20px; background: #f9fafb; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
-.modal-header h3 { margin: 0; font-size: 15px; }
+.modal-header h3 { margin: 0; font-size: 15px; font-weight: 800; }
 .modal-body { padding: 20px; max-height: 70vh; overflow-y: auto; }
 .modal-footer { padding: 10px 20px; border-top: 1px solid #ddd; text-align: right; }
 
-.res-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.detail-item label { font-size: 11px; color: #999; display: block; margin-bottom: 2px; }
+.res-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-top: 2px solid #333; padding-top: 15px; }
+.detail-item label { font-size: 11px; color: #999; display: block; margin-bottom: 2px; font-weight: 600; }
 .detail-item div { font-size: 13px; font-weight: 700; }

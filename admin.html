@@ -10,79 +10,60 @@
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body class="smartstore-admin">
-    <!-- Admin Login Screen -->
+    <!-- Admin Login -->
     <div id="login-container" class="admin-login-wrapper">
         <div class="admin-login-card">
-            <div class="login-logo-centered">
-                <img src="logo.png" alt="Logo">
-                <h1>판매자 센터</h1>
-            </div>
+            <h1>판매자 센터 로그인</h1>
             <form id="login-form">
-                <div class="input-group"><input type="text" id="username" placeholder="관리자 아이디" required></div>
-                <div class="input-group"><input type="password" id="password" placeholder="관리자 비밀번호" required></div>
+                <input type="text" id="username" placeholder="아이디" required>
+                <input type="password" id="password" placeholder="비밀번호" required>
                 <button type="submit" class="btn-admin-login">로그인</button>
             </form>
         </div>
     </div>
 
-    <!-- Main Admin Layout -->
+    <!-- Main Dashboard -->
     <div id="admin-container" class="admin-layout-v3" style="display: none;">
-        
         <header class="admin-top-nav">
             <div class="header-left">
                 <img src="logo.png" alt="Logo" class="admin-top-logo">
                 <span class="brand-text">판매자 센터</span>
             </div>
             <div class="header-right">
-                <div class="admin-profile-menu">
-                    <span class="material-icons">account_circle</span>
-                    <span class="admin-name" id="display-admin-id">Admin</span>
-                    <button id="logout-btn" style="background:none; border:none; color:#999; cursor:pointer; font-size:12px; margin-left:10px;">로그아웃</button>
-                </div>
+                <span id="display-admin-id" style="font-weight:700; font-size:13px;">Admin</span>
+                <button id="logout-btn" style="margin-left:15px; border:1px solid #ddd; background:#fff; padding:4px 10px; border-radius:4px; font-size:11px; cursor:pointer;">로그아웃</button>
             </div>
         </header>
 
         <div class="admin-content-wrapper">
-            <!-- Sidebar -->
             <aside class="admin-side-nav">
                 <nav class="side-menu-container">
                     <div class="nav-section">
-                        <p class="section-label">대시보드</p>
-                        <button class="nav-item active" data-view="reservations">
-                            <span class="material-icons">dashboard</span> 전체 현황
+                        <p class="section-label">주문/배송 관리</p>
+                        <button class="nav-item active" data-view="all">
+                            <span class="material-icons">list_alt</span> 전체 예약 목록
+                        </button>
+                        <button class="nav-item" data-view="tours">
+                            <span class="material-icons">explore</span> 투어/액티비티 예약
+                        </button>
+                        <button class="nav-item" data-view="resorts">
+                            <span class="material-icons">hotel</span> 리조트 견적
                         </button>
                     </div>
                     <div class="nav-section">
-                        <p class="section-label">고객 센터</p>
-                        <a href="http://pf.kakao.com/_zBArM/chat" target="_blank" class="nav-item" style="text-decoration:none;">
-                            <span class="material-icons">chat</span> 카톡 상담연결
-                        </a>
+                        <p class="section-label">기타 관리</p>
+                        <button class="nav-item" data-view="cancelled">
+                            <span class="material-icons">cancel</span> 취소 내역
+                        </button>
                     </div>
                 </nav>
             </aside>
 
-            <!-- Main Content Area -->
             <main class="admin-main-content">
-                <!-- 탭 레이어 -->
-                <div class="admin-tab-layer">
-                    <div class="tab-item active" id="tab-new" onclick="switchAdminTab('new')">
-                        <span class="t-label">신규 예약 (입금대기)</span>
-                        <span class="t-count" id="count-new">0</span>
-                    </div>
-                    <div class="tab-item" id="tab-confirmed" onclick="switchAdminTab('confirmed')">
-                        <span class="t-label">예약 확정</span>
-                        <span class="t-count" id="count-confirmed">0</span>
-                    </div>
-                    <div class="tab-item" id="tab-resorts" onclick="switchAdminTab('resorts')">
-                        <span class="t-label">리조트 견적</span>
-                        <span class="t-count" id="count-resorts">0</span>
-                    </div>
-                </div>
-
                 <div class="view-header">
-                    <h2 id="current-view-title">신규 예약 목록</h2>
-                    <div class="header-tools">
-                        <input type="text" id="header-global-search" placeholder="예약번호/이름 검색" style="padding:6px 12px; border:1px solid #ddd; border-radius:4px; font-size:12px;">
+                    <h2 id="current-view-title">전체 예약 목록</h2>
+                    <div class="search-bar">
+                        <input type="text" id="header-global-search" placeholder="고객명 또는 예약번호 검색" style="padding:6px 12px; border:1px solid #ddd; border-radius:4px; font-size:12px; width:250px;">
                     </div>
                 </div>
 
@@ -91,18 +72,18 @@
                         <thead>
                             <tr>
                                 <th width="40"><input type="checkbox" id="check-all"></th>
-                                <th>번호</th>
-                                <th>예약번호</th>
-                                <th>고객명</th>
-                                <th>상품정보</th>
-                                <th>신청금액</th>
-                                <th>예약일</th>
-                                <th style="text-align:center;">상태</th>
-                                <th width="160">액션</th>
+                                <th width="50">번호</th>
+                                <th width="100">예약번호</th>
+                                <th width="100">고객명</th>
+                                <th>상품 정보</th>
+                                <th width="120">신청금액</th>
+                                <th width="100">신청일</th>
+                                <th width="90" style="text-align:center;">상태</th>
+                                <th width="180">관리 액션</th>
                             </tr>
                         </thead>
                         <tbody id="admin-table-body">
-                            <!-- JS Render -->
+                            <!-- JS Dynamic Render -->
                         </tbody>
                     </table>
                 </div>
@@ -110,17 +91,12 @@
         </div>
     </div>
 
-    <!-- Detail Modal -->
+    <!-- Modal -->
     <div id="res-detail-modal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3>예약 상세 정보</h3>
-                <button onclick="closeModal()" style="border:none; background:none; cursor:pointer;"><span class="material-icons">close</span></button>
-            </div>
+            <div class="modal-header"><h3>예약 상세 내역</h3><button onclick="closeModal()">✕</button></div>
             <div class="modal-body" id="modal-body"></div>
-            <div class="modal-footer">
-                <button class="btn-action-outline" onclick="closeModal()">닫기</button>
-            </div>
+            <div class="modal-footer"><button class="btn-action-outline" onclick="closeModal()">확인</button></div>
         </div>
     </div>
 

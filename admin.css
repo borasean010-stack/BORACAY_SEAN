@@ -1,85 +1,79 @@
-/* Naver Smart Store Center Style - Final Refined */
+/* admin.css - SmartStore Final Refined Style */
 :root {
     --n-green: #03c75a;
     --n-green-dark: #02b350;
     --n-bg: #f4f7f8;
-    --n-sidebar-bg: #242424;
-    --n-sidebar-text: #adb5bd;
     --n-border: #e2e6e9;
-    --n-text-main: #333333;
-    --n-text-sub: #666666;
-    --n-text-light: #999999;
-    --n-white: #ffffff;
-    --n-danger: #f44336; /* 취소 (빨강) */
-    --n-warning: #f0ad4e; /* 입금대기 (노랑) */
-    --n-confirmed: #03c75a; /* 예약확정 (초록) */
-    --n-blue: #2196f3; /* 견적 (파랑) */
-    --n-orange: #ff8c00; /* 입금완료 (주황) */
+    --n-text-main: #333;
+    --n-text-sub: #666;
+    --n-white: #fff;
 }
 
-body.smartstore-admin {
-    margin: 0; padding: 0;
-    font-family: 'Pretendard', -apple-system, system-ui, sans-serif;
-    background-color: var(--n-bg);
-    color: var(--n-text-main);
-}
+body.smartstore-admin { margin: 0; background: var(--n-bg); font-family: 'Pretendard', sans-serif; color: var(--n-text-main); }
 
-/* Layout Compact */
-.admin-top-nav { height: 45px; background: #fff; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; position: sticky; top: 0; z-index: 1000; }
-.admin-top-logo { height: 18px; }
-.brand-text { font-weight: 800; font-size: 13px; color: var(--n-green); border-left: 1px solid #ddd; padding-left: 10px; margin-left: 8px; }
+/* Top Nav */
+.admin-top-nav { height: 50px; background: #fff; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; sticky top: 0; z-index: 100; }
+.admin-top-logo { height: 20px; }
+.brand-text { font-weight: 800; font-size: 14px; color: var(--n-green); border-left: 1px solid #ddd; padding-left: 10px; margin-left: 8px; }
 
-.admin-content-wrapper { display: flex; min-height: calc(100vh - 45px); }
-.admin-side-nav { width: 180px; background: #242424; color: #adb5bd; flex-shrink: 0; }
+/* Layout */
+.admin-content-wrapper { display: flex; min-height: calc(100vh - 50px); }
+.admin-side-nav { width: 180px; background: #242424; flex-shrink: 0; padding-top: 10px; }
+.nav-section { margin-bottom: 15px; }
+.section-label { font-size: 10px; color: #666; padding: 0 15px; margin-bottom: 5px; font-weight: 700; }
+.nav-item { width: 100%; display: flex; align-items: center; gap: 8px; padding: 10px 15px; border: none; background: none; color: #adb5bd; font-size: 12px; cursor: pointer; text-align: left; }
+.nav-item.active { background: rgba(3, 199, 90, 0.1); color: var(--n-green); font-weight: 700; }
 
-/* Sidebar Menu Highlight */
-.nav-section { padding: 15px 0; border-bottom: 1px solid #333; }
-.section-label { font-size: 10px; font-weight: 700; padding: 0 15px; color: #666; margin-bottom: 5px; }
-.nav-item {
-    width: 100%; display: flex; align-items: center; gap: 8px; padding: 8px 15px;
-    border: none; background: none; color: #adb5bd; font-size: 12px; cursor: pointer; text-align: left;
-}
-.nav-item:hover { background: #333; color: #fff; }
-.nav-item.active { background: rgba(3, 199, 90, 0.15); color: var(--n-green); font-weight: 700; border-right: 3px solid var(--n-green); }
-.nav-item .material-icons { font-size: 16px; }
+/* Main Content */
+.admin-main-content { flex: 1; padding: 20px; overflow-x: hidden; }
 
-/* Main Content Compact */
-.admin-main-content { flex: 1; padding: 15px; overflow-x: hidden; }
-.view-header { margin-bottom: 15px; }
-.view-header h2 { font-size: 17px; font-weight: 800; margin: 0; color: #111; }
+/* Tab Layer */
+.admin-tab-layer { display: flex; gap: 10px; margin-bottom: 20px; }
+.tab-item { flex: 1; background: #fff; border: 1px solid #ddd; padding: 12px 15px; border-radius: 4px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+.tab-item:hover { border-color: var(--n-green); }
+.tab-item.active { border: 2px solid var(--n-green); background: #f9fff9; }
+.tab-item .t-label { font-size: 12px; font-weight: 700; color: #666; }
+.tab-item .t-count { font-size: 18px; font-weight: 800; color: var(--n-green); }
 
-/* Table Compact Styling */
-.content-card { background: #fff; border: 1px solid #ddd; border-radius: 3px; }
+/* View Header */
+.view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.view-header h2 { font-size: 16px; font-weight: 800; margin: 0; }
+
+/* Table Compact */
+.content-card { background: #fff; border: 1px solid #ddd; border-radius: 3px; overflow: hidden; }
 .admin-data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-.admin-data-table th { background: #f9fafb; padding: 8px 10px; text-align: left; font-weight: 700; color: #666; border-bottom: 1px solid #eee; }
-.admin-data-table td { padding: 6px 10px; border-bottom: 1px solid #f1f1f1; vertical-align: middle; }
+.admin-data-table th { background: #f9fafb; padding: 8px 10px; text-align: left; color: #666; border-bottom: 1px solid #eee; font-weight: 700; }
+.admin-data-table td { padding: 6px 10px; border-bottom: 1px solid #f1f1f1; vertical-align: middle; line-height: 1.4; }
 .admin-data-table tbody tr:hover { background: #fcfdfe; }
 
-/* Status Badges */
+/* Badges */
 .n-badge { padding: 2px 6px; border-radius: 2px; font-size: 11px; font-weight: 700; display: inline-block; }
 .badge-yellow { background: #fffbe6; color: #d48806; border: 1px solid #ffe58f; } /* 입금대기 */
+.badge-orange { background: #fff7e6; color: #ff8c00; border: 1px solid #ffd591; } /* 입금완료 */
 .badge-green { background: #e6f9ed; color: #03c75a; border: 1px solid #b7eb8f; }  /* 예약확정 */
-.badge-red { background: #fff1f0; color: #f5222d; border: 1px solid #ffa39e; }    /* 취소 */
 .badge-blue { background: #e6f7ff; color: #1890ff; border: 1px solid #91d5ff; }   /* 견적신청 */
-.badge-orange { background: #fff7e6; color: #ff8c00; border: 1px solid #ffd591; } /* 입금완료(임시) */
+.badge-gray { background: #f5f5f5; color: #999; }
 
 /* Buttons */
-.btn-action-received { 
-    background: var(--n-received); color: white; border: none; padding: 4px 10px; border-radius: 2px; 
-    font-size: 11px; font-weight: 700; cursor: pointer;
-}
-.btn-action-outline { 
-    background: white; border: 1px solid #ccc; padding: 3px 8px; border-radius: 2px; 
-    font-size: 11px; font-weight: 600; cursor: pointer; color: #555;
-}
-.btn-action-more { background: #fff; border: 1px solid #ccc; padding: 2px; border-radius: 2px; font-size: 11px; }
+.btn-action-received { background: #ff8c00; color: #fff; border: none; padding: 4px 10px; border-radius: 2px; font-size: 11px; font-weight: 700; cursor: pointer; }
+.btn-action-outline { background: #fff; border: 1px solid #ccc; padding: 3px 8px; border-radius: 2px; font-size: 11px; font-weight: 600; cursor: pointer; color: #555; }
+.btn-action-outline:hover { background: #f8f9fa; }
 
-/* Modal Detail View */
-.res-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-top: 2px solid #333; padding-top: 15px; }
+/* Login Screen */
+.admin-login-wrapper { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.admin-login-card { background: #fff; width: 350px; padding: 40px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; }
+.admin-login-card h1 { font-size: 18px; color: var(--n-green); margin-bottom: 25px; font-weight: 800; }
+.admin-login-card input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 10px; box-sizing: border-box; }
+.btn-admin-login { width: 100%; padding: 12px; background: var(--n-green); color: #fff; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; }
+
+/* Modal */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.modal-content { background: #fff; width: 90%; max-width: 600px; border-radius: 8px; overflow: hidden; }
+.modal-header { padding: 15px 20px; background: #f9fafb; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
+.modal-header h3 { margin: 0; font-size: 15px; }
+.modal-body { padding: 20px; max-height: 70vh; overflow-y: auto; }
+.modal-footer { padding: 10px 20px; border-top: 1px solid #ddd; text-align: right; }
+
+.res-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .detail-item label { font-size: 11px; color: #999; display: block; margin-bottom: 2px; }
 .detail-item div { font-size: 13px; font-weight: 700; }
-
-@media (max-width: 1024px) {
-    .admin-side-nav { position: fixed; left: -180px; transition: 0.3s; z-index: 2000; height: 100%; }
-    .admin-side-nav.active { left: 0; }
-}

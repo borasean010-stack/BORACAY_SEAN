@@ -147,14 +147,25 @@ document.addEventListener('DOMContentLoaded', () => {
         filtered.forEach((res, index) => {
             const tr = document.createElement('tr');
             
-            // Badge Style Mapping
-            let badgeClass = 'badge-gray';
-            let statusText = res.status || '대기';
+            // Badge & Action Logic
+            let statusMarkup = '';
+            let actionMarkup = '';
             
-            if (statusText === '입금대기' || statusText === '예약접수') { badgeClass = 'badge-yellow'; statusText = '입금대기'; }
-            else if (statusText === '입금완료') { badgeClass = 'badge-orange'; }
-            else if (statusText === '예약확정') { badgeClass = 'badge-green'; }
-            else if (statusText === '견적') { badgeClass = 'badge-blue'; }
+            const status = res.status || '예약접수';
+
+            if (status === '입금대기' || status === '예약접수') {
+                statusMarkup = `<span class="n-badge badge-yellow">입금대기</span>`;
+                actionMarkup = `<button class="btn-action-received" onclick="handleStatusChange('${res.id}', '입금완료')">입금 확인</button>`;
+            } else if (status === '예약확정') {
+                statusMarkup = `<span class="n-badge badge-green">예약확정</span>`;
+                actionMarkup = `<span style="color:#03c75a; font-size:11px; font-weight:700;">✅ 처리완료</span>`;
+            } else if (status === '견적') {
+                statusMarkup = `<span class="n-badge badge-blue">견적신청</span>`;
+                actionMarkup = `<button class="btn-action-outline" onclick="handleStatusChange('${res.id}', '입금대기')">견적안내 완료</button>`;
+            } else if (status === '취소') {
+                statusMarkup = `<span class="n-badge badge-gray">취소됨</span>`;
+                actionMarkup = `<button class="btn-action-outline" onclick="handleStatusChange('${res.id}', '입금대기')">복구</button>`;
+            }
 
             const itemsText = res.items ? res.items.map(i => i.name.split('-').pop().trim()).join(', ') : '-';
             const dateStr = res.createdAt?.toDate ? res.createdAt.toDate().toLocaleDateString() : '-';
@@ -169,16 +180,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 </td>
                 <td style="font-weight:800; color:#111;">₩ ${(res.totalPrice || 0).toLocaleString()}</td>
                 <td style="color:#888; font-size:12px;">${dateStr}</td>
-                <td><span class="n-badge ${badgeClass}">${statusText}</span></td>
+                <td style="text-align:center;">${statusMarkup}</td>
                 <td>
-                    <div style="display:flex; gap:4px;">
+                    <div style="display:flex; gap:6px; align-items:center;">
+                        ${actionMarkup}
                         <button class="btn-action-outline" onclick="showDetail('${res.id}')">상세</button>
-                        <select class="btn-action-outline" onchange="handleStatusChange('${res.id}', this.value)" style="width:75px; padding:3px;">
-                            <option value="">변경</option>
-                            <option value="입금대기">입금대기</option>
-                            <option value="입금완료">입금완료</option>
-                            <option value="예약확정">예약확정</option>
-                            <option value="취소">취소</option>
+                        <select class="btn-action-more" onchange="if(this.value) handleStatusChange('${res.id}', this.value)">
+                            <option value="">더보기</option>
+                            <option value="취소">예약취소</option>
+                            <option value="입금대기">상태리셋</option>
                         </select>
                     </div>
                 </td>

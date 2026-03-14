@@ -1,4 +1,4 @@
-/* Naver Smart Store Center Style Admin CSS - Compact & Status Updated */
+/* Naver Smart Store Center Style Admin CSS - Action Oriented */
 :root {
     --n-green: #03c75a;
     --n-green-dark: #02b350;
@@ -13,173 +13,66 @@
     --n-white: #ffffff;
     --n-danger: #f44336;
     --n-blue: #2196f3;
-    --n-warning: #f0ad4e; /* 노랑 (입금대기) */
-    --n-received: #ff8c00; /* 주황 (입금완료) */
-    --n-confirmed: #03c75a; /* 초록 (예약확정) */
+    --n-warning: #f0ad4e;
+    --n-received: #ff8c00;
 }
 
 body.smartstore-admin {
     margin: 0; padding: 0;
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    font-family: 'Pretendard', sans-serif;
     background-color: var(--n-bg);
-    color: var(--n-text-main);
-    overflow-x: hidden;
 }
 
-/* --- Login Screen --- */
-.admin-login-wrapper {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    background: #f0f2f5;
-    z-index: 9999;
-}
-.admin-login-card {
-    width: 100%; max-width: 400px;
-    background: var(--n-white);
-    padding: 50px 40px;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    text-align: center;
-}
-.login-logo-centered img { height: 40px; margin-bottom: 10px; }
-.login-logo-centered h1 { font-size: 18px; font-weight: 800; color: var(--n-green); margin-bottom: 30px; letter-spacing: -0.5px; }
-.admin-login-card .input-group input {
-    width: 100%; padding: 15px; border: 1px solid var(--n-border); border-radius: 4px;
-    margin-bottom: 12px; box-sizing: border-box; font-size: 15px;
-}
-.btn-admin-login {
-    width: 100%; padding: 15px; background: var(--n-green); color: white;
-    border: none; border-radius: 4px; font-size: 16px; font-weight: 700; cursor: pointer;
-    transition: background 0.2s;
-}
-.btn-admin-login:hover { background: var(--n-green-dark); }
-
-/* --- Main Layout --- */
+/* Layout */
 .admin-layout-v3 { display: flex; flex-direction: column; min-height: 100vh; }
-
-/* Top Nav */
-.admin-top-nav {
-    height: 50px; background: var(--n-white); border-bottom: 1px solid var(--n-border);
-    display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
-    position: sticky; top: 0; z-index: 1000;
-}
-.header-left { display: flex; align-items: center; gap: 15px; }
-.admin-top-logo { height: 20px; }
-.brand-text { font-weight: 800; font-size: 14px; color: var(--n-green); border-left: 1px solid #ddd; padding-left: 12px; margin-left: 5px; }
-.global-search-container {
-    display: flex; align-items: center; background: #f0f2f5; padding: 4px 15px; border-radius: 20px; width: 300px;
-}
-.global-search-container .material-icons { font-size: 16px; color: var(--n-text-light); margin-right: 8px; }
-.global-search-container input { background: none; border: none; outline: none; width: 100%; font-size: 13px; }
-
-.header-right { display: flex; align-items: center; gap: 15px; }
-.header-icon-btn { position: relative; cursor: pointer; color: var(--n-text-sub); }
-.badge-n {
-    position: absolute; top: -5px; right: -5px; background: var(--n-danger); color: white;
-    font-size: 9px; padding: 1px 4px; border-radius: 10px; font-weight: 700;
-}
-.admin-profile-menu { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
-
-/* Content Wrapper */
+.admin-top-nav { height: 50px; background: #fff; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; sticky top: 0; z-index: 100; }
 .admin-content-wrapper { display: flex; flex: 1; }
+.admin-side-nav { width: 200px; background: #242424; color: #adb5bd; padding-top: 15px; flex-shrink: 0; }
 
-/* Sidebar */
-.admin-side-nav {
-    width: 200px; background: var(--n-sidebar-bg); color: var(--n-sidebar-text);
-    padding-top: 15px; flex-shrink: 0;
-}
-.nav-section { margin-bottom: 20px; }
-.section-label { font-size: 10px; font-weight: 700; padding: 0 20px; margin-bottom: 8px; color: #666; text-transform: uppercase; }
-.nav-item {
-    width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px 20px;
-    border: none; background: none; color: var(--n-sidebar-text); font-size: 13px; font-weight: 500;
-    cursor: pointer; text-align: left; transition: 0.2s;
-}
-.nav-item .material-icons { font-size: 18px; }
-.nav-item:hover { background: rgba(255,255,255,0.05); color: var(--n-white); }
-.nav-item.active { background: rgba(3, 199, 90, 0.15); color: var(--n-green); font-weight: 700; position: relative; }
-.nav-item.active::after { content: ''; position: absolute; right: 0; top: 0; height: 100%; width: 3px; background: var(--n-green); }
+/* Dashboard Summary */
+.status-cards-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; padding: 20px; }
+.status-card { background: #fff; border: 1px solid #eee; padding: 15px; border-radius: 4px; display: flex; justify-content: space-between; cursor: pointer; transition: 0.2s; }
+.status-card:hover { transform: translateY(-2px); border-color: #03c75a; }
+.s-label { font-size: 12px; color: #888; font-weight: 600; }
+.s-value { font-size: 20px; font-weight: 800; color: #111; margin-top: 3px; }
 
-/* Main Content Area */
+/* Table Section */
 .admin-main-content { flex: 1; padding: 20px; }
-.view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-.view-header h2 { font-size: 18px; font-weight: 800; margin: 0; }
-
-/* Dashboard Status Cards */
-.status-cards-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
-.status-card {
-    background: var(--n-white); border: 1px solid var(--n-border); padding: 15px; border-radius: 4px;
-    display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s;
-}
-.status-card:hover { border-color: var(--n-green); transform: translateY(-2px); }
-.status-card .s-label { font-size: 12px; color: var(--n-text-sub); font-weight: 600; }
-.status-card .s-value { font-size: 20px; font-weight: 800; color: #111; margin-top: 3px; }
-.status-card .s-icon { width: 35px; height: 35px; background: #f8f9fa; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--n-green); font-size: 20px; }
-
-/* Table Section - Compact */
-.content-card { background: var(--n-white); border: 1px solid var(--n-border); border-radius: 4px; overflow: hidden; }
+.content-card { background: #fff; border: 1px solid #ddd; border-radius: 4px; overflow: hidden; }
 .admin-data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.admin-data-table th {
-    background: #f8f9fa; padding: 10px 12px; text-align: left; font-weight: 700;
-    color: var(--n-text-sub); border-bottom: 1px solid var(--n-border);
-}
-.admin-data-table td { padding: 8px 12px; border-bottom: 1px solid #f1f3f5; vertical-align: middle; }
-.admin-data-table tbody tr:hover { background: #fafbfc; }
+.admin-data-table th { background: #f8f9fa; padding: 10px; text-align: left; color: #666; border-bottom: 1px solid #ddd; }
+.admin-data-table td { padding: 8px 10px; border-bottom: 1px solid #eee; vertical-align: middle; }
 
-/* Status Badges - New Colors */
-.n-badge {
-    padding: 3px 8px; border-radius: 2px; font-size: 11px; font-weight: 700; display: inline-block;
-}
-.badge-blue { background: #eef4ff; color: var(--n-blue); }
-.badge-red { background: #fff1f0; color: var(--n-danger); }
-.badge-green { background: #e6f9ed; color: var(--n-confirmed); } /* 예약확정 */
-.badge-yellow { background: #fffbe6; color: var(--n-warning); border: 1px solid #ffe58f; } /* 입금대기 */
-.badge-orange { background: #fff7e6; color: var(--n-received); border: 1px solid #ffd591; } /* 입금완료 */
-.badge-gray { background: #f5f5f5; color: var(--n-text-sub); }
+/* Badges & Action Buttons */
+.n-badge { padding: 3px 8px; border-radius: 2px; font-size: 11px; font-weight: 700; display: inline-block; }
+.badge-yellow { background: #fffbe6; color: #f0ad4e; border: 1px solid #ffe58f; }
+.badge-green { background: #e6f9ed; color: #03c75a; border: 1px solid #b7eb8f; }
+.badge-blue { background: #e6f7ff; color: #1890ff; border: 1px solid #91d5ff; }
+.badge-gray { background: #f5f5f5; color: #999; }
 
-/* Action Buttons */
-.btn-action-outline {
-    background: white; border: 1px solid var(--n-border); padding: 4px 10px; border-radius: 3px;
-    font-size: 11px; font-weight: 600; cursor: pointer; transition: 0.2s;
+.btn-action-received { 
+    background: #ff8c00; color: white; border: none; padding: 5px 12px; border-radius: 3px; 
+    font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.2s; 
 }
-.btn-action-outline:hover { background: #f8f9fa; border-color: #adb5bd; }
-.btn-action-green {
-    background: var(--n-green); color: white; border: 1px solid var(--n-green); padding: 4px 10px;
-    border-radius: 3px; font-size: 11px; font-weight: 600; cursor: pointer;
+.btn-action-received:hover { background: #e67e00; }
+
+.btn-action-outline { 
+    background: white; border: 1px solid #ddd; padding: 4px 10px; border-radius: 3px; 
+    font-size: 11px; font-weight: 600; cursor: pointer; 
+}
+.btn-action-outline:hover { background: #f8f9fa; }
+
+.btn-action-more { 
+    background: #fcfcfc; border: 1px solid #ddd; padding: 3px; border-radius: 3px; 
+    font-size: 11px; color: #888; cursor: pointer; outline: none;
 }
 
-/* --- Modal --- */
-.modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
-    z-index: 2000;
-}
-.modal-content {
-    background: var(--n-white); width: 100%; max-width: 700px; border-radius: 8px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.2); overflow: hidden;
-}
-.modal-header {
-    background: #f8f9fa; padding: 15px 20px; border-bottom: 1px solid var(--n-border);
-    display: flex; justify-content: space-between; align-items: center;
-}
-.modal-header h3 { margin: 0; font-size: 16px; font-weight: 800; }
-.modal-body { padding: 20px; max-height: 70vh; overflow-y: auto; }
-.modal-footer { padding: 12px 20px; border-top: 1px solid var(--n-border); text-align: right; }
+/* Side Menu Items */
+.nav-item { width: 100%; display: flex; align-items: center; gap: 8px; padding: 10px 20px; border: none; background: none; color: #adb5bd; font-size: 13px; cursor: pointer; text-align: left; }
+.nav-item.active { background: rgba(3, 199, 90, 0.1); color: #03c75a; font-weight: 700; position: relative; }
+.nav-item.active::after { content: ''; position: absolute; right: 0; top: 0; height: 100%; width: 3px; background: #03c75a; }
 
-/* Detail Rows in Modal */
-.res-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-.detail-item { margin-bottom: 12px; }
-.detail-item label { display: block; font-size: 11px; color: var(--n-text-light); margin-bottom: 3px; font-weight: 600; }
-.detail-item div { font-size: 14px; font-weight: 700; color: var(--n-text-main); }
-
-/* Bulk Actions Bar */
-.view-actions { background: #fffbe6; border: 1px solid #ffe58f; padding: 8px 15px; border-radius: 4px; display: flex; align-items: center; gap: 12px; }
-.selected-count { font-size: 12px; font-weight: 700; color: #856404; }
-.btn-bulk-confirm { background: var(--n-green); color: white; border: none; padding: 5px 12px; border-radius: 3px; font-weight: 700; cursor: pointer; }
-.btn-bulk-delete { background: var(--n-white); color: var(--n-danger); border: 1px solid var(--n-danger); padding: 5px 12px; border-radius: 3px; font-weight: 700; cursor: pointer; }
-
-@media (max-width: 1024px) {
-    .admin-side-nav { display: none; }
-    .global-search-container { width: 180px; }
-    .status-cards-container { grid-template-columns: 1fr 1fr; }
-}
+/* Modal & Bulk */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.modal-content { background: #fff; width: 90%; max-width: 600px; border-radius: 8px; overflow: hidden; }
+.view-actions { background: #fffbe6; padding: 10px 20px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid #ffe58f; }

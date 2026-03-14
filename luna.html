@@ -60,7 +60,7 @@
         .btn-buy:hover { background: #ff6a00; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
         .btn-cart:hover { background: #fff5eb; }
 
-        @media (max-width: 1024px) {
+        @media (max-device-width: 1024px) {
             .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
             .reservation-box { display: none; }
         }
@@ -374,7 +374,7 @@
     window.onload = () => { renderCalendar('pc-days', 'pc-month'); renderCalendar('m-days', 'm-month'); };
 </script>
 <style>
-    @media (max-width: 1024px) {
+    @media (max-device-width: 1024px) {
         .mobile-bottom-bar { display: flex !important; position: fixed; bottom: 0; left: 0; width: 100%; background: white; padding: 15px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); z-index: 9000; align-items: center; gap: 10px; }
         .m-btn-cart { display: none;  height: 55px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 15px; font-size: 15px; font-weight: 800; }
         .m-btn-buy { flex: 1;  height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; }

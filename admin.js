@@ -1,6 +1,8 @@
+// admin.js (Smart Store Style Refactoring)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// Firebase Config
 const firebaseConfig = {
     apiKey: "AIzaSyDkDjmGKQDF-0Vu2S_qtI6W5Hf2-j4tKcM",
     authDomain: "boracaysean-69b4a.firebaseapp.com",
@@ -11,41 +13,28 @@ const firebaseConfig = {
 };
 
 let db = null;
-try { const app = initializeApp(firebaseConfig); db = getFirestore(app); } catch (e) {}
+try { const app = initializeApp(firebaseConfig); db = getFirestore(app); } catch (e) { console.error("Firebase Init Error", e); }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 🔥 기존 브라우저 캐시 강제 삭제 (테스트 데이터 찌꺼기 제거)
-    localStorage.removeItem('admin_reservations_cache');
-    localStorage.removeItem('last_booking_info');
-
     const loginContainer = document.getElementById('login-container');
     const adminContainer = document.getElementById('admin-container');
     const loginForm = document.getElementById('login-form');
-    
     const tableBody = document.getElementById('admin-table-body');
-    const settleTableBody = document.getElementById('settlement-table-body');
-    const scheduleList = document.getElementById('today-schedule-list');
-    
-    const salesView = document.getElementById('sales-view');
-    const settlementView = document.getElementById('settlement-view');
 
     let allReservations = [];
-    let currentMode = 'sales'; 
-    let currentTab = 'all'; 
+    let currentView = 'reservations';
 
-    // --- Authentication ---
+    // --- 1. Authentication ---
     if (sessionStorage.getItem('isAdminLoggedIn') === 'true') { showAdminPanel(); }
+    
     if (loginForm) {
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const id = document.getElementById('username').value;
             const pw = document.getElementById('password').value;
-
-            const admins = {
-                'luca': 'luca1',
-                'daemit': 'nimo@dori0902',
-                'windy': 'windy1'
-            };
+            
+            // 임시 관리자 계정 (운영 시 환경변수 또는 DB 연동 권장)
+            const admins = { 'admin': 'sean1234!', 'luca': 'luca1', 'daemit': 'nimo@dori0902', 'windy': 'windy1' };
 
             if (admins[id] && admins[id] === pw) {
                 sessionStorage.setItem('isAdminLoggedIn', 'true');
@@ -65,378 +54,218 @@ document.addEventListener('DOMContentLoaded', () => {
     function showAdminPanel() {
         if (loginContainer) loginContainer.style.display = 'none';
         if (adminContainer) adminContainer.style.display = 'flex';
+        const adminId = sessionStorage.getItem('adminId') || 'Admin';
+        document.getElementById('display-admin-id').innerText = adminId;
+        
         initNavigation();
         fetchReservations();
-        const dateLabel = document.getElementById('today-date-label');
-        if (dateLabel) dateLabel.textContent = getTodayStr().replace(/-/g, '.');
     }
 
-    // --- Navigation ---
+    // --- 2. Navigation & Filters ---
     function initNavigation() {
-        document.querySelectorAll('.sidebar-btn').forEach(btn => {
-            if (btn.classList.contains('logout-trigger')) return;
-            if (btn.id === 'logout-btn') return;
-            if (btn.onclick && btn.innerText.includes('새로고침')) return;
-
+        // Sidebar View Switching
+        document.querySelectorAll('.nav-item').forEach(btn => {
+            const view = btn.dataset.view;
+            if (!view) return;
             btn.onclick = () => {
-                document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                
-                currentMode = btn.dataset.mode;
-                currentTab = btn.dataset.tab || 'all';
-                
-                if (salesView) salesView.style.display = (currentMode === 'sales') ? 'block' : 'none';
-                if (settlementView) settlementView.style.display = (currentMode === 'settlement') ? 'block' : 'none';
-                
-                const viewTitle = document.getElementById('view-title');
-                if (viewTitle) viewTitle.textContent = btn.textContent.trim();
-                
-                const subTitle = document.getElementById('table-sub-title');
-                if (subTitle) {
-                    if (currentTab === 'all') subTitle.textContent = '전체 예약 내역';
-                    else subTitle.textContent = `${currentTab} 내역`;
-                }
-
-                renderAll();
+                currentView = view;
+                document.getElementById('current-view-title').innerText = btn.innerText.trim();
+                renderTable();
             };
         });
 
-        const searchInput = document.getElementById('res-search');
-        if (searchInput) {
-            searchInput.oninput = (e) => renderMainTable(e.target.value.toLowerCase());
-        }
-
-        const dateFilter = document.getElementById('res-date-filter');
-        if (dateFilter) {
-            dateFilter.onchange = () => renderMainTable();
-        }
-
-        const statusFilter = document.getElementById('res-status-filter');
-        if (statusFilter) {
-            statusFilter.onchange = () => renderMainTable();
-        }
+        // Search & Status Filter
+        document.getElementById('header-global-search').oninput = () => renderTable();
+        document.getElementById('side-status-filter').onchange = () => renderTable();
     }
 
-    // --- Data Fetching ---
+    // --- 3. Data Fetching ---
     function fetchReservations() {
-        if (!db) { 
-            console.error("Firebase DB 객체가 없습니다.");
-            allReservations = [];
-            renderAll();
-            return; 
-        }
-        const q = query(collection(db, "reservations")); 
+        if (!db) return;
+        const q = query(collection(db, "reservations"), orderBy("createdAt", "desc"));
         onSnapshot(q, (snapshot) => {
-            allReservations = [];
-            snapshot.forEach((doc) => {
-                allReservations.push({ id: doc.id, ...doc.data() });
-            });
-            allReservations.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-            renderAll();
-        }, (error) => {
-            console.error("데이터 로드 중 오류 발생:", error);
-            allReservations = [];
-            renderAll();
+            allReservations = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            updateSummaryStats();
+            renderTable();
         });
     }
 
-    // --- Rendering ---
-    function renderAll() {
-        updateCounters();
-        renderMainTable();
-        renderDailySchedule();
-        renderSettlementTable();
-        updateAlerts();
-    }
-
-    function updateCounters() {
-        const counts = {
-            신규: allReservations.filter(r => r.status === '신규').length,
-            예약완료: allReservations.filter(r => r.status === '예약완료').length,
-            확정: allReservations.filter(r => r.status === '확정').length
+    // --- 4. UI Updating ---
+    function updateSummaryStats() {
+        const stats = {
+            new: allReservations.filter(r => r.status === '예약접수').length,
+            pending: allReservations.filter(r => r.status === '입금대기').length,
+            confirmed: allReservations.filter(r => r.status === '예약확정').length,
+            quote: allReservations.filter(r => r.status === '견적').length
         };
-        const cntNew = document.getElementById('cnt-new');
-        const cntComp = document.getElementById('cnt-completed');
-        const cntConf = document.getElementById('cnt-confirmed');
-        
-        if (cntNew) cntNew.textContent = counts.신규;
-        if (cntComp) cntComp.textContent = counts.예약완료;
-        if (cntConf) cntConf.textContent = counts.확정;
-        
-        const totalSettle = allReservations.filter(r => r.status === '확정').reduce((acc, c) => acc + (c.totalPrice || 0), 0);
-        const settleAmt = document.getElementById('total-settle-amount');
-        if (settleAmt) settleAmt.textContent = `₩ ${totalSettle.toLocaleString()}`;
+
+        document.getElementById('stat-new').innerText = stats.new;
+        document.getElementById('stat-pending').innerText = stats.pending;
+        document.getElementById('stat-confirmed').innerText = stats.confirmed;
+        document.getElementById('stat-quote').innerText = stats.quote;
+        document.getElementById('new-res-count').innerText = stats.new;
     }
 
-    function renderMainTable(searchTerm = '') {
+    window.filterByStatus = (status) => {
+        document.getElementById('side-status-filter').value = status;
+        renderTable();
+    };
+
+    function renderTable() {
         if (!tableBody) return;
         tableBody.innerHTML = '';
-        
-        const dateFilter = document.getElementById('res-date-filter')?.value;
-        const statusFilter = document.getElementById('res-status-filter')?.value || 'all';
 
-        let filtered = [...allReservations];
+        const searchTerm = document.getElementById('header-global-search').value.toLowerCase();
+        const statusFilter = document.getElementById('side-status-filter').value;
 
-        // 필터 적용
-        if (statusFilter !== 'all') {
-            filtered = filtered.filter(r => r.status === statusFilter);
-        }
-        if (dateFilter) {
-            filtered = filtered.filter(r => {
-                const itemDate = r.items?.[0]?.date || r.pickupDate || '';
-                return itemDate === dateFilter;
-            });
-        }
-        if (searchTerm) {
-            filtered = filtered.filter(r => r.customerKorName.toLowerCase().includes(searchTerm.toLowerCase()));
-        }
-
-        // 예약번호 기준 정렬 (최신 날짜가 위로)
-        filtered.sort((a, b) => (b.reservationNumber || '').localeCompare(a.reservationNumber || ''));
+        const filtered = allReservations.filter(r => {
+            const name = (r.customerKorName || '').toLowerCase();
+            const resNo = (r.reservationNumber || '').toLowerCase();
+            const matchesSearch = name.includes(searchTerm) || resNo.includes(searchTerm);
+            const matchesStatus = statusFilter === 'all' || r.status === statusFilter;
+            return matchesSearch && matchesStatus;
+        });
 
         if (filtered.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="6" class="empty-msg-v2">조회된 내역이 없습니다.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:50px; color:#999;">내역이 없습니다.</td></tr>';
             return;
         }
 
-        filtered.forEach(res => {
-            const row = document.createElement('tr');
-            const item = res.items?.[0] || {};
+        filtered.forEach((res, index) => {
+            const tr = document.createElement('tr');
             
-            let usageDate = item.date || res.pickupDate || res.date || '-';
-            const isResortQuote = res.status === '견적';
-            
-            if (isResortQuote && item.details) {
-                usageDate = `${item.details.checkin} ~ ${item.details.checkout}`;
-            }
+            // Badge Styles
+            let badgeClass = 'badge-gray';
+            if (res.status === '예약접수') badgeClass = 'badge-blue';
+            if (res.status === '입금대기') badgeClass = 'badge-red';
+            if (res.status === '예약확정') badgeClass = 'badge-green';
+            if (res.status === '견적') badgeClass = 'badge-orange';
 
-            // 상태별 색상 클래스
-            let statusClass = 'ss-badge-신규';
-            if (res.status === '예약접수' || res.status === '입금대기') statusClass = 'ss-badge-입금대기'; // 빨강 (CSS에서 추가 필요)
-            if (res.status === '예약확정') statusClass = 'ss-badge-예약확정'; // 초록 (CSS에서 추가 필요)
-            if (res.status === '견적') statusClass = 'ss-badge-견적';
+            const itemsText = res.items ? res.items.map(i => i.name.split('-').pop().trim()).join(', ') : '-';
+            const dateStr = res.createdAt?.toDate ? res.createdAt.toDate().toLocaleDateString() : '-';
 
-            row.innerHTML = `
-                <td><b>${res.reservationNumber || '-'}</b></td>
-                <td><b>${res.customerKorName}</b></td>
-                <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-                    ${item.name}${res.items?.length > 1 ? ` 외 ${res.items.length-1}` : ''}
+            tr.innerHTML = `
+                <td><input type="checkbox" class="row-check" value="${res.id}"></td>
+                <td style="color:#999;">${filtered.length - index}</td>
+                <td style="font-weight:700;">${res.reservationNumber || '-'}</td>
+                <td><b>${res.customerKorName || '미입력'}</b></td>
+                <td style="max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    <span title="${itemsText}">${itemsText}</span>
                 </td>
-                <td>${usageDate}</td>
-                <td><span class="ss-badge ${statusClass}">${res.status}</span></td>
+                <td style="font-weight:800; color:#111;">₩ ${(res.totalPrice || 0).toLocaleString()}</td>
+                <td>${dateStr}</td>
+                <td><span class="n-badge ${badgeClass}">${res.status || '대기'}</span></td>
                 <td>
-                    <div style="display:flex; gap:5px; justify-content:center;">
-                        <button class="ss-btn-action" onclick="showDetail('${res.id}')">상세</button>
-                        ${(res.status === '예약접수' || res.status === '입금대기') ? 
-                            `<button class="ss-btn-action" style="background:var(--ss-green); color:white; border:none;" onclick="confirmDeposit('${res.id}')">입금확인</button>` : ''}
-                        ${res.status === '견적' ? `<button class="ss-btn-action" style="background:var(--ss-blue); color:white; border:none;" onclick="updateStatus('${res.id}', '입금대기')">안내완료</button>` : ''}
-                        ${res.status !== '취소' ? `<button class="ss-btn-action" style="color:red" onclick="updateStatus('${res.id}', '취소')">취소</button>` : ''}
+                    <div style="display:flex; gap:5px;">
+                        <button class="btn-action-outline" onclick="showDetail('${res.id}')">상세</button>
+                        <select class="btn-action-outline" onchange="updateStatus('${res.id}', this.value)" style="width:70px;">
+                            <option value="">변경</option>
+                            <option value="입금대기">대기</option>
+                            <option value="예약확정">확정</option>
+                            <option value="취소">취소</option>
+                        </select>
                     </div>
                 </td>
             `;
-            tableBody.appendChild(row);
+            tableBody.appendChild(tr);
         });
     }
 
-    // 신규 함수: 입금 확인 시 바로 예약확정
-    window.confirmDeposit = async (id) => {
-        if (!confirm('입금이 확인되었습니까? 바로 [예약확정] 처리됩니다.')) return;
-        if (db) {
-            await updateDoc(doc(db, "reservations", id), { status: '예약확정' });
-        }
-    };
-
-    function renderDailySchedule() {
-        if (!scheduleList) return;
-        const today = getTodayStr();
-        const todays = allReservations.filter(res => (res.items?.some(i => i.date === today) || res.pickupDate === today || res.sendingDate === today) && res.status !== '취소' && res.status !== '견적');
-        
-        if (!todays.length) {
-            scheduleList.innerHTML = '<p class="empty-msg-v2">오늘 예정된 스케줄이 없습니다.</p>';
-            return;
-        }
-
-        const categories = {
-            "픽업/샌딩": todays.filter(r => r.items?.some(i => i.name.includes('픽업')) || r.pickupDate === today || r.sendingDate === today),
-            "호핑투어": todays.filter(r => r.items?.some(i => i.name.includes('호핑'))),
-            "말룸파티": todays.filter(r => r.items?.some(i => i.name.includes('말룸'))),
-            "액티비티/기타": todays.filter(r => r.items?.some(i => !i.name.includes('픽업') && !i.name.includes('호핑') && !i.name.includes('말룸')))
-        };
-
-        scheduleList.innerHTML = '';
-        for (const [cat, list] of Object.entries(categories)) {
-            if (list.length === 0) continue;
-            const group = document.createElement('div');
-            group.className = 'schedule-group';
-            group.innerHTML = `<div class="schedule-group-title">${cat} (${list.length})</div>`;
-            list.forEach(res => {
-                const item = document.createElement('div');
-                item.className = 'schedule-item-v2';
-                const statusColor = res.status === '확정' ? '#888' : 'var(--ss-text-main)';
-                const resItem = res.items?.find(i => i.date === today) || res.items?.[0] || { name: '예약상품', time: '종일' };
-                item.innerHTML = `
-                    <div class="time-tag">${resItem.time || '종일'}</div>
-                    <div class="info" style="color:${statusColor}">
-                        <b>${res.customerKorName}</b> | ${resItem.name}
-                        ${res.status === '확정' ? ' <small>(확정)</small>' : ''}
-                    </div>
-                `;
-                group.appendChild(item);
-            });
-            scheduleList.appendChild(group);
-        }
-    }
-
-    function renderSettlementTable() {
-        if (!settleTableBody) return;
-        settleTableBody.innerHTML = '';
-        const confirmed = allReservations.filter(r => r.status === '확정');
-        const groupedByDate = {};
-        confirmed.forEach(r => {
-            const date = r.items?.[0]?.date || r.pickupDate || '미정';
-            if (!groupedByDate[date]) groupedByDate[date] = { count: 0, amount: 0 };
-            groupedByDate[date].count++;
-            groupedByDate[date].amount += (r.totalPrice || 0);
-        });
-        const dates = Object.keys(groupedByDate).sort().reverse();
-        if (dates.length === 0) {
-            settleTableBody.innerHTML = '<tr><td colspan="4" class="empty-msg-v2">정산 데이터가 없습니다.</td></tr>';
-            return;
-        }
-        dates.forEach(date => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td><b>${date}</b></td>
-                <td>${groupedByDate[date].count}건</td>
-                <td style="color:var(--ss-green); font-weight:800;">₩ ${groupedByDate[date].amount.toLocaleString()}</td>
-                <td><span class="ss-badge ss-badge-신규">정산 대기</span></td>
-            `;
-            settleTableBody.appendChild(row);
-        });
-    }
-
-    function updateAlerts() {
-        const newCount = allReservations.filter(r => r.status === '신규' || r.status === '견적').length;
-        const alertBox = document.getElementById('new-order-alert');
-        const noAlert = document.getElementById('no-alert-msg');
-        if (newCount > 0) {
-            if (alertBox) {
-                alertBox.style.display = 'block';
-                const quoteCount = allReservations.filter(r => r.status === '견적').length;
-                const newOrderCount = allReservations.filter(r => r.status === '신규').length;
-                let alertText = '신규 내역이 발생했습니다!';
-                if (newOrderCount > 0 && quoteCount > 0) alertText = `신규 주문 ${newOrderCount}건, 견적 ${quoteCount}건 발생!`;
-                else if (quoteCount > 0) alertText = `신규 견적 ${quoteCount}건이 발생했습니다!`;
-                else alertText = `신규 주문 ${newOrderCount}건이 발생했습니다!`;
-                alertBox.querySelector('p').innerText = alertText;
-            }
-            if (noAlert) noAlert.style.display = 'none';
-        } else {
-            if (alertBox) alertBox.style.display = 'none';
-            if (noAlert) noAlert.style.display = 'block';
-        }
-    }
-
-    // --- Global Functions ---
-    window.updateStatus = async (id, newStatus) => {
-        if (!confirm(`[${newStatus}] 상태로 변경하시겠습니까?`)) return;
-        if (db) {
-            await updateDoc(doc(db, "reservations", id), { status: newStatus });
-        }
-    };
-
-    window.confirmPurchase = async (id) => {
-        if (!confirm('구매확정 처리하시겠습니까?')) return;
-        await window.updateStatus(id, '확정');
-    };
-
+    // --- 5. Global Actions (Window scope) ---
     window.showDetail = (id) => {
         const res = allReservations.find(r => r.id === id);
         if (!res) return;
-        const modal = document.getElementById('res-detail-modal');
-        const body = document.getElementById('modal-body');
-        const itemsHtml = res.items?.map(item => {
-            const isResortQuote = item.name.includes('리조트 견적');
-            let itemDetailsHtml = '';
-            
-            if (isResortQuote && item.details) {
-                itemDetailsHtml = `
-                    <div style="grid-column: span 2; margin-top:5px; padding-top:5px; border-top:1px dashed #ddd; font-size:14px;">
-                        <div>🏨 리조트: <b style="color:#ff6a00;">${item.details.resort}</b> | 룸타입: <b style="color:#333;">${item.details.roomType}</b></div>
-                        <div style="margin-top:5px;">📅 기간: <b>${item.details.checkin} ~ ${item.details.checkout}</b></div>
-                        <div style="margin-top:5px;">👥 인원: <b>성인 ${item.details.adults}명, 소인 ${item.details.children}명</b> ${item.details.childAges?.length > 0 ? `(소인 나이: ${item.details.childAges.join(', ')})` : ''}</div>
-                    </div>
-                `;
-            } else {
-                itemDetailsHtml = `
-                    <div>📅 이용일: <b>${item.date || '-'}</b></div>
-                    <div>⏰ 시간: <b>${item.time || '정보없음'}</b></div>
-                    ${item.type ? `<div style="grid-column: span 2; margin-top:5px; padding-top:5px; border-top:1px dashed #ddd;">✨ 선택종류: <b style="color:#333;">${item.type}</b></div>` : ''}
-                `;
-            }
 
-            return `
-                <div style="background:#f8f9fa; padding:15px; border-radius:12px; margin-bottom:10px; border:1px solid #eee;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <b style="color:#ff6a00; font-size:16px;">${item.name}</b>
-                        <span style="font-weight:800;">${item.count}명</span>
+        const modalBody = document.getElementById('modal-body');
+        const itemsHtml = res.items ? res.items.map(i => `
+            <div style="padding:15px; background:#f8f9fa; border-radius:4px; margin-bottom:8px; border:1px solid #eee;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div>
+                        <b style="color:var(--n-green);">${i.name}</b>
+                        <div style="font-size:13px; color:#666; margin-top:5px;">${i.date || '-'} | ${i.time || '-'}</div>
                     </div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:14px; color:#666;">
-                        ${itemDetailsHtml}
-                    </div>
+                    <b style="font-size:15px;">${i.count}명</b>
                 </div>
-            `;
-        }).join('') || '예약 상품 정보가 없습니다.';
+                ${i.details ? `<div style="font-size:12px; color:#888; margin-top:8px; padding-top:8px; border-top:1px dashed #ddd;">${JSON.stringify(i.details)}</div>` : ''}
+            </div>
+        `).join('') : '정보 없음';
 
-        body.innerHTML = `
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:25px;">
-                <div>
-                    <h4 style="margin-bottom:15px; border-left:4px solid #ff6a00; padding-left:10px; color:#333;">👤 예약자 정보</h4>
-                    <div class="detail-row"><span class="label">한글 성함</span><span class="val">${res.customerKorName}</span></div>
-                    <div class="detail-row"><span class="label">영문 성함</span><span class="val">${res.engName || '-'}</span></div>
-                    <div class="detail-row"><span class="label">연락처/ID</span><span class="val">${res.contact || '-'}</span></div>
-                    <div class="detail-row"><span class="label">결제수단</span><span class="val">${res.paymentMethod || '-'}</span></div>
-                    <div class="detail-row"><span class="label">총 결제금액</span><span class="val" style="color:#ff6a00; font-weight:900; font-size:18px;">₩ ${res.totalPrice?.toLocaleString()}</span></div>
-                </div>
-                <div>
-                    <h4 style="margin-bottom:15px; border-left:4px solid #ff6a00; padding-left:10px; color:#333;">✈️ 픽업/샌딩 상세</h4>
-                    <div style="background:#fffcf5; padding:15px; border-radius:12px; border:1px solid #ffedcc;">
-                        <div class="detail-row"><span class="label">픽업날짜</span><span class="val" style="color:#ff6a00;">${res.pickupDate || '-'}</span></div>
-                        <div class="detail-row"><span class="label">픽업항공</span><span class="val">${res.pickupFlight || '-'}</span></div>
-                        <div class="detail-row"><span class="label">픽업호텔</span><span class="val">${res.pickupResort || '-'}</span></div>
-                        <hr style="margin:10px 0; border:none; border-top:1px dashed #ddd;">
-                        <div class="detail-row"><span class="label">샌딩날짜</span><span class="val" style="color:#007aff;">${res.sendingDate || '-'}</span></div>
-                        <div class="detail-row"><span class="label">샌딩항공</span><span class="val">${res.sendingFlight || '-'}</span></div>
-                        <div class="detail-row"><span class="label">샌딩호텔</span><span class="val">${res.sendingResort || '-'}</span></div>
-                    </div>
-                </div>
+        modalBody.innerHTML = `
+            <div class="res-detail-grid">
+                <div class="detail-item"><label>예약번호</label><div>${res.reservationNumber || '-'}</div></div>
+                <div class="detail-item"><label>상태</label><div><span class="n-badge badge-blue">${res.status}</span></div></div>
+                <div class="detail-item"><label>고객명</label><div>${res.customerKorName} (${res.engName || '-'})</div></div>
+                <div class="detail-item"><label>연락처</label><div>${res.contact}</div></div>
+                <div class="detail-item"><label>총 결제금액</label><div style="color:var(--n-green); font-size:18px;">₩ ${(res.totalPrice || 0).toLocaleString()}</div></div>
+                <div class="detail-item"><label>신청일시</label><div>${res.createdAt?.toDate ? res.createdAt.toDate().toLocaleString() : '-'}</div></div>
             </div>
-            <div style="margin-top:30px;">
-                <h4 style="margin-bottom:15px; border-left:4px solid #ff6a00; padding-left:10px; color:#333;">🛒 예약 상품 상세</h4>
-                <div style="display:grid; grid-template-columns: 1fr; gap:10px;">
-                    ${itemsHtml}
+            <div style="margin-top:25px;">
+                <label style="display:block; font-size:12px; color:#999; margin-bottom:10px; font-weight:600;">🛒 예약 상품 내역</label>
+                ${itemsHtml}
+            </div>
+            ${res.pickupDate ? `
+            <div style="margin-top:20px; padding:15px; border:1px solid #ffe58f; background:#fffbe6; border-radius:4px;">
+                <label style="font-weight:800; color:#d48806; display:block; margin-bottom:8px;">✈️ 픽업/샌딩 상세</label>
+                <div style="font-size:13px; line-height:1.6;">
+                    픽업: ${res.pickupDate} (${res.pickupFlight || '-'}) / 호텔: ${res.pickupResort || '-'}<br>
+                    샌딩: ${res.sendingDate} (${res.sendingFlight || '-'}) / 호텔: ${res.sendingResort || '-'}
                 </div>
-            </div>
-            <div style="margin-top:20px; padding-top:15px; border-top:1px solid #eee; font-size:12px; color:#bbb; display:flex; justify-content:space-between;">
-                <span>예약 ID: ${res.id}</span>
-                <span>접수일시: ${res.createdAt?.toDate ? res.createdAt.toDate().toLocaleString() : (res.createdAt || '-')}</span>
-            </div>
+            </div>` : ''}
         `;
-        if (modal) modal.style.display = 'flex';
+        document.getElementById('res-detail-modal').style.display = 'flex';
     };
 
     window.closeModal = () => {
-        const modal = document.getElementById('res-detail-modal');
-        if (modal) modal.style.display = 'none';
+        document.getElementById('res-detail-modal').style.display = 'none';
     };
 
-    window.goToNewOrders = () => {
-        const searchInput = document.getElementById('res-search');
-        if (searchInput) {
-            searchInput.value = '';
-            renderMainTable();
+    window.updateStatus = async (id, newStatus) => {
+        if (!newStatus) return;
+        if (confirm(`상태를 [${newStatus}] (으)로 변경하시겠습니까?`)) {
+            try {
+                await updateDoc(doc(db, "reservations", id), { status: newStatus });
+            } catch (e) { alert('변경 실패'); }
         }
     };
 
-    function getTodayStr() { return new Date().toISOString().split('T')[0]; }
+    window.bulkConfirmDeposit = async () => {
+        const selected = Array.from(document.querySelectorAll('.row-check:checked')).map(cb => cb.value);
+        if (confirm(`${selected.length}건을 일괄 [예약확정] 처리하시겠습니까?`)) {
+            for (const id of selected) { await updateDoc(doc(db, "reservations", id), { status: '예약확정' }); }
+            document.getElementById('check-all').checked = false;
+            updateBulkBar();
+        }
+    };
+
+    window.bulkCancel = async () => {
+        const selected = Array.from(document.querySelectorAll('.row-check:checked')).map(cb => cb.value);
+        if (confirm(`${selected.length}건을 일괄 [취소] 처리하시겠습니까?`)) {
+            for (const id of selected) { await updateDoc(doc(db, "reservations", id), { status: '취소' }); }
+            document.getElementById('check-all').checked = false;
+            updateBulkBar();
+        }
+    };
+
+    // Bulk Check Logic
+    document.getElementById('check-all').onclick = (e) => {
+        document.querySelectorAll('.row-check').forEach(cb => cb.checked = e.target.checked);
+        updateBulkBar();
+    };
+
+    document.addEventListener('change', (e) => {
+        if (e.target.classList.contains('row-check')) updateBulkBar();
+    });
+
+    function updateBulkBar() {
+        const selected = document.querySelectorAll('.row-check:checked').length;
+        const bar = document.getElementById('bulk-actions');
+        if (selected > 0) {
+            bar.style.display = 'flex';
+            bar.querySelector('.selected-count').innerText = `${selected}개 선택됨`;
+        } else {
+            bar.style.display = 'none';
+        }
+    }
 });

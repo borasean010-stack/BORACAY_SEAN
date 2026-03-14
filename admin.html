@@ -12,11 +12,10 @@
 <body class="smartstore-admin">
     <!-- Admin Login Screen -->
     <div id="login-container" class="admin-login-wrapper">
-        <div class="ambient-bg-admin"></div>
         <div class="admin-login-card">
             <div class="login-logo-centered">
                 <img src="logo.png" alt="Logo">
-                <h1>SELLER CENTER</h1>
+                <h1>판매자 센터</h1>
             </div>
             <form id="login-form">
                 <div class="input-group"><input type="text" id="username" placeholder="관리자 아이디" required></div>
@@ -26,17 +25,16 @@
         </div>
     </div>
 
-    <!-- Main Admin Layout (V3 Overhaul) -->
+    <!-- Main Admin Layout -->
     <div id="admin-container" class="admin-layout-v3" style="display: none;">
         
         <!-- 1. Top Bar -->
         <header class="admin-top-nav">
             <div class="header-left">
-                <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
                 <img src="logo.png" alt="Logo" class="admin-top-logo">
-                <span class="brand-text">SELLER CENTER</span>
+                <span class="brand-text">판매자 센터</span>
             </div>
-            <div class="header-center">
+            <div class="header-center pc-only">
                 <div class="global-search-container">
                     <span class="material-icons">search</span>
                     <input type="text" id="header-global-search" placeholder="예약번호 또는 고객명으로 검색">
@@ -46,9 +44,6 @@
                 <div class="header-icon-btn">
                     <span class="material-icons">notifications</span>
                     <span class="badge-n" id="new-res-count">0</span>
-                </div>
-                <div class="header-icon-btn pc-only">
-                    <span class="material-icons">apps</span>
                 </div>
                 <div class="admin-profile-menu">
                     <span class="material-icons">account_circle</span>
@@ -63,30 +58,27 @@
             <aside class="admin-side-nav" id="sideMenu">
                 <nav class="side-menu-container">
                     <div class="nav-section">
-                        <p class="section-label">운영 관리</p>
+                        <p class="section-label">판매 관리</p>
                         <button class="nav-item active" data-view="reservations">
-                            <span class="material-icons">assignment</span> 예약 관리
+                            <span class="material-icons">assignment</span> 예약/주문 관리
                         </button>
+                        <button class="nav-item" data-view="payments">
+                            <span class="material-icons">payments</span> 결제/정산 확인
+                        </button>
+                    </div>
+
+                    <div class="nav-section">
+                        <p class="section-label">상품 관리</p>
                         <button class="nav-item" data-view="tours">
                             <span class="material-icons">explore</span> 투어/액티비티
                         </button>
                         <button class="nav-item" data-view="resorts">
                             <span class="material-icons">hotel</span> 리조트
                         </button>
-                        <button class="nav-item" data-view="payments">
-                            <span class="material-icons">payments</span> 장바구니/결제 확인
-                        </button>
-                        <button class="nav-item" data-view="customers">
-                            <span class="material-icons">people</span> 고객 관리
-                        </button>
                     </div>
 
                     <div class="nav-section filter-section">
                         <p class="section-label">상세 필터</p>
-                        <div class="filter-group">
-                            <label>날짜별 보기</label>
-                            <input type="date" id="side-date-filter">
-                        </div>
                         <div class="filter-group">
                             <label>상태별 보기</label>
                             <select id="side-status-filter">
@@ -100,9 +92,10 @@
                         </div>
                     </div>
 
-                    <div class="side-footer">
-                        <button class="side-footer-btn" onclick="location.reload()"><span class="material-icons">refresh</span></button>
-                        <button class="side-footer-btn logout-trigger" id="logout-btn"><span class="material-icons">logout</span> 로그아웃</button>
+                    <div style="padding: 20px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: auto;">
+                        <button class="nav-item" id="logout-btn">
+                            <span class="material-icons">logout</span> 로그아웃
+                        </button>
                     </div>
                 </nav>
             </aside>
@@ -110,7 +103,43 @@
             <!-- 3. Central Content Area -->
             <main class="admin-main-content">
                 <div class="view-header">
-                    <h2 id="current-view-title">예약 관리</h2>
+                    <h2>오늘의 예약 현황</h2>
+                </div>
+
+                <!-- Dashboard Status Cards -->
+                <div class="status-cards-container">
+                    <div class="status-card" onclick="filterByStatus('예약접수')">
+                        <div>
+                            <div class="s-label">신규예약</div>
+                            <div class="s-value" id="stat-new">0</div>
+                        </div>
+                        <div class="s-icon"><span class="material-icons">fiber_new</span></div>
+                    </div>
+                    <div class="status-card" onclick="filterByStatus('입금대기')">
+                        <div>
+                            <div class="s-label">입금대기</div>
+                            <div class="s-value" id="stat-pending">0</div>
+                        </div>
+                        <div class="s-icon"><span class="material-icons">hourglass_empty</span></div>
+                    </div>
+                    <div class="status-card" onclick="filterByStatus('예약확정')">
+                        <div>
+                            <div class="s-label">예약확정</div>
+                            <div class="s-value" id="stat-confirmed">0</div>
+                        </div>
+                        <div class="s-icon"><span class="material-icons">check_circle</span></div>
+                    </div>
+                    <div class="status-card" onclick="filterByStatus('견적')">
+                        <div>
+                            <div class="s-label">견적신청</div>
+                            <div class="s-value" id="stat-quote">0</div>
+                        </div>
+                        <div class="s-icon"><span class="material-icons">description</span></div>
+                    </div>
+                </div>
+
+                <div class="view-header" style="margin-top: 40px;">
+                    <h2 id="current-view-title">예약 목록</h2>
                     <div class="view-actions" id="bulk-actions" style="display:none;">
                         <span class="selected-count">0개 선택됨</span>
                         <button class="btn-bulk-confirm" onclick="bulkConfirmDeposit()">선택 입금확정</button>
@@ -125,12 +154,14 @@
                             <thead>
                                 <tr>
                                     <th width="40"><input type="checkbox" id="check-all"></th>
+                                    <th>번호</th>
                                     <th>예약번호</th>
                                     <th>고객명</th>
                                     <th>상품정보</th>
+                                    <th>신청금액</th>
                                     <th>예약일</th>
                                     <th>상태</th>
-                                    <th width="200">액션</th>
+                                    <th width="150">관리</th>
                                 </tr>
                             </thead>
                             <tbody id="admin-table-body">
@@ -148,13 +179,13 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>예약 상세 정보</h3>
-                <button class="close-modal" onclick="closeModal()"><span class="material-icons">close</span></button>
+                <button class="btn-action-outline" onclick="closeModal()" style="border:none; padding:5px;"><span class="material-icons">close</span></button>
             </div>
             <div class="modal-body" id="modal-body">
                 <!-- JS Render -->
             </div>
             <div class="modal-footer">
-                <button class="btn-primary" onclick="closeModal()">닫기</button>
+                <button class="btn-action-green" onclick="closeModal()">닫기</button>
             </div>
         </div>
     </div>

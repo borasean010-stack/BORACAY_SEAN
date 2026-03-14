@@ -321,8 +321,14 @@
             const pw = document.getElementById('adminPw').value;
 
             // 실제 운영시에는 Firebase Auth 등을 사용해야 함
-            if(id === 'admin' && pw === 'sean1234') {
+            const admins = { 
+                'admin': 'sean1234', 
+                'sean': 'sean1' 
+            };
+
+            if(admins[id] && admins[id] === pw) {
                 localStorage.setItem('isAdmin', 'true');
+                localStorage.setItem('adminId', id);
                 alert('관리자로 로그인되었습니다.');
                 location.href = 'admin.html';
             } else {

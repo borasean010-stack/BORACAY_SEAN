@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const id = document.getElementById('username').value;
         const pw = document.getElementById('password').value;
-        const admins = { 'admin': 'sean1234!', 'luca': 'luca1', 'daemit': 'nimo@dori0902', 'windy': 'windy1' };
+        const admins = { 'admin': 'sean1234!', 'luca': 'luca1', 'daemit': 'nimo@dori0902', 'windy': 'windy1', 'sean': 'sean1' };
         if (admins[id] && admins[id] === pw) {
             sessionStorage.setItem('isAdminLoggedIn', 'true');
             sessionStorage.setItem('adminId', id);

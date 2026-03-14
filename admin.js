@@ -215,6 +215,24 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('') : '<div style="padding:30px; text-align:center; color:#ccc;">상품 정보가 없습니다.</div>';
 
         modalBody.innerHTML = `
+            ${res.pickupDate ? `
+            <div style="padding:25px; background:#fffbe6; border:2px solid #ffe58f; border-radius:15px; margin-bottom:30px; box-shadow: 0 4px 12px rgba(255,106,0,0.05);">
+                <h4 style="font-size:16px; color:#d48806; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
+                    <span class="material-icons" style="font-size:22px;">flight_takeoff</span> 
+                    <span style="font-weight:900; font-size:18px;">픽업/샌딩 상세 정보 (최우선 확인)</span>
+                </h4>
+                <div style="font-size:16px; line-height:2; color:#111;">
+                    <div style="display:flex; border-bottom:1px dashed #ffd591; padding-bottom:12px; margin-bottom:12px;">
+                        <b style="width:70px; color:#d35400;">픽업</b> 
+                        <div style="font-weight:700;">${res.pickupDate} / ${res.pickupFlight || '-'} / ${res.pickupResort || '-'}</div>
+                    </div>
+                    <div style="display:flex;">
+                        <b style="width:70px; color:#d35400;">샌딩</b> 
+                        <div style="font-weight:700;">${res.sendingDate} / ${res.sendingFlight || '-'} / ${res.sendingResort || '-'}</div>
+                    </div>
+                </div>
+            </div>` : ''}
+
             <div style="margin-bottom:30px;">
                 <h4 style="font-size:15px; color:#111; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
                     <span class="material-icons" style="font-size:20px; color:var(--ss-green);">shopping_cart</span> 
@@ -223,13 +241,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 ${itemsHtml}
             </div>
 
-            <div style="margin-bottom:30px;">
+            <div style="margin-bottom:10px;">
                 <h4 style="font-size:15px; color:#111; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
                     <span class="material-icons" style="font-size:20px; color:var(--ss-green);">person</span> 
                     <span style="font-weight:800;">예약자 및 결제 정보</span>
                 </h4>
                 <div class="res-detail-grid" style="background:#fff; border:1px solid #eee; padding:25px; border-radius:10px; border-top:3px solid #333; row-gap:20px;">
                     <div class="detail-item"><label style="font-size:12px; color:#999;">예약번호</label><div style="color:#ff6a00; font-size:16px;">${res.reservationNumber}</div></div>
+                    <div class="detail-item"><label style="font-size:12px; color:#999;">카카오 ID</label><div style="font-size:14px; font-family:monospace; color:#666;">${res.kakaoUserId || '비로그인 예약'}</div></div>
                     <div class="detail-item"><label style="font-size:12px; color:#999;">예약상태</label><div><span class="n-badge badge-blue" style="font-size:13px; padding:4px 10px;">${res.status}</span></div></div>
                     <div class="detail-item"><label style="font-size:12px; color:#999;">고객명(한글/영문)</label><div style="font-size:17px;">${res.customerKorName} / ${res.engName || '-'}</div></div>
                     <div class="detail-item"><label style="font-size:12px; color:#999;">연락처(카톡ID)</label><div style="font-size:17px;">${res.contact}</div></div>
@@ -240,22 +259,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="detail-item" style="grid-column: span 2;"><label style="font-size:12px; color:#999;">신청일시</label><div style="font-weight:400; color:#888; font-size:14px;">${res.createdAt?.toDate ? res.createdAt.toDate().toLocaleString() : '-'}</div></div>
                 </div>
             </div>
-
-            ${res.pickupDate ? `
-            <div style="padding:20px; background:#fffbe6; border:1px solid #ffe58f; border-radius:10px;">
-                <h4 style="font-size:15px; color:#d48806; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
-                    <span class="material-icons" style="font-size:20px;">flight_takeoff</span> 
-                    <span style="font-weight:800;">픽업/샌딩 상세 정보</span>
-                </h4>
-                <div style="font-size:15px; line-height:2; color:#444;">
-                    <div style="display:flex; border-bottom:1px dashed #ffd591; padding-bottom:10px; margin-bottom:10px;">
-                        <b style="width:60px;">픽업</b> ${res.pickupDate} / ${res.pickupFlight || '-'} / ${res.pickupResort || '-'}
-                    </div>
-                    <div>
-                        <b style="width:60px;">샌딩</b> ${res.sendingDate} / ${res.sendingFlight || '-'} / ${res.sendingResort || '-'}
-                    </div>
-                </div>
-            </div>` : ''}
         `;
         document.getElementById('res-detail-modal').style.display = 'flex';
     };

@@ -64,6 +64,17 @@
             .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
             .reservation-box { display: none; }
         }
+
+        .mobile-bottom-bar { display: none; }
+        @media (max-width: 1024px) {
+            .mobile-bottom-bar { 
+                display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
+                background: white; padding: 15px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); 
+                z-index: 9000; align-items: center; gap: 10px;
+            }
+            .m-btn-cart { flex: 1; height: 55px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 15px; font-size: 15px; font-weight: 800; }
+            .m-btn-buy { flex: 2; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; }
+        }
     </style>
 </head>
 <body>
@@ -195,17 +206,31 @@
     let adultCount = 1;
     let currentDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
-    let selectedType = '딥티슈 마사지 (1시간40분)';
-    let selectedPrice = 49000;
+    let selectedTypes = { '딥티슈 마사지 (1시간40분)': 49000 };
     let selectedTime = '12:30';
 
     function selectType(type, price, el) {
-        selectedType = type;
-        selectedPrice = price;
-        document.getElementById('display-price').innerText = '₩ ' + price.toLocaleString();
-        const tabs = document.querySelectorAll('#type-tabs .selection-tab');
-        tabs.forEach(tab => tab.classList.remove('active'));
-        el.classList.add('active');
+        if (selectedTypes[type]) {
+            if (Object.keys(selectedTypes).length > 1) {
+                delete selectedTypes[type];
+                el.classList.remove('active');
+            } else {
+                alert('최소 하나 이상의 마사지를 선택해주세요.');
+            }
+        } else {
+            selectedTypes[type] = price;
+            el.classList.add('active');
+        }
+        updateTotalPrice();
+    }
+
+    function updateTotalPrice() {
+        let total = 0;
+        for (let key in selectedTypes) {
+            total += selectedTypes[key];
+        }
+        const displayTotal = total * adultCount;
+        document.getElementById('display-price').innerText = '₩ ' + displayTotal.toLocaleString();
     }
 
     function selectTime(time, el) {
@@ -218,6 +243,7 @@
     function updateCount(delta) {
         adultCount = Math.max(1, adultCount + delta);
         document.getElementById('pc-count').innerText = adultCount;
+        updateTotalPrice();
     }
     function changeMonth(delta) {
         currentDate.setMonth(currentDate.getMonth() + delta);
@@ -253,14 +279,26 @@
         }
     }
     function handleBuy() {
-        const item = { name: "카바얀 - " + selectedType, price: selectedPrice, count: adultCount, date: selectedDate, time: selectedTime };
-        sessionStorage.setItem('directBuyItem', JSON.stringify(item));
+        const items = Object.keys(selectedTypes).map(type => ({
+            name: "카바얀 - " + type,
+            price: selectedTypes[type],
+            count: adultCount,
+            date: selectedDate,
+            time: selectedTime
+        }));
+        sessionStorage.setItem('directBuyItem', JSON.stringify(items));
         window.open('booking-form.html', '_blank');
     }
     function addToCart() {
-        const item = { name: "카바얀 - " + selectedType, price: selectedPrice, count: adultCount, date: selectedDate, time: selectedTime };
+        const items = Object.keys(selectedTypes).map(type => ({
+            name: "카바얀 - " + type,
+            price: selectedTypes[type],
+            count: adultCount,
+            date: selectedDate,
+            time: selectedTime
+        }));
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        cart.push(item);
+        items.forEach(item => cart.push(item));
         localStorage.setItem('cart', JSON.stringify(cart));
         if(confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) { window.location.assign('cart.html'); }
     }

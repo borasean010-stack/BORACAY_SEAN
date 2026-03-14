@@ -155,21 +155,19 @@
             <div class="calendar-grid" id="pc-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
         </div>
 
-        <!-- 마사지 종류 선택 -->
         <div class="selection-container">
-            <span class="selection-label">마사지 종류 선택</span>
+            <span class="selection-label">마사지 종류 선택 (중복 가능)</span>
             <div class="selection-tabs" id="type-tabs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                <div class="selection-tab active" data-price="55000" onclick="selectType('퓨어오일 마사지', 55000, this)">퓨어오일</div>
-                <div class="selection-tab" data-price="55000" onclick="selectType('태반 마사지', 55000, this)">태반 마사지</div>
-                <div class="selection-tab" data-price="55000" onclick="selectType('스톤 마사지', 55000, this)">스톤 마사지</div>
-                <div class="selection-tab" data-price="70000" onclick="selectType('힐롯 마사지', 70000, this)">힐롯 마사지</div>
-                <div class="selection-tab" data-price="84000" onclick="selectType('포핸드 마사지', 84000, this)">포핸드 마사지</div>
-                <div class="selection-tab" data-price="42000" onclick="selectType('성장 마사지 (1시간)', 42000, this)">성장(1시간)</div>
-                <div class="selection-tab" data-price="55000" onclick="selectType('성장 마사지 (2시간)', 55000, this)">성장(2시간)</div>
+                <div class="selection-tab active" onclick="selectType('퓨어오일 마사지', 55000, this)">퓨어오일</div>
+                <div class="selection-tab" onclick="selectType('태반 마사지', 55000, this)">태반 마사지</div>
+                <div class="selection-tab" onclick="selectType('스톤 마사지', 55000, this)">스톤 마사지</div>
+                <div class="selection-tab" onclick="selectType('힐롯 마사지', 70000, this)">힐롯 마사지</div>
+                <div class="selection-tab" onclick="selectType('포핸드 마사지', 84000, this)">포핸드 마사지</div>
+                <div class="selection-tab" onclick="selectType('성장 마사지 (1시간)', 42000, this)">성장(1시간)</div>
+                <div class="selection-tab" onclick="selectType('성장 마사지 (2시간)', 55000, this)">성장(2시간)</div>
             </div>
         </div>
 
-        <!-- 이용 시간 선택 -->
         <div class="selection-container">
             <span class="selection-label">이용 가능 시간 선택</span>
             <div class="selection-tabs" id="time-tabs">
@@ -221,9 +219,8 @@
         <div class="calendar-grid" id="m-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
     </div>
 
-    <!-- 마사지 종류 선택 (모바일) -->
     <div class="selection-container">
-        <span class="selection-label">마사지 종류 선택</span>
+        <span class="selection-label">마사지 종류 선택 (중복 가능)</span>
         <div class="selection-tabs" id="m-type-tabs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
             <div class="selection-tab active" onclick="selectType('퓨어오일 마사지', 55000, this)">퓨어오일</div>
             <div class="selection-tab" onclick="selectType('태반 마사지', 55000, this)">태반 마사지</div>
@@ -235,7 +232,6 @@
         </div>
     </div>
 
-    <!-- 이용 시간 선택 (모바일) -->
     <div class="selection-container">
         <span class="selection-label">이용 가능 시간 선택</span>
         <div class="selection-tabs" id="m-time-tabs">
@@ -262,8 +258,7 @@
     let adultCount = 1;
     let currentDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
-    let selectedType = '퓨어오일 마사지';
-    let selectedPrice = 55000;
+    let selectedTypes = { '퓨어오일 마사지': 55000 };
     let selectedTime = '12:30';
 
     function openOptionSheet() { 
@@ -276,16 +271,33 @@
     }
 
     function selectType(type, price, el) {
-        selectedType = type;
-        selectedPrice = price;
+        if (selectedTypes[type]) {
+            if (Object.keys(selectedTypes).length > 1) {
+                delete selectedTypes[type];
+                // Sync with both PC and mobile tabs
+                document.querySelectorAll('.selection-tab').forEach(tab => {
+                    if (tab.innerText === type || (type.includes(tab.innerText) && tab.innerText.length > 2)) tab.classList.remove('active');
+                });
+            } else {
+                alert('최소 하나 이상의 마사지를 선택해주세요.');
+            }
+        } else {
+            selectedTypes[type] = price;
+            document.querySelectorAll('.selection-tab').forEach(tab => {
+                if (tab.innerText === type || (type.includes(tab.innerText) && tab.innerText.length > 2)) tab.classList.add('active');
+            });
+        }
+        updateTotalPrice();
+    }
+    
+    function updateTotalPrice() {
+        let totalPrice = 0;
+        for (const type in selectedTypes) {
+            totalPrice += selectedTypes[type];
+        }
+        const displayTotal = totalPrice * adultCount;
         const priceDisplays = document.querySelectorAll('#display-price');
-        priceDisplays.forEach(d => d.innerText = '₩ ' + price.toLocaleString());
-        
-        const tabs = document.querySelectorAll('.selection-tab');
-        tabs.forEach(tab => {
-            if(tab.innerText === type || (type.includes(tab.innerText) && tab.innerText.length > 2)) tab.classList.add('active');
-            else if(tab.parentElement.id === 'type-tabs' || tab.parentElement.id === 'm-type-tabs') tab.classList.remove('active');
-        });
+        priceDisplays.forEach(d => d.innerText = '₩ ' + displayTotal.toLocaleString());
     }
 
     function selectTime(time, el) {
@@ -303,6 +315,7 @@
         if(pcCount) pcCount.innerText = adultCount;
         const mCount = document.getElementById('m-count');
         if(mCount) mCount.innerText = adultCount;
+        updateTotalPrice();
     }
     function changeMonth(delta) {
         currentDate.setMonth(currentDate.getMonth() + delta);
@@ -342,14 +355,26 @@
         }
     }
     function handleBuy() {
-        const item = { name: "에스파 - " + selectedType, price: selectedPrice, count: adultCount, date: selectedDate, time: selectedTime };
-        sessionStorage.setItem('directBuyItem', JSON.stringify(item));
+        const items = Object.keys(selectedTypes).map(type => ({
+            name: "에스파 - " + type,
+            price: selectedTypes[type],
+            count: adultCount,
+            date: selectedDate,
+            time: selectedTime
+        }));
+        sessionStorage.setItem('directBuyItem', JSON.stringify(items));
         window.open('booking-form.html', '_blank');
     }
     function addToCart() {
-        const item = { name: "에스파 - " + selectedType, price: selectedPrice, count: adultCount, date: selectedDate, time: selectedTime };
+        const items = Object.keys(selectedTypes).map(type => ({
+            name: "에스파 - " + type,
+            price: selectedTypes[type],
+            count: adultCount,
+            date: selectedDate,
+            time: selectedTime
+        }));
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        cart.push(item);
+        items.forEach(item => cart.push(item));
         localStorage.setItem('cart', JSON.stringify(cart));
         if(confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) { window.location.assign('cart.html'); }
     }

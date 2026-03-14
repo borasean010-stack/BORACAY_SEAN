@@ -172,7 +172,13 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         const directBuy = sessionStorage.getItem('directBuyItem');
-        cartData = directBuy ? [JSON.parse(directBuy)] : JSON.parse(localStorage.getItem('cart') || '[]');
+        if (directBuy) {
+            const parsed = JSON.parse(directBuy);
+            cartData = Array.isArray(parsed) ? parsed : [parsed];
+        } else {
+            cartData = JSON.parse(localStorage.getItem('cart') || '[]');
+        }
+        
         if (cartData.length === 0) { alert('상품이 없습니다.'); return; }
 
         const list = document.getElementById('summary-list');

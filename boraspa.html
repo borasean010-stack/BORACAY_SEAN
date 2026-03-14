@@ -212,17 +212,31 @@
     let adultCount = 1;
     let currentDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
-    let selectedType = '꿀 마사지';
-    let selectedPrice = 55000;
+    let selectedTypes = { '꿀 마사지': 55000 };
     let selectedTime = '12:30';
 
     function selectType(type, price, el) {
-        selectedType = type;
-        selectedPrice = price;
-        document.getElementById('display-price').innerText = '₩ ' + price.toLocaleString();
-        const tabs = document.querySelectorAll('#type-tabs .selection-tab');
-        tabs.forEach(tab => tab.classList.remove('active'));
-        el.classList.add('active');
+        if (selectedTypes[type]) {
+            if (Object.keys(selectedTypes).length > 1) {
+                delete selectedTypes[type];
+                el.classList.remove('active');
+            } else {
+                alert('최소 하나 이상의 마사지를 선택해주세요.');
+            }
+        } else {
+            selectedTypes[type] = price;
+            el.classList.add('active');
+        }
+        updateTotalPrice();
+    }
+
+    function updateTotalPrice() {
+        let total = 0;
+        for (let key in selectedTypes) {
+            total += selectedTypes[key];
+        }
+        const displayTotal = total * adultCount;
+        document.getElementById('display-price').innerText = '₩ ' + displayTotal.toLocaleString();
     }
 
     function selectTime(time, el) {
@@ -235,6 +249,7 @@
     function updateCount(delta) {
         adultCount = Math.max(1, adultCount + delta);
         document.getElementById('pc-count').innerText = adultCount;
+        updateTotalPrice();
     }
     function changeMonth(delta) {
         currentDate.setMonth(currentDate.getMonth() + delta);
@@ -270,14 +285,26 @@
         }
     }
     function handleBuy() {
-        const item = { name: "보라스파 - " + selectedType, price: selectedPrice, count: adultCount, date: selectedDate, time: selectedTime };
-        sessionStorage.setItem('directBuyItem', JSON.stringify(item));
+        const items = Object.keys(selectedTypes).map(type => ({
+            name: "보라스파 - " + type,
+            price: selectedTypes[type],
+            count: adultCount,
+            date: selectedDate,
+            time: selectedTime
+        }));
+        sessionStorage.setItem('directBuyItem', JSON.stringify(items));
         window.open('booking-form.html', '_blank');
     }
     function addToCart() {
-        const item = { name: "보라스파 - " + selectedType, price: selectedPrice, count: adultCount, date: selectedDate, time: selectedTime };
+        const items = Object.keys(selectedTypes).map(type => ({
+            name: "보라스파 - " + type,
+            price: selectedTypes[type],
+            count: adultCount,
+            date: selectedDate,
+            time: selectedTime
+        }));
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        cart.push(item);
+        items.forEach(item => cart.push(item));
         localStorage.setItem('cart', JSON.stringify(cart));
         if(confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) { window.location.assign('cart.html'); }
     }

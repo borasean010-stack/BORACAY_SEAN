@@ -195,17 +195,58 @@ document.addEventListener('DOMContentLoaded', () => {
         const res = allReservations.find(r => r.id === id);
         if (!res) return;
         const modalBody = document.getElementById('modal-body');
+        
+        const itemsHtml = res.items ? res.items.map(i => `
+            <div style="padding:15px; background:#f8f9fa; border-radius:8px; margin-bottom:10px; border:1px solid #e2e6e9;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div>
+                        <div style="font-size:14px; font-weight:800; color:var(--ss-green); margin-bottom:5px;">${i.name}</div>
+                        <div style="font-size:13px; color:#666;">
+                            <span style="margin-right:10px;">📅 ${i.date || '-'}</span>
+                            <span>⏰ ${i.time || '-'}</span>
+                        </div>
+                    </div>
+                    <div style="font-size:15px; font-weight:800; color:#333;">${i.count}명</div>
+                </div>
+                ${i.details ? `<div style="margin-top:10px; padding-top:10px; border-top:1px dashed #ddd; font-size:12px; color:#888;">${i.details}</div>` : ''}
+            </div>
+        `).join('') : '<div style="padding:20px; text-align:center; color:#ccc;">상품 정보가 없습니다.</div>';
+
         modalBody.innerHTML = `
-            <div class="res-detail-grid">
-                <div class="detail-item"><label>예약번호</label><div>${res.reservationNumber}</div></div>
-                <div class="detail-item"><label>고객명</label><div>${res.customerKorName} (${res.engName || '-'})</div></div>
-                <div class="detail-item"><label>연락처</label><div>${res.contact}</div></div>
-                <div class="detail-item"><label>결제금액</label><div style="color:var(--ss-green);">₩ ${(res.totalPrice || 0).toLocaleString()}</div></div>
+            <div style="margin-bottom:25px;">
+                <h4 style="font-size:13px; color:#111; margin-bottom:12px; display:flex; align-items:center; gap:5px;">
+                    <span class="material-icons" style="font-size:16px;">shopping_cart</span> 예약 상품 정보
+                </h4>
+                ${itemsHtml}
             </div>
-            <div style="margin-top:20px; font-size:12px; color:#666; line-height:1.6;">
-                <b style="color:#333;">상품 내역:</b><br>
-                ${res.items ? res.items.map(i => `- ${i.name} (${i.count}명) / ${i.date || '-'} ${i.time || '-'}`).join('<br>') : '없음'}
+
+            <div style="margin-bottom:25px;">
+                <h4 style="font-size:13px; color:#111; margin-bottom:12px; display:flex; align-items:center; gap:5px;">
+                    <span class="material-icons" style="font-size:16px;">person</span> 예약자 및 결제 정보
+                </h4>
+                <div class="res-detail-grid" style="background:#fff; border:1px solid #eee; padding:20px; border-radius:8px; border-top:2px solid #333;">
+                    <div class="detail-item"><label>예약번호</label><div style="color:#ff6a00;">${res.reservationNumber}</div></div>
+                    <div class="detail-item"><label>예약상태</label><div><span class="n-badge badge-blue">${res.status}</span></div></div>
+                    <div class="detail-item"><label>고객명(한글/영문)</label><div>${res.customerKorName} / ${res.engName || '-'}</div></div>
+                    <div class="detail-item"><label>연락처(카톡ID)</label><div>${res.contact}</div></div>
+                    <div class="detail-item" style="grid-column: span 2; margin-top:10px; padding-top:15px; border-top:1px solid #f1f1f1;">
+                        <label>총 결제금액</label>
+                        <div style="color:var(--ss-green); font-size:20px; font-weight:900;">₩ ${(res.totalPrice || 0).toLocaleString()}</div>
+                    </div>
+                    <div class="detail-item" style="grid-column: span 2;"><label>신청일시</label><div style="font-weight:400; color:#888;">${res.createdAt?.toDate ? res.createdAt.toDate().toLocaleString() : '-'}</div></div>
+                </div>
             </div>
+
+            ${res.pickupDate ? `
+            <div style="padding:15px; background:#fffbe6; border:1px solid #ffe58f; border-radius:8px;">
+                <h4 style="font-size:13px; color:#d48806; margin-bottom:10px; display:flex; align-items:center; gap:5px;">
+                    <span class="material-icons" style="font-size:16px;">flight_takeoff</span> 픽업/샌딩 상세 정보
+                </h4>
+                <div style="font-size:13px; line-height:1.8; color:#555;">
+                    <b>픽업:</b> ${res.pickupDate} (${res.pickupFlight || '-'}) / 호텔: ${res.pickupResort || '-'}<br>
+                    <b>샌딩:</b> ${res.sendingDate} (${res.sendingFlight || '-'}) / 호텔: ${res.sendingResort || '-'}
+                </div>
+            </div>` : ''}
         `;
         document.getElementById('res-detail-modal').style.display = 'flex';
     };

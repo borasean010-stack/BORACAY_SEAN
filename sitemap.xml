@@ -1,8 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-<url>
-<loc>https://boracaysean.com/</loc>
-</url>
-
+  <url><loc>https://boracaysean.com/</loc></url>
+  <url><loc>https://boracaysean.com/index.html</loc></url>
+  <url><loc>https://boracaysean.com/essential-tours.html</loc></url>
+  <url><loc>https://boracaysean.com/activities.html</loc></url>
+  <url><loc>https://boracaysean.com/massage.html</loc></url>
+  <url><loc>https://boracaysean.com/price-list.html</loc></url>
+  <url><loc>https://boracaysean.com/resort-quote.html</loc></url>
+  <url><loc>https://boracaysean.com/about-us.html</loc></url>
+  <url><loc>https://boracaysean.com/bora-ajae-hopping.html</loc></url>
+  <url><loc>https://boracaysean.com/freediving.html</loc></url>
+  <url><loc>https://boracaysean.com/golf.html</loc></url>
+  <url><loc>https://boracaysean.com/helmet-diving.html</loc></url>
+  <url><loc>https://boracaysean.com/paragliding.html</loc></url>
+  <url><loc>https://boracaysean.com/jetski.html</loc></url>
+  <url><loc>https://boracaysean.com/aspa.html</loc></url>
+  <url><loc>https://boracaysean.com/boraspa.html</loc></url>
+  <url><loc>https://boracaysean.com/helios.html</loc></url>
+  <url><loc>https://boracaysean.com/kabayan.html</loc></url>
+  <url><loc>https://boracaysean.com/luna.html</loc></url>
+  <url><loc>https://boracaysean.com/maris.html</loc></url>
+  <url><loc>https://boracaysean.com/poseidon.html</loc></url>
+  <url><loc>https://boracaysean.com/spa.html</loc></url>
+  <url><loc>https://boracaysean.com/crimson-resort.html</loc></url>
+  <url><loc>https://boracaysean.com/shangrila-resort.html</loc></url>
 </urlset>

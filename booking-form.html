@@ -236,13 +236,15 @@
         btn.disabled = true;
 
         const pickupItem = cartData.find(i => i.name.includes('픽업샌딩'));
-        const isResortQuote = cartData.some(item => item.name.includes('리조트 견적'));
+        const resortItem = cartData.find(i => i.name.includes('리조트 견적'));
+        const isResortQuote = !!resortItem;
 
         // 예약번호 생성 (YYMMDD 형식)
         const tourDate = pickupItem ? (pickupItem.pickupDate || pickupItem.date) : (cartData[0].date || new Date().toISOString().split('T')[0]);
         const resNo = tourDate.replace(/-/g, '').slice(2, 8); 
         
         const bookingData = {
+            kakaoUserId: user.id, // 카카오 유저 ID 추가
             reservationNumber: resNo,
             customerKorName: document.getElementById('kor-name').value,
             contact: document.getElementById('contact').value,
@@ -257,7 +259,10 @@
             pickupFlight: document.getElementById('pickup-flight').value || '',
             pickupResort: document.getElementById('pickup-resort').value || '',
             sendingFlight: document.getElementById('sending-flight').value || '',
-            sendingResort: document.getElementById('sending-resort').value || ''
+            sendingResort: document.getElementById('sending-resort').value || '',
+            // 리조트 전용 날짜 추출
+            resortCheckin: (resortItem && resortItem.details) ? resortItem.details.checkin : '',
+            resortCheckout: (resortItem && resortItem.details) ? resortItem.details.checkout : ''
         };
 
         const finalize = () => {

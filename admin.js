@@ -196,25 +196,63 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!res) return;
         const modalBody = document.getElementById('modal-body');
         
-        const itemsHtml = res.items ? res.items.map(i => `
-            <div style="padding:18px; background:#fff; border-radius:10px; margin-bottom:12px; border:1px solid #e2e6e9; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
-                    <div style="font-size:18px; font-weight:900; color:#111;">${i.name}</div>
-                    <div style="font-size:18px; font-weight:900; color:var(--ss-green);">${i.count}명</div>
-                </div>
-                <div style="display:flex; gap:10px;">
-                    <div style="background:#fff5eb; color:#ff6a00; padding:6px 12px; border-radius:6px; font-size:16px; font-weight:800; border:1px solid #ffe0d1;">
-                        📅 ${i.date || '-'}
+        const itemsHtml = res.items ? res.items.map(i => {
+            let detailsHtml = '';
+            if (i.details) {
+                if (typeof i.details === 'string') {
+                    detailsHtml = `<div style="margin-top:12px; padding-top:12px; border-top:1px dashed #eee; font-size:14px; color:#666; line-height:1.5;">${i.details}</div>`;
+                } else if (typeof i.details === 'object') {
+                    // 객체인 경우 주요 정보 추출 (리조트 견적 등)
+                    const d = i.details;
+                    detailsHtml = `
+                        <div style="margin-top:12px; padding-top:12px; border-top:1px dashed #eee; font-size:13px; color:#777; line-height:1.6;">
+                            ${d.resort ? `<b>리조트:</b> ${d.resort}<br>` : ''}
+                            ${d.roomType ? `<b>객실:</b> ${d.roomType}<br>` : ''}
+                            ${d.checkin ? `<b>체크인:</b> ${d.checkin} / <b>체크아웃:</b> ${d.checkout}<br>` : ''}
+                            ${d.adults ? `<b>인원:</b> 성인 ${d.adults}, 소인 ${d.children}` : ''}
+                        </div>
+                    `;
+                }
+            }
+
+            return `
+                <div style="padding:18px; background:#fff; border-radius:10px; margin-bottom:12px; border:1px solid #e2e6e9; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                        <div style="font-size:18px; font-weight:900; color:#111;">${i.name}</div>
+                        <div style="font-size:18px; font-weight:900; color:var(--ss-green);">${i.count}명</div>
                     </div>
-                    <div style="background:#f0f7ff; color:#007bff; padding:6px 12px; border-radius:6px; font-size:16px; font-weight:800; border:1px solid #d1e9ff;">
-                        ⏰ ${i.time || '-'}
+                    <div style="display:flex; gap:10px;">
+                        <div style="background:#fff5eb; color:#ff6a00; padding:6px 12px; border-radius:6px; font-size:16px; font-weight:800; border:1px solid #ffe0d1;">
+                            📅 ${i.date || '-'}
+                        </div>
+                        <div style="background:#f0f7ff; color:#007bff; padding:6px 12px; border-radius:6px; font-size:16px; font-weight:800; border:1px solid #d1e9ff;">
+                            ⏰ ${i.time || '-'}
+                        </div>
                     </div>
+                    ${detailsHtml}
                 </div>
-                ${i.details ? `<div style="margin-top:12px; padding-top:12px; border-top:1px dashed #eee; font-size:14px; color:#666; line-height:1.5;">${i.details}</div>` : ''}
-            </div>
-        `).join('') : '<div style="padding:30px; text-align:center; color:#ccc;">상품 정보가 없습니다.</div>';
+            `;
+        }).join('') : '<div style="padding:30px; text-align:center; color:#ccc;">상품 정보가 없습니다.</div>';
 
         modalBody.innerHTML = `
+            ${res.resortCheckin ? `
+            <div style="padding:25px; background:#f0f7ff; border:2px solid #007bff; border-radius:15px; margin-bottom:30px; box-shadow: 0 4px 12px rgba(0,123,255,0.05);">
+                <h4 style="font-size:16px; color:#0056b3; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
+                    <span class="material-icons" style="font-size:22px;">hotel</span> 
+                    <span style="font-weight:900; font-size:18px;">리조트 숙박 일정 (최우선 확인)</span>
+                </h4>
+                <div style="font-size:16px; line-height:2; color:#111;">
+                    <div style="display:flex; border-bottom:1px dashed #d1e9ff; padding-bottom:12px; margin-bottom:12px;">
+                        <b style="width:100px; color:#0056b3;">체크인</b> 
+                        <div style="font-weight:700;">${res.resortCheckin}</div>
+                    </div>
+                    <div style="display:flex;">
+                        <b style="width:100px; color:#0056b3;">체크아웃</b> 
+                        <div style="font-weight:700;">${res.resortCheckout}</div>
+                    </div>
+                </div>
+            </div>` : ''}
+
             ${res.pickupDate ? `
             <div style="padding:25px; background:#fffbe6; border:2px solid #ffe58f; border-radius:15px; margin-bottom:30px; box-shadow: 0 4px 12px rgba(255,106,0,0.05);">
                 <h4 style="font-size:16px; color:#d48806; margin-bottom:15px; display:flex; align-items:center; gap:8px;">

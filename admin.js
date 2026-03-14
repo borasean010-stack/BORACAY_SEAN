@@ -197,54 +197,63 @@ document.addEventListener('DOMContentLoaded', () => {
         const modalBody = document.getElementById('modal-body');
         
         const itemsHtml = res.items ? res.items.map(i => `
-            <div style="padding:15px; background:#f8f9fa; border-radius:8px; margin-bottom:10px; border:1px solid #e2e6e9;">
-                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                    <div>
-                        <div style="font-size:14px; font-weight:800; color:var(--ss-green); margin-bottom:5px;">${i.name}</div>
-                        <div style="font-size:13px; color:#666;">
-                            <span style="margin-right:10px;">📅 ${i.date || '-'}</span>
-                            <span>⏰ ${i.time || '-'}</span>
-                        </div>
-                    </div>
-                    <div style="font-size:15px; font-weight:800; color:#333;">${i.count}명</div>
+            <div style="padding:18px; background:#fff; border-radius:10px; margin-bottom:12px; border:1px solid #e2e6e9; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                    <div style="font-size:18px; font-weight:900; color:#111;">${i.name}</div>
+                    <div style="font-size:18px; font-weight:900; color:var(--ss-green);">${i.count}명</div>
                 </div>
-                ${i.details ? `<div style="margin-top:10px; padding-top:10px; border-top:1px dashed #ddd; font-size:12px; color:#888;">${i.details}</div>` : ''}
+                <div style="display:flex; gap:10px;">
+                    <div style="background:#fff5eb; color:#ff6a00; padding:6px 12px; border-radius:6px; font-size:16px; font-weight:800; border:1px solid #ffe0d1;">
+                        📅 ${i.date || '-'}
+                    </div>
+                    <div style="background:#f0f7ff; color:#007bff; padding:6px 12px; border-radius:6px; font-size:16px; font-weight:800; border:1px solid #d1e9ff;">
+                        ⏰ ${i.time || '-'}
+                    </div>
+                </div>
+                ${i.details ? `<div style="margin-top:12px; padding-top:12px; border-top:1px dashed #eee; font-size:14px; color:#666; line-height:1.5;">${i.details}</div>` : ''}
             </div>
-        `).join('') : '<div style="padding:20px; text-align:center; color:#ccc;">상품 정보가 없습니다.</div>';
+        `).join('') : '<div style="padding:30px; text-align:center; color:#ccc;">상품 정보가 없습니다.</div>';
 
         modalBody.innerHTML = `
-            <div style="margin-bottom:25px;">
-                <h4 style="font-size:13px; color:#111; margin-bottom:12px; display:flex; align-items:center; gap:5px;">
-                    <span class="material-icons" style="font-size:16px;">shopping_cart</span> 예약 상품 정보
+            <div style="margin-bottom:30px;">
+                <h4 style="font-size:15px; color:#111; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
+                    <span class="material-icons" style="font-size:20px; color:var(--ss-green);">shopping_cart</span> 
+                    <span style="font-weight:800;">예약 상품 정보</span>
                 </h4>
                 ${itemsHtml}
             </div>
 
-            <div style="margin-bottom:25px;">
-                <h4 style="font-size:13px; color:#111; margin-bottom:12px; display:flex; align-items:center; gap:5px;">
-                    <span class="material-icons" style="font-size:16px;">person</span> 예약자 및 결제 정보
+            <div style="margin-bottom:30px;">
+                <h4 style="font-size:15px; color:#111; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
+                    <span class="material-icons" style="font-size:20px; color:var(--ss-green);">person</span> 
+                    <span style="font-weight:800;">예약자 및 결제 정보</span>
                 </h4>
-                <div class="res-detail-grid" style="background:#fff; border:1px solid #eee; padding:20px; border-radius:8px; border-top:2px solid #333;">
-                    <div class="detail-item"><label>예약번호</label><div style="color:#ff6a00;">${res.reservationNumber}</div></div>
-                    <div class="detail-item"><label>예약상태</label><div><span class="n-badge badge-blue">${res.status}</span></div></div>
-                    <div class="detail-item"><label>고객명(한글/영문)</label><div>${res.customerKorName} / ${res.engName || '-'}</div></div>
-                    <div class="detail-item"><label>연락처(카톡ID)</label><div>${res.contact}</div></div>
-                    <div class="detail-item" style="grid-column: span 2; margin-top:10px; padding-top:15px; border-top:1px solid #f1f1f1;">
-                        <label>총 결제금액</label>
-                        <div style="color:var(--ss-green); font-size:20px; font-weight:900;">₩ ${(res.totalPrice || 0).toLocaleString()}</div>
+                <div class="res-detail-grid" style="background:#fff; border:1px solid #eee; padding:25px; border-radius:10px; border-top:3px solid #333; row-gap:20px;">
+                    <div class="detail-item"><label style="font-size:12px; color:#999;">예약번호</label><div style="color:#ff6a00; font-size:16px;">${res.reservationNumber}</div></div>
+                    <div class="detail-item"><label style="font-size:12px; color:#999;">예약상태</label><div><span class="n-badge badge-blue" style="font-size:13px; padding:4px 10px;">${res.status}</span></div></div>
+                    <div class="detail-item"><label style="font-size:12px; color:#999;">고객명(한글/영문)</label><div style="font-size:17px;">${res.customerKorName} / ${res.engName || '-'}</div></div>
+                    <div class="detail-item"><label style="font-size:12px; color:#999;">연락처(카톡ID)</label><div style="font-size:17px;">${res.contact}</div></div>
+                    <div class="detail-item" style="grid-column: span 2; margin-top:10px; padding-top:20px; border-top:1px solid #f1f1f1;">
+                        <label style="font-size:13px; color:#666; font-weight:700;">최종 입금액</label>
+                        <div style="color:var(--ss-green); font-size:26px; font-weight:900; letter-spacing:-1px;">₩ ${(res.totalPrice || 0).toLocaleString()}</div>
                     </div>
-                    <div class="detail-item" style="grid-column: span 2;"><label>신청일시</label><div style="font-weight:400; color:#888;">${res.createdAt?.toDate ? res.createdAt.toDate().toLocaleString() : '-'}</div></div>
+                    <div class="detail-item" style="grid-column: span 2;"><label style="font-size:12px; color:#999;">신청일시</label><div style="font-weight:400; color:#888; font-size:14px;">${res.createdAt?.toDate ? res.createdAt.toDate().toLocaleString() : '-'}</div></div>
                 </div>
             </div>
 
             ${res.pickupDate ? `
-            <div style="padding:15px; background:#fffbe6; border:1px solid #ffe58f; border-radius:8px;">
-                <h4 style="font-size:13px; color:#d48806; margin-bottom:10px; display:flex; align-items:center; gap:5px;">
-                    <span class="material-icons" style="font-size:16px;">flight_takeoff</span> 픽업/샌딩 상세 정보
+            <div style="padding:20px; background:#fffbe6; border:1px solid #ffe58f; border-radius:10px;">
+                <h4 style="font-size:15px; color:#d48806; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
+                    <span class="material-icons" style="font-size:20px;">flight_takeoff</span> 
+                    <span style="font-weight:800;">픽업/샌딩 상세 정보</span>
                 </h4>
-                <div style="font-size:13px; line-height:1.8; color:#555;">
-                    <b>픽업:</b> ${res.pickupDate} (${res.pickupFlight || '-'}) / 호텔: ${res.pickupResort || '-'}<br>
-                    <b>샌딩:</b> ${res.sendingDate} (${res.sendingFlight || '-'}) / 호텔: ${res.sendingResort || '-'}
+                <div style="font-size:15px; line-height:2; color:#444;">
+                    <div style="display:flex; border-bottom:1px dashed #ffd591; padding-bottom:10px; margin-bottom:10px;">
+                        <b style="width:60px;">픽업</b> ${res.pickupDate} / ${res.pickupFlight || '-'} / ${res.pickupResort || '-'}
+                    </div>
+                    <div>
+                        <b style="width:60px;">샌딩</b> ${res.sendingDate} / ${res.sendingFlight || '-'} / ${res.sendingResort || '-'}
+                    </div>
                 </div>
             </div>` : ''}
         `;

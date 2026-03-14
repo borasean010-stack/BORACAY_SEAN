@@ -174,9 +174,9 @@
 
         <div class="calendar-wrap" style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 15px;">
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&lt;</button>
+                <button onclick="changeMonth(-1, 'pc')" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&lt;</button>
                 <strong id="pc-month">2026년 3월</strong>
-                <button onclick="changeMonth(1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&gt;</button>
+                <button onclick="changeMonth(1, 'pc')" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&gt;</button>
             </div>
             <div class="calendar-grid" id="pc-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
         </div>
@@ -201,31 +201,86 @@
     </div>
 </footer>
 
+<!-- 📱 모바일 예약 바 -->
+<div class="mobile-bottom-bar">
+    <button class="m-btn-cart" onclick="addToCart()">장바구니</button>
+    <button class="m-btn-buy" onclick="openOptionSheet()">구매하기</button>
+</div>
+
+<!-- 📱 모바일 옵션 시트 -->
+<div class="option-sheet-overlay" id="sheetOverlay" onclick="closeOptionSheet()"></div>
+<div class="option-sheet" id="optionSheet">
+    <h3 style="font-weight:900; margin-bottom:20px; font-size:20px;">예약 옵션 선택</h3>
+    
+    <div class="calendar-wrap" style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 15px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <button onclick="changeMonth(-1, 'mobile')" style="border:none; background:none; color:#ff6a00; font-weight:800;">&lt;</button>
+            <strong id="m-month">2026년 3월</strong>
+            <button onclick="changeMonth(1, 'mobile')" style="border:none; background:none; color:#ff6a00; font-weight:800;">&gt;</button>
+        </div>
+        <div class="calendar-grid" id="m-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:#fcfcfc; border-radius:15px; margin-bottom:20px; border:1px solid #f0f0f0;">
+        <span style="font-weight:700;">인원 (팀/인)</span>
+        <div class="counter">
+            <button class="count-btn" onclick="updateCount(-1)">-</button>
+            <strong id="m-count">1</strong>
+            <button class="count-btn" onclick="updateCount(1)">+</button>
+        </div>
+    </div>
+    <button class="btn-buy" onclick="handleBuy()" style="background:#ff6a00;">선택 완료 / 구매하기</button>
+</div>
+
 <script src="main.js"></script>
 <script>
     let adultCount = 1;
-    let currentDate = new Date(2026, 2, 1);
+    let pcDate = new Date(2026, 2, 1);
+    let mobileDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
+
+    function openOptionSheet() { 
+        document.getElementById('sheetOverlay').classList.add('active'); 
+        document.getElementById('optionSheet').classList.add('active'); 
+        document.body.style.overflow = 'hidden';
+    }
+    function closeOptionSheet() { 
+        document.getElementById('sheetOverlay').classList.remove('active'); 
+        document.getElementById('optionSheet').classList.remove('active'); 
+        document.body.style.overflow = '';
+    }
     
     function updateCount(delta) {
         adultCount = Math.max(1, adultCount + delta);
         document.getElementById('pc-count').innerText = adultCount;
+        document.getElementById('m-count').innerText = adultCount;
     }
-    function changeMonth(delta) {
-        currentDate.setMonth(currentDate.getMonth() + delta);
-        renderCalendar('pc-days', 'pc-month');
+    function changeMonth(delta, view) {
+        if (view === 'pc') {
+            pcDate.setMonth(pcDate.getMonth() + delta);
+        } else {
+            mobileDate.setMonth(mobileDate.getMonth() + delta);
+        }
+        renderCalendars();
     }
-    function renderCalendar(cid, tid) {
+    function renderCalendars() {
+        renderCalendar('pc-days', 'pc-month', pcDate);
+        renderCalendar('m-days', 'm-month', mobileDate);
+    }
+    function renderCalendar(cid, tid, dateObj) {
         const container = document.getElementById(cid);
         const title = document.getElementById(tid);
-        const year = currentDate.getFullYear();
-        const month = currentDate.getMonth();
+        if(!container || !title) return;
+
+        const year = dateObj.getFullYear();
+        const month = dateObj.getMonth();
         title.innerText = `${year}년 ${month + 1}월`;
         container.innerHTML = '';
         ['일','월','화','수','목','금','토'].forEach(d => container.innerHTML += `<div style="color:#bbb; font-weight:800; font-size:12px;">${d}</div>`);
         const firstDay = new Date(year, month, 1).getDay();
         const lastDate = new Date(year, month + 1, 0).getDate();
         const today = new Date(); today.setHours(0, 0, 0, 0);
+
         for (let i = 0; i < firstDay; i++) container.appendChild(document.createElement('div'));
         for (let i = 1; i <= lastDate; i++) {
             const dateStr = `${year}-${(month+1).toString().padStart(2,'0')}-${i.toString().padStart(2,'0')}`;
@@ -237,30 +292,34 @@
                 div.onclick = function() {
                     selectedDate = dateStr;
                     document.getElementById('pc-date-display').innerText = dateStr;
-                    renderCalendar('pc-days', 'pc-month');
+                    renderCalendars();
                 };
             }
             div.innerText = i;
             container.appendChild(div);
         }
     }
+    
     function handleBuy() {
         const item = { name: "JL 스냅사진 촬영", price: 80000, count: adultCount, date: selectedDate };
         sessionStorage.setItem('directBuyItem', JSON.stringify(item));
         window.open('booking-form.html', '_blank');
     }
+
     function addToCart() {
         const item = { name: "JL 스냅사진 촬영", price: 80000, count: adultCount, date: selectedDate };
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         cart.push(item);
         localStorage.setItem('cart', JSON.stringify(cart));
-        if(confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) { window.location.assign('cart.html'); }
+        if(confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) {
+            window.location.assign('cart.html');
+        }
     }
-    window.onload = () => { renderCalendar('pc-days', 'pc-month'); };
+    window.onload = () => { 
+        const mcount = document.getElementById('m-count');
+        if (mcount) mcount.innerText = adultCount;
+        renderCalendars(); 
+    };
 </script>
-<div class="mobile-bottom-bar">
-    <button class="m-btn-cart" onclick="addToCart()">장바구니</button>
-    <button class="m-btn-buy" onclick="openBookingDrawer()">구매하기</button>
-</div>
 </body>
 </html>

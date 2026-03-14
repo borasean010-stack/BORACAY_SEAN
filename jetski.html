@@ -72,9 +72,6 @@
             }
             .m-btn-cart { flex: 1; height: 55px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 15px; font-size: 15px; font-weight: 800; }
             .m-btn-buy { flex: 2; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; }
-            
-            .option-sheet.active { transform: translateY(0) !important; }
-            .option-sheet-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; }
         }
     </style>
 </head>
@@ -178,9 +175,9 @@
 
         <div class="calendar-wrap" style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 15px;">
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&lt;</button>
+                <button onclick="changeMonth(-1, 'pc')" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&lt;</button>
                 <strong id="pc-month">2026년 3월</strong>
-                <button onclick="changeMonth(1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&gt;</button>
+                <button onclick="changeMonth(1, 'pc')" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&gt;</button>
             </div>
             <div class="calendar-grid" id="pc-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
         </div>
@@ -188,7 +185,7 @@
         <!-- 이용 시간 선택 -->
         <div class="selection-container">
             <span class="selection-label">이용 가능 시간 선택</span>
-            <div class="selection-tabs" id="time-tabs">
+            <div class="selection-tabs" id="pc-time-tabs">
                 <div class="selection-tab active" onclick="selectTime('09:00', this)">09:00</div>
                 <div class="selection-tab" onclick="selectTime('10:00', this)">10:00</div>
                 <div class="selection-tab" onclick="selectTime('11:00', this)">11:00</div>
@@ -210,6 +207,14 @@
     </div>
 </div>
 
+<footer class="footer">
+    <div class="footer-left">
+        <b class="important">상호 : 보라카이션 | 대표 : 윤오현</b><br>
+        서울특별시 중랑구 상봉로 16길 25-3<br>
+        사업자번호 : 498-31-00593 | daemit@naver.com
+    </div>
+</footer>
+
 <!-- 📱 모바일 예약 바 -->
 <div class="mobile-bottom-bar">
     <button class="m-btn-cart" onclick="addToCart()">장바구니</button>
@@ -218,14 +223,14 @@
 
 <!-- 📱 모바일 옵션 시트 -->
 <div class="option-sheet-overlay" id="sheetOverlay" onclick="closeOptionSheet()"></div>
-<div class="option-sheet" id="optionSheet" style="position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-radius: 25px 25px 0 0; z-index: 10005; padding: 30px 20px 40px; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); max-height: 80vh; overflow-y: auto;">
+<div class="option-sheet" id="optionSheet">
     <h3 style="font-weight:900; margin-bottom:20px; font-size:20px;">예약 옵션 선택</h3>
     
     <div class="calendar-wrap" style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 15px;">
         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-            <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800;">&lt;</button>
+            <button onclick="changeMonth(-1, 'mobile')" style="border:none; background:none; color:#ff6a00; font-weight:800;">&lt;</button>
             <strong id="m-month">2026년 3월</strong>
-            <button onclick="changeMonth(1)" style="border:none; background:none; color:#ff6a00; font-weight:800;">&gt;</button>
+            <button onclick="changeMonth(1, 'mobile')" style="border:none; background:none; color:#ff6a00; font-weight:800;">&gt;</button>
         </div>
         <div class="calendar-grid" id="m-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
     </div>
@@ -253,56 +258,65 @@
     <button class="btn-buy" onclick="handleBuy()" style="background:#ff6a00;">선택 완료 / 구매하기</button>
 </div>
 
-<footer class="footer">
-    <div class="footer-left">
-        <b class="important">상호 : 보라카이션 | 대표 : 윤오현</b><br>
-        서울특별시 중랑구 상봉로 16길 25-3<br>
-        사업자번호 : 498-31-00593 | daemit@naver.com
-    </div>
-</footer>
-
 <script src="main.js"></script>
 <script>
     let adultCount = 1;
-    let currentDate = new Date(2026, 2, 1);
+    let pcDate = new Date(2026, 2, 1);
+    let mobileDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
     let selectedTime = '09:00';
 
-    function openOptionSheet() { document.getElementById('sheetOverlay').style.display = 'block'; document.getElementById('optionSheet').classList.add('active'); }
-    function closeOptionSheet() { document.getElementById('sheetOverlay').style.display = 'none'; document.getElementById('optionSheet').classList.remove('active'); }
-
+    function openOptionSheet() { 
+        document.getElementById('sheetOverlay').classList.add('active'); 
+        document.getElementById('optionSheet').classList.add('active'); 
+        document.body.style.overflow = 'hidden';
+    }
+    function closeOptionSheet() { 
+        document.getElementById('sheetOverlay').classList.remove('active'); 
+        document.getElementById('optionSheet').classList.remove('active'); 
+        document.body.style.overflow = '';
+    }
+    
     function selectTime(time, el) {
         selectedTime = time;
-        const tabs = document.querySelectorAll('.selection-tab');
-        tabs.forEach(tab => {
-            if(tab.innerText === time) tab.classList.add('active');
-            else tab.classList.remove('active');
+        document.querySelectorAll('#pc-time-tabs .selection-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('#m-time-tabs .selection-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll(`.selection-tab`).forEach(t => {
+            if (t.innerText === time) t.classList.add('active');
         });
     }
 
     function updateCount(delta) {
         adultCount = Math.max(1, adultCount + delta);
         document.getElementById('pc-count').innerText = adultCount;
-        const mCount = document.getElementById('m-count');
-        if(mCount) mCount.innerText = adultCount;
+        document.getElementById('m-count').innerText = adultCount;
     }
-    function changeMonth(delta) {
-        currentDate.setMonth(currentDate.getMonth() + delta);
-        renderCalendar('pc-days', 'pc-month');
-        renderCalendar('m-days', 'm-month');
+    function changeMonth(delta, view) {
+        if (view === 'pc') {
+            pcDate.setMonth(pcDate.getMonth() + delta);
+        } else {
+            mobileDate.setMonth(mobileDate.getMonth() + delta);
+        }
+        renderCalendars();
     }
-    function renderCalendar(cid, tid) {
+    function renderCalendars() {
+        renderCalendar('pc-days', 'pc-month', pcDate);
+        renderCalendar('m-days', 'm-month', mobileDate);
+    }
+    function renderCalendar(cid, tid, dateObj) {
         const container = document.getElementById(cid);
         const title = document.getElementById(tid);
         if(!container || !title) return;
-        const year = currentDate.getFullYear();
-        const month = currentDate.getMonth();
+
+        const year = dateObj.getFullYear();
+        const month = dateObj.getMonth();
         title.innerText = `${year}년 ${month + 1}월`;
         container.innerHTML = '';
         ['일','월','화','수','목','금','토'].forEach(d => container.innerHTML += `<div style="color:#bbb; font-weight:800; font-size:12px;">${d}</div>`);
         const firstDay = new Date(year, month, 1).getDay();
         const lastDate = new Date(year, month + 1, 0).getDate();
         const today = new Date(); today.setHours(0, 0, 0, 0);
+
         for (let i = 0; i < firstDay; i++) container.appendChild(document.createElement('div'));
         for (let i = 1; i <= lastDate; i++) {
             const dateStr = `${year}-${(month+1).toString().padStart(2,'0')}-${i.toString().padStart(2,'0')}`;
@@ -313,10 +327,8 @@
                 div.className = 'day' + (dateStr === selectedDate ? ' selected' : '');
                 div.onclick = function() {
                     selectedDate = dateStr;
-                    const pcDisp = document.getElementById('pc-date-display');
-                    if(pcDisp) pcDisp.innerText = dateStr;
-                    renderCalendar('pc-days', 'pc-month');
-                    renderCalendar('m-days', 'm-month');
+                    document.getElementById('pc-date-display').innerText = dateStr;
+                    renderCalendars();
                 };
             }
             div.innerText = i;
@@ -324,18 +336,21 @@
         }
     }
     function handleBuy() {
-        const item = { name: "제트스키", price: 55000, count: adultCount, date: selectedDate, time: selectedTime };
+        const item = { name: "제트스키 (Jet Ski)", price: 55000, count: adultCount, date: selectedDate, time: selectedTime };
         sessionStorage.setItem('directBuyItem', JSON.stringify(item));
         window.open('booking-form.html', '_blank');
     }
     function addToCart() {
-        const item = { name: "제트스키", price: 55000, count: adultCount, date: selectedDate, time: selectedTime };
+        const item = { name: "제트스키 (Jet Ski)", price: 55000, count: adultCount, date: selectedDate, time: selectedTime };
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         cart.push(item);
         localStorage.setItem('cart', JSON.stringify(cart));
         if(confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) { window.location.assign('cart.html'); }
     }
-    window.onload = () => { renderCalendar('pc-days', 'pc-month'); renderCalendar('m-days', 'm-month'); };
+    window.onload = () => { 
+        document.getElementById('m-count').innerText = adultCount;
+        renderCalendars(); 
+    };
 </script>
 </body>
 </html>

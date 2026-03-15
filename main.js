@@ -45,7 +45,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!productsContainer) return;
         
         productsContainer.innerHTML = '';
-        const products = productData[category] || [];
+        let products = [...(productData[category] || [])]; // 복사본 생성 후 정렬
+        
+        // --- 뱃지 우선순위 정렬 (HOT -> NEW -> 일반) ---
+        products.sort((a, b) => {
+            const getPriority = (badge) => {
+                if (badge === 'HOT') return 1;
+                if (badge === 'NEW') return 2;
+                return 3;
+            };
+            return getPriority(a.badge) - getPriority(b.badge);
+        });
         
         if (bestTitle) {
             const categoryNames = {

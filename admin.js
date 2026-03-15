@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="padding:18px; background:#fff; border-radius:10px; margin-bottom:12px; border:1px solid #e2e6e9; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
                     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
                         <div style="font-size:18px; font-weight:900; color:#111;">${i.name}</div>
-                        <div style="font-size:18px; font-weight:900; color:var(--ss-green);">${i.count}명</div>
+                        <div style="font-size:18px; font-weight:900; color:var(--ss-green);">${i.count || i.qty || 0}명</div>
                     </div>
                     <div style="display:flex; gap:10px;">
                         <div style="background:#fff5eb; color:#ff6a00; padding:6px 12px; border-radius:6px; font-size:16px; font-weight:800; border:1px solid #ffe0d1;">

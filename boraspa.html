@@ -159,14 +159,11 @@
             <div class="calendar-grid" id="pc-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
         </div>
 
-        <!-- 마사지 종류 선택 -->
+                <!-- 마사지 종류 선택 -->
         <div class="selection-container">
-            <span class="selection-label">마사지 종류 선택</span>
-            <div class="selection-tabs" id="type-tabs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                <div class="selection-tab active" onclick="selectType('꿀 마사지', 55000, this)">꿀 마사지</div>
-                <div class="selection-tab" onclick="selectType('태반 마사지', 55000, this)">태반 마사지</div>
-                <div class="selection-tab" onclick="selectType('성장 마사지 (1시간)', 42000, this)">성장(1시간)</div>
-                <div class="selection-tab" onclick="selectType('성장 마사지 (2시간)', 55000, this)">성장(2시간)</div>
+            <span class="selection-label">마사지 종류 및 인원 선택</span>
+            <div id="type-selectors" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- JS will render individual counters here -->
             </div>
         </div>
 
@@ -181,13 +178,9 @@
             </div>
         </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:10px; background:#fcfcfc; border-radius:15px; border:1px solid #f0f0f0;">
-            <span style="font-weight:700; font-size:15px;">인원 (성인)</span>
-            <div class="counter">
-                <button class="count-btn" onclick="updateCount(-1)">-</button>
-                <strong id="pc-count">1</strong>
-                <button class="count-btn" onclick="updateCount(1)">+</button>
-            </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:12px; background:#f8f9fa; border-radius:15px; border:1px solid #eee;">
+            <span style="font-weight:800; font-size:15px; color:#111;">총 예약 인원</span>
+            <div style="font-size:18px; font-weight:900; color:#ff6a00;"><span id="total-count-display">0</span>명</div>
         </div>
         <button class="btn-buy" onclick="handleBuy()">구매하기</button>
         <button class="btn-cart" onclick="addToCart()" style="margin-top:6px; width:100%;">장바구니 담기</button>
@@ -208,55 +201,103 @@
 
 <script src="main.js"></script>
 <script>
-    let adultCount = 1;
+    const massageOptions = [{"name": "꿀 마사지", "price": 55000}, {"name": "태반 마사지", "price": 55000}, {"name": "진주 마사지", "price": 55000}, {"name": "성장 마사지 (1시간)", "price": 42000}, {"name": "성장 마사지 (2시간)", "price": 55000}];
+
+    let selectedQuantities = {}; 
     let currentDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
-    let selectedTypes = { '꿀 마사지': 55000 };
     let selectedTime = '12:30';
 
-    function selectType(type, price, el) {
-        if (selectedTypes[type]) {
-            if (Object.keys(selectedTypes).length > 1) {
-                delete selectedTypes[type];
-                el.classList.remove('active');
-            } else {
-                alert('최소 하나 이상의 마사지를 선택해주세요.');
-            }
-        } else {
-            selectedTypes[type] = price;
-            el.classList.add('active');
-        }
-        updateTotalPrice();
+    function initSelectors() {
+        const containers = [document.getElementById('type-selectors'), document.getElementById('m-type-selectors')];
+        containers.forEach(container => {
+            if (!container) return;
+            container.innerHTML = '';
+            massageOptions.forEach(opt => {
+                const row = document.createElement('div');
+                row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#fcfcfc; border-radius:12px; border:1px solid #f0f0f0;';
+                row.innerHTML = `
+                    <div style="display:flex; flex-direction:column;">
+                        <span style="font-size:14px; font-weight:700; color:#333;">${opt.name}</span>
+                        <span style="font-size:12px; color:#ff6a00; font-weight:600;">₩ ${opt.price.toLocaleString()}</span>
+                    </div>
+                    <div class="counter">
+                        <button class="count-btn" onclick="updateQty('${opt.name}', -1)">-</button>
+                        <strong class="qty-display" data-name="${opt.name}">0</strong>
+                        <button class="count-btn" onclick="updateQty('${opt.name}', 1)">+</button>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        });
+        // 초기값 설정 (첫 번째 옵션 1명)
+        updateQty(massageOptions[0].name, 1);
     }
 
-    function updateTotalPrice() {
-        let total = 0;
-        for (let key in selectedTypes) {
-            total += selectedTypes[key];
+    function updateQty(name, delta) {
+        const current = selectedQuantities[name] || 0;
+        const next = Math.max(0, current + delta);
+        if (next === 0) delete selectedQuantities[name];
+        else selectedQuantities[name] = next;
+        
+        document.querySelectorAll(`.qty-display[data-name="${name}"]`).forEach(el => {
+            el.innerText = next;
+            el.style.color = next > 0 ? '#ff6a00' : '#bbb';
+        });
+        
+        updateTotal();
+    }
+
+    function updateTotal() {
+        let totalCount = 0;
+        let totalPrice = 0;
+        for (const name in selectedQuantities) {
+            const qty = selectedQuantities[name];
+            const opt = massageOptions.find(o => o.name === name);
+            totalCount += qty;
+            totalPrice += (opt.price * qty);
         }
-        const displayTotal = total * adultCount;
-        document.getElementById('display-price').innerText = '₩ ' + displayTotal.toLocaleString();
+        
+        const tcDisp = document.getElementById('total-count-display');
+        if(tcDisp) tcDisp.innerText = totalCount;
+        const mtcDisp = document.getElementById('m-total-count-display');
+        if(mtcDisp) mtcDisp.innerText = totalCount;
+        
+        const priceDisplays = document.querySelectorAll('#display-price');
+        priceDisplays.forEach(d => d.innerText = '₩ ' + totalPrice.toLocaleString());
+    }
+
+    function openOptionSheet() { 
+        const overlay = document.getElementById('sheetOverlay');
+        const sheet = document.getElementById('optionSheet');
+        if(overlay) overlay.classList.add('active'); 
+        if(sheet) sheet.classList.add('active'); 
+    }
+    function closeOptionSheet() { 
+        const overlay = document.getElementById('sheetOverlay');
+        const sheet = document.getElementById('optionSheet');
+        if(overlay) overlay.classList.remove('active'); 
+        if(sheet) sheet.classList.remove('active'); 
     }
 
     function selectTime(time, el) {
         selectedTime = time;
-        const tabs = document.querySelectorAll('#time-tabs .selection-tab');
-        tabs.forEach(tab => tab.classList.remove('active'));
-        el.classList.add('active');
+        document.querySelectorAll('.selection-tab').forEach(tab => {
+            if (tab.innerText === time) tab.classList.add('active');
+            else if (tab.parentElement.id === 'time-tabs' || tab.parentElement.id === 'm-time-tabs') tab.classList.remove('active');
+        });
     }
 
-    function updateCount(delta) {
-        adultCount = Math.max(1, adultCount + delta);
-        document.getElementById('pc-count').innerText = adultCount;
-        updateTotalPrice();
-    }
     function changeMonth(delta) {
         currentDate.setMonth(currentDate.getMonth() + delta);
         renderCalendar('pc-days', 'pc-month');
+        renderCalendar('m-days', 'm-month');
     }
+
     function renderCalendar(cid, tid) {
         const container = document.getElementById(cid);
         const title = document.getElementById(tid);
+        if(!container || !title) return;
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth();
         title.innerText = `${year}년 ${month + 1}월`;
@@ -275,39 +316,54 @@
                 div.className = 'day' + (dateStr === selectedDate ? ' selected' : '');
                 div.onclick = function() {
                     selectedDate = dateStr;
-                    document.getElementById('pc-date-display').innerText = dateStr;
+                    const pcDisp = document.getElementById('pc-date-display');
+                    if(pcDisp) pcDisp.innerText = dateStr;
                     renderCalendar('pc-days', 'pc-month');
+                    renderCalendar('m-days', 'm-month');
                 };
             }
             div.innerText = i;
             container.appendChild(div);
         }
     }
+
+    function getSelectedItems() {
+        const items = [];
+        for (const name in selectedQuantities) {
+            const qty = selectedQuantities[name];
+            const opt = massageOptions.find(o => o.name === name);
+            items.push({
+                name: "보라스파 - " + name,
+                price: opt.price,
+                count: qty,
+                date: selectedDate,
+                time: selectedTime
+            });
+        }
+        return items;
+    }
+
     function handleBuy() {
-        const items = Object.keys(selectedTypes).map(type => ({
-            name: "보라스파 - " + type,
-            price: selectedTypes[type],
-            count: adultCount,
-            date: selectedDate,
-            time: selectedTime
-        }));
+        const items = getSelectedItems();
+        if (items.length === 0) { alert('최소 1명 이상의 마사지를 선택해주세요.'); return; }
         sessionStorage.setItem('directBuyItem', JSON.stringify(items));
         window.open('booking-form.html', '_blank');
     }
+
     function addToCart() {
-        const items = Object.keys(selectedTypes).map(type => ({
-            name: "보라스파 - " + type,
-            price: selectedTypes[type],
-            count: adultCount,
-            date: selectedDate,
-            time: selectedTime
-        }));
+        const items = getSelectedItems();
+        if (items.length === 0) { alert('최소 1명 이상의 마사지를 선택해주세요.'); return; }
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         items.forEach(item => cart.push(item));
         localStorage.setItem('cart', JSON.stringify(cart));
         if(confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) { window.location.assign('cart.html'); }
     }
-    window.onload = () => { renderCalendar('pc-days', 'pc-month'); };
+
+    window.onload = () => { 
+        initSelectors();
+        renderCalendar('pc-days', 'pc-month'); 
+        renderCalendar('m-days', 'm-month'); 
+    };
 </script>
 </body>
 </html>

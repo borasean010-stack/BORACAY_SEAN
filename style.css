@@ -985,17 +985,18 @@ body {
 }
 
 .s-icon {
-    width: 64px;
-    height: 64px;
-    margin-bottom: 20px;
-    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
-    transition: 0.4s;
+    width: 100px;
+    height: 100px;
+    margin-bottom: 25px;
+    filter: drop-shadow(0 8px 15px rgba(0,0,0,0.12));
+    transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     border-radius: 50%;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f8f9fa;
+    background: white;
+    border: 1px solid #f0f0f0;
 }
 
 .s-icon img {
@@ -1005,21 +1006,22 @@ body {
 }
 
 .service-card:hover .s-icon {
-    transform: scale(1.15) rotate(5deg);
+    transform: scale(1.1) rotate(3deg);
+    border-color: #ff6a00;
 }
 
 .service-card h3 {
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 800;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     color: #111;
 }
 
 .service-card p {
-    font-size: 14px;
-    color: #777;
+    font-size: 13px;
+    color: #888;
     font-weight: 500;
-    line-height: 1.5;
+    line-height: 1.4;
     word-break: keep-all;
 }
 
@@ -1027,9 +1029,9 @@ body {
     .service-section { padding: 60px 16px; }
     .service-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
     .service-card { padding: 25px 15px; border-radius: 20px; }
-    .s-icon { font-size: 36px; margin-bottom: 15px; }
-    .service-card h3 { font-size: 15px; margin-bottom: 6px; }
-    .service-card p { font-size: 12px; }
+    .s-icon { width: 80px; height: 80px; margin-bottom: 15px; }
+    .service-card h3 { font-size: 14px; margin-bottom: 4px; }
+    .service-card p { font-size: 11px; }
 }
 
 @media (max-device-width: 768px) {

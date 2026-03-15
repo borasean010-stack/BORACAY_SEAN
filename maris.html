@@ -144,7 +144,7 @@
     </div>
 
     <div class="reservation-box">
-        <div id="display-price" style="font-size:24px; font-weight:900; color:#ff6a00; margin-bottom:15px; letter-spacing: -1px;">₩ 91,000</div>
+        <div id="display-price" style="font-size:24px; font-weight:900; color:#ff6a00; margin-bottom:10px; letter-spacing: -1px;">₩ 91,000</div>
         
         <div class="date-tabs">
             <div class="date-tab active">예약 날짜 선택<span id="pc-date-display" class="date-display">2026-03-02</span></div>
@@ -210,16 +210,15 @@
             container.innerHTML = '';
             massageOptions.forEach(opt => {
                 const row = document.createElement('div');
-                row.style.cssText = 'display:flex; flex-direction:column; gap:4px; padding:8px; background:#fcfcfc; border-radius:10px; border:1px solid #f0f0f0;';
+                row.style.cssText = 'display:grid; grid-template-columns: 1fr auto; gap: 2px 8px; padding:6px 10px; background:#fcfcfc; border-radius:10px; border:1px solid #f0f0f0; align-items:center;';
                 row.innerHTML = `
-                    <div style="display:flex; flex-direction:column;">
-                        <span style="font-size:12px; font-weight:700; color:#333; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${opt.name}</span>
-                        <span style="font-size:11px; color:#ff6a00; font-weight:600;">₩ ${opt.price.toLocaleString()}</span>
-                    </div>
-                    <div class="counter" style="justify-content:space-between; width:100%; margin-top:4px;">
-                        <button class="count-btn" style="width:24px; height:24px; font-size:12px;" onclick="updateQty('${opt.name}', -1)">-</button>
-                        <strong class="qty-display" style="font-size:13px;" data-name="${opt.name}">0</strong>
-                        <button class="count-btn" style="width:24px; height:24px; font-size:12px;" onclick="updateQty('${opt.name}', 1)">+</button>
+                    <div style="font-size:12px; font-weight:700; color:#333; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${opt.name}</div>
+                    <div style="font-size:10px; color:#999; text-align:center; font-weight:600; line-height:1;">수량</div>
+                    <div style="font-size:11px; color:#ff6a00; font-weight:800;">₩ ${opt.price.toLocaleString()}</div>
+                    <div class="counter" style="gap:4px; border:none; background:none; padding:0;">
+                        <button class="count-btn" style="width:22px; height:22px; font-size:12px;" onclick="updateQty('${opt.name}', -1)">-</button>
+                        <strong class="qty-display" style="font-size:13px; width:18px;" data-name="${opt.name}">0</strong>
+                        <button class="count-btn" style="width:22px; height:22px; font-size:12px;" onclick="updateQty('${opt.name}', 1)">+</button>
                     </div>
                 `;
                 container.appendChild(row);

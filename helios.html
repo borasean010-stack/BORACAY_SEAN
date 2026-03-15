@@ -175,8 +175,8 @@
         <div class="selection-container">
             <span class="selection-label">이용 가능 시간 선택</span>
             <div class="selection-tabs" id="time-tabs">
-                <div class="selection-tab active" onclick="selectTime('12:30', this)">12:30</div>
-                <div class="selection-tab" onclick="selectTime('14:30', this)">14:30</div>
+                <div class="selection-tab active" onclick="selectTime('09:30', this)">09:30</div>
+                <div class="selection-tab" onclick="selectTime('13:00', this)">13:00</div>
                 <div class="selection-tab" onclick="selectTime('16:30', this)">16:30</div>
                 <div class="selection-tab" onclick="selectTime('19:30', this)">19:30</div>
             </div>
@@ -213,7 +213,7 @@
     let currentDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
     let selectedTypes = { '허니 스톤': 91000 };
-    let selectedTime = '12:30';
+    let selectedTime = '09:30';
 
     function selectType(type, price, el) {
         if (selectedTypes[type]) {

@@ -812,18 +812,18 @@ body {
     display: flex; 
     align-items: center; 
     background: #f8f9fa; 
-    border-radius: 12px; 
-    padding: 4px; 
+    border-radius: 10px; 
+    padding: 2px; /* Reduced from 3px */
     border: 1px solid #eee;
 }
 .count-btn { 
-    width: 36px; 
-    height: 36px; 
+    width: 28px; /* Reduced from 32px */
+    height: 28px; /* Reduced from 32px */
     border: none; 
     background: white; 
     color: #111; 
-    border-radius: 8px; 
-    font-size: 18px; 
+    border-radius: 6px; 
+    font-size: 14px; /* Reduced from 16px */
     font-weight: 700; 
     cursor: pointer; 
     transition: 0.2s;
@@ -835,36 +835,36 @@ body {
 .count-btn:hover { background: #ff6a00; color: white; transform: translateY(-1px); }
 .count-btn:active { transform: translateY(0); }
 #pc-count { 
-    width: 40px; 
+    width: 30px; /* Reduced from 34px */
     text-align: center; 
-    font-size: 16px; 
+    font-size: 14px; /* Reduced from 15px */
     font-weight: 800; 
     color: #111; 
 }
 
 .selection-container {
-    margin-bottom: 20px;
+    margin-bottom: 10px; /* Reduced from 12px */
 }
 .selection-label {
     display: block;
-    font-size: 14px;
+    font-size: 12px; /* Reduced from 13px */
     font-weight: 800;
     color: #333;
-    margin-bottom: 10px;
+    margin-bottom: 4px; /* Reduced from 6px */
     padding-left: 2px;
 }
 .selection-tabs {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    gap: 8px;
+    gap: 6px;
 }
 .selection-tab {
-    padding: 12px 5px;
+    padding: 8px 4px; /* Reduced from 10px 4px */
     text-align: center;
-    font-size: 13px;
+    font-size: 11px; /* Reduced from 12px */
     font-weight: 700;
     cursor: pointer;
-    border-radius: 12px;
+    border-radius: 10px;
     background: #f8f9fa;
     color: #888;
     border: 1px solid #eee;
@@ -879,7 +879,7 @@ body {
     background: #ff6a00;
     color: white;
     border-color: #ff6a00;
-    box-shadow: 0 5px 15px rgba(255,106,0,0.2);
+    box-shadow: 0 4px 12px rgba(255,106,0,0.2);
 }
 
 .day.disabled { color: #ccc !important; cursor: not-allowed; pointer-events: none; text-decoration: line-through; opacity: 0.5; }

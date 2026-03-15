@@ -35,15 +35,15 @@
         .itinerary-img { width: 100%; margin-bottom: 30px; }
         .itinerary-img img { width: 100%; border-radius: 20px; display: block; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         
-        .date-tabs { display: flex; gap: 5px; margin-bottom: 15px; background: #f8f9fa; padding: 5px; border-radius: 12px; }
-        .date-tab { flex: 1; padding: 12px 5px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 10px; transition: 0.2s; color: #888; border: 1px solid transparent; }
+        .date-tabs { display: flex; gap: 5px; margin-bottom: 10px; background: #f8f9fa; padding: 5px; border-radius: 12px; }
+        .date-tab { flex: 1; padding: 8px 5px; text-align: center; font-size: 12px; font-weight: 700; cursor: pointer; border-radius: 10px; transition: 0.2s; color: #888; border: 1px solid transparent; }
         .date-tab.active { background: white; color: #ff6a00; border-color: #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .date-display { font-size: 12px; display: block; margin-top: 4px; color: #ff6a00; font-weight: 800; }
 
         .reservation-box { 
             background: white; 
             border-radius: 28px; 
-            padding: 30px; 
+            padding: 20px; 
             box-shadow: 0 20px 50px rgba(0,0,0,0.08); 
             position: sticky; 
             top: 100px; 
@@ -55,8 +55,8 @@
         .day:hover { background: #fff1e6; }
         .day.selected { background: #ff6a00 !important; color: white !important; font-weight: 800; }
 
-        .btn-buy { width: 100%; padding: 20px; background: #111; color: white; border: none; border-radius: 16px; font-size: 17px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .btn-cart { width: 100%; padding: 18px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 16px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-buy { width: 100%; padding: 16px; background: #111; color: white; border: none; border-radius: 16px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-cart { width: 100%; padding: 14px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 16px; font-size: 15px; font-weight: 800; cursor: pointer; transition: 0.3s; }
         .btn-buy:hover { background: #ff6a00; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
         .btn-cart:hover { background: #fff5eb; }
 
@@ -166,13 +166,13 @@
     </div>
 
     <div class="reservation-box">
-        <div style="font-size:28px; font-weight:900; color:#ff6a00; margin-bottom:20px; letter-spacing: -1px;">₩ 55,000</div>
+        <div style="font-size:24px; font-weight:900; color:#ff6a00; margin-bottom:15px; letter-spacing: -1px;">₩ 55,000</div>
         
         <div class="date-tabs">
             <div class="date-tab active">예약 날짜 선택<span id="pc-date-display" class="date-display">2026-03-02</span></div>
         </div>
 
-        <div class="calendar-wrap" style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 15px;">
+        <div class="calendar-wrap" style="margin-bottom: 12px; border: 1px solid #eee; border-radius: 16px; padding: 10px;">
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <button onclick="changeMonth(-1, 'pc')" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&lt;</button>
                 <strong id="pc-month">2026년 3월</strong>
@@ -193,7 +193,7 @@
             </div>
         </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding:15px; background:#fcfcfc; border-radius:15px; border:1px solid #f0f0f0;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:10px; background:#fcfcfc; border-radius:15px; border:1px solid #f0f0f0;">
             <span style="font-weight:700; font-size:15px;">인원 (성인)</span>
             <div class="counter">
                 <button class="count-btn" onclick="updateCount(-1)">-</button>
@@ -202,7 +202,7 @@
             </div>
         </div>
         <button class="btn-buy" onclick="handleBuy()">구매하기</button>
-        <button class="btn-cart" onclick="addToCart()" style="margin-top:10px;">장바구니 담기</button>
+        <button class="btn-cart" onclick="addToCart()" style="margin-top:6px;">장바구니 담기</button>
     </div>
 </div>
 
@@ -225,7 +225,7 @@
 <div class="option-sheet" id="optionSheet">
     <h3 style="font-weight:900; margin-bottom:20px; font-size:20px;">예약 옵션 선택</h3>
     
-    <div class="calendar-wrap" style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 15px;">
+    <div class="calendar-wrap" style="margin-bottom: 12px; border: 1px solid #eee; border-radius: 16px; padding: 10px;">
         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
             <button onclick="changeMonth(-1, 'mobile')" style="border:none; background:none; color:#ff6a00; font-weight:800;">&lt;</button>
             <strong id="m-month">2026년 3월</strong>
@@ -246,7 +246,7 @@
         </div>
     </div>
 
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:#fcfcfc; border-radius:15px; margin-bottom:20px; border:1px solid #f0f0f0;">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#fcfcfc; border-radius:15px; margin-bottom:12px; border:1px solid #f0f0f0;">
         <span style="font-weight:700;">인원 (성인)</span>
         <div class="counter">
             <button class="count-btn" onclick="updateCount(-1)">-</button>

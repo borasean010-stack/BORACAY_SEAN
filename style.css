@@ -884,20 +884,36 @@ body {
 
 .day.disabled { color: #ccc !important; cursor: not-allowed; pointer-events: none; text-decoration: line-through; opacity: 0.5; }
 
-/* 상품 배지 (BEST 등) */
+/* 상품 배지 (HOT, NEW 등) */
 .product-badge {
     position: absolute;
     top: 15px;
     left: 15px;
     background: #ff6a00;
     color: white;
-    padding: 5px 12px;
-    border-radius: 50px;
-    font-size: 11px;
+    padding: 6px 14px;
+    border-radius: 12px;
+    font-size: 12px;
     font-weight: 900;
     z-index: 10;
-    box-shadow: 0 4px 10px rgba(255,106,0,0.3);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
     text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-hot {
+    background: #ff3b30 !important; /* Vivid Red */
+    animation: badge-pulse 2s infinite;
+}
+
+.badge-new {
+    background: #007aff !important; /* Blue */
+}
+
+@keyframes badge-pulse {
+    0% { transform: scale(1); box-shadow: 0 4px 15px rgba(255,59,48,0.3); }
+    50% { transform: scale(1.05); box-shadow: 0 4px 20px rgba(255,59,48,0.5); }
+    100% { transform: scale(1); box-shadow: 0 4px 15px rgba(255,59,48,0.3); }
 }
 
 /* 💰 Sophisticated Price Button */

@@ -952,7 +952,6 @@ body {
 /* 📢 알립니다! (서비스 바로가기) 섹션 추가 */
 .service-section {
     padding: clamp(60px, 10vw, 100px) 20px;
-    background: #fafafa;
 }
 
 .service-grid {

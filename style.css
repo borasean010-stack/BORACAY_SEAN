@@ -812,18 +812,18 @@ body {
     display: flex; 
     align-items: center; 
     background: #f8f9fa; 
-    border-radius: 10px; 
-    padding: 2px; /* Reduced from 3px */
+    border-radius: 8px; 
+    padding: 2px; 
     border: 1px solid #eee;
 }
 .count-btn { 
-    width: 28px; /* Reduced from 32px */
-    height: 28px; /* Reduced from 32px */
+    width: 24px; 
+    height: 24px; 
     border: none; 
     background: white; 
     color: #111; 
-    border-radius: 6px; 
-    font-size: 14px; /* Reduced from 16px */
+    border-radius: 4px; 
+    font-size: 12px; 
     font-weight: 700; 
     cursor: pointer; 
     transition: 0.2s;
@@ -834,10 +834,10 @@ body {
 }
 .count-btn:hover { background: #ff6a00; color: white; transform: translateY(-1px); }
 .count-btn:active { transform: translateY(0); }
-#pc-count { 
-    width: 30px; /* Reduced from 34px */
+#pc-count, #m-count, .qty-display { 
+    width: 24px; 
     text-align: center; 
-    font-size: 14px; /* Reduced from 15px */
+    font-size: 13px; 
     font-weight: 800; 
     color: #111; 
 }

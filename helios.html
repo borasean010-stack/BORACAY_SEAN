@@ -43,7 +43,7 @@
         .reservation-box { 
             background: white; 
             border-radius: 28px; 
-            padding: 20px; 
+            padding: 15px; 
             box-shadow: 0 20px 50px rgba(0,0,0,0.08); 
             position: sticky; 
             top: 100px; 
@@ -150,7 +150,7 @@
             <div class="date-tab active">예약 날짜 선택<span id="pc-date-display" class="date-display">2026-03-02</span></div>
         </div>
 
-        <div class="calendar-wrap" style="margin-bottom: 12px; border: 1px solid #eee; border-radius: 16px; padding: 10px;">
+        <div class="calendar-wrap" style="margin-bottom: 8px; border: 1px solid #eee; border-radius: 16px; padding: 10px;">
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&lt;</button>
                 <strong id="pc-month">2026년 3월</strong>
@@ -159,10 +159,10 @@
             <div class="calendar-grid" id="pc-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
         </div>
 
-                <!-- 마사지 종류 선택 -->
+                                <!-- 마사지 종류 선택 -->
         <div class="selection-container">
             <span class="selection-label">마사지 종류 및 인원 선택</span>
-            <div id="type-selectors" style="display: flex; flex-direction: column; gap: 10px;">
+            <div id="type-selectors" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
                 <!-- JS will render individual counters here -->
             </div>
         </div>
@@ -178,9 +178,9 @@
             </div>
         </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:12px; background:#f8f9fa; border-radius:15px; border:1px solid #eee;">
-            <span style="font-weight:800; font-size:15px; color:#111;">총 예약 인원</span>
-            <div style="font-size:18px; font-weight:900; color:#ff6a00;"><span id="total-count-display">0</span>명</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding:10px; background:#f8f9fa; border-radius:12px; border:1px solid #eee;">
+            <span style="font-weight:800; font-size:14px; color:#111;">총 예약 인원</span>
+            <div style="font-size:16px; font-weight:900; color:#ff6a00;"><span id="total-count-display">0</span>명</div>
         </div>
         <button class="btn-buy" onclick="handleBuy()">구매하기</button>
         <button class="btn-cart" onclick="addToCart()" style="margin-top:6px; width:100%;">장바구니 담기</button>
@@ -202,7 +202,6 @@
 <script src="main.js"></script>
 <script>
     const massageOptions = [{"name": "허니 스톤", "price": 91000}, {"name": "코코 스파", "price": 105000}, {"name": "허니 스톤 + 코코 스파", "price": 119000}, {"name": "성장 마사지 (1시간)", "price": 42000}, {"name": "성장 마사지 (2시간)", "price": 55000}];
-
     let selectedQuantities = {}; 
     let currentDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
@@ -215,22 +214,21 @@
             container.innerHTML = '';
             massageOptions.forEach(opt => {
                 const row = document.createElement('div');
-                row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#fcfcfc; border-radius:12px; border:1px solid #f0f0f0;';
+                row.style.cssText = 'display:flex; flex-direction:column; gap:4px; padding:8px; background:#fcfcfc; border-radius:10px; border:1px solid #f0f0f0;';
                 row.innerHTML = `
                     <div style="display:flex; flex-direction:column;">
-                        <span style="font-size:14px; font-weight:700; color:#333;">${opt.name}</span>
-                        <span style="font-size:12px; color:#ff6a00; font-weight:600;">₩ ${opt.price.toLocaleString()}</span>
+                        <span style="font-size:12px; font-weight:700; color:#333; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${opt.name}</span>
+                        <span style="font-size:11px; color:#ff6a00; font-weight:600;">₩ ${opt.price.toLocaleString()}</span>
                     </div>
-                    <div class="counter">
-                        <button class="count-btn" onclick="updateQty('${opt.name}', -1)">-</button>
-                        <strong class="qty-display" data-name="${opt.name}">0</strong>
-                        <button class="count-btn" onclick="updateQty('${opt.name}', 1)">+</button>
+                    <div class="counter" style="justify-content:space-between; width:100%; margin-top:4px;">
+                        <button class="count-btn" style="width:24px; height:24px; font-size:12px;" onclick="updateQty('${opt.name}', -1)">-</button>
+                        <strong class="qty-display" style="font-size:13px;" data-name="${opt.name}">0</strong>
+                        <button class="count-btn" style="width:24px; height:24px; font-size:12px;" onclick="updateQty('${opt.name}', 1)">+</button>
                     </div>
                 `;
                 container.appendChild(row);
             });
         });
-        // 초기값 설정 (첫 번째 옵션 1명)
         updateQty(massageOptions[0].name, 1);
     }
 
@@ -239,45 +237,35 @@
         const next = Math.max(0, current + delta);
         if (next === 0) delete selectedQuantities[name];
         else selectedQuantities[name] = next;
-        
         document.querySelectorAll(`.qty-display[data-name="${name}"]`).forEach(el => {
             el.innerText = next;
             el.style.color = next > 0 ? '#ff6a00' : '#bbb';
         });
-        
         updateTotal();
     }
 
     function updateTotal() {
-        let totalCount = 0;
-        let totalPrice = 0;
+        let totalCount = 0; let totalPrice = 0;
         for (const name in selectedQuantities) {
             const qty = selectedQuantities[name];
             const opt = massageOptions.find(o => o.name === name);
-            totalCount += qty;
-            totalPrice += (opt.price * qty);
+            totalCount += qty; totalPrice += (opt.price * qty);
         }
-        
         const tcDisp = document.getElementById('total-count-display');
         if(tcDisp) tcDisp.innerText = totalCount;
         const mtcDisp = document.getElementById('m-total-count-display');
         if(mtcDisp) mtcDisp.innerText = totalCount;
-        
         const priceDisplays = document.querySelectorAll('#display-price');
         priceDisplays.forEach(d => d.innerText = '₩ ' + totalPrice.toLocaleString());
     }
 
     function openOptionSheet() { 
-        const overlay = document.getElementById('sheetOverlay');
-        const sheet = document.getElementById('optionSheet');
-        if(overlay) overlay.classList.add('active'); 
-        if(sheet) sheet.classList.add('active'); 
+        document.getElementById('sheetOverlay')?.classList.add('active'); 
+        document.getElementById('optionSheet')?.classList.add('active'); 
     }
     function closeOptionSheet() { 
-        const overlay = document.getElementById('sheetOverlay');
-        const sheet = document.getElementById('optionSheet');
-        if(overlay) overlay.classList.remove('active'); 
-        if(sheet) sheet.classList.remove('active'); 
+        document.getElementById('sheetOverlay')?.classList.remove('active'); 
+        document.getElementById('optionSheet')?.classList.remove('active'); 
     }
 
     function selectTime(time, el) {

@@ -166,6 +166,7 @@
         db = getFirestore(app);
     } catch (e) { console.error("Firebase init failed"); }
 
+    const user = JSON.parse(localStorage.getItem('kakao_user') || '{"id": "guest"}');
     let hasPickup = false;
     let cartData = [];
     let selectedPayment = '무통장'; // 기본값 무통장 설정

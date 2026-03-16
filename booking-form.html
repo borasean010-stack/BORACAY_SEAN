@@ -116,12 +116,12 @@
                     <input type="text" id="contact" placeholder="안내 메시지를 받으실 수 있는 정보" required>
                 </div>
 
-                <div class="input-group">
+                <div class="input-group" id="requests-group" style="display: none;">
                     <label id="requests-label">기타 요청사항</label>
                     <textarea id="requests" placeholder="추가 문의사항이나 리조트 견적 시 특별히 요청하실 내용을 적어주세요. (예: 침대 타입, 특정 위치 선호 등)"></textarea>
                 </div>
 
-                <div id="pickup-sending-fields">
+                <div id="pickup-sending-fields" style="display: none;">
                     <div class="section-subtitle" style="color:#ff6a00;">✈️ 픽업/샌딩 상세 정보</div>
                     <div class="input-group"><label>대표자 영문 이름</label><input type="text" id="eng-name" placeholder="예: HONG GILDONG"></div>
                     <div class="input-group"><label>픽업 항공편명</label><input type="text" id="pickup-flight" placeholder="예: TW125"></div>
@@ -224,7 +224,7 @@
         const isResortQuote = cartData.some(item => item.name.includes('리조트 견적'));
         
         if (!isResortQuote) {
-            const requestsGroup = document.getElementById('requests').closest('.input-group');
+            const requestsGroup = document.getElementById('requests-group');
             if (requestsGroup) requestsGroup.style.display = 'none';
         }
 

@@ -133,7 +133,8 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * Updated Child label to "소인 인원 (36개월~초6학년)".
     * **Ayurveda Spa Style:** Unified the "Total Summary" design to match other pages.
     * **S-SPA Navigation Fix:** Fixed the active menu tab when viewing the S-SPA detail page.
-    * **Booking Form Optimization:** Hidden the "Other Requests" (기타 요청사항) field for all products except resort quotes to simplify the reservation process.
+    * **Booking Form Optimization:** Permanently hidden the "Other Requests" (기타 요청사항) field for all products except resort quotes. The field is now hidden by default in the HTML and only revealed via JavaScript when a resort quote is detected, preventing any UI flicker during page load.
+    * **My Page Consistency:** Verified that the "My Requests" section in `mypage.html` remains hidden for activity bookings as the underlying data field is no longer populated for non-resort products.
 
 ## Previous Milestone: Admin & Login Redesign
 

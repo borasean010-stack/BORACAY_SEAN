@@ -195,15 +195,66 @@
 
     function renderBooking(container, booking) {
         const info = booking.info;
-        const items = booking.items || [];
+        // items가 없는 경우 info.items를 사용 (최근 예약 대응)
+        const items = booking.items && booking.items.length > 0 ? booking.items : (info.items || []);
         const date = booking.timestamp ? new Date(booking.timestamp).toLocaleDateString() : '최근 예약';
+        
         const card = document.createElement('div');
         card.className = 'booking-card';
+        
         let itemsHtml = '';
         items.forEach(item => {
-            itemsHtml += `<div class="reserved-item"><div><div class="item-title">${item.name}</div><div class="item-meta">예약일: ${item.date} | 인원: ${item.count}명</div></div><div class="item-price">₩ ${(item.price * item.count).toLocaleString()}</div></div>`;
+            // 날짜 및 상세 정보 구성
+            let dateStr = item.date || '날짜 미지정';
+            if (item.name.includes('픽업샌딩')) {
+                dateStr = `${item.pickupDate || '픽업일 미정'} ~ ${item.sendingDate || '샌딩일 미정'}`;
+            } else if (item.name.includes('리조트 견적') && item.details) {
+                dateStr = `${item.details.checkin} ~ ${item.details.checkout}`;
+            }
+
+            const timeStr = item.time ? ` | 시간: ${item.time}` : '';
+            const countStr = ` | 인원: ${item.count}명`;
+            const detailStr = (item.details && typeof item.details === 'string') ? `<br><small style="color:#999;">(${item.details})</small>` : '';
+
+            // 통일된 금액 계산 로직: item.totalPrice 우선
+            const itemPrice = item.totalPrice || (item.price * item.count);
+
+            itemsHtml += `
+                <div class="reserved-item" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+                    <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                        <div class="item-title" style="margin-bottom: 0;">${item.name}</div>
+                        <div class="item-price">₩ ${itemPrice.toLocaleString()}</div>
+                    </div>
+                    <div class="item-meta">
+                        📅 ${dateStr}${timeStr}${countStr}${detailStr}
+                    </div>
+                </div>`;
         });
-        card.innerHTML = `<h3><span>●</span> 예약 내역 (${date})</h3><div class="info-grid"><div class="info-item"><label>대표자명</label><span>${info.customerKorName}</span></div><div class="info-item"><label>연락처</label><span>${info.contact}</span></div></div><div style="margin-top:20px;">${itemsHtml}</div>`;
+
+        const requestsHtml = info.requests ? `
+            <div style="margin-top: 20px; padding: 15px; background: #fafafa; border-radius: 12px; border: 1px solid #eee;">
+                <label style="font-size: 12px; color: #999; font-weight: 700; display: block; margin-bottom: 5px;">나의 요청사항</label>
+                <div style="font-size: 14px; color: #444; white-space: pre-wrap;">${info.requests}</div>
+            </div>` : '';
+
+        card.innerHTML = `
+            <h3><span>●</span> 예약 내역 (${date})</h3>
+            <div class="info-grid">
+                <div class="info-item"><label>대표자명</label><span>${info.customerKorName}</span></div>
+                <div class="info-item"><label>연락처</label><span>${info.contact}</span></div>
+                <div class="info-item"><label>예약번호</label><span style="color:#ff6a00;">${info.reservationNumber || '-'}</span></div>
+                <div class="info-item"><label>예약상태</label><span>${info.status || '확인중'}</span></div>
+            </div>
+            <div style="margin-top:20px;">
+                <label style="font-size: 12px; color: #999; font-weight: 700; display: block; margin-bottom: 10px;">선택한 상품</label>
+                ${itemsHtml}
+            </div>
+            ${requestsHtml}
+            <div style="margin-top: 25px; padding-top: 20px; border-top: 2px solid #f9f9f9; text-align: right;">
+                <span style="font-size: 14px; color: #888; font-weight: 600; margin-right: 10px;">총 결제 금액</span>
+                <span style="font-size: 24px; font-weight: 900; color: #ff6a00;">₩ ${(info.totalPrice || 0).toLocaleString()}</span>
+            </div>
+        `;
         container.appendChild(card);
     }
 </script>

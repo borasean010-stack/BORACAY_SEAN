@@ -60,6 +60,25 @@
         .btn-buy:hover { background: #ff6a00; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
         .btn-cart:hover { background: #fff5eb; }
 
+        /* 인원 선택 영역 개선 스타일 */
+        .person-selector { background:#fcfcfc; border-radius:20px; border:1px solid #f0f0f0; padding:20px; margin-bottom:20px; }
+        .person-row { margin-bottom: 15px; }
+        .person-row:last-child { margin-bottom: 0; }
+        .person-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .person-price-calc { text-align: right; font-size: 13px; color: #888; font-weight: 600; }
+        .person-price-calc b { color: #333; }
+
+        .total-summary { 
+            padding-top: 15px; 
+            border-top: 1px solid #eee; 
+            margin-top: 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+        }
+        .total-summary span { font-size: 15px; font-weight: 800; color: #111; }
+        .total-summary b { font-size: 24px; font-weight: 900; color: #ff6a00; letter-spacing: -1px; }
+
         @media (max-device-width: 1024px) {
             .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
             .reservation-box { display: none; }
@@ -171,26 +190,11 @@
     </div>
 
     <div class="reservation-box">
-        <div class="price-styled-header" style="margin-bottom:25px; padding-bottom:20px; border-bottom:1px solid #f0f0f0;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <span style="font-size:14px; color:#888; font-weight:700;">성인 1인</span>
-                <b style="font-size:16px; color:#333;">₩ 99,000</b>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <span style="font-size:14px; color:#888; font-weight:700;">소인 1인</span>
-                <b style="font-size:16px; color:#333;">₩ 90,000</b>
-            </div>
-            <div style="font-size:28px; font-weight:900; color:#ff6a00; letter-spacing: -1.5px; text-align:right;">
-                <span style="font-size:14px; vertical-align:middle; margin-right:5px;">총 합계</span>
-                <span id="display-total-price">₩ 99,000</span>
-            </div>
-        </div>
-        
         <div class="date-tabs">
             <div class="date-tab active">투어 날짜 선택<span id="pc-date-display" class="date-display">2026-03-02</span></div>
         </div>
 
-        <div class="calendar-wrap" style="margin-bottom: 12px; border: 1px solid #eee; border-radius: 16px; padding: 10px;">
+        <div class="calendar-wrap" style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 10px;">
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <button onclick="changeMonth(-1, 'pc')" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&lt;</button>
                 <strong id="pc-month">2026년 3월</strong>
@@ -199,32 +203,44 @@
             <div class="calendar-grid" id="pc-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
         </div>
 
-        <div style="background:#fcfcfc; border-radius:20px; border:1px solid #f0f0f0; padding:20px; margin-bottom:25px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <div>
-                    <b style="display:block; font-size:15px;">성인 인원</b>
-                    <small style="color:#999; font-size:12px;">중1학년 ~ 성인</small>
+        <div class="person-selector">
+            <!-- 성인 선택 -->
+            <div class="person-row">
+                <div class="person-info">
+                    <span style="font-weight:800; font-size:15px;">성인 인원</span>
+                    <div class="counter">
+                        <button class="count-btn" onclick="updateAdultCount(-1)">-</button>
+                        <strong id="pc-adult-count">1</strong>
+                        <button class="count-btn" onclick="updateAdultCount(1)">+</button>
+                    </div>
                 </div>
-                <div class="counter">
-                    <button class="count-btn" onclick="updateAdultCount(-1)">-</button>
-                    <strong id="pc-adult-count">1</strong>
-                    <button class="count-btn" onclick="updateAdultCount(1)">+</button>
+                <div class="person-price-calc">
+                    ₩ 99,000 × <span id="adult-count-text">1</span> = <b id="adult-subtotal">₩ 99,000</b>
                 </div>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div>
-                    <b style="display:block; font-size:15px;">소인 인원</b>
-                    <small style="color:#999; font-size:12px;">36개월 ~ 초6학년</small>
+            <!-- 소인 선택 -->
+            <div class="person-row" style="margin-top:15px; padding-top:15px; border-top:1px dashed #eee;">
+                <div class="person-info">
+                    <span style="font-weight:800; font-size:15px;">소인 인원</span>
+                    <div class="counter">
+                        <button class="count-btn" onclick="updateChildCount(-1)">-</button>
+                        <strong id="pc-child-count">0</strong>
+                        <button class="count-btn" onclick="updateChildCount(1)">+</button>
+                    </div>
                 </div>
-                <div class="counter">
-                    <button class="count-btn" onclick="updateChildCount(-1)">-</button>
-                    <strong id="pc-child-count">0</strong>
-                    <button class="count-btn" onclick="updateChildCount(1)">+</button>
+                <div class="person-price-calc">
+                    ₩ 90,000 × <span id="child-count-text">0</span> = <b id="child-subtotal">₩ 0</b>
                 </div>
+            </div>
+
+            <!-- 총 합계 -->
+            <div class="total-summary">
+                <span>총 합계 금액</span>
+                <b id="display-total-price">₩ 99,000</b>
             </div>
         </div>
 
-        <button class="btn-buy" onclick="handleBuy()" style="width:100%;">구매하기</button>
+        <button class="btn-buy" onclick="handleBuy()" id="buy-btn">₩ 99,000 구매하기</button>
         <button class="btn-cart" onclick="addToCart()" style="margin-top:6px; width:100%;">장바구니 담기</button>
     </div>
 </div>
@@ -252,19 +268,30 @@
     let selectedDate = '2026-03-02';
 
     function updateTotalPrice() {
-        const total = (adultCount * ADULT_PRICE) + (childCount * CHILD_PRICE);
-        document.getElementById('display-total-price').innerText = '₩ ' + total.toLocaleString();
+        const adultSubtotal = adultCount * ADULT_PRICE;
+        const childSubtotal = childCount * CHILD_PRICE;
+        const total = adultSubtotal + childSubtotal;
+
+        document.getElementById('pc-adult-count').innerText = adultCount;
+        document.getElementById('adult-count-text').innerText = adultCount;
+        document.getElementById('adult-subtotal').innerText = '₩ ' + adultSubtotal.toLocaleString();
+
+        document.getElementById('pc-child-count').innerText = childCount;
+        document.getElementById('child-count-text').innerText = childCount;
+        document.getElementById('child-subtotal').innerText = '₩ ' + childSubtotal.toLocaleString();
+
+        const totalStr = '₩ ' + total.toLocaleString();
+        document.getElementById('display-total-price').innerText = totalStr;
+        document.getElementById('buy-btn').innerText = totalStr + ' 구매하기';
     }
 
     function updateAdultCount(delta) {
         adultCount = Math.max(1, adultCount + delta);
-        document.getElementById('pc-adult-count').innerText = adultCount;
         updateTotalPrice();
     }
 
     function updateChildCount(delta) {
         childCount = Math.max(0, childCount + delta);
-        document.getElementById('pc-child-count').innerText = childCount;
         updateTotalPrice();
     }
 
@@ -309,7 +336,7 @@
         const total = (adultCount * ADULT_PRICE) + (childCount * CHILD_PRICE);
         const item = { 
             name: "시크릿가든 말룸파티 투어", 
-            price: total, 
+            price: total / (adultCount + childCount), 
             count: adultCount + childCount, 
             date: selectedDate,
             details: `성인 ${adultCount}, 소인 ${childCount}`
@@ -322,7 +349,7 @@
         const total = (adultCount * ADULT_PRICE) + (childCount * CHILD_PRICE);
         const item = { 
             name: "시크릿가든 말룸파티 투어", 
-            price: total, 
+            price: total / (adultCount + childCount), 
             count: adultCount + childCount, 
             date: selectedDate,
             details: `성인 ${adultCount}, 소인 ${childCount}`

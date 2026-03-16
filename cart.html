@@ -101,9 +101,25 @@
         listContainer.innerHTML = '';
         let total = 0;
         cart.forEach((item, index) => {
-            const itemTotal = item.price * item.count;
+            // 통일된 금액 계산 로직: item.totalPrice 우선
+            const itemTotal = item.totalPrice || (item.price * item.count);
             total += itemTotal;
-            listContainer.innerHTML += `<div class="cart-item"><div class="item-info"><h4>${item.name}</h4><p>예약일: ${item.date}</p><p>인원: 성인 ${item.count}명</p><button class="remove-btn" onclick="removeItem(${index})">삭제하기</button></div><div class="item-price">₩ ${itemTotal.toLocaleString()}</div></div>`;
+            
+            let itemDate = item.date || '';
+            if (item.name.includes('픽업샌딩')) {
+                itemDate = `${item.pickupDate} ~ ${item.sendingDate}`;
+            }
+
+            listContainer.innerHTML += `
+                <div class="cart-item">
+                    <div class="item-info">
+                        <h4>${item.name}</h4>
+                        <p style="font-size:14px; color:#666;">예약일: ${itemDate} ${item.time || ''}</p>
+                        <p style="font-size:14px; color:#666;">인원: ${item.count}명 (${item.details || ''})</p>
+                        <button class="remove-btn" onclick="removeItem(${index})">삭제하기</button>
+                    </div>
+                    <div class="item-price">₩ ${itemTotal.toLocaleString()}</div>
+                </div>`;
         });
         document.getElementById('final-price').innerText = '₩ ' + total.toLocaleString();
     }

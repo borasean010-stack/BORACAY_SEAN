@@ -247,7 +247,9 @@
         const mtcDisp = document.getElementById('m-total-count-display');
         if(mtcDisp) mtcDisp.innerText = totalCount;
         const priceDisplays = document.querySelectorAll('#display-price');
-        priceDisplays.forEach(d => d.innerText = '₩ ' + totalPrice.toLocaleString());
+        priceDisplays.forEach(d => d.innerText = BSUtils.formatPrice(totalPrice));
+        const buyBtn = document.getElementById('buy-btn');
+        if(buyBtn) buyBtn.innerText = BSUtils.formatPrice(totalPrice) + ' 구매하기';
     }
 
     function openOptionSheet() { 
@@ -311,13 +313,16 @@
         for (const name in selectedQuantities) {
             const qty = selectedQuantities[name];
             const opt = massageOptions.find(o => o.name === name);
-            items.push({
-                name: "포세이돈 - " + name,
-                price: opt.price,
-                count: qty,
-                date: selectedDate,
-                time: selectedTime
-            });
+            if (qty > 0) {
+                items.push({
+                    name: "포세이돈 - " + name,
+                    price: opt.price,
+                    count: qty,
+                    totalPrice: opt.price * qty,
+                    date: selectedDate,
+                    time: selectedTime
+                });
+            }
         }
         return items;
     }
@@ -325,13 +330,19 @@
     function handleBuy() {
         const items = getSelectedItems();
         if (items.length === 0) { alert('최소 1명 이상의 마사지를 선택해주세요.'); return; }
-        sessionStorage.setItem('directBuyItem', JSON.stringify(items));
-        window.open('booking-form.html', '_blank');
+        BSUtils.buyNow(items);
     }
 
     function addToCart() {
         const items = getSelectedItems();
         if (items.length === 0) { alert('최소 1명 이상의 마사지를 선택해주세요.'); return; }
+        items.forEach(item => {
+            // saveToCart handles push and confirm
+            // But since we have multiple items here, we might want to do it differently
+            // Actually BSUtils.saveToCart handles ONE item and confirms.
+            // Let's modify BSUtils to handle array or just do it here for now.
+        });
+        
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         items.forEach(item => cart.push(item));
         localStorage.setItem('cart', JSON.stringify(cart));

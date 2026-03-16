@@ -2,6 +2,32 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log("BORACAY SEAN JS Loaded");
 
+    // --- Naver Cafe Link Optimization (PC/Mobile Redirection) ---
+    function optimizeCafeLinks() {
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 768;
+        const links = document.querySelectorAll('a[href*="cafe.naver.com"]');
+        
+        links.forEach(link => {
+            let href = link.href;
+            if (isMobile) {
+                // Mobile: cafe.naver.com -> m.cafe.naver.com
+                if (href.includes('cafe.naver.com') && !href.includes('m.cafe.naver.com')) {
+                    link.href = href.replace('cafe.naver.com', 'm.cafe.naver.com');
+                }
+            } else {
+                // PC: m.cafe.naver.com -> cafe.naver.com
+                if (href.includes('m.cafe.naver.com')) {
+                    link.href = href.replace('m.cafe.naver.com', 'cafe.naver.com');
+                }
+            }
+        });
+    }
+
+    // Run on load
+    optimizeCafeLinks();
+    // Also run on resize to handle device orientation or browser window changes
+    window.addEventListener('resize', optimizeCafeLinks);
+
     // --- 상품 데이터 정의 (최저가 포함, 마사지 성장마사지 제외) ---
     const productData = {
         essential: [
@@ -297,5 +323,45 @@ document.addEventListener('DOMContentLoaded', () => {
             // setTimeout(() => overlay.remove(), 400); // Keep it for performance or remove? Better keep.
         }
         document.body.style.overflow = '';
+    };
+
+    // --- Global Utility Functions for Price Calculation & Cart ---
+    window.BSUtils = {
+        formatPrice: function(amount) {
+            return '₩ ' + (amount || 0).toLocaleString();
+        },
+        
+        calculateTotal: function(adultCount, adultPrice, childCount, childPrice, optionsTotal = 0) {
+            return (adultCount * adultPrice) + (childCount * childPrice) + optionsTotal;
+        },
+
+        // For simple items where price is per person
+        calculateSimpleTotal: function(count, price) {
+            return count * price;
+        },
+
+        saveToCart: function(item) {
+            // Ensure totalPrice is calculated if not present
+            if (item.totalPrice === undefined) {
+                item.totalPrice = (item.price || 0) * (item.count || 0);
+            }
+            
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            cart.push(item);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            if (confirm('장바구니에 담겼습니다. 장바구니로 이동하시겠습니까?')) {
+                window.location.assign('cart.html');
+            }
+        },
+
+        buyNow: function(item) {
+            // Ensure totalPrice is calculated if not present
+            if (item.totalPrice === undefined) {
+                item.totalPrice = (item.price || 0) * (item.count || 0);
+            }
+            
+            sessionStorage.setItem('directBuyItem', JSON.stringify(item));
+            window.location.assign('booking-form.html');
+        }
     };
 });

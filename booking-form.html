@@ -27,8 +27,9 @@
 
         .input-group { margin-bottom: 25px; }
         .input-group label { display: block; font-size: 15px; font-weight: 700; color: #444; margin-bottom: 10px; }
-        .input-group input, .input-group select { width: 100%; padding: 16px; border: 1.5px solid #eee; border-radius: 14px; font-family: inherit; font-size: 16px; transition: 0.3s; background: #fafafa; }
-        .input-group input:focus, .input-group select:focus { outline: none; border-color: #ff6a00; background: white; box-shadow: 0 0 0 4px rgba(255,106,0,0.1); }
+        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 16px; border: 1.5px solid #eee; border-radius: 14px; font-family: inherit; font-size: 16px; transition: 0.3s; background: #fafafa; }
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus { outline: none; border-color: #ff6a00; background: white; box-shadow: 0 0 0 4px rgba(255,106,0,0.1); }
+        .input-group textarea { min-height: 120px; resize: vertical; }
         
         .section-subtitle { font-size: 19px; font-weight: 800; color: #333; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
         .next-btn { width: 100%; padding: 22px; background: #ff6a00; color: white; border: none; border-radius: 18px; font-size: 19px; font-weight: 900; cursor: pointer; transition: 0.3s; margin-top: 20px; box-shadow: 0 10px 25px rgba(255,106,0,0.25); }
@@ -115,6 +116,11 @@
                     <input type="text" id="contact" placeholder="안내 메시지를 받으실 수 있는 정보" required>
                 </div>
 
+                <div class="input-group">
+                    <label>기타 요청사항</label>
+                    <textarea id="requests" placeholder="추가 문의사항이나 리조트 견적 시 특별히 요청하실 내용을 적어주세요."></textarea>
+                </div>
+
                 <div id="pickup-sending-fields">
                     <div class="section-subtitle" style="color:#ff6a00;">✈️ 픽업/샌딩 상세 정보</div>
                     <div class="input-group"><label>대표자 영문 이름</label><input type="text" id="eng-name" placeholder="예: HONG GILDONG"></div>
@@ -185,7 +191,32 @@
         const list = document.getElementById('summary-list');
         cartData.forEach(item => {
             if (item.name.includes('픽업샌딩')) hasPickup = true;
-            list.innerHTML += `<div class="order-item"><span>${item.name} (${item.count}명)</span><b>₩ ${(item.price * item.count).toLocaleString()}</b></div>`;
+            
+            // 날짜 정보 구성
+            let dateStr = item.date || '날짜 미지정';
+            if (item.name.includes('픽업샌딩')) {
+                dateStr = `${item.pickupDate || '픽업일 미정'} ~ ${item.sendingDate || '샌딩일 미정'}`;
+            } else if (item.name.includes('리조트 견적') && item.details && item.details.checkin) {
+                dateStr = `${item.details.checkin} ~ ${item.details.checkout}`;
+            }
+
+            const timeStr = item.time ? ` | 시간: ${item.time}` : '';
+            const countStr = ` | 인원: ${item.count}명`;
+            const detailStr = (item.details && typeof item.details === 'string') ? `<br><small style="color:#999;">(${item.details})</small>` : '';
+
+            // 통일된 금액 계산 로직: itemTotalPrice를 우선 사용
+            const finalItemPrice = item.totalPrice || (item.price * item.count);
+
+            list.innerHTML += `
+                <div class="order-item" style="flex-direction: column; align-items: flex-start;">
+                    <div style="display: flex; justify-content: space-between; width: 100%;">
+                        <span style="font-weight: 800;">${item.name}</span>
+                        <b>₩ ${finalItemPrice.toLocaleString()}</b>
+                    </div>
+                    <div style="font-size: 13px; color: #666; margin-top: 5px;">
+                        📅 ${dateStr}${timeStr}${countStr}${detailStr}
+                    </div>
+                </div>`;
         });
         if (hasPickup) document.getElementById('pickup-sending-fields').style.display = 'block';
 
@@ -249,14 +280,15 @@
             reservationNumber: resNo,
             customerKorName: document.getElementById('kor-name').value,
             contact: document.getElementById('contact').value,
+            requests: document.getElementById('requests').value,
             paymentMethod: selectedPayment,
             items: cartData,
-            totalPrice: cartData.reduce((acc, curr) => acc + (curr.price * curr.count), 0),
+            totalPrice: cartData.reduce((acc, curr) => acc + (curr.totalPrice || (curr.price * curr.count)), 0),
             status: isResortQuote ? '견적' : '예약접수',
             createdAt: serverTimestamp ? serverTimestamp() : new Date(),
             engName: document.getElementById('eng-name').value || '',
-            pickupDate: pickupItem ? pickupItem.pickupDate : '',
-            sendingDate: pickupItem ? pickupItem.sendingDate : '',
+            pickupDate: pickupItem ? (pickupItem.pickupDate || '') : '',
+            sendingDate: pickupItem ? (pickupItem.sendingDate || '') : '',
             pickupFlight: document.getElementById('pickup-flight').value || '',
             pickupResort: document.getElementById('pickup-resort').value || '',
             sendingFlight: document.getElementById('sending-flight').value || '',

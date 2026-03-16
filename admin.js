@@ -290,6 +290,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="detail-item"><label style="font-size:12px; color:#999;">예약상태</label><div><span class="n-badge badge-blue" style="font-size:13px; padding:4px 10px;">${res.status}</span></div></div>
                     <div class="detail-item"><label style="font-size:12px; color:#999;">고객명(한글/영문)</label><div style="font-size:17px;">${res.customerKorName} / ${res.engName || '-'}</div></div>
                     <div class="detail-item"><label style="font-size:12px; color:#999;">연락처(카톡ID)</label><div style="font-size:17px;">${res.contact}</div></div>
+                    <div class="detail-item" style="grid-column: span 2; background: #fffcf0; padding: 15px; border-radius: 10px; border: 1px solid #ffe58f;">
+                        <label style="font-size:12px; color:#d48806; font-weight:800;">📝 고객 요청사항</label>
+                        <div style="font-size:15px; color:#444; margin-top:8px; white-space: pre-wrap; line-height:1.6;">${res.requests || '없음'}</div>
+                    </div>
                     <div class="detail-item" style="grid-column: span 2; margin-top:10px; padding-top:20px; border-top:1px solid #f1f1f1;">
                         <label style="font-size:13px; color:#666; font-weight:700;">최종 입금액</label>
                         <div style="color:var(--ss-green); font-size:26px; font-weight:900; letter-spacing:-1px;">₩ ${(res.totalPrice || 0).toLocaleString()}</div>

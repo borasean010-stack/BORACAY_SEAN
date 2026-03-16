@@ -985,8 +985,8 @@ body {
 }
 
 .s-icon {
-    width: clamp(60px, 8vw, 100px);
-    height: clamp(60px, 8vw, 100px);
+    width: 80px;
+    height: 80px;
     margin-bottom: 20px;
     filter: drop-shadow(0 8px 15px rgba(0,0,0,0.12));
     transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -998,6 +998,12 @@ body {
     background: white;
     border: 1px solid #f0f0f0;
     flex-shrink: 0;
+}
+
+.s-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 @media (max-width: 1100px) {

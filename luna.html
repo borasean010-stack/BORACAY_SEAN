@@ -63,6 +63,13 @@
         @media (max-device-width: 1024px) {
             .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
             .reservation-box { display: none; }
+            .mobile-bottom-bar { 
+                display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
+                background: white; padding: 15px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); 
+                z-index: 9000; align-items: center; gap: 10px;
+            }
+            .m-btn-cart { display: none;  height: 55px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 15px; font-size: 15px; font-weight: 800; }
+            .m-btn-buy { flex: 1;  height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; }
         }
     </style>
 </head>
@@ -148,7 +155,7 @@
             <div class="calendar-grid" id="pc-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
         </div>
 
-                        <!-- 마사지 종류 선택 -->
+                                <!-- 마사지 종류 선택 -->
         <div class="selection-container">
             <span class="selection-label">마사지 종류 및 인원 선택</span>
             <div id="type-selectors" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
@@ -176,51 +183,6 @@
     </div>
 </div>
 
-<!-- 📱 모바일 예약 바 -->
-<div class="mobile-bottom-bar" style="display: none;">
-    <button class="m-btn-buy" onclick="openOptionSheet()">구매하기</button>
-</div>
-
-<!-- 📱 모바일 옵션 시트 -->
-<div class="option-sheet-overlay" id="sheetOverlay" onclick="closeOptionSheet()"></div>
-<div class="option-sheet" id="optionSheet">
-    <h3 style="font-weight:900; margin-bottom:20px; font-size:20px;">예약 옵션 선택</h3>
-    
-    <div class="calendar-wrap" style="margin-bottom: 8px; border: 1px solid #eee; border-radius: 16px; padding: 10px;">
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-            <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800;">&lt;</button>
-            <strong id="m-month">2026년 3월</strong>
-            <button onclick="changeMonth(1)" style="border:none; background:none; color:#ff6a00; font-weight:800;">&gt;</button>
-        </div>
-        <div class="calendar-grid" id="m-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
-    </div>
-
-            <!-- 마사지 종류 선택 (모바일) -->
-    <div class="selection-container">
-        <span class="selection-label">마사지 종류 및 인원 선택</span>
-        <div id="m-type-selectors" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-            <!-- JS will render individual counters here -->
-        </div>
-    </div>
-
-    <!-- 이용 시간 선택 (모바일) -->
-    <div class="selection-container">
-        <span class="selection-label">이용 가능 시간 선택</span>
-        <div class="selection-tabs" id="m-time-tabs">
-            <div class="selection-tab active" onclick="selectTime('12:30', this)">12:30</div>
-            <div class="selection-tab" onclick="selectTime('14:30', this)">14:30</div>
-            <div class="selection-tab" onclick="selectTime('16:30', this)">16:30</div>
-            <div class="selection-tab" onclick="selectTime('19:30', this)">19:30</div>
-        </div>
-    </div>
-
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f8f9fa; border-radius:12px; margin-bottom:10px; border:1px solid #eee;">
-        <span style="font-weight:800; color:#111; font-size:14px;">총 예약 인원</span>
-        <div style="font-size:16px; font-weight:900; color:#ff6a00;"><span id="m-total-count-display">0</span>명</div>
-    </div>
-    <button class="btn-buy" onclick="handleBuy()" style="background:#ff6a00;">선택 완료 / 구매하기</button>
-</div>
-
 <footer class="footer">
     <div class="footer-left">
         <b class="important">상호 : 보라카이션 | 대표 : 윤오현</b><br>
@@ -246,7 +208,7 @@
                 const row = document.createElement('div');
                 row.style.cssText = 'display:grid; grid-template-columns: 1fr auto; gap: 2px 8px; padding:6px 10px; background:#fcfcfc; border-radius:10px; border:1px solid #f0f0f0; align-items:center;';
                 row.innerHTML = `
-                    <div style="font-size:12px; font-weight:700; color:#333; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${opt.name}</div>
+                    <div style="font-size:11px; font-weight:700; color:#333; line-height:1.2; word-break:keep-all;">${opt.name}</div>
                     <div style="font-size:10px; color:#999; text-align:center; font-weight:600; line-height:1;">수량</div>
                     <div style="font-size:11px; color:#ff6a00; font-weight:800;">${BSUtils.formatPrice(opt.price)}</div>
                     <div class="counter" style="gap:4px; border:none; background:none; padding:0;">
@@ -387,12 +349,8 @@
         renderCalendar('m-days', 'm-month'); 
     };
 </script>
-<style>
-    @media (max-device-width: 1024px) {
-        .mobile-bottom-bar { display: flex !important; position: fixed; bottom: 0; left: 0; width: 100%; background: white; padding: 15px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); z-index: 9000; align-items: center; gap: 10px; }
-        .m-btn-cart { display: none;  height: 55px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 15px; font-size: 15px; font-weight: 800; }
-        .m-btn-buy { flex: 1;  height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; }
-    }
-</style>
+<div class="mobile-bottom-bar">
+    <button class="m-btn-buy" onclick="openBookingDrawer()">구매하기</button>
+</div>
 </body>
 </html>

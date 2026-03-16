@@ -220,6 +220,13 @@
         });
         if (hasPickup) document.getElementById('pickup-sending-fields').style.display = 'block';
 
+        // 마사지 상품이 포함된 경우 기타 요청사항 숨기기
+        const hasMassage = cartData.some(item => item.name.includes('마사지') || item.name.includes('스파') || item.name.includes('에스파'));
+        if (hasMassage) {
+            const requestsGroup = document.getElementById('requests').closest('.input-group');
+            if (requestsGroup) requestsGroup.style.display = 'none';
+        }
+
         // 리조트 견적인 경우 UI 변경
         const isResortQuote = cartData.some(item => item.name.includes('리조트 견적'));
         if (isResortQuote) {

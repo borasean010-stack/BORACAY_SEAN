@@ -75,6 +75,15 @@ This project is a reservation website for tours and activities in Boracay (BORAC
     * **Resort Detail Pages:** Added dedicated introduction pages for resorts (e.g., Shangri-La) providing comprehensive info on facilities and room types.
     * Quote request submission logic: Bypasses the payment method selection in `booking-form.html` for a direct request.
 
+### 4. Massage Option UI Fix (Text Truncation)
+* **Issue:** Long massage names (e.g., "성장 마사지 (2시간)", "포핸드 마사지") were being truncated with "..." in the selection area.
+* **Fix:** Updated the `initSelectors` logic in `spa.html`, `aspa.html`, `boraspa.html`, and `helios.html` to remove fixed-width constraints and text-overflow hidden.
+* **Changes:**
+    * Removed `white-space: nowrap`, `overflow: hidden`, and `text-overflow: ellipsis`.
+    * Added `word-break: keep-all` and `line-height: 1.2` to allow multi-line text wrapping for long names.
+    * Adjusted font size slightly (to 11px) to better accommodate content in the 2-column grid layout.
+    * Ensured height flexibility so that the selection card expands vertically if text wraps.
+
 ## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (Luxurious & Centered)

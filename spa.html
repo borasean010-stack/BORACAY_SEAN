@@ -196,10 +196,7 @@
                 <div class="selection-tab" onclick="selectTime('19:30', this)">19:30</div>
             </div>
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding:10px; background:#f8f9fa; border-radius:12px; border:1px solid #eee; margin-top:20px;">
-            <span style="font-weight:800; font-size:14px; color:#111;">총 예약 인원</span>
-            <div style="font-size:16px; font-weight:900; color:#ff6a00;"><span id="total-count-display">0</span>명</div>
-        </div>
+        
 
         <div class="total-summary">
             <span>총 합계 금액</span>
@@ -275,10 +272,10 @@
             const opt = massageOptions.find(o => o.name === name);
             totalCount += qty; totalPrice += (opt.price * qty);
         }
-        const tcDisp = document.getElementById('total-count-display');
-        if(tcDisp) tcDisp.innerText = totalCount;
-        const mtcDisp = document.getElementById('m-total-count-display');
-        if(mtcDisp) mtcDisp.innerText = totalCount;
+        
+        
+        
+        
         
         
         const totalStr = BSUtils.formatPrice(totalPrice);

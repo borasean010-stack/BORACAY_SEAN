@@ -100,14 +100,14 @@ This project is a reservation website for tours and activities in Boracay (BORAC
     * **HTML Fixes:** Corrected broken HTML structures in several files where the `selection-tabs` container was closed prematurely.
     * **Affected Files:** `aspa.html`, `boraspa.html`, `golf.html`, `helios.html`, `helmet-diving.html`, `jetski.html`, `kabayan.html`, `luna.html`, `maris.html`, `parasailing.html`, `poseidon.html`, `scuba-diving.html`, `spa.html`.
 
-    ### 8. Reservation Box Height Optimization
-    * **Objective:** Reduce the total height of the reservation box on product detail pages to ensure the "Buy Now" button is visible without scrolling.
-    * **Visual Changes:**
-        * Reduced `.reservation-box` padding from 24px to 15px.
-        * Decreased margins between price, calendar, options, and total summary sections.
-        * Adjusted button paddings and font sizes for a more compact look.
-        * Changed sticky `top` position to 80px for better visibility on shorter screens.
-    * **Benefits:** Improved conversion by making the booking action immediate and visible upon page load.
+    ### 8. Reservation Box & Option Sheet Optimization
+    * **Objective:** Simplify the booking UI by removing redundant information and standardizing layouts.
+    * **UI Simplification:**
+        * **Removed "Total Reservation Count" (총 예약 인원):** Deleted this summary from all spa and activity pages to reduce vertical clutter.
+        * **Mobile Price Display:** Hidden the separate "Total Summary" (총 합계 금액) on mobile views, as the total price is already dynamically displayed on the "Buy Now" button.
+        * **Massage Type Layout:** Standardized the massage program selection list to a **2-column grid** layout on both **PC and Mobile** for all spa pages (`aspa.html`, `boraspa.html`, etc.).
+    * **Styling Alignment:** Updated `pickup-sending.html` to match the refined design of the hopping tour page for consistent branding.
+    * **Benefits:** A much cleaner, more compact booking interface that fits better on mobile screens and provides a faster path to purchase.
 
     ### 9. Link Optimization (Mobile & PC Friendly)
     * **Objective:** Update Naver Cafe links to provide the best experience based on the platform.

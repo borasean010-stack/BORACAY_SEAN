@@ -39,50 +39,55 @@ This project is a reservation website for tours and activities in Boracay (BORAC
 * **Massage Type Selection:** Added product type selection for spa services to allow users to choose specific programs.
     * Luna Spa: Placenta, Stone, Noni Seed Oil, Tiger Oil massages.
     * Bora Spa: Honey, Placenta massages.
-    * S-SPA (에스파): Pure Oil, Placenta, Stone, Hilot, Four-hand massages.
-    * Helios Spa: Honey Stone, Coco Spa, Honey Stone + Coco Spa.
-    * Ayurveda Spa: Placenta, Stone, Golden Ring, Ayurveda Spa.
+    *   S-SPA (에스파): Pure Oil, Placenta, Stone, Hilot, Four-hand massages.
+        *   Helios Spa: Honey Stone, Coco Spa, Honey Stone + Coco Spa.
+        *   Ayurveda Spa: Placenta, Stone, Golden Ring, Ayurveda Spa.
+        *   Poseidon Spa (포세이돈 스파): VIP, VVIP massages.
 
-### 2. UI/UX Improvements
-* **Sophisticated Counter Design:** Redesigned the quantity selection buttons (+/-) with a modern, clean aesthetic using better spacing, subtle shadows, and responsive feedback.
-* **Selection Tabs:** Implemented a reusable "Selection Tab" UI component across all detail pages for a consistent and intuitive user experience.
-* **Booking Integration:** Updated the purchase and cart logic to capture the selected time and product type, ensuring all reservation data is passed to the booking form.
+    ### 2. UI/UX Improvements
+    * **Sophisticated Counter Design:** Redesigned the quantity selection buttons (+/-) with a modern, clean aesthetic using better spacing, subtle shadows, and responsive feedback.
+    * **Selection Tabs:** Implemented a reusable "Selection Tab" UI component across all detail pages for a consistent and intuitive user experience.
+    * **Booking Integration:** Updated the purchase and cart logic to capture the selected time and product type, ensuring all reservation data is passed to the booking form.
 
-### 3. Menu Structure Update
-* **Navigation Bar:** Added "리조트 견적" (Resort Quote) menu item between "한눈에 요금표" and "장바구니" for easier access to resort pricing. Points to `resort-quote.html`.
-* **Side Menu:** Updated the mobile side menu to include "리조트 견적" for consistency across all platforms.
+    ### 3. Menu Structure Update
+    * **Navigation Bar:** Added "리조트 견적" (Resort Quote) menu item between "한눈에 요금표" and "장바구니" for easier access to resort pricing. Points to `resort-quote.html`.
+    * **Side Menu:** Updated the mobile side menu to include "리조트 견적" for consistency across all platforms.
 
-## Current Milestone: Product Management & Navigation
+    ## Current Milestone: Product Management & Navigation
 
-### 1. New Activity & Updates: Fairway Golf Club (페어웨이 골프클럽)
-* **Objective:** Add a new golf activity and keep it updated.
-* **Implementation:** Created `golf.html` and registered it in `main.js`. 
-* **Updates:** 
-    * Updated thumbnail to `golf1.jpg`.
-    * Updated `golf.html` gallery to use `golf1.jpg` through `golf4.jpg`.
+    ### 1. New Activity & Updates: Fairway Golf Club (페어웨이 골프클럽)
+    * **Objective:** Add a new golf activity and keep it updated.
+    * **Implementation:** Created `golf.html` and registered it in `main.js`. 
+    * **Updates:** 
+        * Updated thumbnail to `golf1.jpg`.
+        * Updated `golf.html` gallery to use `golf1.jpg` through `golf4.jpg`.
 
-### 2. Product Deletion: Sunset Sailing (선셋 세일링) & Beach Island Tour (비치 아일랜드 투어)
-* **Objective:** Remove outdated products from the activity list.
-* **Implementation:** Removed entries for "Sunset Sailing" and "Beach Island Tour" from `main.js`.
+    ### 2. Product Deletion: Sunset Sailing (선셋 세일링) & Beach Island Tour (비치 아일랜드 투어)
+    * **Objective:** Remove outdated products from the activity list.
+    * **Implementation:** Removed entries for "Sunset Sailing" and "Beach Island Tour" from `main.js`.
 
-### 3. Resort Quote System (리조트 견적)
-* **Objective:** Implement a specialized form for users to request resort accommodation quotes.
-* **Features:** 
-    * Check-in/Check-out date selection.
-    * Guest count selection (Adults/Children).
-    * Dynamic "Child Age" input fields that appear when children are added.
-    * Premium vertical scrolling card UI for resort selection with large icons.
-    * **Resort Detail Pages:** Added dedicated introduction pages for resorts (e.g., Shangri-La) providing comprehensive info on facilities and room types.
-    * Quote request submission logic: Bypasses the payment method selection in `booking-form.html` for a direct request.
+    ### 3. Resort Quote System (리조트 견적)
+    * **Objective:** Implement a specialized form for users to request resort accommodation quotes.
+    * **Features:** 
+        * Check-in/Check-out date selection.
+        * Guest count selection (Adults/Children).
+        * Dynamic "Child Age" input fields that appear when children are added.
+        * Premium vertical scrolling card UI for resort selection with large icons.
+        * **Resort Detail Pages:** Added dedicated introduction pages for resorts (e.g., Shangri-La) providing comprehensive info on facilities and room types.
+        * Quote request submission logic: Bypasses the payment method selection in `booking-form.html` for a direct request.
 
-### 4. Massage Option UI Fix (Text Truncation)
-* **Issue:** Long massage names (e.g., "성장 마사지 (2시간)", "포핸드 마사지") were being truncated with "..." in the selection area.
-* **Fix:** Updated the `initSelectors` logic in `spa.html`, `aspa.html`, `boraspa.html`, and `helios.html` to remove fixed-width constraints and text-overflow hidden.
-* **Changes:**
-    * Removed `white-space: nowrap`, `overflow: hidden`, and `text-overflow: ellipsis`.
-    * Added `word-break: keep-all` and `line-height: 1.2` to allow multi-line text wrapping for long names.
-    * Adjusted font size slightly (to 11px) to better accommodate content in the 2-column grid layout.
-    * Ensured height flexibility so that the selection card expands vertically if text wraps.
+    ### 4. Massage Option UI Fix (Text Truncation)
+    * **Issue:** Long massage names (e.g., "성장 마사지 (2시간)", "포핸드 마사지") were being truncated with "..." in the selection area.
+    * **Fix:** Updated the `initSelectors` logic in `spa.html`, `aspa.html`, `boraspa.html`, `helios.html`, and `poseidon.html` to remove fixed-width constraints and text-overflow hidden.
+    * **Changes:**
+        * Removed `white-space: nowrap`, `overflow: hidden`, and `text-overflow: ellipsis`.
+        * Added `word-break: keep-all` and `line-height: 1.2` to allow multi-line text wrapping for long names.
+        * Adjusted font size slightly (to 11px) to better accommodate content in the 2-column grid layout.
+        * Ensured height flexibility so that the selection card expands vertically if text wraps.
+
+    ### 5. Poseidon Spa Update
+    * **Massage Types:** Updated from "포세이돈 스파" to specific options: **VIP (105,000원)** and **VVIP (119,000원)**.
+
 
 ## Previous Milestone: Admin & Login Redesign
 

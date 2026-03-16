@@ -193,7 +193,7 @@
 
 <script src="main.js"></script>
 <script>
-    const massageOptions = [{"name": "포세이돈 스파", "price": 105000}, {"name": "성장 마사지 (1시간)", "price": 42000}, {"name": "성장 마사지 (2시간)", "price": 55000}];
+    const massageOptions = [{"name": "VIP", "price": 105000}, {"name": "VVIP", "price": 119000}, {"name": "성장 마사지 (1시간)", "price": 42000}, {"name": "성장 마사지 (2시간)", "price": 55000}];
     let selectedQuantities = {}; 
     let currentDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
@@ -208,9 +208,9 @@
                 const row = document.createElement('div');
                 row.style.cssText = 'display:grid; grid-template-columns: 1fr auto; gap: 2px 8px; padding:6px 10px; background:#fcfcfc; border-radius:10px; border:1px solid #f0f0f0; align-items:center;';
                 row.innerHTML = `
-                    <div style="font-size:12px; font-weight:700; color:#333; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${opt.name}</div>
+                    <div style="font-size:11px; font-weight:700; color:#333; line-height:1.2; word-break:keep-all;">${opt.name}</div>
                     <div style="font-size:10px; color:#999; text-align:center; font-weight:600; line-height:1;">수량</div>
-                    <div style="font-size:11px; color:#ff6a00; font-weight:800;">₩ ${opt.price.toLocaleString()}</div>
+                    <div style="font-size:11px; color:#ff6a00; font-weight:800;">${BSUtils.formatPrice(opt.price)}</div>
                     <div class="counter" style="gap:4px; border:none; background:none; padding:0;">
                         <button class="count-btn" style="width:22px; height:22px; font-size:12px;" onclick="updateQty('${opt.name}', -1)">-</button>
                         <strong class="qty-display" style="font-size:13px; width:18px;" data-name="${opt.name}">0</strong>
@@ -248,8 +248,13 @@
         if(mtcDisp) mtcDisp.innerText = totalCount;
         const priceDisplays = document.querySelectorAll('#display-price');
         priceDisplays.forEach(d => d.innerText = BSUtils.formatPrice(totalPrice));
-        const buyBtn = document.getElementById('buy-btn');
-        if(buyBtn) buyBtn.innerText = BSUtils.formatPrice(totalPrice) + ' 구매하기';
+        
+        const buyBtns = document.querySelectorAll('.btn-buy, .m-btn-buy');
+        buyBtns.forEach(btn => {
+            if (btn.tagName === 'BUTTON') {
+                btn.innerText = BSUtils.formatPrice(totalPrice) + ' 구매하기';
+            }
+        });
     }
 
     function openOptionSheet() { 
@@ -336,13 +341,6 @@
     function addToCart() {
         const items = getSelectedItems();
         if (items.length === 0) { alert('최소 1명 이상의 마사지를 선택해주세요.'); return; }
-        items.forEach(item => {
-            // saveToCart handles push and confirm
-            // But since we have multiple items here, we might want to do it differently
-            // Actually BSUtils.saveToCart handles ONE item and confirms.
-            // Let's modify BSUtils to handle array or just do it here for now.
-        });
-        
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         items.forEach(item => cart.push(item));
         localStorage.setItem('cart', JSON.stringify(cart));

@@ -198,7 +198,7 @@
 
     <div class="reservation-box">
         <div class="price-header">
-            <span class="price-label">1인 기준</span>
+            <span class="price-label" style="font-size: 14px; color: #888; font-weight: 700; margin-bottom: 4px; display: block;">요금</span>
             <div class="price-value" id="display-price">₩ 85,000</div>
         </div>
 
@@ -214,7 +214,19 @@
             </div>
             <div class="calendar-grid" id="pc-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
         </div>
-<div style="margin-bottom:12px; padding:15px; background:#fff5eb; border-radius:15px; border:1px solid #ffe0d1;">
+
+        <!-- 마사지 시간 선택 (예전 스타일 - 2x2 배열) -->
+        <div class="selection-container" style="margin-bottom: 20px;">
+            <span class="selection-label" style="display: block; font-size: 14px; font-weight: 800; color: #333; margin-bottom: 8px;">마사지 시간 선택</span>
+            <div class="time-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div class="selection-tab active" onclick="selectTime('12:30', this)" style="padding: 10px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 10px; background: #f8f9fa; border: 1px solid #eee; transition: 0.2s;">12:30</div>
+                <div class="selection-tab" onclick="selectTime('14:30', this)" style="padding: 10px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 10px; background: #f8f9fa; border: 1px solid #eee; transition: 0.2s;">14:30</div>
+                <div class="selection-tab" onclick="selectTime('16:30', this)" style="padding: 10px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 10px; background: #f8f9fa; border: 1px solid #eee; transition: 0.2s;">16:30</div>
+                <div class="selection-tab" onclick="selectTime('19:30', this)" style="padding: 10px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 10px; background: #f8f9fa; border: 1px solid #eee; transition: 0.2s;">19:30</div>
+            </div>
+        </div>
+
+        <div style="margin-bottom:12px; padding:15px; background:#fff5eb; border-radius:15px; border:1px solid #ffe0d1;">
             <label style="font-weight:800; font-size:14px; color:#d35400; display:block; margin-bottom:10px;">추가 옵션 (현장지불)</label>
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <span style="font-size:15px; font-weight:700;">점보크랩 런치 (1인 $30)</span>
@@ -224,11 +236,12 @@
                     <button class="count-btn" onclick="updateJumboCount(1)">+</button>
                 </div>
             </div>
+        </div>
 
         <div class="person-selector">
             <div class="person-row">
                 <div class="person-info">
-                    <span style="font-weight:800; font-size:15px;">성인 인원</span>
+                    <span style="font-weight:800; font-size:15px;">인원 선택</span>
                     <div class="counter">
                         <button class="count-btn" onclick="updateAdultCount(-1)">-</button>
                         <strong id="pc-adult-count">1</strong>
@@ -237,19 +250,6 @@
                 </div>
                 <div class="person-price-calc">
                     ₩ <span id="adult-price-text"></span> × <span id="adult-count-text">1</span> = <b id="adult-subtotal">₩ 0</b>
-                </div>
-            </div>
-            <div class="person-row" style="margin-top:15px; padding-top:15px; border-top:1px dashed #eee;">
-                <div class="person-info">
-                    <span style="font-weight:800; font-size:15px;">소인 인원</span>
-                    <div class="counter">
-                        <button class="count-btn" onclick="updateChildCount(-1)">-</button>
-                        <strong id="pc-child-count">0</strong>
-                        <button class="count-btn" onclick="updateChildCount(1)">+</button>
-                    </div>
-                </div>
-                <div class="person-price-calc">
-                    ₩ <span id="child-price-text"></span> × <span id="child-count-text">0</span> = <b id="child-subtotal">₩ 0</b>
                 </div>
             </div>
         </div>
@@ -283,37 +283,26 @@
 <script src="main.js"></script>
 <script>
     let adultCount = 1;
-    let childCount = 0;
     let jumboCount = 0;
     const ADULT_PRICE = 85000;
-    const CHILD_PRICE = 40000;
     
     let currentDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
+    let selectedTime = '12:30';
 
     function updateTotalPrice() {
         if(document.getElementById('adult-price-text')) document.getElementById('adult-price-text').innerText = ADULT_PRICE.toLocaleString();
-        if(document.getElementById('child-price-text')) document.getElementById('child-price-text').innerText = CHILD_PRICE.toLocaleString();
         const adultSubtotal = adultCount * ADULT_PRICE;
-        const childSubtotal = childCount * CHILD_PRICE;
-        const total = BSUtils.calculateTotal(adultCount, ADULT_PRICE, childCount, CHILD_PRICE);
+        const total = adultSubtotal;
 
         document.getElementById('pc-adult-count').innerText = adultCount;
         document.getElementById('adult-count-text').innerText = adultCount;
         document.getElementById('adult-subtotal').innerText = BSUtils.formatPrice(adultSubtotal);
 
-        if (document.getElementById('pc-child-count')) {
-            document.getElementById('pc-child-count').innerText = childCount;
-            document.getElementById('child-count-text').innerText = childCount;
-            document.getElementById('child-subtotal').innerText = BSUtils.formatPrice(childSubtotal);
-        }
-
         const totalStr = BSUtils.formatPrice(total);
+        document.getElementById('display-price').innerText = totalStr;
         document.getElementById('display-total-price').innerText = totalStr;
         document.getElementById('buy-btn').innerText = totalStr + ' 구매하기';
-        if (document.getElementById('m-buy-btn')) {
-            document.getElementById('m-buy-btn').innerText = totalStr + ' 구매하기';
-        }
     }
 
     function updateAdultCount(delta) {
@@ -321,9 +310,18 @@
         updateTotalPrice();
     }
 
-    function updateChildCount(delta) {
-        childCount = Math.max(0, childCount + delta);
-        updateTotalPrice();
+    function selectTime(time, el) {
+        selectedTime = time;
+        document.querySelectorAll('.selection-tab').forEach(tab => {
+            tab.style.background = '#f8f9fa';
+            tab.style.color = '#888';
+            tab.style.borderColor = '#eee';
+            tab.classList.remove('active');
+        });
+        el.style.background = '#ff6a00';
+        el.style.color = 'white';
+        el.style.borderColor = '#ff6a00';
+        el.classList.add('active');
     }
 
     function updateJumboCount(delta) {
@@ -369,8 +367,32 @@
         }
     }
     
-    function handleBuy() { const total = BSUtils.calculateTotal(adultCount, ADULT_PRICE, childCount, CHILD_PRICE); const item = { name: document.querySelector("h1").innerText, price: total / (adultCount + childCount || 1), count: adultCount + childCount, totalPrice: total, date: selectedDate, details: `성인 ${adultCount}, 소인 ${childCount}` }; BSUtils.buyNow(item); }
-    function addToCart() { const total = BSUtils.calculateTotal(adultCount, ADULT_PRICE, childCount, CHILD_PRICE); const item = { name: document.querySelector("h1").innerText, price: total / (adultCount + childCount || 1), count: adultCount + childCount, totalPrice: total, date: selectedDate, details: `성인 ${adultCount}, 소인 ${childCount}` }; BSUtils.saveToCart(item); }
+    function handleBuy() { 
+        const total = adultCount * ADULT_PRICE; 
+        const item = { 
+            name: "블랙펄 요트 호핑투어", 
+            price: ADULT_PRICE, 
+            count: adultCount, 
+            totalPrice: total, 
+            date: selectedDate, 
+            time: selectedTime,
+            details: `성인 ${adultCount}` + (jumboCount > 0 ? `, 점보크랩 ${jumboCount}` : '')
+        }; 
+        BSUtils.buyNow(item); 
+    }
+    function addToCart() { 
+        const total = adultCount * ADULT_PRICE; 
+        const item = { 
+            name: "블랙펄 요트 호핑투어", 
+            price: ADULT_PRICE, 
+            count: adultCount, 
+            totalPrice: total, 
+            date: selectedDate, 
+            time: selectedTime,
+            details: `성인 ${adultCount}` + (jumboCount > 0 ? `, 점보크랩 ${jumboCount}` : '')
+        }; 
+        BSUtils.saveToCart(item); 
+    }
     window.onload = () => { renderCalendar('pc-days', 'pc-month'); updateTotalPrice(); };
 </script>
 </body>

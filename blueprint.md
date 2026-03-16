@@ -88,7 +88,14 @@ This project is a reservation website for tours and activities in Boracay (BORAC
     ### 5. Poseidon Spa Update
     * **Massage Types:** Updated from "포세이돈 스파" to specific options: **VIP (105,000원)** and **VVIP (119,000원)**.
 
-    ### 6. Link Optimization (Mobile-Friendly)
+    ### 6. Black Pearl Yacht Hopping Tour (블랙펄 요트호핑투어) Update
+    * **Child Pricing Deletion:** Removed child pricing and related selection UI. The tour now only accepts adult reservations.
+    * **Massage Time Selection:** Added a massage time selection section using the "old style" (2x2 grid) layout for better accessibility. 
+        * Available Slots: 12:30, 14:30, 16:30, 19:30.
+    * **Price Label Update:** Changed the price label from "가격" or "인원 선택" to "요금" to match the requested terminology.
+    * **Dynamic Pricing:** Ensured the total price updates dynamically based on the adult count, displayed as the "Total Price" (총 합계 금액).
+
+    ### 7. Link Optimization (Mobile-Friendly)
     * **Objective:** Update Naver Cafe links to their mobile-optimized (`m.cafe.naver.com`) versions for better user experience on mobile devices.
     * **Announcements (공지사항):** Updated to `https://m.cafe.naver.com/ca-fe/web/cafes/17953658/menus/21`.
     * **Reviews (내돈내산):** Updated to `https://m.cafe.naver.com/ca-fe/web/cafes/17953658/menus/141`.

@@ -63,10 +63,6 @@
         @media (max-device-width: 1024px) {
             .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
             .reservation-box { display: none; }
-        }
-
-        .mobile-bottom-bar { display: none; }
-        @media (max-device-width: 1024px) {
             .mobile-bottom-bar { 
                 display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
                 background: white; padding: 15px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); 
@@ -202,7 +198,7 @@
 
 <script src="main.js"></script>
 <script>
-    const massageOptions = [{"name": "태반 마사지", "price": 55000}, {"name": "아로마 마사지", "price": 55000}, {"name": "스톤 마사지", "price": 55000}, {"name": "성장 마사지 (1시간)", "price": 42000}, {"name": "성장 마사지 (2시간)", "price": 55000}];
+    const massageOptions = [{"name": "태반 마사지", "price": 55000}, {"name": "스톤 마사지", "price": 55000}, {"name": "골든 링 마사지", "price": 55000}, {"name": "아유르베다 스파", "price": 55000}, {"name": "성장 마사지 (1시간)", "price": 42000}, {"name": "성장 마사지 (2시간)", "price": 55000}];
     let selectedQuantities = {}; 
     let currentDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
@@ -219,7 +215,7 @@
                 row.innerHTML = `
                     <div style="font-size:11px; font-weight:700; color:#333; line-height:1.2; word-break:keep-all;">${opt.name}</div>
                     <div style="font-size:10px; color:#999; text-align:center; font-weight:600; line-height:1;">수량</div>
-                    <div style="font-size:11px; color:#ff6a00; font-weight:800;">₩ ${opt.price.toLocaleString()}</div>
+                    <div style="font-size:11px; color:#ff6a00; font-weight:800;">${BSUtils.formatPrice(opt.price)}</div>
                     <div class="counter" style="gap:4px; border:none; background:none; padding:0;">
                         <button class="count-btn" style="width:22px; height:22px; font-size:12px;" onclick="updateQty('${opt.name}', -1)">-</button>
                         <strong class="qty-display" style="font-size:13px; width:18px;" data-name="${opt.name}">0</strong>
@@ -255,10 +251,17 @@
         if(tcDisp) tcDisp.innerText = totalCount;
         const mtcDisp = document.getElementById('m-total-count-display');
         if(mtcDisp) mtcDisp.innerText = totalCount;
+        
+        const totalStr = BSUtils.formatPrice(totalPrice);
         const priceDisplays = document.querySelectorAll('#display-price');
-        priceDisplays.forEach(d => d.innerText = BSUtils.formatPrice(totalPrice));
-        const buyBtn = document.getElementById('buy-btn');
-        if(buyBtn) buyBtn.innerText = BSUtils.formatPrice(totalPrice) + ' 구매하기';
+        priceDisplays.forEach(d => d.innerText = totalStr);
+        
+        const buyBtns = document.querySelectorAll('.btn-buy, .m-btn-buy');
+        buyBtns.forEach(btn => {
+            if (btn.tagName === 'BUTTON') {
+                btn.innerText = totalStr + ' 구매하기';
+            }
+        });
     }
 
     function openOptionSheet() { 

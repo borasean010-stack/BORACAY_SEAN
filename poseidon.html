@@ -246,13 +246,15 @@
         if(tcDisp) tcDisp.innerText = totalCount;
         const mtcDisp = document.getElementById('m-total-count-display');
         if(mtcDisp) mtcDisp.innerText = totalCount;
+        
+        const totalStr = BSUtils.formatPrice(totalPrice);
         const priceDisplays = document.querySelectorAll('#display-price');
-        priceDisplays.forEach(d => d.innerText = BSUtils.formatPrice(totalPrice));
+        priceDisplays.forEach(d => d.innerText = totalStr);
         
         const buyBtns = document.querySelectorAll('.btn-buy, .m-btn-buy');
         buyBtns.forEach(btn => {
             if (btn.tagName === 'BUTTON') {
-                btn.innerText = BSUtils.formatPrice(totalPrice) + ' 구매하기';
+                btn.innerText = totalStr + ' 구매하기';
             }
         });
     }

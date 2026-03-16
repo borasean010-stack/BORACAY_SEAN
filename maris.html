@@ -320,14 +320,16 @@
         for (const name in selectedQuantities) {
             const qty = selectedQuantities[name];
             const opt = massageOptions.find(o => o.name === name);
-            items.push({
-                name: "마리스 - " + name,
-                price: opt.price,
-                count: qty,
-                totalPrice: opt.price * qty,
-                date: selectedDate,
-                time: selectedTime
-            });
+            if (qty > 0) {
+                items.push({
+                    name: "마리스 - " + name,
+                    price: opt.price,
+                    count: qty,
+                    totalPrice: opt.price * qty,
+                    date: selectedDate,
+                    time: selectedTime
+                });
+            }
         }
         return items;
     }

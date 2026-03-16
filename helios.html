@@ -63,10 +63,6 @@
         @media (max-device-width: 1024px) {
             .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
             .reservation-box { display: none; }
-        }
-
-        .mobile-bottom-bar { display: none; }
-        @media (max-device-width: 1024px) {
             .mobile-bottom-bar { 
                 display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
                 background: white; padding: 15px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); 
@@ -195,10 +191,6 @@
     </div>
 </footer>
 
-<div class="mobile-bottom-bar">
-    <button class="m-btn-buy" onclick="openBookingDrawer()">구매하기</button>
-</div>
-
 <script src="main.js"></script>
 <script>
     const massageOptions = [{"name": "허니 스톤", "price": 91000}, {"name": "코코 스파", "price": 105000}, {"name": "허니 스톤 + 코코 스파", "price": 119000}, {"name": "성장 마사지 (1시간)", "price": 42000}, {"name": "성장 마사지 (2시간)", "price": 55000}];
@@ -258,7 +250,7 @@
         const totalStr = BSUtils.formatPrice(totalPrice);
         const priceDisplays = document.querySelectorAll('#display-price');
         priceDisplays.forEach(d => d.innerText = totalStr);
-
+        
         const buyBtns = document.querySelectorAll('.btn-buy, .m-btn-buy');
         buyBtns.forEach(btn => {
             if (btn.tagName === 'BUTTON') {
@@ -357,5 +349,8 @@
         renderCalendar('m-days', 'm-month'); 
     };
 </script>
+<div class="mobile-bottom-bar">
+    <button class="m-btn-buy" onclick="openBookingDrawer()">구매하기</button>
+</div>
 </body>
 </html>

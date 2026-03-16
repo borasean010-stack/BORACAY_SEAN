@@ -188,9 +188,6 @@
     </div>
 
     <div class="reservation-box">
-        <div class="price-header">
-            <span class="price-label">1인 기준</span>
-            <div class="price-value" id="display-price">₩ 192,000</div>
         </div>
 
         <div class="date-tabs">
@@ -287,12 +284,15 @@
             document.getElementById('child-subtotal').innerText = BSUtils.formatPrice(childSubtotal);
         }
 
+        
         const totalStr = BSUtils.formatPrice(total);
-        document.getElementById('display-total-price').innerText = totalStr;
-        document.getElementById('buy-btn').innerText = totalStr + ' 구매하기';
-        if (document.getElementById('m-buy-btn')) {
-            document.getElementById('m-buy-btn').innerText = totalStr + ' 구매하기';
-        }
+        const totalDisp = document.getElementById('display-total-price');
+        if (totalDisp) totalDisp.innerText = totalStr;
+        document.querySelectorAll('.btn-buy, .m-btn-buy').forEach(btn => {
+            if (btn.tagName === 'BUTTON') btn.innerText = totalStr + ' 구매하기';
+        });
+
+        
     }
 
     function updateAdultCount(delta) {

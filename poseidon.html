@@ -166,9 +166,6 @@
     </div>
 
     <div class="reservation-box">
-        <div class="price-header">
-            <span class="price-label">1인 기준</span>
-            <div class="price-value" id="display-price">₩ 105,000</div>
         </div>
 
         <div class="date-tabs">
@@ -277,16 +274,14 @@
         const mtcDisp = document.getElementById('m-total-count-display');
         if(mtcDisp) mtcDisp.innerText = totalCount;
         
-        const totalStr = BSUtils.formatPrice(totalPrice);
-        const priceDisplays = document.querySelectorAll('#display-price');
-        priceDisplays.forEach(d => d.innerText = totalStr);
         
-        const buyBtns = document.querySelectorAll('.btn-buy, .m-btn-buy');
-        buyBtns.forEach(btn => {
-            if (btn.tagName === 'BUTTON') {
-                btn.innerText = totalStr + ' 구매하기';
-            }
+        const totalStr = BSUtils.formatPrice(totalPrice);
+        const totalDisp = document.getElementById('display-total-price');
+        if (totalDisp) totalDisp.innerText = totalStr;
+        document.querySelectorAll('.btn-buy, .m-btn-buy').forEach(btn => {
+            if (btn.tagName === 'BUTTON') btn.innerText = totalStr + ' 구매하기';
         });
+
     }
 
     function openOptionSheet() { 

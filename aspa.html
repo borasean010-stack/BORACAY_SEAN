@@ -144,7 +144,6 @@
     </div>
 
     <div class="reservation-box">
-        <div id="display-price" style="font-size:24px; font-weight:900; color:#ff6a00; margin-bottom:10px; letter-spacing: -1px;">₩ 55,000</div>
         
         <div class="date-tabs">
             <div class="date-tab active">예약 날짜 선택<span id="pc-date-display" class="date-display">2026-03-02</span></div>
@@ -182,6 +181,11 @@
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding:10px; background:#f8f9fa; border-radius:12px; border:1px solid #eee;">
             <span style="font-weight:800; font-size:14px; color:#111;">총 예약 인원</span>
             <div style="font-size:16px; font-weight:900; color:#ff6a00;"><span id="total-count-display">0</span>명</div>
+        </div>
+        
+        <div class="total-summary">
+            <span>총 합계 금액</span>
+            <b id="display-total-price">₩ 0</b>
         </div>
         <button class="btn-buy" onclick="handleBuy()">구매하기</button>
         <button class="btn-cart" onclick="addToCart()" style="margin-top:6px; width:100%;">장바구니 담기</button>
@@ -256,16 +260,14 @@
         const mtcDisp = document.getElementById('m-total-count-display');
         if(mtcDisp) mtcDisp.innerText = totalCount;
         
-        const totalStr = BSUtils.formatPrice(totalPrice);
-        const priceDisplays = document.querySelectorAll('#display-price');
-        priceDisplays.forEach(d => d.innerText = totalStr);
         
-        const buyBtns = document.querySelectorAll('.btn-buy, .m-btn-buy');
-        buyBtns.forEach(btn => {
-            if (btn.tagName === 'BUTTON') {
-                btn.innerText = totalStr + ' 구매하기';
-            }
+        const totalStr = BSUtils.formatPrice(totalPrice);
+        const totalDisp = document.getElementById('display-total-price');
+        if (totalDisp) totalDisp.innerText = totalStr;
+        document.querySelectorAll('.btn-buy, .m-btn-buy').forEach(btn => {
+            if (btn.tagName === 'BUTTON') btn.innerText = totalStr + ' 구매하기';
         });
+
     }
 
     function openOptionSheet() { 

@@ -263,9 +263,14 @@
         document.getElementById('pc-count').innerText = adultCount;
         document.getElementById('adult-count-text').innerText = adultCount;
         document.getElementById('adult-subtotal').innerText = BSUtils.formatPrice(total);
+        
         const totalStr = BSUtils.formatPrice(total);
-        document.getElementById('display-total-price').innerText = totalStr;
-        document.getElementById('buy-btn').innerText = totalStr + ' 구매하기';
+        const totalDisp = document.getElementById('display-total-price');
+        if (totalDisp) totalDisp.innerText = totalStr;
+        document.querySelectorAll('.btn-buy, .m-btn-buy').forEach(btn => {
+            if (btn.tagName === 'BUTTON') btn.innerText = totalStr + ' 구매하기';
+        });
+
     }
 
     function selectTime(time, el) {

@@ -188,9 +188,6 @@
     </div>
 
     <div class="reservation-box">
-        <div class="price-header">
-            <span class="price-label">1인 기준</span>
-            <div class="price-value" id="display-price">₩ 0</div>
         </div>
 
         <div class="date-tabs">
@@ -288,8 +285,20 @@
         document.body.style.overflow = '';
     }
     
+    
+    function updateTotalPrice() {
+        const total = adultCount * 45000;
+        const totalStr = BSUtils.formatPrice(total);
+        const totalDisp = document.getElementById('display-total-price');
+        if (totalDisp) totalDisp.innerText = totalStr;
+        document.querySelectorAll('.btn-buy, .m-btn-buy').forEach(btn => {
+            if (btn.tagName === 'BUTTON') btn.innerText = totalStr + ' 구매하기';
+        });
+    }
+
     function updateCount(delta) {
         adultCount = Math.max(1, adultCount + delta);
+        updateTotalPrice();
         document.getElementById('pc-count').innerText = adultCount;
         document.getElementById('m-count').innerText = adultCount;
     }
@@ -352,7 +361,8 @@
         if(confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) {
             window.location.assign('cart.html');
         }
-    window.onload = () => { 
+    window.onload = () => {
+        updateTotalPrice(); 
         const mcount = document.getElementById('m-count');
         if (mcount) mcount.innerText = adultCount;
         renderCalendars(); 

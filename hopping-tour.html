@@ -197,9 +197,6 @@
     </div>
 
     <div class="reservation-box">
-        <div class="price-header">
-            <span class="price-label" style="font-size: 14px; color: #888; font-weight: 700; margin-bottom: 4px; display: block;">요금</span>
-            <div class="price-value" id="display-price">₩ 85,000</div>
         </div>
 
         <div class="date-tabs">
@@ -287,10 +284,14 @@
         document.getElementById('adult-count-text').innerText = adultCount;
         document.getElementById('adult-subtotal').innerText = BSUtils.formatPrice(adultSubtotal);
 
+        
         const totalStr = BSUtils.formatPrice(total);
-        document.getElementById('display-price').innerText = totalStr;
-        document.getElementById('display-total-price').innerText = totalStr;
-        document.getElementById('buy-btn').innerText = totalStr + ' 구매하기';
+        const totalDisp = document.getElementById('display-total-price');
+        if (totalDisp) totalDisp.innerText = totalStr;
+        document.querySelectorAll('.btn-buy, .m-btn-buy').forEach(btn => {
+            if (btn.tagName === 'BUTTON') btn.innerText = totalStr + ' 구매하기';
+        });
+
     }
 
     function updateAdultCount(delta) {

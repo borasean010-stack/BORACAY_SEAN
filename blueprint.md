@@ -88,6 +88,13 @@ This project is a reservation website for tours and activities in Boracay (BORAC
     ### 5. Poseidon Spa Update
     * **Massage Types:** Updated from "포세이돈 스파" to specific options: **VIP (105,000원)** and **VVIP (119,000원)**.
 
+    ### 6. Link Optimization (Mobile-Friendly)
+    * **Objective:** Update Naver Cafe links to their mobile-optimized (`m.cafe.naver.com`) versions for better user experience on mobile devices.
+    * **Announcements (공지사항):** Updated to `https://m.cafe.naver.com/ca-fe/web/cafes/17953658/menus/21`.
+    * **Reviews (내돈내산):** Updated to `https://m.cafe.naver.com/ca-fe/web/cafes/17953658/menus/141`.
+    * **FAQ (자주묻는 질문):** Updated to `https://m.cafe.naver.com/ca-fe/web/cafes/17953658/menus/165`.
+    * **General Cafe Link:** Updated across all footers and buttons to `https://m.cafe.naver.com/jesupblue.cafe?`.
+
 
 ## Previous Milestone: Admin & Login Redesign
 

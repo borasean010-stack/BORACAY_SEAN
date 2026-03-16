@@ -10,7 +10,7 @@ def update_html(file_path):
     # <div class="header-right ...">
     #     <a href="mypage.html" class="mypage-btn">...</a>
     #     <a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카카오톡 상담</a>
-    #     <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페 바로가기</a>
+    #     <a href="https://m.cafe.naver.com/jesupblue.cafe?" target="_blank" class="naver-btn">카페 바로가기</a>
     # </div>
 
     kakao_btn = '<a href="https://business.kakao.com/_zBArM/chats" target="_blank" class="kakao-btn">카카오톡 상담</a>'
@@ -48,7 +48,7 @@ def update_html(file_path):
     <div class="header-right pc-only">
         <a href="mypage.html" class="mypage-btn">마이페이지</a>
         {kakao_btn}
-        <a href="https://cafe.naver.com/f-e/cafes/17953658/menus/0?t=1772441375461" target="_blank" class="naver-btn">카페 바로가기</a>
+        <a href="https://m.cafe.naver.com/jesupblue.cafe?" target="_blank" class="naver-btn">카페 바로가기</a>
     </div>'''
             # Insert before the end of .top-bar
             # Find the last </div> before the next major section or end of file

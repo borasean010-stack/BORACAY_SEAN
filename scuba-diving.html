@@ -42,11 +42,11 @@
 
         .reservation-box { 
             background: white; 
-            border-radius: 28px; 
-            padding: 20px; 
+            border-radius: 20px; 
+            padding: 15px; 
             box-shadow: 0 20px 50px rgba(0,0,0,0.08); 
             position: sticky; 
-            top: 100px; 
+            top: 80px; 
             border: 1px solid #f0f0f0; 
             height: fit-content;
         }
@@ -55,12 +55,12 @@
         .day:hover { background: #fff1e6; }
         .day.selected { background: #ff6a00 !important; color: white !important; font-weight: 800; }
 
-        .btn-buy { width: 100%; padding: 16px; background: #111; color: white; border: none; border-radius: 16px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .btn-cart { width: 100%; padding: 14px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 16px; font-size: 15px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-buy { width: 100%; padding: 14px; background: #111; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-cart { width: 100%; padding: 12px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 12px; font-size: 14px; font-weight: 800; cursor: pointer; transition: 0.3s; }
         .btn-buy:hover { background: #ff6a00; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
         .btn-cart:hover { background: #fff5eb; }
 
-        .person-selector { background:#fcfcfc; border-radius:20px; border:1px solid #f0f0f0; padding:20px; margin-bottom:20px; }
+        .person-selector { background:#fcfcfc; border-radius:20px; border:1px solid #f0f0f0; padding:12px; margin-bottom:10px; }
         .person-row { margin-bottom: 15px; }
         .person-row:last-child { margin-bottom: 0; }
         .person-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
@@ -68,9 +68,9 @@
         .person-price-calc b { color: #333; }
 
         .total-summary { 
-            padding-top: 15px; 
+            padding-top: 10px; 
             border-top: 1px solid #eee; 
-            margin-top: 15px; 
+            margin-top: 10px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center;
@@ -187,7 +187,7 @@
             <div class="date-tab active">예약 날짜 선택<span id="pc-date-display" class="date-display">2026-03-02</span></div>
         </div>
 
-        <div class="calendar-wrap" style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 10px;">
+        <div class="calendar-wrap" style="margin-bottom: 10px; border: 1px solid #eee; border-radius: 16px; padding: 8px;">
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&lt;</button>
                 <strong id="pc-month">2026년 3월</strong>

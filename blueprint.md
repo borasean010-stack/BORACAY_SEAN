@@ -100,7 +100,16 @@ This project is a reservation website for tours and activities in Boracay (BORAC
     * **HTML Fixes:** Corrected broken HTML structures in several files where the `selection-tabs` container was closed prematurely.
     * **Affected Files:** `aspa.html`, `boraspa.html`, `golf.html`, `helios.html`, `helmet-diving.html`, `jetski.html`, `kabayan.html`, `luna.html`, `maris.html`, `parasailing.html`, `poseidon.html`, `scuba-diving.html`, `spa.html`.
 
-    ### 8. Link Optimization (Mobile-Friendly)
+    ### 8. Reservation Box Height Optimization
+    * **Objective:** Reduce the total height of the reservation box on product detail pages to ensure the "Buy Now" button is visible without scrolling.
+    * **Visual Changes:**
+        * Reduced `.reservation-box` padding from 24px to 15px.
+        * Decreased margins between price, calendar, options, and total summary sections.
+        * Adjusted button paddings and font sizes for a more compact look.
+        * Changed sticky `top` position to 80px for better visibility on shorter screens.
+    * **Benefits:** Improved conversion by making the booking action immediate and visible upon page load.
+
+    ### 9. Link Optimization (Mobile-Friendly)
     * **Objective:** Update Naver Cafe links to their mobile-optimized (`m.cafe.naver.com`) versions for better user experience on mobile devices.
     * **Announcements (공지사항):** Updated to `https://m.cafe.naver.com/ca-fe/web/cafes/17953658/menus/21`.
     * **Reviews (내돈내산):** Updated to `https://m.cafe.naver.com/ca-fe/web/cafes/17953658/menus/141`.

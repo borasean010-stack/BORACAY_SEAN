@@ -109,12 +109,15 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * Changed sticky `top` position to 80px for better visibility on shorter screens.
     * **Benefits:** Improved conversion by making the booking action immediate and visible upon page load.
 
-    ### 9. Link Optimization (Mobile-Friendly)
-    * **Objective:** Update Naver Cafe links to their mobile-optimized (`m.cafe.naver.com`) versions for better user experience on mobile devices.
-    * **Announcements (공지사항):** Updated to `https://m.cafe.naver.com/ca-fe/web/cafes/17953658/menus/21`.
-    * **Reviews (내돈내산):** Updated to `https://m.cafe.naver.com/ca-fe/web/cafes/17953658/menus/141`.
-    * **FAQ (자주묻는 질문):** Updated to `https://m.cafe.naver.com/ca-fe/web/cafes/17953658/menus/165`.
-    * **General Cafe Link:** Updated across all footers and buttons to `https://m.cafe.naver.com/jesupblue.cafe?`.
+    ### 9. Link Optimization (Mobile & PC Friendly)
+    * **Objective:** Update Naver Cafe links to provide the best experience based on the platform.
+    * **Main Page "Notice" Section (PC Friendly):**
+        * **Announcements (공지사항):** Updated to `https://cafe.naver.com/f-e/cafes/17953658/menus/21`.
+        * **Reviews (내돈내산):** Updated to `https://cafe.naver.com/f-e/cafes/17953658/menus/141`.
+        * **FAQ (자주묻는 질문):** Updated to `https://cafe.naver.com/f-e/cafes/17953658/menus/165`.
+    * **General Site Optimization:**
+        * **Mobile-Specific Links:** Some links are optimized for mobile using `m.cafe.naver.com` where direct redirection is preferred.
+        * **General Cafe Link:** Updated across all footers and buttons to `https://m.cafe.naver.com/jesupblue.cafe?`.
 
 
 ## Previous Milestone: Admin & Login Redesign

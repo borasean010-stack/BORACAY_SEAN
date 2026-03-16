@@ -58,12 +58,13 @@
     .day { padding: 10px 0; cursor: pointer; border-radius: 8px; font-size: 13px; font-weight: 600; }
     .day:hover { background: #fff1e6; }
     .day.selected { background: #ff6a00 !important; color: white !important; font-weight: 800; }
-    .day.selected-pickup { background: #ff6a00 !important; color: white !important; font-weight: 800; position: relative; }
-    .day.selected-pickup::after { content: '픽업'; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-size: 8px; }
-    .day.selected-sending { background: #00c4ff !important; color: white !important; font-weight: 800; position: relative; }
-    .day.selected-sending::after { content: '샌딩'; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-size: 8px; }
+
+    .selection-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+    .selection-tab { padding: 12px; text-align: center; background: #f8f9fa; border: 1px solid #eee; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; color: #888; transition: 0.3s; }
+    .selection-tab.active { background: #ff6a00; color: white; border-color: #ff6a00; box-shadow: 0 5px 15px rgba(255,106,0,0.2); }
 
     .btn-buy { width: 100%; padding: 18px; background: #111; color: white; border: none; border-radius: 18px; font-size: 17px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+
     .btn-cart { width: 100%; padding: 16px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 18px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; }
     .btn-buy:hover { background: #ff6a00; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
     .btn-cart:hover { background: #fff5eb; }
@@ -271,10 +272,15 @@
 
 <script src="main.js"></script>
 <script>
-    let adultCount = 1;
+    let selectedType = 'A타입';
+    let currentPrice = 750000;
     let pcDate = new Date(2026, 2, 1);
     let mobileDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
+
+    function openBookingDrawer() {
+        openOptionSheet();
+    }
 
     function openOptionSheet() { 
         document.getElementById('sheetOverlay').classList.add('active'); 
@@ -287,11 +293,32 @@
         document.body.style.overflow = '';
     }
     
-    function updateCount(delta) {
-        adultCount = Math.max(1, adultCount + delta);
-        document.getElementById('pc-count').innerText = adultCount;
-        document.getElementById('m-count').innerText = adultCount;
+    function selectType(el, type, price) {
+        selectedType = type;
+        currentPrice = price;
+        
+        // UI Sync
+        document.querySelectorAll('.selection-tab').forEach(tab => {
+            if (tab.innerText === type) tab.classList.add('active');
+            else tab.classList.remove('active');
+        });
+        
+        updateTotalPrice();
     }
+
+    function updateTotalPrice() {
+        const priceStr = BSUtils.formatPrice(currentPrice);
+        const totalPriceEl = document.getElementById('display-total-price');
+        const buyBtn = document.getElementById('buy-btn');
+        const mBuyBtn = document.getElementById('m-buy-btn');
+        const mBtnBuyTop = document.querySelector('.m-btn-buy');
+
+        if (totalPriceEl) totalPriceEl.innerText = priceStr;
+        if (buyBtn) buyBtn.innerText = priceStr + ' 구매하기';
+        if (mBuyBtn) mBuyBtn.innerText = priceStr + ' 구매하기';
+        if (mBtnBuyTop) mBtnBuyTop.innerText = priceStr + ' 구매하기';
+    }
+
     function changeMonth(delta, view) {
         if (view === 'pc') {
             pcDate.setMonth(pcDate.getMonth() + delta);
@@ -338,24 +365,29 @@
     }
     
     function handleBuy() {
-        const item = { name: "JL 스냅사진 촬영", price: 80000, count: adultCount, date: selectedDate };
-        sessionStorage.setItem('directBuyItem', JSON.stringify(item));
-        window.open('booking-form.html', '_blank');
+        const item = { 
+            name: `JL 스냅사진 촬영 (${selectedType})`, 
+            price: currentPrice, 
+            count: 1, 
+            totalPrice: currentPrice,
+            date: selectedDate,
+            details: `${selectedType} (2인 기준)`
+        };
+        BSUtils.buyNow(item);
     }
 
     function addToCart() {
-        const item = { name: "JL 스냅사진 촬영", price: 80000, count: adultCount, date: selectedDate };
-        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        cart.push(item);
-        localStorage.setItem('cart', JSON.stringify(cart));
-        if(confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) {
-            window.location.assign('cart.html');
-        }
-    window.onload = () => { 
-        const mcount = document.getElementById('m-count');
-        if (mcount) mcount.innerText = adultCount;
-        renderCalendars(); 
-    };
+        const item = { 
+            name: `JL 스냅사진 촬영 (${selectedType})`, 
+            price: currentPrice, 
+            count: 1, 
+            totalPrice: currentPrice,
+            date: selectedDate,
+            details: `${selectedType} (2인 기준)`
+        };
+        BSUtils.saveToCart(item);
+    }
+    window.onload = () => { renderCalendars(); updateTotalPrice(); };
 </script>
 </body>
 </html>

@@ -135,6 +135,9 @@ This project is a reservation website for tours and activities in Boracay (BORAC
     * **S-SPA Navigation Fix:** Fixed the active menu tab when viewing the S-SPA detail page.
     * **Booking Form Optimization:** Permanently hidden the "Other Requests" (기타 요청사항) field for all products except resort quotes. The field is now hidden by default in the HTML and only revealed via JavaScript when a resort quote is detected, preventing any UI flicker during page load.
     * **My Page Consistency:** Verified that the "My Requests" section in `mypage.html` remains hidden for activity bookings as the underlying data field is no longer populated for non-resort products.
+    * **JL Snap Photo Price Update:**
+        * **New Pricing (2 Persons):** Type A - 750,000 KRW, Type B - 450,000 KRW, Type C - 300,000 KRW.
+        * **UI Update:** Added a Type selection tab in `jl-snap.html` to allow users to choose between sessions. Updated `main.js` to reflect the starting price of 300,000 KRW.
 
 ## Previous Milestone: Admin & Login Redesign
 

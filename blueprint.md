@@ -119,6 +119,19 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Mobile-Specific Links:** Some links are optimized for mobile using `m.cafe.naver.com` where direct redirection is preferred.
         * **General Cafe Link:** Updated across all footers and buttons to `https://m.cafe.naver.com/jesupblue.cafe?`.
 
+    ### 10. Product & Label Updates (March 2026)
+    * **Thumbnail Information Update:**
+        * **Black Pearl Yacht Hopping:** Updated description to: "럭셔리 요트위에서 즐기는 보라카이 선셋과 신나는 음악과 파티가 함께하는 1등 선상 파티 호핑".
+        * **Secret Garden Malumpati:** Updated description to: "우리끼리 프라이빗하게 즐기고 신비로운 블루라군과 튜빙".
+        * **Bora-Ajae Hopping:** Updated description to: "카라바오 섬에서 즐기는 호핑투어".
+    * **Badge Removal:** Removed the "HOT" badge from the Bora-Ajae Hopping Tour in `main.js`.
+    * **Pickup & Sending Label Update:**
+        * **Child Category Deletion:** Removed the "Child" (소인) selection row from `pickup-sending.html`.
+        * **Unified Age Range:** Updated the person selection label to "예약 인원 (36개월~성인)" to reflect unified pricing for that range.
+    * **Secret Garden Malumpati Age Ranges:**
+        * Updated Adult label to "성인 인원 (중1학년~성인)".
+        * Updated Child label to "소인 인원 (36개월~초6학년)".
+    * **Ayurveda Spa & Booking Form Cleanup:** Simplified the booking form and product summaries by removing redundant request sections for spa-only reservations.
 
 ## Previous Milestone: Admin & Login Redesign
 

@@ -32,17 +32,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const productData = {
         essential: [
             { title: "공항 왕복 픽업샌딩", img: "pickup.jpg", url: "pickup-sending.html", badge: "HOT", desc: "공항부터 숙소 앞까지 가장 안전하고 편안하게!", price: 54900 },
-            { title: "블랙펄 요트호핑투어", img: "hopping.jpg", url: "hopping-tour.html", badge: "HOT", desc: "보라카이 최고의 럭셔리 요트에서 즐기는 환상적인 파티.", price: 85000 },
-            { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "malumpati.html", badge: "HOT", desc: "에메랄드빛 블루라군에서 즐기는 시원한 다이빙과 휴식.", price: 99000 },
+            { title: "블랙펄 요트호핑투어", img: "hopping.jpg", url: "hopping-tour.html", badge: "HOT", desc: "럭셔리 요트위에서 즐기는 보라카이 선셋과 신나는 음악과 파티가 함께하는 1등 선상 파티 호핑", price: 85000 },
+            { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "malumpati.html", badge: "HOT", desc: "우리끼리 프라이빗하게 즐기고 신비로운 블루라군과 튜빙", price: 99000 },
             { title: "한눈에 요금표", img: "price.png", url: "price-list.html", desc: "보라카이션의 모든 투어 요금을 한눈에 확인하세요.", price: null }
         ],
         activity: [
-            { title: "블랙펄 요트호핑투어", img: "hopping.jpg", url: "hopping-tour.html", badge: "HOT", desc: "럭셔리 요트 위에서 즐기는 최고의 선셋과 스노클링.", price: 85000 },
-            { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "malumpati.html", badge: "HOT", desc: "신비로운 블루라군 탐험과 푸짐한 현지식 오찬.", price: 99000 },
+            { title: "블랙펄 요트호핑투어", img: "hopping.jpg", url: "hopping-tour.html", badge: "HOT", desc: "럭셔리 요트위에서 즐기는 보라카이 선셋과 신나는 음악과 파티가 함께하는 1등 선상 파티 호핑", price: 85000 },
+            { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "malumpati.html", badge: "HOT", desc: "우리끼리 프라이빗하게 즐기고 신비로운 블루라군과 튜빙", price: 99000 },
             { title: "프리다이빙 체험", img: "free1.jpg", url: "freediving.html", badge: "NEW", desc: "바다 속 자유를 만끽하는 특별한 프리다이빙 체험.", price: 70000 },
             { title: "보라카이 랜드투어", img: "beach1.jpg", url: "land-tour.html", desc: "전용 차량으로 즐기는 보라카이 섬 구석구석 명소 탐방.", price: 45000 },
             { title: "JL 스냅사진 촬영", img: "jl1.jpg", url: "jl-snap.html", desc: "보라카이의 아름다운 풍경과 함께 인생샷을 남겨보세요.", price: 80000 },
-            { title: "보라아재 호핑투어", img: "bora1.jpg", url: "bora-ajae-hopping.html", badge: "HOT", desc: "신나는 음악과 파티가 함께하는 보라카이 1위 선상 파티 호핑.", price: 180000 },
+            { title: "보라아재 호핑투어", img: "bora1.jpg", url: "bora-ajae-hopping.html", desc: "카라바오 섬에서 즐기는 호핑투어", price: 180000 },
             { title: "파라세일링", img: "para1.jpg", url: "parasailing.html", desc: "하늘 높이 날아올라 보라카이 전경을 한눈에 담아보세요.", price: 55000 },
             { title: "체험 다이빙", img: "diving1.jpg", url: "scuba-diving.html", desc: "전문 강사와 함께하는 환상적인 수중 세계 탐험.", price: 55000 },
             { title: "헬멧 다이빙", img: "he1.jpg", url: "helmet-diving.html", desc: "머리 젖지 않고 바다 속을 걷는 신비로운 경험.", price: 44000 },

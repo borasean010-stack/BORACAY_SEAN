@@ -7,89 +7,97 @@
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
-        body { background: #fdfdfd; padding-bottom: 100px; }
-        .tour-detail-container { 
-            max-width: 1100px; 
-            margin: 120px auto 50px; 
-            display: grid; 
-            grid-template-columns: 1fr 360px; 
-            gap: 40px; 
-            padding: 0 20px; 
-        }
-        .tour-content { 
-            background: white; 
-            padding: 40px; 
-            border-radius: 28px; 
-            box-shadow: 0 15px 40px rgba(0,0,0,0.03); 
-            border: 1px solid #f5f5f5;
-        }
-        .tour-content h1 { font-size: 32px; font-weight: 900; margin-bottom: 30px; letter-spacing: -1.5px; }
-        .section-title { 
-            font-size: 20px; 
-            font-weight: 800; 
-            margin: 40px 0 20px; 
-            padding-bottom: 12px; 
-            border-bottom: 2px solid #fff5eb; 
-            color: #ff6a00; 
-        }
-        .itinerary-img { width: 100%; margin-bottom: 30px; }
-        .itinerary-img img { width: 100%; border-radius: 20px; display: block; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        
-        .date-tabs { display: flex; gap: 5px; margin-bottom: 10px; background: #f8f9fa; padding: 5px; border-radius: 12px; }
-        .date-tab { flex: 1; padding: 8px 5px; text-align: center; font-size: 12px; font-weight: 700; cursor: pointer; border-radius: 10px; transition: 0.2s; color: #888; border: 1px solid transparent; }
-        .date-tab.active { background: white; color: #ff6a00; border-color: #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .date-display { font-size: 12px; display: block; margin-top: 4px; color: #ff6a00; font-weight: 800; }
+    body { background: #fdfdfd; padding-bottom: 100px; }
+    .tour-detail-container { 
+        max-width: 1100px; 
+        margin: 120px auto 50px; 
+        display: grid; 
+        grid-template-columns: 1fr 360px; 
+        gap: 40px; 
+        padding: 0 20px; 
+    }
+    .tour-content { 
+        background: white; 
+        padding: 40px; 
+        border-radius: 28px; 
+        box-shadow: 0 15px 40px rgba(0,0,0,0.03); 
+        border: 1px solid #f5f5f5;
+    }
+    .tour-content h1 { font-size: 32px; font-weight: 900; margin-bottom: 30px; letter-spacing: -1.5px; }
+    .section-title { 
+        font-size: 20px; 
+        font-weight: 800; 
+        margin: 40px 0 20px; 
+        padding-bottom: 12px; 
+        border-bottom: 2px solid #fff5eb; 
+        color: #ff6a00; 
+    }
+    .itinerary-img { width: 100%; margin-bottom: 30px; }
+    .itinerary-img img { width: 100%; border-radius: 20px; display: block; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+    
+    .date-tabs { display: flex; gap: 5px; margin-bottom: 10px; background: #f8f9fa; padding: 5px; border-radius: 12px; }
+    .date-tab { flex: 1; padding: 8px 5px; text-align: center; font-size: 12px; font-weight: 700; cursor: pointer; border-radius: 10px; transition: 0.2s; color: #888; border: 1px solid transparent; }
+    .date-tab.active { background: white; color: #ff6a00; border-color: #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    .date-display { font-size: 12px; display: block; margin-top: 4px; color: #ff6a00; font-weight: 800; }
 
-        .reservation-box { 
-            background: white; 
-            border-radius: 20px; 
-            padding: 20px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.08); 
-            position: sticky; 
-            top: 100px; 
-            border: 1px solid #f0f0f0; 
-            height: fit-content;
+    .reservation-box { 
+        background: white; 
+        border-radius: 28px; 
+        padding: 24px; 
+        box-shadow: 0 20px 50px rgba(0,0,0,0.08); 
+        position: sticky; 
+        top: 100px; 
+        border: 1px solid #f0f0f0; 
+        height: fit-content;
+    }
+    
+    .price-header { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #f8f8f8; }
+    .price-label { font-size: 14px; color: #888; font-weight: 700; margin-bottom: 4px; display: block; }
+    .price-value { font-size: 28px; font-weight: 900; color: #ff6a00; letter-spacing: -1px; }
+
+    .day { padding: 10px 0; cursor: pointer; border-radius: 8px; font-size: 13px; font-weight: 600; }
+    .day:hover { background: #fff1e6; }
+    .day.selected { background: #ff6a00 !important; color: white !important; font-weight: 800; }
+    .day.selected-pickup { background: #ff6a00 !important; color: white !important; font-weight: 800; position: relative; }
+    .day.selected-pickup::after { content: '픽업'; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-size: 8px; }
+    .day.selected-sending { background: #00c4ff !important; color: white !important; font-weight: 800; position: relative; }
+    .day.selected-sending::after { content: '샌딩'; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-size: 8px; }
+
+    .btn-buy { width: 100%; padding: 18px; background: #111; color: white; border: none; border-radius: 18px; font-size: 17px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+    .btn-cart { width: 100%; padding: 16px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 18px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+    .btn-buy:hover { background: #ff6a00; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
+    .btn-cart:hover { background: #fff5eb; }
+
+    .person-selector { background:#fcfcfc; border-radius:24px; border:1px solid #f0f0f0; padding:20px; margin-bottom:20px; }
+    .person-row { margin-bottom: 15px; }
+    .person-row:last-child { margin-bottom: 0; }
+    .person-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .person-price-calc { text-align: right; font-size: 13px; color: #888; font-weight: 600; }
+    .person-price-calc b { color: #333; }
+
+    .total-summary { 
+        padding-top: 20px; 
+        border-top: 2px solid #f8f8f8; 
+        margin-top: 20px; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .total-summary span { font-size: 16px; font-weight: 800; color: #111; }
+    .total-summary b { font-size: 28px; font-weight: 900; color: #ff6a00; letter-spacing: -1px; }
+
+    @media (max-device-width: 1024px) {
+        .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
+        .reservation-box { display: none; }
+        .mobile-bottom-bar { 
+            display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
+            background: white; padding: 12px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); 
+            z-index: 9000; align-items: center;
         }
-        
-        .day { padding: 10px 0; cursor: pointer; border-radius: 8px; font-size: 13px; font-weight: 600; }
-        .day:hover { background: #fff1e6; }
-        .day.selected { background: #ff6a00 !important; color: white !important; font-weight: 800; }
-
-        .btn-buy { width: 100%; padding: 16px; background: #111; color: white; border: none; border-radius: 16px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .btn-cart { width: 100%; padding: 14px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 16px; font-size: 15px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .btn-buy:hover { background: #ff6a00; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
-        .btn-cart:hover { background: #fff5eb; }
-
-        /* 인원 선택 영역 개선 스타일 */
-        .person-selector { background:#fcfcfc; border-radius:20px; border:1px solid #f0f0f0; padding:20px; margin-bottom:20px; }
-        .person-row { margin-bottom: 15px; }
-        .person-row:last-child { margin-bottom: 0; }
-        .person-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .person-price-calc { text-align: right; font-size: 13px; color: #888; font-weight: 600; }
-        .person-price-calc b { color: #333; }
-
-        .total-summary { 
-            padding-top: 15px; 
-            border-top: 1px solid #eee; 
-            margin-top: 15px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-        }
-        .total-summary span { font-size: 15px; font-weight: 800; color: #111; }
-        .total-summary b { font-size: 24px; font-weight: 900; color: #ff6a00; letter-spacing: -1px; }
-
-        @media (max-device-width: 1024px) {
-            .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
-            .reservation-box { display: none; }
-            .mobile-bottom-bar { 
-                display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
-                background: white; padding: 12px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); 
-                z-index: 9000; align-items: center;
-            }
-            .m-btn-buy { flex: 1; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 17px; font-weight: 800; }
-        }
-    </style>
+        .m-btn-buy { flex: 1; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 17px; font-weight: 800; }
+    }
+</style>
 </head>
 <body>
 <div class="side-menu-overlay" id="overlay"></div>
@@ -185,8 +193,13 @@
     </div>
 
     <div class="reservation-box">
+        <div class="price-header">
+            <span class="price-label">1인 기준</span>
+            <div class="price-value" id="display-price">₩ 70,000</div>
+        </div>
+
         <div class="date-tabs">
-            <div class="date-tab active">체험 날짜 선택<span id="pc-date-display" class="date-display">2026-03-02</span></div>
+            <div class="date-tab active">예약 날짜 선택<span id="pc-date-display" class="date-display">2026-03-02</span></div>
         </div>
 
         <div class="calendar-wrap" style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 10px;">
@@ -201,25 +214,25 @@
         <div class="person-selector">
             <div class="person-row">
                 <div class="person-info">
-                    <span style="font-weight:800; font-size:15px;">성인 인원</span>
+                    <span style="font-weight:800; font-size:15px;">인원 선택</span>
                     <div class="counter">
                         <button class="count-btn" onclick="updateAdultCount(-1)">-</button>
-                        <strong id="pc-adult-count">1</strong>
+                        <strong id="pc-count">1</strong>
                         <button class="count-btn" onclick="updateAdultCount(1)">+</button>
                     </div>
                 </div>
                 <div class="person-price-calc">
-                    ₩ ₩ 70,000 × <span id="adult-count-text">1</span> = <b id="adult-subtotal">₩ 70,000</b>
+                    ₩ <span id="adult-price-text"></span> × <span id="adult-count-text">1</span> = <b id="adult-subtotal">₩ 0</b>
                 </div>
-            </div>
-
-            <div class="total-summary">
-                <span>총 합계 금액</span>
-                <b id="display-total-price">₩ 70,000</b>
             </div>
         </div>
 
-        <button class="btn-buy" onclick="handleBuy()" id="buy-btn">₩ 70,000 구매하기</button>
+        <div class="total-summary">
+            <span>총 합계 금액</span>
+            <b id="display-total-price">₩ 0</b>
+        </div>
+
+        <button class="btn-buy" onclick="handleBuy()" id="buy-btn">구매하기</button>
         <button class="btn-cart" onclick="addToCart()" style="margin-top:6px; width:100%;">장바구니 담기</button>
     </div>
 </div>
@@ -243,11 +256,16 @@
 <script src="main.js"></script>
 <script>
     let adultCount = 1;
+    let childCount = 0;
     const ADULT_PRICE = 70000;
+    const CHILD_PRICE = 0;
+    
     let currentDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
 
     function updateTotalPrice() {
+        if(document.getElementById('adult-price-text')) document.getElementById('adult-price-text').innerText = ADULT_PRICE.toLocaleString();
+        if(document.getElementById('child-price-text')) document.getElementById('child-price-text').innerText = CHILD_PRICE.toLocaleString();
         const adultSubtotal = adultCount * ADULT_PRICE;
         const childSubtotal = childCount * CHILD_PRICE;
         const total = BSUtils.calculateTotal(adultCount, ADULT_PRICE, childCount, CHILD_PRICE);
@@ -315,10 +333,7 @@
     }
     
     function handleBuy() { const total = BSUtils.calculateTotal(adultCount, ADULT_PRICE, childCount, CHILD_PRICE); const item = { name: document.querySelector("h1").innerText, price: total / (adultCount + childCount || 1), count: adultCount + childCount, totalPrice: total, date: selectedDate, details: `성인 ${adultCount}, 소인 ${childCount}` }; BSUtils.buyNow(item); }
-    }
-
     function addToCart() { const total = BSUtils.calculateTotal(adultCount, ADULT_PRICE, childCount, CHILD_PRICE); const item = { name: document.querySelector("h1").innerText, price: total / (adultCount + childCount || 1), count: adultCount + childCount, totalPrice: total, date: selectedDate, details: `성인 ${adultCount}, 소인 ${childCount}` }; BSUtils.saveToCart(item); }
-    }
     window.onload = () => { renderCalendar('pc-days', 'pc-month'); updateTotalPrice(); };
 </script>
 </body>

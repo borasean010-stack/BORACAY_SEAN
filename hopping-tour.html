@@ -215,17 +215,6 @@
             <div class="calendar-grid" id="pc-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
         </div>
 
-        <!-- 마사지 시간 선택 (예전 스타일 - 2x2 배열) -->
-        <div class="selection-container" style="margin-bottom: 20px;">
-            <span class="selection-label" style="display: block; font-size: 14px; font-weight: 800; color: #333; margin-bottom: 8px;">마사지 시간 선택</span>
-            <div class="time-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                <div class="selection-tab active" onclick="selectTime('12:30', this)" style="padding: 10px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 10px; background: #f8f9fa; border: 1px solid #eee; transition: 0.2s;">12:30</div>
-                <div class="selection-tab" onclick="selectTime('14:30', this)" style="padding: 10px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 10px; background: #f8f9fa; border: 1px solid #eee; transition: 0.2s;">14:30</div>
-                <div class="selection-tab" onclick="selectTime('16:30', this)" style="padding: 10px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 10px; background: #f8f9fa; border: 1px solid #eee; transition: 0.2s;">16:30</div>
-                <div class="selection-tab" onclick="selectTime('19:30', this)" style="padding: 10px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 10px; background: #f8f9fa; border: 1px solid #eee; transition: 0.2s;">19:30</div>
-            </div>
-        </div>
-
         <div style="margin-bottom:12px; padding:15px; background:#fff5eb; border-radius:15px; border:1px solid #ffe0d1;">
             <label style="font-weight:800; font-size:14px; color:#d35400; display:block; margin-bottom:10px;">추가 옵션 (현장지불)</label>
             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -288,7 +277,6 @@
     
     let currentDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
-    let selectedTime = '12:30';
 
     function updateTotalPrice() {
         if(document.getElementById('adult-price-text')) document.getElementById('adult-price-text').innerText = ADULT_PRICE.toLocaleString();
@@ -308,20 +296,6 @@
     function updateAdultCount(delta) {
         adultCount = Math.max(1, adultCount + delta);
         updateTotalPrice();
-    }
-
-    function selectTime(time, el) {
-        selectedTime = time;
-        document.querySelectorAll('.selection-tab').forEach(tab => {
-            tab.style.background = '#f8f9fa';
-            tab.style.color = '#888';
-            tab.style.borderColor = '#eee';
-            tab.classList.remove('active');
-        });
-        el.style.background = '#ff6a00';
-        el.style.color = 'white';
-        el.style.borderColor = '#ff6a00';
-        el.classList.add('active');
     }
 
     function updateJumboCount(delta) {
@@ -375,7 +349,6 @@
             count: adultCount, 
             totalPrice: total, 
             date: selectedDate, 
-            time: selectedTime,
             details: `성인 ${adultCount}` + (jumboCount > 0 ? `, 점보크랩 ${jumboCount}` : '')
         }; 
         BSUtils.buyNow(item); 
@@ -388,7 +361,6 @@
             count: adultCount, 
             totalPrice: total, 
             date: selectedDate, 
-            time: selectedTime,
             details: `성인 ${adultCount}` + (jumboCount > 0 ? `, 점보크랩 ${jumboCount}` : '')
         }; 
         BSUtils.saveToCart(item); 

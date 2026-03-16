@@ -194,7 +194,6 @@
 
     <div class="reservation-box">
         <div class="price-header">
-            <span class="price-label">1인 기준</span>
             <div class="price-value" id="display-price">₩ 70,000</div>
         </div>
 
@@ -270,7 +269,7 @@
         const childSubtotal = childCount * CHILD_PRICE;
         const total = BSUtils.calculateTotal(adultCount, ADULT_PRICE, childCount, CHILD_PRICE);
 
-        document.getElementById('pc-adult-count').innerText = adultCount;
+        document.getElementById('pc-count').innerText = adultCount;
         document.getElementById('adult-count-text').innerText = adultCount;
         document.getElementById('adult-subtotal').innerText = BSUtils.formatPrice(adultSubtotal);
 
@@ -283,6 +282,10 @@
         const totalStr = BSUtils.formatPrice(total);
         document.getElementById('display-total-price').innerText = totalStr;
         document.getElementById('buy-btn').innerText = totalStr + ' 구매하기';
+        
+        const priceDisplays = document.querySelectorAll('#display-price');
+        priceDisplays.forEach(d => d.innerText = totalStr);
+
         if (document.getElementById('m-buy-btn')) {
             document.getElementById('m-buy-btn').innerText = totalStr + ' 구매하기';
         }

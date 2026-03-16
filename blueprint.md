@@ -90,12 +90,17 @@ This project is a reservation website for tours and activities in Boracay (BORAC
 
     ### 6. Black Pearl Yacht Hopping Tour (블랙펄 요트호핑투어) Update
     * **Child Pricing Deletion:** Removed child pricing and related selection UI. The tour now only accepts adult reservations.
-    * **Massage Time Selection:** Added a massage time selection section using the "old style" (2x2 grid) layout for better accessibility. 
-        * Available Slots: 12:30, 14:30, 16:30, 19:30.
+    * **Massage Time Selection Deletion:** Removed the massage time selection section as it was no longer required for this specific tour.
     * **Price Label Update:** Changed the price label from "가격" or "인원 선택" to "요금" to match the requested terminology.
     * **Dynamic Pricing:** Ensured the total price updates dynamically based on the adult count, displayed as the "Total Price" (총 합계 금액).
 
-    ### 7. Link Optimization (Mobile-Friendly)
+    ### 7. Time Selection UI Grid Update (All Pages)
+    * **3-Column Layout:** Standardized the time selection (이용 가능 시간 선택 / 티오프 시간 선택) UI to use a 3-column grid layout across all activity and spa pages.
+    * **Implementation:** Updated the `.selection-tabs` class in `style.css` to `grid-template-columns: repeat(3, 1fr)`.
+    * **HTML Fixes:** Corrected broken HTML structures in several files where the `selection-tabs` container was closed prematurely.
+    * **Affected Files:** `aspa.html`, `boraspa.html`, `golf.html`, `helios.html`, `helmet-diving.html`, `jetski.html`, `kabayan.html`, `luna.html`, `maris.html`, `parasailing.html`, `poseidon.html`, `scuba-diving.html`, `spa.html`.
+
+    ### 8. Link Optimization (Mobile-Friendly)
     * **Objective:** Update Naver Cafe links to their mobile-optimized (`m.cafe.naver.com`) versions for better user experience on mobile devices.
     * **Announcements (공지사항):** Updated to `https://m.cafe.naver.com/ca-fe/web/cafes/17953658/menus/21`.
     * **Reviews (내돈내산):** Updated to `https://m.cafe.naver.com/ca-fe/web/cafes/17953658/menus/141`.

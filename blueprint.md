@@ -131,7 +131,9 @@ This project is a reservation website for tours and activities in Boracay (BORAC
     * **Secret Garden Malumpati Age Ranges:**
         * Updated Adult label to "성인 인원 (중1학년~성인)".
         * Updated Child label to "소인 인원 (36개월~초6학년)".
-    * **Ayurveda Spa & Booking Form Cleanup:** Simplified the booking form and product summaries by removing redundant request sections for spa-only reservations.
+    * **Ayurveda Spa Style:** Unified the "Total Summary" design to match other pages.
+    * **S-SPA Navigation Fix:** Fixed the active menu tab when viewing the S-SPA detail page.
+    * **Booking Form Optimization:** Hidden the "Other Requests" (기타 요청사항) field for all products except resort quotes to simplify the reservation process.
 
 ## Previous Milestone: Admin & Login Redesign
 

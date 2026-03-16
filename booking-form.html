@@ -220,11 +220,10 @@
         });
         if (hasPickup) document.getElementById('pickup-sending-fields').style.display = 'block';
 
-        // 리조트 견적이나 픽업샌딩이 아닌 경우(즉, 마사지나 액티비티인 경우) 기타 요청사항 숨기기
+        // 리조트 견적이 아닌 경우 기타 요청사항 숨기기
         const isResortQuote = cartData.some(item => item.name.includes('리조트 견적'));
-        const isPickupSending = cartData.some(item => item.name.includes('픽업샌딩'));
         
-        if (!isResortQuote && !isPickupSending) {
+        if (!isResortQuote) {
             const requestsGroup = document.getElementById('requests').closest('.input-group');
             if (requestsGroup) requestsGroup.style.display = 'none';
         }

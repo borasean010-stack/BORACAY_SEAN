@@ -191,8 +191,8 @@
 
     <div class="reservation-box">
         <div class="price-header">
-            <span class="price-label">1인 기준</span>
-            <div class="price-value" id="display-price">₩ 55,000</div>
+            <span class="price-label">1인 기준 (성인)</span>
+            <div class="price-value" id="display-price">₩ 180,000</div>
         </div>
 
         <div class="date-tabs">
@@ -211,25 +211,38 @@
         <div class="person-selector">
             <div class="person-row">
                 <div class="person-info">
-                    <span style="font-weight:800; font-size:15px;">인원 선택</span>
+                    <span style="font-weight:800; font-size:15px;">성인 인원</span>
                     <div class="counter">
                         <button class="count-btn" onclick="updateAdultCount(-1)">-</button>
-                        <strong id="pc-count">1</strong>
+                        <strong id="pc-adult-count">1</strong>
                         <button class="count-btn" onclick="updateAdultCount(1)">+</button>
                     </div>
                 </div>
                 <div class="person-price-calc">
-                    ₩ <span id="adult-price-text"></span> × <span id="adult-count-text">1</span> = <b id="adult-subtotal">₩ 0</b>
+                    ₩ <span id="adult-price-text">180,000</span> × <span id="adult-count-text">1</span> = <b id="adult-subtotal">₩ 180,000</b>
+                </div>
+            </div>
+            <div class="person-row" style="margin-top:15px; padding-top:15px; border-top:1px dashed #eee;">
+                <div class="person-info">
+                    <span style="font-weight:800; font-size:15px;">소인 인원</span>
+                    <div class="counter">
+                        <button class="count-btn" onclick="updateChildCount(-1)">-</button>
+                        <strong id="pc-child-count">0</strong>
+                        <button class="count-btn" onclick="updateChildCount(1)">+</button>
+                    </div>
+                </div>
+                <div class="person-price-calc">
+                    ₩ <span id="child-price-text">135,000</span> × <span id="child-count-text">0</span> = <b id="child-subtotal">₩ 0</b>
                 </div>
             </div>
         </div>
 
         <div class="total-summary">
             <span>총 합계 금액</span>
-            <b id="display-total-price">₩ 0</b>
+            <b id="display-total-price">₩ 180,000</b>
         </div>
 
-        <button class="btn-buy" onclick="handleBuy()" id="buy-btn">구매하기</button>
+        <button class="btn-buy" onclick="handleBuy()" id="buy-btn">₩ 180,000 구매하기</button>
         <button class="btn-cart" onclick="addToCart()" style="margin-top:6px; width:100%;">장바구니 담기</button>
     </div>
 </div>
@@ -254,8 +267,8 @@
 <script>
     let adultCount = 1;
     let childCount = 0;
-    const ADULT_PRICE = 55000;
-    const CHILD_PRICE = 40000;
+    const ADULT_PRICE = 180000;
+    const CHILD_PRICE = 135000;
     
     let currentDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';

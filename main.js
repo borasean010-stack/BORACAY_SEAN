@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: "프리다이빙 체험", img: "free1.jpg", url: "freediving.html", badge: "NEW", desc: "바다 속 자유를 만끽하는 특별한 프리다이빙 체험.", price: 70000 },
             { title: "보라카이 랜드투어", img: "beach1.jpg", url: "land-tour.html", desc: "전용 차량으로 즐기는 보라카이 섬 구석구석 명소 탐방.", price: 45000 },
             { title: "JL 스냅사진 촬영", img: "jl1.jpg", url: "jl-snap.html", desc: "보라카이의 아름다운 풍경과 함께 인생샷을 남겨보세요.", price: 80000 },
-            { title: "보라아재 호핑투어", img: "bora1.jpg", url: "bora-ajae-hopping.html", badge: "HOT", desc: "신나는 음악과 파티가 함께하는 보라카이 1위 선상 파티 호핑.", price: 55000 },
+            { title: "보라아재 호핑투어", img: "bora1.jpg", url: "bora-ajae-hopping.html", badge: "HOT", desc: "신나는 음악과 파티가 함께하는 보라카이 1위 선상 파티 호핑.", price: 180000 },
             { title: "파라세일링", img: "para1.jpg", url: "parasailing.html", desc: "하늘 높이 날아올라 보라카이 전경을 한눈에 담아보세요.", price: 55000 },
             { title: "체험 다이빙", img: "diving1.jpg", url: "scuba-diving.html", desc: "전문 강사와 함께하는 환상적인 수중 세계 탐험.", price: 55000 },
             { title: "헬멧 다이빙", img: "he1.jpg", url: "helmet-diving.html", desc: "머리 젖지 않고 바다 속을 걷는 신비로운 경험.", price: 44000 },

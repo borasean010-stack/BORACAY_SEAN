@@ -209,7 +209,7 @@
                     </div>
                 </div>
                 <div class="person-price-calc">
-                    ₩ 70,000 × <span id="adult-count-text">1</span> = <b id="adult-subtotal">₩ 70,000</b>
+                    ₩ ₩ 70,000 × <span id="adult-count-text">1</span> = <b id="adult-subtotal">₩ 70,000</b>
                 </div>
             </div>
 
@@ -248,14 +248,26 @@
     let selectedDate = '2026-03-02';
 
     function updateTotalPrice() {
-        const total = adultCount * ADULT_PRICE;
+        const adultSubtotal = adultCount * ADULT_PRICE;
+        const childSubtotal = childCount * CHILD_PRICE;
+        const total = BSUtils.calculateTotal(adultCount, ADULT_PRICE, childCount, CHILD_PRICE);
+
         document.getElementById('pc-adult-count').innerText = adultCount;
         document.getElementById('adult-count-text').innerText = adultCount;
-        document.getElementById('adult-subtotal').innerText = '₩ ' + total.toLocaleString();
-        
-        const totalStr = '₩ ' + total.toLocaleString();
+        document.getElementById('adult-subtotal').innerText = BSUtils.formatPrice(adultSubtotal);
+
+        if (document.getElementById('pc-child-count')) {
+            document.getElementById('pc-child-count').innerText = childCount;
+            document.getElementById('child-count-text').innerText = childCount;
+            document.getElementById('child-subtotal').innerText = BSUtils.formatPrice(childSubtotal);
+        }
+
+        const totalStr = BSUtils.formatPrice(total);
         document.getElementById('display-total-price').innerText = totalStr;
         document.getElementById('buy-btn').innerText = totalStr + ' 구매하기';
+        if (document.getElementById('m-buy-btn')) {
+            document.getElementById('m-buy-btn').innerText = totalStr + ' 구매하기';
+        }
     }
 
     function updateAdultCount(delta) {
@@ -302,34 +314,10 @@
         }
     }
     
-    function handleBuy() {
-        const total = adultCount * ADULT_PRICE;
-        const item = { 
-            name: "프리다이빙 체험", 
-            price: ADULT_PRICE, 
-            totalPrice: total,
-            count: adultCount, 
-            date: selectedDate 
-        };
-        sessionStorage.setItem('directBuyItem', JSON.stringify(item));
-        window.open('booking-form.html', '_blank');
+    function handleBuy() { const total = BSUtils.calculateTotal(adultCount, ADULT_PRICE, childCount, CHILD_PRICE); const item = { name: document.querySelector("h1").innerText, price: total / (adultCount + childCount || 1), count: adultCount + childCount, totalPrice: total, date: selectedDate, details: `성인 ${adultCount}, 소인 ${childCount}` }; BSUtils.buyNow(item); }
     }
 
-    function addToCart() {
-        const total = adultCount * ADULT_PRICE;
-        const item = { 
-            name: "프리다이빙 체험", 
-            price: ADULT_PRICE, 
-            totalPrice: total,
-            count: adultCount, 
-            date: selectedDate 
-        };
-        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        cart.push(item);
-        localStorage.setItem('cart', JSON.stringify(cart));
-        if(confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) {
-            window.location.assign('cart.html');
-        }
+    function addToCart() { const total = BSUtils.calculateTotal(adultCount, ADULT_PRICE, childCount, CHILD_PRICE); const item = { name: document.querySelector("h1").innerText, price: total / (adultCount + childCount || 1), count: adultCount + childCount, totalPrice: total, date: selectedDate, details: `성인 ${adultCount}, 소인 ${childCount}` }; BSUtils.saveToCart(item); }
     }
     window.onload = () => { renderCalendar('pc-days', 'pc-month'); updateTotalPrice(); };
 </script>

@@ -338,15 +338,12 @@
                         selectedPickupDate = dateStr;
                         const pd = document.getElementById('pc-pickup-display');
                         if(pd) pd.innerText = dateStr;
-                        // 픽업 선택 후 자동으로 샌딩 탭으로 이동하지만, 
-                        // 이미 탭 클릭 없이도 선택 가능하도록 보장 (탭이 active 상태가 아닐 때도 클릭 시 로직 수행)
-                        setTimeout(() => setMode('sending'), 200);
+                        setMode('sending');
                     } else {
                         selectedSendingDate = dateStr;
                         const sd = document.getElementById('pc-sending-display');
                         if(sd) sd.innerText = dateStr;
-                        // 샌딩 선택 후 다시 픽업으로 자동 이동하여 반복 선택 편의성 제공
-                        setTimeout(() => setMode('pickup'), 200);
+                        setMode('pickup');
                     }
                     renderCalendar('pc-days', 'pc-month');
                 };
@@ -357,35 +354,31 @@
     }
 
     function handleBuy() {
-        const total = (adultCount * ADULT_PRICE) + (childCount * CHILD_PRICE);
+        const total = BSUtils.calculateTotal(adultCount, ADULT_PRICE, childCount, CHILD_PRICE);
         const item = { 
             name: "공항 왕복 픽업샌딩", 
             price: total / (adultCount + childCount), 
             count: adultCount + childCount, 
+            totalPrice: total,
             pickupDate: selectedPickupDate,
             sendingDate: selectedSendingDate,
             details: `성인 ${adultCount}, 소인 ${childCount}`
         };
-        sessionStorage.setItem('directBuyItem', JSON.stringify(item));
-        window.open('booking-form.html', '_blank');
+        BSUtils.buyNow(item);
     }
 
     function addToCart() {
-        const total = (adultCount * ADULT_PRICE) + (childCount * CHILD_PRICE);
+        const total = BSUtils.calculateTotal(adultCount, ADULT_PRICE, childCount, CHILD_PRICE);
         const item = { 
             name: "공항 왕복 픽업샌딩", 
             price: total / (adultCount + childCount), 
             count: adultCount + childCount, 
+            totalPrice: total,
             pickupDate: selectedPickupDate,
             sendingDate: selectedSendingDate,
             details: `성인 ${adultCount}, 소인 ${childCount}`
         };
-        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        cart.push(item);
-        localStorage.setItem('cart', JSON.stringify(cart));
-        if(confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) {
-            window.location.assign('cart.html');
-        }
+        BSUtils.saveToCart(item);
     }
 
     window.onload = () => { 

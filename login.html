@@ -9,298 +9,224 @@
     <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.0/kakao.min.js" integrity="sha384-l68G9m6HS8uR7C/5L94K8N08O0t8TzU+A0fS2x5W5F9z7Vz0O+6x1H6Z8M2N5R1" crossorigin="anonymous"></script>
     <style>
         :root {
-            --lux-gold: #c5a059;
-            --lux-dark: #1a1a1a;
-            --lux-light: #fdfdfd;
-            --accent-color: #ff6a00;
+            --primary-color: #ff6a00;
+            --text-color: #333;
+            --bg-gray: #f8f9fa;
+            --border-color: #e5e5e5;
         }
 
-        body.lux-login-bg {
+        body {
             margin: 0;
             padding: 0;
-            min-height: 100vh;
+            background-color: var(--bg-gray);
+            font-family: 'Pretendard', sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: radial-gradient(circle at center, #2c3e50 0%, #000000 100%);
-            font-family: 'Pretendard', sans-serif;
-            overflow-x: hidden;
+            min-height: 100vh;
         }
 
-        /* Ambient Background Effect */
-        .ambient-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .login-wrapper {
             width: 100%;
-            height: 100%;
-            background: url('beach1.jpg') no-repeat center center;
-            background-size: cover;
-            filter: blur(40px) brightness(0.4);
-            z-index: -1;
-            transform: scale(1.1);
+            max-width: 480px;
+            padding: 20px;
         }
 
-        .login-card {
-            width: 90%;
-            max-width: 440px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            padding: 50px 40px;
-            border-radius: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+        .login-container {
+            background: #fff;
+            padding: 60px 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
             text-align: center;
-            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
+        .login-header {
+            margin-bottom: 40px;
         }
 
-        .login-logo-centered {
-            margin-bottom: 35px;
-            display: block;
-            text-decoration: none;
-        }
-
-        .login-logo-centered img {
-            width: 100px;
+        .login-header img {
+            width: 120px;
             height: auto;
-            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.2));
             margin-bottom: 15px;
         }
 
-        .login-logo-centered h1 {
-            color: #fff;
+        .login-header h1 {
             font-size: 24px;
             font-weight: 900;
-            letter-spacing: 2px;
-            text-transform: uppercase;
+            color: var(--primary-color);
+            letter-spacing: -1px;
             margin: 0;
         }
 
-        .login-welcome {
-            margin-bottom: 35px;
+        .login-header p {
+            font-size: 15px;
+            color: #666;
+            margin-top: 10px;
+            font-weight: 500;
         }
 
-        .login-welcome h2 {
-            color: var(--lux-gold);
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .login-welcome p {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 14px;
-            line-height: 1.6;
-            margin: 0;
-        }
-
-        /* 폼 섹션 스타일 */
-        .admin-login-form {
-            margin-bottom: 25px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .input-group {
-            position: relative;
+        .form-group {
+            margin-bottom: 12px;
             text-align: left;
         }
 
-        .input-group input {
+        .form-group input {
             width: 100%;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 18px 20px;
-            border-radius: 16px;
-            color: #fff;
+            height: 54px;
+            padding: 0 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
             font-size: 15px;
-            font-weight: 500;
-            transition: all 0.3s;
+            color: var(--text-color);
             outline: none;
+            transition: border-color 0.2s;
         }
 
-        .input-group input::placeholder {
-            color: rgba(255, 255, 255, 0.3);
-        }
-
-        .input-group input:focus {
-            background: rgba(255, 255, 255, 0.12);
-            border-color: var(--lux-gold);
-            box-shadow: 0 0 15px rgba(197, 160, 89, 0.2);
+        .form-group input:focus {
+            border-color: var(--primary-color);
         }
 
         .btn-login {
             width: 100%;
-            background: var(--lux-gold);
+            height: 54px;
+            background-color: var(--primary-color);
             color: #fff;
             border: none;
-            padding: 18px;
-            border-radius: 16px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 17px;
             font-weight: 800;
             cursor: pointer;
-            transition: 0.3s;
-            margin-top: 8px;
+            margin-top: 20px;
+            transition: opacity 0.2s;
         }
 
         .btn-login:hover {
-            background: #d4b47a;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(197, 160, 89, 0.3);
+            opacity: 0.9;
         }
 
-        .divider {
+        .login-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #888;
+        }
+
+        .login-options a {
+            color: #888;
+            text-decoration: none;
+        }
+
+        .login-options a:hover {
+            text-decoration: underline;
+        }
+
+        .sns-login {
+            margin-top: 40px;
+        }
+
+        .sns-login-title {
             display: flex;
             align-items: center;
-            margin: 25px 0;
-            color: rgba(255, 255, 255, 0.2);
-            font-size: 12px;
-            gap: 15px;
+            font-size: 13px;
+            color: #bbb;
+            margin-bottom: 20px;
         }
 
-        .divider::before, .divider::after {
-            content: "";
+        .sns-login-title::before,
+        .sns-login-title::after {
+            content: '';
             flex: 1;
             height: 1px;
-            background: rgba(255, 255, 255, 0.1);
+            background-color: #eee;
         }
 
-        .kakao-login-btn {
+        .sns-login-title span {
+            padding: 0 15px;
+        }
+
+        .kakao-btn {
             width: 100%;
+            height: 54px;
+            background-color: #fee500;
             border: none;
-            background: #fee500;
-            color: #3c1e1e;
-            padding: 18px;
-            border-radius: 16px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            font-weight: 800;
-            font-size: 16px;
             cursor: pointer;
-            transition: all 0.3s;
+            font-size: 16px;
+            font-weight: 800;
+            color: #3c1e1e;
         }
 
-        .kakao-login-btn:hover {
-            transform: translateY(-2px);
-            background: #fada00;
-        }
-
-        .kakao-login-btn img {
+        .kakao-btn img {
             width: 20px;
         }
 
-        .home-link {
-            display: inline-block;
-            margin-top: 30px;
-            color: rgba(255, 255, 255, 0.4);
-            text-decoration: none;
-            font-size: 14px;
-            transition: color 0.3s;
-        }
-
-        .home-link:hover {
-            color: #fff;
-        }
-
-        /* Footer in Login */
         .login-footer {
-            position: absolute;
-            bottom: 30px;
-            color: rgba(255, 255, 255, 0.2);
-            font-size: 12px;
+            margin-top: 30px;
             text-align: center;
-            width: 100%;
+            font-size: 13px;
+            color: #bbb;
         }
 
-        @media (max-device-width: 480px) {
-            .login-card {
-                padding: 40px 25px;
-            }
+        .login-footer a {
+            color: #bbb;
+            text-decoration: none;
+            margin: 0 10px;
         }
     </style>
 </head>
-<body class="lux-login-bg">
-<div class="side-menu-overlay" id="overlay"></div>
-<div class="side-menu" id="sideMenu">
-    <div class="side-menu-header">
-        <div class="side-logo">BORACAY SEAN</div>
-        <div class="side-close" id="sideClose">✕</div>
-    </div>
-    <div class="side-menu-list">
-        <a href="essential-tours.html">보라카이 필수투어</a>
-        <a href="activities.html">액티비티</a>
-        <a href="massage.html">마사지</a>
-        <a href="price-list.html">한눈에 요금표</a>
-        <a href="resort-quote.html">리조트 견적</a>
-        <a href="cart.html">장바구니</a>
-        <a href="mypage.html" style="margin-top:20px; font-size:14px; opacity:0.6;">마이페이지 (예약확인)</a>
-    </div>
-</div>
-
-<div class="top-bar">
-    <div class="header-left">
-        <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
-        <div class="logo">
-            <a href="index.html">
-                <img src="logo.png" class="logo-img" alt="로고"><span class="logo-text">BORACAY SEAN</span></a>
-        </div>
-    </div>
-
-    <div class="menu pc-only">
-        <a href="essential-tours.html" class="tab-link" data-category="essential">보라카이 필수투어</a>
-        <a href="activities.html" class="tab-link" data-category="activity">액티비티</a>
-        <a href="massage.html" class="tab-link" data-category="massage">마사지</a>
-        <a href="price-list.html" class="tab-link">한눈에 요금표</a>
-        <a href="resort-quote.html" class="tab-link">리조트 견적</a>
-        <a href="cart.html" class="tab-link">장바구니</a>
-    </div>
-
-    <div class="header-right">
-        <!-- main.js에서 동적으로 버튼들이 삽입됩니다 -->
-    </div>
-</div>
-<div class="login-card">
-        <a href="index.html" class="login-logo-centered">
-            <img src="logo.png" alt="Boracay Sean Logo">
-            <h1>BORACAY SEAN</h1>
-        </a>
-
-        <div class="login-welcome">
-            <h2>Luxury Experience</h2>
-            <p>보라카이션의 특별한 서비스와<br>체계적인 관리 시스템을 경험하세요.</p>
-        </div>
-
-        <form class="admin-login-form" onsubmit="handleAdminLogin(event)">
-            <div class="input-group">
-                <input type="text" id="adminId" placeholder="아이디를 입력하세요" required>
+<body>
+    <div class="login-wrapper">
+        <div class="login-container">
+            <div class="login-header">
+                <a href="index.html">
+                    <img src="logo.png" alt="Boracay Sean Logo">
+                </a>
+                <h1>BORACAY SEAN</h1>
+                <p>보라카이션 비즈니스 채널에 오신 것을 환영합니다.</p>
             </div>
-            <div class="input-group">
-                <input type="password" id="adminPw" placeholder="비밀번호를 입력하세요" required>
+
+            <form onsubmit="handleAdminLogin(event)">
+                <div class="form-group">
+                    <input type="text" id="adminId" placeholder="아이디" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="adminPw" placeholder="비밀번호" required>
+                </div>
+                <button type="submit" class="btn-login">로그인</button>
+            </form>
+
+            <div class="login-options">
+                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                    <input type="checkbox" style="width: 16px; height: 16px; border-radius: 4px;"> 아이디 저장
+                </label>
+                <div>
+                    <a href="#">비밀번호 찾기</a>
+                    <span style="margin: 0 8px; color: #eee;">|</span>
+                    <a href="index.html">홈으로 가기</a>
+                </div>
             </div>
-            <button type="submit" class="btn-login">관리자 로그인</button>
-        </form>
 
-        <div class="divider">또는</div>
-
-        <button onclick="loginWithKakao()" class="kakao-login-btn">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e3/KakaoTalk_logo.svg" alt="Kakao">
-            카카오 1초 로그인
-        </button>
-
-        <a href="index.html" class="home-link">홈으로 돌아가기</a>
-    </div>
-
-    <div class="login-footer">
-        © 2024 BORACAY SEAN. All Rights Reserved.
+            <div class="sns-login">
+                <div class="sns-login-title">
+                    <span>간편 로그인</span>
+                </div>
+                <button onclick="loginWithKakao()" class="kakao-btn">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e3/KakaoTalk_logo.svg" alt="Kakao">
+                    카카오로 로그인
+                </button>
+            </div>
+        </div>
+        <div class="login-footer">
+            <a href="#">이용약관</a>
+            <a href="#">개인정보처리방침</a>
+            <p style="margin-top: 10px;">© BORACAY SEAN. All rights reserved.</p>
+        </div>
     </div>
 
     <script>

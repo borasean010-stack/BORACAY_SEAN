@@ -105,9 +105,14 @@ This project is a reservation website for tours and activities in Boracay (BORAC
 
 ## Previous Milestone: Admin & Login Redesign
 
-### 1. Login Page Redesign (Luxurious & Centered)
-* **Objective:** Transform the login page into a high-end, visually appealing entry point.
-* **Design Strategy:** Prominent centered logo, glassmorphism effects, and elegant typography.
+### 1. Login Page Redesign (HanaTour Seller Style)
+* **Objective:** Redesign the login page to match the clean, professional aesthetic of modern seller portals (e.g., HanaTour Seller).
+* **Design Strategy:** 
+    * **Clean Layout:** Switched from a dark glassmorphism style to a bright, clean white centered box on a light gray background (`#f8f9fa`).
+    * **Branding:** Centered the Boracay Sean logo and brand name with a welcoming message.
+    * **Color Palette:** Used orange (`#ff6a00`) as the primary accent color for buttons and interactive elements, replacing the previous gold and HanaTour's pink.
+    * **User Experience:** Simplified input fields, added an "ID Save" checkbox, and integrated a prominent Kakao SNS login button.
+    * **Responsive:** Fully optimized for mobile and desktop views with a maximum width of 480px for the login card.
 
 ### 2. Admin Site Redesign (Naver Smart Store Style)
 * **Objective:** Reorganize the admin interface to match the Naver Smart Store Seller Center layout.

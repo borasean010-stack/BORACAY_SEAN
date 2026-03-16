@@ -61,12 +61,16 @@
         .btn-cart:hover { background: #fff5eb; }
 
         @media (max-device-width: 1024px) {
+            #type-selectors, #m-type-selectors { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
+            .total-summary { display: none !important; }
             .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
             .reservation-box { display: none; }
         }
 
         .mobile-bottom-bar { display: none; }
         @media (max-device-width: 1024px) {
+            #type-selectors, #m-type-selectors { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
+            .total-summary { display: none !important; }
             .mobile-bottom-bar { 
                 display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
                 background: white; padding: 15px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); 

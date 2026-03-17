@@ -50,14 +50,14 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: "페어웨이 골프클럽", img: "Golf1.jpg", url: "golf.html", badge: "NEW", desc: "보라카이 유일의 18홀 골프 코스에서 즐기는 환상적인 라운딩.", price: 192000 }
         ],
         massage: [
-            { title: "아유르베다 스파", img: "aspa1.jpg", url: "aspa.html", desc: "고대 인도의 전통 치유 요법으로 즐기는 심신 안정 테라피.", price: 55000 },
-            { title: "에스파 (S-SPA)", img: "spa1.jpg", url: "spa.html", badge: "HOT", desc: "보라카이의 정취를 느끼며 즐기는 최고의 힐링 마사지.", price: 55000 },
-            { title: "포세이돈 스파", img: "poseidon1.jpg", url: "poseidon.html", desc: "최고급 시설에서 제공하는 프리미엄 테라피 서비스.", price: 105000 },
-            { title: "마리스 스파", img: "maris1.jpg", url: "maris.html", desc: "한적한 분위기 속에서 즐기는 정성 어린 힐링 체험.", price: 91000 },
-            { title: "카바얀 스파", img: "kabayan1.jpg", url: "kabayan.html", desc: "보라카이 전통과 전문성이 어우러진 고품격 스파.", price: 49000 },
-            { title: "루나 스파", img: "luna1.jpg", url: "luna.html", desc: "차별화된 프로그램으로 일상의 스트레스를 해소하세요.", price: 55000 },
-            { title: "보라스파", img: "boraspa1.jpg", url: "boraspa.html", desc: "전문 테라피스트의 손길로 여행의 피로를 풀어보세요.", price: 55000 },
-            { title: "헬리오스 스파", img: "helios1.jpg", url: "helios.html", desc: "특별한 휴식을 원하는 분들을 위한 프리미엄 케어.", price: 91000 }
+            { title: "아유르베다 스파", img: "aspa1.jpg", url: "aspa.html", desc: "분위기에 취하고 마사지에 반하는 마사지샵", price: 55000 },
+            { title: "에스파 (S-SPA)", img: "spa1.jpg", url: "spa.html", badge: "HOT", desc: "보라카이 최초 포핸드 마사지 런칭", price: 55000 },
+            { title: "포세이돈 스파", img: "poseidon1.jpg", url: "poseidon.html", desc: "연예인이 운영하는 스파, 모든 룸 안게 개별 수영장 + 자쿠지", price: 105000 },
+            { title: "마리스 스파", img: "maris1.jpg", url: "maris.html", desc: "로멘틱 마리스 스파,허니문이나 커플 연인들에게 인기만점", price: 91000 },
+            { title: "카바얀 스파", img: "kabayan1.jpg", url: "kabayan.html", desc: "딤 티슈 마사지, 디몰 버젯마트 근처 마사지샵", price: 49000 },
+            { title: "루나 스파", img: "luna1.jpg", url: "luna.html", desc: "보라카이 최초 노니씨드 마사지 런칭", price: 55000 },
+            { title: "보라스파", img: "boraspa1.jpg", url: "boraspa.html", desc: "보라카이 꿀 마사지 원조, 꿀마사지와 태반마사지 단 두가지만으로 승부하는 보라스파", price: 55000 },
+            { title: "헬리오스 스파", img: "helios1.jpg", url: "helios.html", desc: "유럽풍 고급 분위기 스파", price: 91000 }
         ]
     };
 

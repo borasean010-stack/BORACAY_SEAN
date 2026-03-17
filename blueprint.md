@@ -139,8 +139,17 @@ This project is a reservation website for tours and activities in Boracay (BORAC
     *   **New Pricing (2 Persons):** Type A - 750,000 KRW, Type B - 450,000 KRW, Type C - 300,000 KRW.
     *   **UI Update:** Added a Type selection tab in `jl-snap.html` to allow users to choose between sessions. Updated `main.js` to reflect the starting price of 300,000 KRW.
     * **Hero Video Update:**
-    * **Replacement:** Replaced the main hero video `hero-video.mp4` with `mainhereo (1).mov`.
-    * **Implementation:** Updated `index.html` with the new source and set the type to `video/quicktime`.
+    * **Replacement:** Replaced the main hero video `hero-video.mp4` with `mainhero.mov` (optimized path).
+    * **Implementation:** Updated `index.html` with the new source and set the type to `video/quicktime`. Reverted to `hero-video.mp4` temporarily due to 25MB platform limits.
+    * **Massage Description Update (March 2026):**
+        * **Bora Spa:** "보라카이 꿀 마사지 원조, 꿀마사지와 태반마사지 단 두가지만으로 승부하는 보라스파"
+        * **Poseidon Spa:** "연예인이 운영하는 스파, 모든 룸 안게 개별 수영장 + 자쿠지"
+        * **S-SPA (에스파):** "보라카이 최초 포핸드 마사지 런칭"
+        * **Kabayan Spa:** "딤 티슈 마사지, 디몰 버젯마트 근처 마사지샵"
+        * **Ayurveda Spa:** "분위기에 취하고 마사지에 반하는 마사지샵"
+        * **Maris Spa:** "로멘틱 마리스 스파,허니문이나 커플 연인들에게 인기만점"
+        * **Luna Spa:** "보라카이 최초 노니씨드 마사지 런칭"
+        * **Helios Spa:** "유럽풍 고급 분위기 스파"
 
 
 ## Previous Milestone: Admin & Login Redesign

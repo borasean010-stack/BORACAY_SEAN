@@ -177,4 +177,44 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.assign('booking-form.html');
         }
     };
+
+    // --- Main Banner Slider Logic ---
+    let currentSlide = 0;
+    const bannerWrapper = document.getElementById('bannerWrapper');
+    const slides = document.querySelectorAll('.banner-slide');
+    const dotsContainer = document.getElementById('sliderDots');
+    let autoSlideInterval;
+
+    if (bannerWrapper && slides.length > 0) {
+        // Create Dots
+        slides.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.onclick = () => moveSlide(i - currentSlide);
+            dotsContainer.appendChild(dot);
+        });
+
+        window.moveSlide = (direction) => {
+            currentSlide = (currentSlide + direction + slides.length) % slides.length;
+            updateSlider();
+            resetAutoSlide();
+        };
+
+        function updateSlider() {
+            bannerWrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, i) => dot.classList.toggle('active', i === currentSlide));
+        }
+
+        function startAutoSlide() {
+            autoSlideInterval = setInterval(() => moveSlide(1), 4000);
+        }
+
+        function resetAutoSlide() {
+            clearInterval(autoSlideInterval);
+            startAutoSlide();
+        }
+
+        startAutoSlide();
+    }
 });

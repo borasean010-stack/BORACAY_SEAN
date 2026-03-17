@@ -229,7 +229,6 @@
         }
 
         // 리조트 견적인 경우 UI 변경
-        const isResortQuote = cartData.some(item => item.name.includes('리조트 견적'));
         if (isResortQuote) {
             document.querySelector('#info-section h2').innerText = '리조트 견적 신청';
             document.querySelector('#info-section .desc').innerText = '견적 신청 정보를 입력하시면 상담원 확인 후 연락드립니다.';

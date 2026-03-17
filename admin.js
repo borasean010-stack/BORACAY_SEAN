@@ -79,7 +79,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const counts = {
             new: allReservations.filter(r => r.status === '입금대기' || r.status === '예약접수').length,
             confirmed: allReservations.filter(r => r.status === '예약확정').length,
-            resorts: allReservations.filter(r => r.status === '견적').length
+            resorts: allReservations.filter(r => r.status === '견적').length,
+            resort_confirmed: allReservations.filter(r => r.status === '리조트확정').length
         };
         document.getElementById('count-new').innerText = counts.new;
         document.getElementById('count-confirmed').innerText = counts.confirmed;
@@ -101,10 +102,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if(statusCard) statusCard.classList.add('active');
 
         // UI Sync: Titles & Breadcrumb
-        const titles = { 'new': '신규예약 관리', 'confirmed': '예약확정 내역', 'resorts': '리조트 견적 신청' };
-        const crumbs = { 'new': '신규예약', 'confirmed': '예약확정', 'resorts': '리조트 견적' };
-        document.getElementById('current-view-title').innerText = titles[tab];
-        document.getElementById('breadcrumb-active').innerText = crumbs[tab];
+        const titles = { 
+            'new': '신규예약 관리', 
+            'confirmed': '예약확정 내역', 
+            'resorts': '리조트 견적 신청',
+            'resort_confirmed': '리조트 확정 내역'
+        };
+        const crumbs = { 
+            'new': '신규예약', 
+            'confirmed': '예약확정', 
+            'resorts': '리조트 견적',
+            'resort_confirmed': '리조트 확정'
+        };
+        document.getElementById('current-view-title').innerText = titles[tab] || '관리';
+        document.getElementById('breadcrumb-active').innerText = crumbs[tab] || '홈';
 
         renderTable();
     };
@@ -125,6 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (activeTab === 'new') matchesTab = (r.status === '입금대기' || r.status === '예약접수');
             else if (activeTab === 'confirmed') matchesTab = (r.status === '예약확정');
             else if (activeTab === 'resorts') matchesTab = (r.status === '견적');
+            else if (activeTab === 'resort_confirmed') matchesTab = (r.status === '리조트확정');
             
             return matchesSearch && matchesTab;
         });
@@ -149,7 +161,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 actionMarkup = `<span style="color:var(--ss-green); font-weight:800; font-size:11px;">최종 확정</span>`;
             } else if (status === '견적') {
                 badgeClass = 'badge-blue';
-                actionMarkup = `<button class="btn-action-outline" onclick="handleStatusChange('${res.id}', '입금대기')">상담 완료</button>`;
+                actionMarkup = `<button class="btn-action-outline" onclick="handleStatusChange('${res.id}', '리조트확정')">상담 완료</button>`;
+            } else if (status === '리조트확정') {
+                badgeClass = 'badge-green';
+                actionMarkup = `<span style="color:var(--ss-green); font-weight:800; font-size:11px;">확정 완료</span>`;
             }
 
             const itemsText = res.items ? res.items.map(i => i.name.split('-').pop().trim()).join(', ') : '-';

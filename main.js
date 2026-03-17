@@ -62,13 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ]
     };
 
-    // MD 추천 상품 별도 추출 로직 (메인 페이지용)
-    const mdRecommendedItems = [
-        { title: "블랙펄 요트호핑투어", img: "hopping.jpg", url: "hopping-tour.html", badge: "HOT", mdBadge: true, desc: "럭셔리 요트위에서 즐기는 보라카이 선셋과 파티", price: 85000 },
-        { title: "체험 다이빙", img: "diving1.jpg", url: "scuba-diving.html", badge: "HOT", mdBadge: true, desc: "전문 강사와 함께하는 환상적인 수중 세계 탐험", price: 55000 },
-        { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "malumpati.html", badge: "HOT", mdBadge: true, desc: "우리끼리 프라이빗하게 즐기는 블루라군", price: 99000 },
-        { title: "에스파 (S-SPA)", img: "spa1.jpg", url: "spa.html", badge: "HOT", mdBadge: true, desc: "보라카이 최초 포핸드 마사지 런칭", price: 55000 }
-    ];
+    // MD 추천 상품 목록 (타이틀 기준 매칭하여 데이터 자동 동기화)
+    const mdRecommendedTitles = ["블랙펄 요트호핑투어", "체험 다이빙", "시크릿가든 말룸파티", "에스파 (S-SPA)"];
 
     // --- 탭 전환 및 상품 렌더링 ---
     const tabLinks = document.querySelectorAll('.tab-link');
@@ -96,7 +91,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderMDProducts() {
         if (!mdContainer) return;
         mdContainer.innerHTML = '';
-        mdRecommendedItems.forEach((p, idx) => {
+        
+        // 모든 카테고리 상품 합치기
+        const allProducts = [...productData.essential, ...productData.activity, ...productData.massage];
+        
+        mdRecommendedTitles.forEach((title) => {
+            const p = allProducts.find(item => item.title.includes(title));
+            if (!p) return;
+
             const productDiv = document.createElement('div');
             productDiv.className = 'product tour-card';
             productDiv.onclick = () => { window.location.href = p.url; };
@@ -121,9 +123,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!productsContainer) return;
         
         productsContainer.innerHTML = '';
-        let products = [...(productData[category] || [])]; // 복사본 생성 후 정렬
+        let products = [...(productData[category] || [])];
         
-        // --- 뱃지 우선순위 정렬 ---
         products.sort((a, b) => {
             const getPriority = (p) => {
                 if (p.badge === 'HOT') return 1;

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>카티클란 공항 왕복 픽업샌딩 | BORACAY SEAN</title>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/style.css?v=1.4">
+    <link rel="stylesheet" href="style.css">
     <style>
     body { background: #fdfdfd; padding-bottom: 100px; }
     .tour-detail-container { 
@@ -123,7 +123,7 @@
         <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
         <div class="logo">
             <a href="index.html">
-                <img src="/logo.png" class="logo-img" alt="로고"><span class="logo-text">BORACAY SEAN</span></a>
+                <img src="logo.png" class="logo-img" alt="로고"><span class="logo-text">BORACAY SEAN</span></a>
         </div>
     </div>
 
@@ -144,13 +144,13 @@
         <h1>카티클란 공항 왕복 픽업샌딩</h1>
         <div class="section-title">투어 일정</div>
         <div class="itinerary">
-            <div class="itinerary-img"><img src="/catipickipsending.jpg?v=1.4" alt="일정 1"></div>
-            <div class="itinerary-img"><img src="/catipickipsending2.jpg?v=1.4" alt="일정 2"></div>
-            <div class="itinerary-img"><img src="/catipickipsending3.jpg?v=1.4" alt="일정 3"></div>
-            <div class="itinerary-img"><img src="/catipickipsending4.jpg?v=1.4" alt="일정 4"></div>
-            <div class="itinerary-img"><img src="/catipickipsending5.jpg?v=1.4" alt="일정 5"></div>
-            <div class="itinerary-img"><img src="/catipickipsending6.jpg?v=1.4" alt="일정 6"></div>
-            <div class="itinerary-img"><img src="/catipickipsending7.png?v=1.4" alt="일정 7"></div>
+            <div class="itinerary-img"><img src="catipickipsending.jpg" alt="일정 1"></div>
+            <div class="itinerary-img"><img src="catipickipsending2.jpg" alt="일정 2"></div>
+            <div class="itinerary-img"><img src="catipickipsending3.jpg" alt="일정 3"></div>
+            <div class="itinerary-img"><img src="catipickipsending4.jpg" alt="일정 4"></div>
+            <div class="itinerary-img"><img src="catipickipsending5.jpg" alt="일정 5"></div>
+            <div class="itinerary-img"><img src="catipickipsending6.jpg" alt="일정 6"></div>
+            <div class="itinerary-img"><img src="catipickipsending7.png" alt="일정 7"></div>
         </div>
         
         <div class="section-title">서비스 이용 절차</div>
@@ -180,7 +180,7 @@
         </p>
 
         <div class="section-title">환불 규정</div>
-        <img src="/refund.png?v=1.4" style="width:100%; border-radius:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+        <img src="refund.png" style="width:100%; border-radius:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
     </div>
 
     <div class="reservation-box">
@@ -231,7 +231,7 @@
     <button class="m-btn-buy" onclick="openBookingDrawer()">구매하기</button>
 </div>
 
-<script src="/main.js?v=1.4"></script>
+<script src="main.js"></script>
 <script>
     let adultCount = 1;
     const ADULT_PRICE = 54900;
@@ -256,7 +256,7 @@
         document.getElementById('pc-adult-count').innerText = adultCount;
         document.getElementById('adult-count-text').innerText = adultCount;
         document.getElementById('adult-subtotal').innerText = '₩ ' + adultSubtotal.toLocaleString();
-        const totalStr = BSUtils.formatPrice(adultSubtotal);
+        const totalStr = '₩ ' + adultSubtotal.toLocaleString();
         if (document.getElementById('display-total-price')) document.getElementById('display-total-price').innerText = totalStr;
         document.querySelectorAll('.btn-buy, .m-btn-buy').forEach(btn => btn.innerText = totalStr + ' 구매하기');
     }

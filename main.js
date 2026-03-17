@@ -31,28 +31,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 상품 데이터 정의 (최저가 포함, 마사지 성장마사지 제외) ---
     const productData = {
         essential: [
-            { title: "보라카이 왕복 픽업샌딩", img: "pickup.jpg", url: "pickup-sending.html", badge: "HOT", desc: "공항부터 숙소 앞까지 가장 안전하고 편안하게!", price: 54900 },
-            { title: "블랙펄 요트호핑투어", img: "hopping.jpg", url: "hopping-tour.html", badge: "HOT", desc: "럭셔리 요트위에서 즐기는 보라카이 선셋과 신나는 음악과 파티가 함께하는 1등 선상 파티 호핑", price: 85000 },
-            { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "malumpati.html", badge: "HOT", desc: "우리끼리 프라이빗하게 즐기고 신비로운 블루라군과 튜빙", price: 99000 },
+            { title: "보라카이 왕복 픽업샌딩", img: "pickup.jpg", url: "pickup-sending.html", badge: "MD추천", desc: "공항부터 숙소 앞까지 가장 안전하고 편안하게!", price: 54900 },
+            { title: "블랙펄 요트호핑투어", img: "hopping.jpg", url: "hopping-tour.html", badge: "MD추천", desc: "럭셔리 요트위에서 즐기는 보라카이 선셋과 신나는 음악과 파티가 함께하는 1등 선상 파티 호핑", price: 85000 },
+            { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "malumpati.html", badge: "MD추천", desc: "우리끼리 프라이빗하게 즐기고 신비로운 블루라군과 튜빙", price: 99000 },
             { title: "한눈에 요금표", img: "price.png", url: "price-list.html", desc: "보라카이션의 모든 투어 요금을 한눈에 확인하세요.", price: null }
         ],
         activity: [
             { title: "카티클란 공항 왕복 픽업샌딩", img: "pickup.jpg", url: "catipickipsending.html", desc: "카티클란 공항에서 보라카이까지 더 빠르고 편리하게!", price: 54900 },
-            { title: "블랙펄 요트호핑투어", img: "hopping.jpg", url: "hopping-tour.html", badge: "HOT", desc: "럭셔리 요트위에서 즐기는 보라카이 선셋과 신나는 음악과 파티가 함께하는 1등 선상 파티 호핑", price: 85000 },
-            { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "malumpati.html", badge: "HOT", desc: "우리끼리 프라이빗하게 즐기고 신비로운 블루라군과 튜빙", price: 99000 },
+            { title: "블랙펄 요트호핑투어", img: "hopping.jpg", url: "hopping-tour.html", badge: "MD추천", desc: "럭셔리 요트위에서 즐기는 보라카이 선셋과 신나는 음악과 파티가 함께하는 1등 선상 파티 호핑", price: 85000 },
+            { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "malumpati.html", badge: "MD추천", desc: "우리끼리 프라이빗하게 즐기고 신비로운 블루라군과 튜빙", price: 99000 },
             { title: "프리다이빙 체험", img: "free1.jpg", url: "freediving.html", badge: "NEW", desc: "바다 속 자유를 만끽하는 특별한 프리다이빙 체험.", price: 70000 },
             { title: "보라카이 랜드투어", img: "beach1.jpg", url: "land-tour.html", desc: "전용 차량으로 즐기는 보라카이 섬 구석구석 명소 탐방.", price: 45000 },
             { title: "JL 스냅사진 촬영", img: "jl1.jpg", url: "jl-snap.html", desc: "보라카이의 아름다운 풍경과 함께 인생샷을 남겨보세요.", price: 300000 },
             { title: "보라아재 호핑투어", img: "bora1.jpg", url: "bora-ajae-hopping.html", desc: "카라바오 섬에서 즐기는 호핑투어", price: 180000 },
             { title: "파라세일링", img: "para1.jpg", url: "parasailing.html", desc: "하늘 높이 날아올라 보라카이 전경을 한눈에 담아보세요.", price: 55000 },
-            { title: "체험 다이빙", img: "diving1.jpg", url: "scuba-diving.html", desc: "전문 강사와 함께하는 환상적인 수중 세계 탐험.", price: 55000 },
+            { title: "체험 다이빙", img: "diving1.jpg", url: "scuba-diving.html", badge: "MD추천", desc: "전문 강사와 함께하는 환상적인 수중 세계 탐험.", price: 55000 },
             { title: "헬멧 다이빙", img: "he1.jpg", url: "helmet-diving.html", desc: "머리 젖지 않고 바다 속을 걷는 신비로운 경험.", price: 44000 },
             { title: "제트스키", img: "ze1.jpg", url: "jetski.html", desc: "보라카이 바다 위를 시원하게 질주하는 짜릿한 속도감.", price: 55000 },
             { title: "페어웨이 골프클럽", img: "Golf1.jpg", url: "golf.html", badge: "NEW", desc: "보라카이 유일의 18홀 골프 코스에서 즐기는 환상적인 라운딩.", price: 192000 }
         ],
         massage: [
             { title: "아유르베다 스파", img: "aspa1.jpg", url: "aspa.html", desc: "분위기에 취하고 마사지에 반하는 마사지샵", price: 55000 },
-            { title: "에스파 (S-SPA)", img: "spa1.jpg", url: "spa.html", badge: "HOT", desc: "보라카이 최초 포핸드 마사지 런칭", price: 55000 },
+            { title: "에스파 (S-SPA)", img: "spa1.jpg", url: "spa.html", badge: "MD추천", desc: "보라카이 최초 포핸드 마사지 런칭", price: 55000 },
             { title: "포세이돈 스파", img: "poseidon1.jpg", url: "poseidon.html", desc: "연예인이 운영하는 스파 모든 룸 안 개별 수영장 + 자쿠지", price: 105000 },
             { title: "마리스 스파", img: "maris1.jpg", url: "maris.html", desc: "로멘틱 마리스 스파,허니문이나 커플 연인들에게 인기만점", price: 91000 },
             { title: "카바얀 스파", img: "kabayan1.jpg", url: "kabayan.html", desc: "디몰 버젯마트 근처 마사지샵", price: 49000 },
@@ -62,11 +62,45 @@ document.addEventListener('DOMContentLoaded', () => {
         ]
     };
 
+    // MD 추천 상품 별도 추출 로직 (메인 페이지용)
+    const mdRecommendedItems = [
+        { title: "블랙펄 요트호핑투어", img: "hopping.jpg", url: "hopping-tour.html", badge: "MD추천", desc: "럭셔리 요트위에서 즐기는 보라카이 선셋과 파티", price: 85000 },
+        { title: "보라카이 왕복 픽업샌딩", img: "pickup.jpg", url: "pickup-sending.html", badge: "MD추천", desc: "공항부터 숙소 앞까지 가장 안전하고 편안하게!", price: 54900 },
+        { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "malumpati.html", badge: "MD추천", desc: "우리끼리 프라이빗하게 즐기는 블루라군", price: 99000 },
+        { title: "에스파 (S-SPA)", img: "spa1.jpg", url: "spa.html", badge: "MD추천", desc: "보라카이 최초 포핸드 마사지 런칭", price: 55000 },
+        { title: "체험 다이빙", img: "diving1.jpg", url: "scuba-diving.html", badge: "MD추천", desc: "전문 강사와 함께하는 환상적인 수중 세계 탐험", price: 55000 }
+    ];
+
     // --- 탭 전환 및 상품 렌더링 ---
     const tabLinks = document.querySelectorAll('.tab-link');
     const catTabs = document.querySelectorAll('.cat-tab');
     const productsContainer = document.querySelector('.products');
+    const mdContainer = document.querySelector('.md-products');
     const bestTitle = document.querySelector('.best-title');
+
+    function renderMDProducts() {
+        if (!mdContainer) return;
+        mdContainer.innerHTML = '';
+        mdRecommendedItems.forEach((p, idx) => {
+            const productDiv = document.createElement('div');
+            productDiv.className = 'product tour-card';
+            productDiv.onclick = () => { window.location.href = p.url; };
+            const priceHtml = `<div class="price-btn"><span class="price-from">From</span><span class="price-val">₩ ${p.price.toLocaleString()}</span></div>`;
+            
+            productDiv.innerHTML = `
+                <div class="product-badge badge-md">MD추천</div>
+                <div class="img-container card-img-wrap">
+                    <img src="${p.img}" alt="${p.title}" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <h3>${p.title}</h3>
+                    <p style="font-size:14px; color:#777; margin-top:10px; line-height:1.5; word-break:keep-all;">${p.desc || ''}</p>
+                    ${priceHtml}
+                </div>
+            `;
+            mdContainer.appendChild(productDiv);
+        });
+    }
 
     function renderProducts(category) {
         if (!productsContainer) return;
@@ -74,12 +108,13 @@ document.addEventListener('DOMContentLoaded', () => {
         productsContainer.innerHTML = '';
         let products = [...(productData[category] || [])]; // 복사본 생성 후 정렬
         
-        // --- 뱃지 우선순위 정렬 (HOT -> NEW -> 일반) ---
+        // --- 뱃지 우선순위 정렬 (HOT -> MD추천 -> NEW -> 일반) ---
         products.sort((a, b) => {
             const getPriority = (badge) => {
                 if (badge === 'HOT') return 1;
-                if (badge === 'NEW') return 2;
-                return 3;
+                if (badge === 'MD추천') return 2;
+                if (badge === 'NEW') return 3;
+                return 4;
             };
             return getPriority(a.badge) - getPriority(b.badge);
         });
@@ -112,6 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let badgeClass = 'product-badge';
             if (p.badge === 'HOT') badgeClass += ' badge-hot';
             if (p.badge === 'NEW') badgeClass += ' badge-new';
+            if (p.badge === 'MD추천') badgeClass += ' badge-md';
 
             productDiv.innerHTML = `
                 ${p.badge ? `<div class="${badgeClass}">${p.badge}</div>` : ''}
@@ -153,6 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isHomePage) {
         // 메인 페이지의 BEST TOUR 섹션도 동적으로 렌더링 (필수투어 카테고리 활용)
         renderProducts('essential');
+        renderMDProducts();
     } else if (productsContainer) {
         const activeTab = document.querySelector('.tab-link.active');
         const initialCategory = activeTab ? activeTab.getAttribute('data-category') : 'essential';

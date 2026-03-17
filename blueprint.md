@@ -151,6 +151,14 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Luna Spa:** "보라카이 최초 노니씨드 마사지 런칭"
         * **Helios Spa:** "유럽풍 고급 분위기 스파"
 
+    ### 11. Event Banner Layout Update
+    * **Objective:** Change the event banner from a single-item slider back to a 2-column layout to show both banners simultaneously.
+    * **Implementation:** 
+        * Updated `.banner-wrapper` in `style.css` to use `display: grid` with `grid-template-columns: repeat(2, 1fr)` on PC.
+        * Configured banners to stack vertically on mobile for better readability.
+        * Removed slider navigation arrows and dots from `index.html` as they are no longer required for the static grid layout.
+        * Removed redundant flex-basis settings that were hiding the second banner.
+
 
 ## Previous Milestone: Admin & Login Redesign
 

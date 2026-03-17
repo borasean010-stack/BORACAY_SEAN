@@ -197,6 +197,12 @@
             <div class="date-tab active">예약 날짜 선택<span id="pc-date-display" class="date-display">2026-03-02</span></div>
         </div>
 
+        <div class="selection-tabs">
+            <div class="selection-tab active" onclick="selectType(this, 'A타입', 750000)">A타입</div>
+            <div class="selection-tab" onclick="selectType(this, 'B타입', 450000)">B타입</div>
+            <div class="selection-tab" onclick="selectType(this, 'C타입', 300000)">C타입</div>
+        </div>
+
         <div class="calendar-wrap" style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 10px;">
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&lt;</button>
@@ -249,6 +255,12 @@
 <div class="option-sheet-overlay" id="sheetOverlay" onclick="closeOptionSheet()"></div>
 <div class="option-sheet" id="optionSheet">
     <h3 style="font-weight:900; margin-bottom:20px; font-size:20px;">예약 옵션 선택</h3>
+
+    <div class="selection-tabs">
+        <div class="selection-tab active" onclick="selectType(this, 'A타입', 750000)">A타입</div>
+        <div class="selection-tab" onclick="selectType(this, 'B타입', 450000)">B타입</div>
+        <div class="selection-tab" onclick="selectType(this, 'C타입', 300000)">C타입</div>
+    </div>
     
     <div class="calendar-wrap" style="margin-bottom: 12px; border: 1px solid #eee; border-radius: 16px; padding: 10px;">
         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
@@ -274,6 +286,7 @@
 <script>
     let selectedType = 'A타입';
     let currentPrice = 750000;
+    let adultCount = 1;
     let pcDate = new Date(2026, 2, 1);
     let mobileDate = new Date(2026, 2, 1);
     let selectedDate = '2026-03-02';
@@ -306,17 +319,40 @@
         updateTotalPrice();
     }
 
-    function updateTotalPrice() {
-        const priceStr = BSUtils.formatPrice(currentPrice);
-        const totalPriceEl = document.getElementById('display-total-price');
-        const buyBtn = document.getElementById('buy-btn');
-        const mBuyBtn = document.getElementById('m-buy-btn');
-        const mBtnBuyTop = document.querySelector('.m-btn-buy');
+    function updateAdultCount(delta) {
+        adultCount = Math.max(1, adultCount + delta);
+        document.getElementById('pc-count').innerText = adultCount;
+        document.getElementById('m-count').innerText = adultCount;
+        updateTotalPrice();
+    }
 
+    function updateCount(delta) {
+        updateAdultCount(delta);
+    }
+
+    function updateTotalPrice() {
+        const total = currentPrice * adultCount;
+        const priceStr = BSUtils.formatPrice(total);
+        
+        // PC UI Update
+        if (document.getElementById('adult-price-text')) 
+            document.getElementById('adult-price-text').innerText = currentPrice.toLocaleString();
+        if (document.getElementById('adult-count-text')) 
+            document.getElementById('adult-count-text').innerText = adultCount;
+        if (document.getElementById('adult-subtotal')) 
+            document.getElementById('adult-subtotal').innerText = BSUtils.formatPrice(total);
+
+        const totalPriceEl = document.getElementById('display-total-price');
         if (totalPriceEl) totalPriceEl.innerText = priceStr;
+        
+        const buyBtn = document.getElementById('buy-btn');
         if (buyBtn) buyBtn.innerText = priceStr + ' 구매하기';
-        if (mBuyBtn) mBuyBtn.innerText = priceStr + ' 구매하기';
+        
+        const mBtnBuyTop = document.querySelector('.m-btn-buy');
         if (mBtnBuyTop) mBtnBuyTop.innerText = priceStr + ' 구매하기';
+        
+        const mSheetBuyBtn = document.querySelector('#optionSheet .btn-buy');
+        if (mSheetBuyBtn) mSheetBuyBtn.innerText = priceStr + ' 선택 완료 / 구매하기';
     }
 
     function changeMonth(delta, view) {
@@ -365,25 +401,27 @@
     }
     
     function handleBuy() {
+        const total = currentPrice * adultCount;
         const item = { 
             name: `JL 스냅사진 촬영 (${selectedType})`, 
             price: currentPrice, 
-            count: 1, 
-            totalPrice: currentPrice,
+            count: adultCount, 
+            totalPrice: total,
             date: selectedDate,
-            details: `${selectedType} (2인 기준)`
+            details: `${selectedType}`
         };
         BSUtils.buyNow(item);
     }
 
     function addToCart() {
+        const total = currentPrice * adultCount;
         const item = { 
             name: `JL 스냅사진 촬영 (${selectedType})`, 
             price: currentPrice, 
-            count: 1, 
-            totalPrice: currentPrice,
+            count: adultCount, 
+            totalPrice: total,
             date: selectedDate,
-            details: `${selectedType} (2인 기준)`
+            details: `${selectedType}`
         };
         BSUtils.saveToCart(item);
     }

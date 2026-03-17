@@ -159,6 +159,14 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * Removed slider navigation arrows and dots from `index.html` as they are no longer required for the static grid layout.
         * Removed redundant flex-basis settings that were hiding the second banner.
 
+    ### 12. Dynamic Reservation Date Initialization
+    * **Objective:** Ensure the reservation date input defaults to the current date (today) every time a detail page is loaded.
+    * **Implementation:** 
+        * Updated the script in all activity and spa detail pages to initialize `selectedDate` using the current local date (`new Date()`).
+        * Formatted the initial date as `YYYY-MM-DD`.
+        * Added logic in `window.onload` to automatically update the visible date display element (`#pc-date-display`) with the current date.
+        * Affected all detail pages including `aspa.html`, `golf.html`, `spa.html`, `pickup-sending.html`, etc.
+
 
 ## Previous Milestone: Admin & Login Redesign
 

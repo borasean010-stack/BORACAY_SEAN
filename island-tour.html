@@ -235,7 +235,12 @@
     let adultCount = 1;
     let pcDate = new Date(2026, 2, 1);
     let mobileDate = new Date(2026, 2, 1);
-    let selectedDate = '2026-03-02';
+    const now = new Date();
+    let currentDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    let selectedDate = `${yyyy}-${mm}-${dd}`;
 
     function openOptionSheet() { 
         document.getElementById('sheetOverlay').classList.add('active'); 
@@ -313,10 +318,13 @@
             window.location.assign('cart.html');
         }
     }
-    window.onload = () => { 
+    window.onload = () => {
+        const pcDisp = document.getElementById('pc-date-display');
+        if(pcDisp) pcDisp.innerText = selectedDate; 
         const mcount = document.getElementById('m-count');
         if (mcount) mcount.innerText = adultCount;
         renderCalendars(); 
+    
     };
 </script>
 </body>

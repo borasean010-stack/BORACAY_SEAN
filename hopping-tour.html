@@ -271,9 +271,13 @@
     let adultCount = 1;
     let jumboCount = 0;
     const ADULT_PRICE = 85000;
-    
-    let currentDate = new Date(2026, 2, 1);
-    let selectedDate = '2026-03-02';
+
+    const now = new Date();
+    let currentDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    let selectedDate = `${yyyy}-${mm}-${dd}`;
 
     function updateTotalPrice() {
         if(document.getElementById('adult-price-text')) document.getElementById('adult-price-text').innerText = ADULT_PRICE.toLocaleString();
@@ -284,7 +288,6 @@
         document.getElementById('adult-count-text').innerText = adultCount;
         document.getElementById('adult-subtotal').innerText = BSUtils.formatPrice(adultSubtotal);
 
-        
         const totalStr = BSUtils.formatPrice(total);
         const totalDisp = document.getElementById('display-total-price');
         if (totalDisp) totalDisp.innerText = totalStr;
@@ -366,7 +369,10 @@
         }; 
         BSUtils.saveToCart(item); 
     }
-    window.onload = () => { renderCalendar('pc-days', 'pc-month'); updateTotalPrice(); };
+    window.onload = () => {
+        const pcDisp = document.getElementById('pc-date-display');
+        if(pcDisp) pcDisp.innerText = selectedDate; renderCalendar('pc-days', 'pc-month'); updateTotalPrice(); 
+    };
 </script>
 </body>
 </html>

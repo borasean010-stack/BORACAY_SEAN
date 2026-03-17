@@ -194,8 +194,6 @@
             </div>
         </div>
 
-        
-        
         <div class="total-summary">
             <span>총 합계 금액</span>
             <b id="display-total-price">₩ 0</b>
@@ -221,8 +219,13 @@
 <script>
     const massageOptions = [{"name": "태반 마사지", "price": 55000}, {"name": "스톤 마사지", "price": 55000}, {"name": "골든링 마사지", "price": 55000}, {"name": "아유르베다 스파", "price": 55000}, {"name": "성장 마사지 (1시간)", "price": 42000}, {"name": "성장 마사지 (2시간)", "price": 55000}];
     let selectedQuantities = {}; 
-    let currentDate = new Date(2026, 2, 1);
-    let selectedDate = '2026-03-02';
+    
+    const now = new Date();
+    let currentDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    let selectedDate = `${yyyy}-${mm}-${dd}`;
     let selectedTime = '12:30';
 
     function initSelectors() {
@@ -268,12 +271,7 @@
             const opt = massageOptions.find(o => o.name === name);
             totalCount += qty; totalPrice += (opt.price * qty);
         }
-        
-        
-        
-        
-        
-        
+
         const totalStr = BSUtils.formatPrice(totalPrice);
         const totalDisp = document.getElementById('display-total-price');
         if (totalDisp) totalDisp.innerText = totalStr;
@@ -373,10 +371,13 @@
         if(confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) { window.location.assign('cart.html'); }
     }
 
-    window.onload = () => { 
+    window.onload = () => {
+        const pcDisp = document.getElementById('pc-date-display');
+        if(pcDisp) pcDisp.innerText = selectedDate; 
         initSelectors();
         renderCalendar('pc-days', 'pc-month'); 
         renderCalendar('m-days', 'm-month'); 
+    
     };
 </script>
 </body>

@@ -270,9 +270,13 @@
     let childCount = 0;
     const ADULT_PRICE = 99000;
     const CHILD_PRICE = 90000;
-    
-    let currentDate = new Date(2026, 2, 1);
-    let selectedDate = '2026-03-02';
+
+    const now = new Date();
+    let currentDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    let selectedDate = `${yyyy}-${mm}-${dd}`;
 
     function updateTotalPrice() {
         if(document.getElementById('adult-price-text')) document.getElementById('adult-price-text').innerText = ADULT_PRICE.toLocaleString();
@@ -291,7 +295,6 @@
             document.getElementById('child-subtotal').innerText = BSUtils.formatPrice(childSubtotal);
         }
 
-        
         const totalStr = BSUtils.formatPrice(total);
         const totalDisp = document.getElementById('display-total-price');
         if (totalDisp) totalDisp.innerText = totalStr;
@@ -299,7 +302,6 @@
             if (btn.tagName === 'BUTTON') btn.innerText = totalStr + ' 구매하기';
         });
 
-        
     }
 
     function updateAdultCount(delta) {
@@ -351,7 +353,10 @@
     
     function handleBuy() { const total = BSUtils.calculateTotal(adultCount, ADULT_PRICE, childCount, CHILD_PRICE); const item = { name: document.querySelector("h1").innerText, price: total / (adultCount + childCount || 1), count: adultCount + childCount, totalPrice: total, date: selectedDate, details: `성인 ${adultCount}, 소인 ${childCount}` }; BSUtils.buyNow(item); }
     function addToCart() { const total = BSUtils.calculateTotal(adultCount, ADULT_PRICE, childCount, CHILD_PRICE); const item = { name: document.querySelector("h1").innerText, price: total / (adultCount + childCount || 1), count: adultCount + childCount, totalPrice: total, date: selectedDate, details: `성인 ${adultCount}, 소인 ${childCount}` }; BSUtils.saveToCart(item); }
-    window.onload = () => { renderCalendar('pc-days', 'pc-month'); updateTotalPrice(); };
+    window.onload = () => {
+        const pcDisp = document.getElementById('pc-date-display');
+        if(pcDisp) pcDisp.innerText = selectedDate; renderCalendar('pc-days', 'pc-month'); updateTotalPrice(); 
+    };
 </script>
 </body>
 </html>

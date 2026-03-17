@@ -255,8 +255,13 @@
 <script>
     const ADULT_PRICE = 55000;
     let adultCount = 1;
-    let currentDate = new Date(2026, 2, 1);
-    let selectedDate = '2026-03-02';
+    
+    const now = new Date();
+    let currentDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    let selectedDate = `${yyyy}-${mm}-${dd}`;
     let selectedTime = '09:00';
 
     function updateTotalPrice() {
@@ -330,7 +335,10 @@
         const item = { name: "체험 다이빙 (Scuba Diving)", price: ADULT_PRICE, count: adultCount, totalPrice: total, date: selectedDate, time: selectedTime, details: `인원 ${adultCount}` };
         BSUtils.saveToCart(item);
     }
-    window.onload = () => { renderCalendar('pc-days', 'pc-month'); updateTotalPrice(); };
+    window.onload = () => {
+        const pcDisp = document.getElementById('pc-date-display');
+        if(pcDisp) pcDisp.innerText = selectedDate; renderCalendar('pc-days', 'pc-month'); updateTotalPrice(); 
+    };
 </script>
 </body>
 </html>

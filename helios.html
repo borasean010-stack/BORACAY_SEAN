@@ -195,7 +195,6 @@
                 <div class="selection-tab" onclick="selectTime('19:30', this)">19:30</div>
             </div>
         </div>
-        
 
         <div class="total-summary">
             <span>총 합계 금액</span>
@@ -219,8 +218,13 @@
 <script>
     const massageOptions = [{"name": "허니 스톤", "price": 91000}, {"name": "코코 스파", "price": 105000}, {"name": "허니 스톤 + 코코 스파", "price": 119000}, {"name": "성장 마사지 (1시간)", "price": 42000}, {"name": "성장 마사지 (2시간)", "price": 55000}];
     let selectedQuantities = {}; 
-    let currentDate = new Date(2026, 2, 1);
-    let selectedDate = '2026-03-02';
+    
+    const now = new Date();
+    let currentDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    let selectedDate = `${yyyy}-${mm}-${dd}`;
     let selectedTime = '09:30';
 
     function initSelectors() {
@@ -266,12 +270,7 @@
             const opt = massageOptions.find(o => o.name === name);
             totalCount += qty; totalPrice += (opt.price * qty);
         }
-        
-        
-        
-        
-        
-        
+
         const totalStr = BSUtils.formatPrice(totalPrice);
         const totalDisp = document.getElementById('display-total-price');
         if (totalDisp) totalDisp.innerText = totalStr;
@@ -365,10 +364,13 @@
         items.forEach(item => BSUtils.saveToCart(item));
     }
 
-    window.onload = () => { 
+    window.onload = () => {
+        const pcDisp = document.getElementById('pc-date-display');
+        if(pcDisp) pcDisp.innerText = selectedDate; 
         initSelectors();
         renderCalendar('pc-days', 'pc-month'); 
         renderCalendar('m-days', 'm-month'); 
+    
     };
 </script>
 <div class="mobile-bottom-bar">

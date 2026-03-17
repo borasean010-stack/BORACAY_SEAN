@@ -86,14 +86,14 @@ body.smartstore-admin { margin: 0; padding: 0; background: var(--ss-bg); font-fa
 .btn-action-received { background: var(--ss-orange); color: white; border: none; padding: 5px 12px; border-radius: 2px; font-size: 11px; font-weight: 700; cursor: pointer; }
 .btn-action-outline { background: #fff; border: 1px solid #ccc; padding: 4px 10px; border-radius: 2px; font-size: 11px; font-weight: 600; cursor: pointer; color: #555; }
 
-/* Admin Login Redesign (HanaTour Seller Style) */
+/* Admin Login Redesign (HanaTour Partner Style) */
 .admin-login-wrapper { 
     position: fixed; 
     top: 0; 
     left: 0; 
     width: 100%; 
     height: 100%; 
-    background: #f8f9fa; 
+    background: #f0f2f5; 
     display: flex; 
     align-items: center; 
     justify-content: center; 
@@ -102,76 +102,122 @@ body.smartstore-admin { margin: 0; padding: 0; background: var(--ss-bg); font-fa
 .admin-login-card { 
     background: #fff; 
     width: 100%;
-    max-width: 420px; 
-    padding: 60px 40px; 
-    border-radius: 20px; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
-    text-align: center; 
+    max-width: 440px; 
+    padding: 50px 50px; 
+    border-radius: 12px; 
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08); 
+    text-align: left; 
 }
 .admin-login-header {
+    text-align: center;
     margin-bottom: 40px;
 }
-.admin-login-header img {
-    width: 100px;
-    height: auto;
+.admin-logo-box {
+    display: inline-block;
+    background: #fff;
+    padding: 10px;
+    border-radius: 15px;
     margin-bottom: 15px;
 }
+.admin-login-header img {
+    width: 80px;
+    height: auto;
+}
 .admin-login-header h1 {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 900;
-    color: #ff6a00;
+    color: #ff6a00; /* Boracay Sean Orange */
     letter-spacing: -1px;
     margin: 0;
 }
+.admin-login-header h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    margin: 5px 0 0;
+}
 .admin-login-header p {
     font-size: 14px;
-    color: #666;
-    margin-top: 8px;
-    font-weight: 600;
+    color: #888;
+    margin-top: 10px;
 }
+
 .admin-form-group {
-    margin-bottom: 12px;
+    margin-bottom: 20px;
 }
-.admin-login-card input { 
+.admin-form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #555;
+    margin-bottom: 8px;
+}
+.admin-login-card input[type="text"], 
+.admin-login-card input[type="password"] { 
     width: 100%; 
-    height: 52px;
-    padding: 0 20px; 
-    border: 1px solid #e5e5e5; 
-    border-radius: 10px; 
+    height: 54px;
+    padding: 0 15px; 
+    border: 1px solid #ddd; 
+    border-radius: 6px; 
     box-sizing: border-box; 
     font-size: 15px; 
     outline: none;
-    transition: border-color 0.2s;
+    transition: all 0.2s;
+    background: #fafafa;
 }
 .admin-login-card input:focus {
     border-color: #ff6a00;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(255,106,0,0.1);
 }
+
+.admin-login-options {
+    margin-bottom: 25px;
+    font-size: 13px;
+    color: #666;
+}
+.admin-login-options label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
 .btn-admin-login { 
     width: 100%; 
-    height: 52px;
+    height: 56px;
     background: #ff6a00; 
     color: #fff; 
     border: none; 
-    border-radius: 10px; 
+    border-radius: 6px; 
     font-weight: 800; 
     cursor: pointer; 
-    font-size: 16px; 
-    margin-top: 10px;
-    transition: opacity 0.2s;
+    font-size: 17px; 
+    transition: all 0.2s;
 }
 .btn-admin-login:hover {
-    opacity: 0.9;
+    background: #e65c00;
+    transform: translateY(-1px);
 }
+
 .admin-login-footer {
-    margin-top: 25px;
+    margin-top: 30px;
+    text-align: center;
     font-size: 13px;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 20px;
 }
 .admin-login-footer a {
     color: #888;
     text-decoration: none;
 }
 .admin-login-footer a:hover {
+    color: #333;
     text-decoration: underline;
+}
+.footer-divider {
+    margin: 0 12px;
+    color: #ddd;
 }
 
 /* Modal */

@@ -528,7 +528,7 @@ body {
     }
     
     /* 버튼 스타일 조정 (모바일에서 더 작게) */
-    .kakao-btn, .naver-btn, .mypage-btn {
+    .kakao-btn, .naver-btn {
         height: 32px !important;
         padding: 0 10px !important;
         font-size: 10px !important;
@@ -538,6 +538,7 @@ body {
         align-items: center !important;
         justify-content: center !important;
     }
+    .mypage-btn { display: none !important; }
     .kakao-icon { width: 14px !important; height: 14px !important; }
 
     /* 2. 메인 히어로 섹션 */

@@ -52,11 +52,11 @@ document.addEventListener('DOMContentLoaded', () => {
         massage: [
             { title: "아유르베다 스파", img: "aspa1.jpg", url: "aspa.html", desc: "분위기에 취하고 마사지에 반하는 마사지샵", price: 55000 },
             { title: "에스파 (S-SPA)", img: "spa1.jpg", url: "spa.html", badge: "HOT", desc: "보라카이 최초 포핸드 마사지 런칭", price: 55000 },
-            { title: "포세이돈 스파", img: "poseidon1.jpg", url: "poseidon.html", desc: "연예인이 운영하는 스파, 모든 룸 안게 개별 수영장 + 자쿠지", price: 105000 },
+            { title: "포세이돈 스파", img: "poseidon1.jpg", url: "poseidon.html", desc: "연예인이 운영하는 스파 모든 룸 안 개별 수영장 + 자쿠지", price: 105000 },
             { title: "마리스 스파", img: "maris1.jpg", url: "maris.html", desc: "로멘틱 마리스 스파,허니문이나 커플 연인들에게 인기만점", price: 91000 },
-            { title: "카바얀 스파", img: "kabayan1.jpg", url: "kabayan.html", desc: "딤 티슈 마사지, 디몰 버젯마트 근처 마사지샵", price: 49000 },
+            { title: "카바얀 스파", img: "kabayan1.jpg", url: "kabayan.html", desc: "디몰 버젯마트 근처 마사지샵", price: 49000 },
             { title: "루나 스파", img: "luna1.jpg", url: "luna.html", desc: "보라카이 최초 노니씨드 마사지 런칭", price: 55000 },
-            { title: "보라스파", img: "boraspa1.jpg", url: "boraspa.html", desc: "보라카이 꿀 마사지 원조, 꿀마사지와 태반마사지 단 두가지만으로 승부하는 보라스파", price: 55000 },
+            { title: "보라스파", img: "boraspa1.jpg", url: "boraspa.html", desc: "보라카이 꿀 마사지 원조", price: 55000 },
             { title: "헬리오스 스파", img: "helios1.jpg", url: "helios.html", desc: "유럽풍 고급 분위기 스파", price: 91000 }
         ]
     };

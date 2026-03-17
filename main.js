@@ -2,33 +2,23 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log("BORACAY SEAN JS Loaded");
 
-    // --- Naver Cafe Link Optimization (PC/Mobile Redirection) ---
+    // --- Naver Cafe Link Optimization ---
     function optimizeCafeLinks() {
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 768;
         const links = document.querySelectorAll('a[href*="cafe.naver.com"]');
-        
         links.forEach(link => {
             let href = link.href;
             if (isMobile) {
-                // Mobile: cafe.naver.com -> m.cafe.naver.com
-                if (href.includes('cafe.naver.com') && !href.includes('m.cafe.naver.com')) {
-                    link.href = href.replace('cafe.naver.com', 'm.cafe.naver.com');
-                }
+                if (href.includes('cafe.naver.com') && !href.includes('m.cafe.naver.com')) link.href = href.replace('cafe.naver.com', 'm.cafe.naver.com');
             } else {
-                // PC: m.cafe.naver.com -> cafe.naver.com
-                if (href.includes('m.cafe.naver.com')) {
-                    link.href = href.replace('m.cafe.naver.com', 'cafe.naver.com');
-                }
+                if (href.includes('m.cafe.naver.com')) link.href = href.replace('m.cafe.naver.com', 'cafe.naver.com');
             }
         });
     }
-
-    // Run on load
     optimizeCafeLinks();
-    // Also run on resize to handle device orientation or browser window changes
     window.addEventListener('resize', optimizeCafeLinks);
 
-    // --- 상품 데이터 정의 (최저가 포함, 마사지 성장마사지 제외) ---
+    // --- 중앙 상품 데이터 정의 ---
     const productData = {
         essential: [
             { title: "보라카이 왕복 픽업샌딩", img: "pickup.jpg", url: "pickup-sending.html", badge: "HOT", mdBadge: true, desc: "공항부터 숙소 앞까지 가장 안전하고 편안하게!", price: 54900 },
@@ -62,12 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
         ]
     };
 
-    // MD 추천 상품 목록 (타이틀 기준 매칭하여 데이터 자동 동기화)
+    // MD 추천 타이틀 목록
     const mdRecommendedTitles = ["블랙펄 요트호핑투어", "체험 다이빙", "시크릿가든 말룸파티", "에스파 (S-SPA)"];
 
-    // --- 탭 전환 및 상품 렌더링 ---
-    const tabLinks = document.querySelectorAll('.tab-link');
-    const catTabs = document.querySelectorAll('.cat-tab');
     const productsContainer = document.querySelector('.products');
     const mdContainer = document.querySelector('.md-products');
     const bestTitle = document.querySelector('.best-title');
@@ -80,110 +67,66 @@ document.addEventListener('DOMContentLoaded', () => {
             if (p.badge === 'NEW') cls += ' badge-new';
             badges.push(`<div class="${cls}">${p.badge}</div>`);
         }
-        if (p.mdBadge) {
-            badges.push(`<div class="product-badge badge-md">MD추천</div>`);
-        }
-        
-        if (badges.length === 0) return '';
-        return `<div class="badge-container">${badges.join('')}</div>`;
+        if (p.mdBadge) badges.push(`<div class="product-badge badge-md">MD추천</div>`);
+        return badges.length > 0 ? `<div class="badge-container">${badges.join('')}</div>` : '';
     }
 
     function renderMDProducts() {
         if (!mdContainer) return;
         mdContainer.innerHTML = '';
-        
-        // 모든 카테고리 상품 합치기
         const allProducts = [...productData.essential, ...productData.activity, ...productData.massage];
-        
-        mdRecommendedTitles.forEach((title) => {
-            const p = allProducts.find(item => item.title.includes(title));
+        mdRecommendedTitles.forEach(title => {
+            const p = allProducts.find(item => item.title.replace('<br>', ' ') === title || item.title === title);
             if (!p) return;
-
-            const productDiv = document.createElement('div');
-            productDiv.className = 'product tour-card';
-            productDiv.onclick = () => { window.location.href = p.url; };
-            const priceHtml = `<div class="price-btn"><span class="price-from">From</span><span class="price-val">₩ ${p.price.toLocaleString()}</span></div>`;
-            
-            productDiv.innerHTML = `
+            const div = document.createElement('div');
+            div.className = 'product tour-card';
+            div.onclick = () => window.location.href = p.url;
+            div.innerHTML = `
                 ${getBadgesHtml(p)}
-                <div class="img-container card-img-wrap">
-                    <img src="${p.img}" alt="${p.title}" loading="lazy">
-                </div>
+                <div class="img-container card-img-wrap"><img src="${p.img}" alt="${p.title}" loading="lazy"></div>
                 <div class="card-body">
                     <h3>${p.title}</h3>
-                    <p style="font-size:14px; color:#777; margin-top:10px; line-height:1.5; word-break:keep-all;">${p.desc || ''}</p>
-                    ${priceHtml}
+                    <p style="font-size:14px; color:#777; margin-top:10px; line-height:1.5; word-break:keep-all;">${p.desc}</p>
+                    <div class="price-btn"><span class="price-from">From</span><span class="price-val">₩ ${p.price.toLocaleString()}</span></div>
                 </div>
             `;
-            mdContainer.appendChild(productDiv);
+            mdContainer.appendChild(div);
         });
     }
 
     function renderProducts(category) {
         if (!productsContainer) return;
-        
         productsContainer.innerHTML = '';
         let products = [...(productData[category] || [])];
-        
         products.sort((a, b) => {
-            const getPriority = (p) => {
-                if (p.badge === 'HOT') return 1;
-                if (p.mdBadge) return 2;
-                if (p.badge === 'NEW') return 3;
-                return 4;
-            };
+            const getPriority = p => (p.badge === 'HOT' ? 1 : p.mdBadge ? 2 : p.badge === 'NEW' ? 3 : 4);
             return getPriority(a) - getPriority(b);
         });
-        
         if (bestTitle) {
-            const categoryNames = {
-                essential: "보라카이 필수투어",
-                activity: "액티비티",
-                massage: "마사지"
-            };
-            bestTitle.textContent = categoryNames[category] || "BEST TOUR";
+            const names = { essential: "보라카이 필수투어", activity: "액티비티", massage: "마사지" };
+            bestTitle.textContent = names[category] || "BEST TOUR";
         }
-
-        products.forEach((p, idx) => {
-            const productDiv = document.createElement('div');
-            productDiv.className = 'product tour-card';
-            productDiv.style.animationDelay = `${idx * 0.1}s`;
-            
-            productDiv.onclick = () => {
-                if (p.url && p.url !== '#') window.location.href = p.url;
-                else alert('상품 상세 페이지 준비 중입니다.');
-            };
-
-            const priceHtml = p.price 
-                ? `<div class="price-btn"><span class="price-from">From</span><span class="price-val">₩ ${p.price.toLocaleString()}</span></div>`
-                : `<div class="price-btn" style="background:#555;"><span class="price-val" style="font-size:14px;">View Details</span></div>`;
-            
-            productDiv.innerHTML = `
+        products.forEach(p => {
+            const div = document.createElement('div');
+            div.className = 'product tour-card';
+            div.onclick = () => { if (p.url && p.url !== '#') window.location.href = p.url; else alert('상세 페이지 준비 중'); };
+            div.innerHTML = `
                 ${getBadgesHtml(p)}
-                <div class="img-container card-img-wrap">
-                    <img src="${p.img}" alt="${p.title}" loading="lazy">
-                </div>
+                <div class="img-container card-img-wrap"><img src="${p.img}" alt="${p.title}" loading="lazy"></div>
                 <div class="card-body">
                     <h3>${p.title}</h3>
                     <p style="font-size:14px; color:#777; margin-top:10px; line-height:1.5; word-break:keep-all;">${p.desc || ''}</p>
-                    ${priceHtml}
+                    ${p.price ? `<div class="price-btn"><span class="price-from">From</span><span class="price-val">₩ ${p.price.toLocaleString()}</span></div>` : `<div class="price-btn" style="background:#555;"><span class="price-val" style="font-size:14px;">View Details</span></div>`}
                 </div>
             `;
-            productsContainer.appendChild(productDiv);
+            productsContainer.appendChild(div);
         });
-
-        productsContainer.style.opacity = '0';
-        productsContainer.style.transform = 'translateY(20px)';
-        setTimeout(() => {
-            productsContainer.style.opacity = '1';
-            productsContainer.style.transform = 'translateY(0)';
-            productsContainer.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
-        }, 50);
     }
 
+    const catTabs = document.querySelectorAll('.cat-tab');
     if (catTabs.length > 0) {
         catTabs.forEach(tab => {
-            tab.addEventListener('click', (e) => {
+            tab.addEventListener('click', e => {
                 e.preventDefault();
                 catTabs.forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
@@ -192,19 +135,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 페이지별 초기 렌더링 ---
-    const isHomePage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname === '' || window.location.pathname.split('/').pop() === '';
-    
-    if (isHomePage) {
-        renderProducts('essential');
-        renderMDProducts();
-    } else if (productsContainer) {
+    const isHomePage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname === '';
+    if (isHomePage) { renderProducts('essential'); renderMDProducts(); } 
+    else if (productsContainer) {
         const activeTab = document.querySelector('.tab-link.active');
-        const initialCategory = activeTab ? activeTab.getAttribute('data-category') : 'essential';
-        renderProducts(initialCategory);
+        renderProducts(activeTab ? activeTab.getAttribute('data-category') : 'essential');
     }
 
-    // --- 헤더 UI 상시 고정 (로그인 체크 제거) ---
+    // --- Header UI ---
     const updateHeaderUI = () => {
         const headerRight = document.querySelector('.header-right');
         if (!headerRight) return;
@@ -219,193 +157,23 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     updateHeaderUI();
 
-    // --- 비디오 및 애니메이션 ---
-    const video = document.getElementById('hero-video');
-    if (video) {
-        video.muted = true; video.autoplay = true; video.loop = true; video.playsInline = true;
-        video.play().catch(() => {
-            document.body.addEventListener('touchstart', () => { video.play(); }, { once: true });
-        });
-        setTimeout(() => video.classList.add('loaded'), 2000);
-    }
-    const indicator = document.querySelector('.scroll-indicator');
-    if (indicator) {
-        setTimeout(() => indicator.classList.add('visible'), 500);
-        setTimeout(() => indicator.classList.add('fade-out'), 5500);
-    }
-
-    // --- 모바일 메뉴 ---
     const menuToggle = document.getElementById('menuToggle');
     const sideMenu = document.getElementById('sideMenu');
     const overlay = document.getElementById('overlay');
     if (menuToggle && sideMenu && overlay) {
-        menuToggle.onclick = (e) => { e.stopPropagation(); sideMenu.classList.toggle('active'); overlay.classList.toggle('active'); };
+        menuToggle.onclick = e => { e.stopPropagation(); sideMenu.classList.toggle('active'); overlay.classList.toggle('active'); };
         overlay.onclick = () => { sideMenu.classList.remove('active'); overlay.classList.remove('active'); };
     }
 
-    // --- 배너 슬라이더 ---
-    let currentIdx = 0;
-    const bannerWrapper = document.getElementById('bannerWrapper');
-    const sliderDotsContainer = document.getElementById('sliderDots');
-    const slides = document.querySelectorAll('.banner-slide');
-    if (bannerWrapper && slides.length > 0) {
-        if (sliderDotsContainer) {
-            sliderDotsContainer.innerHTML = '';
-            for (let i = 0; i < slides.length; i++) {
-                const dot = document.createElement('div');
-                dot.classList.add('dot');
-                if (i === 0) dot.classList.add('active');
-                dot.onclick = () => goToSlide(i);
-                sliderDotsContainer.appendChild(dot);
-            }
-        }
-        window.goToSlide = (idx) => {
-            currentIdx = idx;
-            bannerWrapper.style.transform = `translateX(-${currentIdx * 100}%)`;
-            const dots = document.querySelectorAll('.dot');
-            dots.forEach((dot, i) => { if (i === currentIdx) dot.classList.add('active'); else dot.classList.remove('active'); });
-        };
-        window.moveSlide = (step) => { currentIdx = (currentIdx + step + slides.length) % slides.length; goToSlide(currentIdx); };
-        let autoSlide = setInterval(() => moveSlide(1), 5000);
-        bannerWrapper.parentElement.onmouseenter = () => clearInterval(autoSlide);
-        bannerWrapper.parentElement.onmouseleave = () => { clearInterval(autoSlide); autoSlide = setInterval(() => moveSlide(1), 5000); };
-    }
-
-    const introModal = document.getElementById('introModal');
-    window.openIntroModal = () => { if (introModal) { introModal.style.display = 'flex'; document.body.style.overflow = 'hidden'; } };
-    window.closeIntroModal = () => { if (introModal) { introModal.style.display = 'none'; document.body.style.overflow = 'auto'; } };
-
-    // --- 메인 팝업 로직 ---
-    const popup = document.getElementById('mainPopup');
-    const popupSlider = document.getElementById('popupSlider');
-    const popupDotsContainer = document.getElementById('popupDots');
-    const popupSlides = document.querySelectorAll('.popup-slide');
-    let currentPopupIdx = 0;
-
-    if (popup && popupSlides.length > 0) {
-        // 오늘 하루 보지 않기 체크
-        const popupClosedUntil = localStorage.getItem('mainPopupClosedUntil');
-        if (!popupClosedUntil || new Date().getTime() > parseInt(popupClosedUntil)) {
-            popup.style.display = 'flex';
-        }
-
-        // 팝업 도트 생성
-        if (popupDotsContainer) {
-            popupDotsContainer.innerHTML = '';
-            popupSlides.forEach((_, i) => {
-                const dot = document.createElement('div');
-                dot.className = 'popup-dot' + (i === 0 ? ' active' : '');
-                dot.onclick = () => goToPopupSlide(i);
-                popupDotsContainer.appendChild(dot);
-            });
-        }
-
-        window.goToPopupSlide = (idx) => {
-            currentPopupIdx = idx;
-            popupSlider.style.transform = `translateX(-${currentPopupIdx * 100}%)`;
-            const dots = document.querySelectorAll('.popup-dot');
-            dots.forEach((dot, i) => {
-                if (i === currentPopupIdx) dot.classList.add('active');
-                else dot.classList.remove('active');
-            });
-        };
-
-        window.movePopupSlide = (step) => {
-            currentPopupIdx = (currentPopupIdx + step + popupSlides.length) % popupSlides.length;
-            goToPopupSlide(currentPopupIdx);
-        };
-
-        window.closePopup = () => { popup.style.display = 'none'; };
-        window.closePopupToday = () => {
-            const tomorrow = new Date();
-            tomorrow.setHours(24, 0, 0, 0);
-            localStorage.setItem('mainPopupClosedUntil', tomorrow.getTime());
-            closePopup();
-        };
-
-        // 자동 슬라이드 제거 (사용자 요청: 수동으로 편하게 넘길 수 있게)
-    }
-
-    // 🔥 모바일 예약 드로어 제어 (Global)
-    window.openBookingDrawer = () => {
-        const drawer = document.querySelector('.reservation-box');
-        
-        // 오버레이 없으면 생성
-        let overlay = document.getElementById('drawer-overlay');
-        if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.id = 'drawer-overlay';
-            overlay.className = 'drawer-overlay';
-            overlay.onclick = window.closeBookingDrawer;
-            document.body.appendChild(overlay);
-        }
-
-        // 닫기 버튼 없으면 생성
-        if (drawer && !drawer.querySelector('.drawer-close')) {
-            const closeBtn = document.createElement('div');
-            closeBtn.className = 'drawer-close';
-            closeBtn.innerHTML = '✕';
-            closeBtn.onclick = window.closeBookingDrawer;
-            drawer.appendChild(closeBtn); // prepend instead of append if we want it top-right? CSS sets absolute pos.
-        }
-
-        if (drawer) {
-            drawer.classList.add('mobile-drawer');
-            setTimeout(() => drawer.classList.add('active'), 10); // Slight delay for transition
-        }
-        if (overlay) setTimeout(() => overlay.classList.add('active'), 10);
-        document.body.style.overflow = 'hidden'; // 스크롤 방지
-    };
-
-    window.closeBookingDrawer = () => {
-        const drawer = document.querySelector('.reservation-box');
-        const overlay = document.getElementById('drawer-overlay');
-        if (drawer) {
-            drawer.classList.remove('active');
-            setTimeout(() => drawer.classList.remove('mobile-drawer'), 400); // Wait for transition
-        }
-        if (overlay) {
-            overlay.classList.remove('active');
-            // setTimeout(() => overlay.remove(), 400); // Keep it for performance or remove? Better keep.
-        }
-        document.body.style.overflow = '';
-    };
-
-    // --- Global Utility Functions for Price Calculation & Cart ---
     window.BSUtils = {
-        formatPrice: function(amount) {
-            return '₩ ' + (amount || 0).toLocaleString();
-        },
-        
-        calculateTotal: function(adultCount, adultPrice, childCount, childPrice, optionsTotal = 0) {
-            return (adultCount * adultPrice) + (childCount * childPrice) + optionsTotal;
-        },
-
-        // For simple items where price is per person
-        calculateSimpleTotal: function(count, price) {
-            return count * price;
-        },
-
-        saveToCart: function(item) {
-            // Ensure totalPrice is calculated if not present
-            if (item.totalPrice === undefined) {
-                item.totalPrice = (item.price || 0) * (item.count || 0);
-            }
-            
+        formatPrice: amount => '₩ ' + (amount || 0).toLocaleString(),
+        saveToCart: item => {
             let cart = JSON.parse(localStorage.getItem('cart') || '[]');
             cart.push(item);
             localStorage.setItem('cart', JSON.stringify(cart));
-            if (confirm('장바구니에 담겼습니다. 장바구니로 이동하시겠습니까?')) {
-                window.location.assign('cart.html');
-            }
+            if (confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) window.location.assign('cart.html');
         },
-
-        buyNow: function(item) {
-            // Ensure totalPrice is calculated if not present
-            if (item.totalPrice === undefined) {
-                item.totalPrice = (item.price || 0) * (item.count || 0);
-            }
-            
+        buyNow: item => {
             sessionStorage.setItem('directBuyItem', JSON.stringify(item));
             window.location.assign('booking-form.html');
         }

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카티클란 공항 왕복 픽업샌딩 | BORACAY SEAN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+    body { background: #fdfdfd; padding-bottom: 100px; }
+    .tour-detail-container { 
+        max-width: 1100px; 
+        margin: 120px auto 50px; 
+        display: grid; 
+        grid-template-columns: 1fr 360px; 
+        gap: 40px; 
+        padding: 0 20px; 
+    }
+    .tour-content { 
+        background: white; 
+        padding: 40px; 
+        border-radius: 28px; 
+        box-shadow: 0 15px 40px rgba(0,0,0,0.03); 
+        border: 1px solid #f5f5f5;
+    }
+    .tour-content h1 { font-size: 32px; font-weight: 900; margin-bottom: 30px; letter-spacing: -1.5px; }
+    .section-title { 
+        font-size: 20px; 
+        font-weight: 800; 
+        margin: 40px 0 20px; 
+        padding-bottom: 12px; 
+        border-bottom: 2px solid #fff5eb; 
+        color: #ff6a00; 
+    }
+    .itinerary-img { width: 100%; margin-bottom: 30px; }
+    .itinerary-img img { width: 100%; border-radius: 20px; display: block; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+    
+    .date-tabs { display: flex; gap: 5px; margin-bottom: 10px; background: #f8f9fa; padding: 5px; border-radius: 12px; }
+    .date-tab { flex: 1; padding: 8px 5px; text-align: center; font-size: 12px; font-weight: 700; cursor: pointer; border-radius: 10px; transition: 0.2s; color: #888; border: 1px solid transparent; }
+    .date-tab.active { background: white; color: #ff6a00; border-color: #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    .date-display { font-size: 12px; display: block; margin-top: 4px; color: #ff6a00; font-weight: 800; }
+
+    .reservation-box { 
+        background: white; 
+        border-radius: 20px; 
+        padding: 15px; 
+        box-shadow: 0 20px 50px rgba(0,0,0,0.08); 
+        position: sticky; 
+        top: 80px; 
+        border: 1px solid #f0f0f0; 
+        height: fit-content;
+    }
+    
+    .price-header { margin-bottom: 10px; padding-bottom: 15px; border-bottom: 1px solid #f8f8f8; }
+    .price-label { font-size: 14px; color: #888; font-weight: 700; margin-bottom: 4px; display: block; }
+    .price-value { font-size: 24px; font-weight: 900; color: #ff6a00; letter-spacing: -1px; }
+
+    .day { padding: 10px 0; cursor: pointer; border-radius: 8px; font-size: 13px; font-weight: 600; }
+    .day:hover { background: #fff1e6; }
+    .day.selected { background: #ff6a00 !important; color: white !important; font-weight: 800; }
+    .day.selected-pickup { background: #ff6a00 !important; color: white !important; font-weight: 800; position: relative; }
+    .day.selected-pickup::after { content: '픽업'; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-size: 8px; }
+    .day.selected-sending { background: #00c4ff !important; color: white !important; font-weight: 800; position: relative; }
+    .day.selected-sending::after { content: '샌딩'; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-size: 8px; }
+
+    .btn-buy { width: 100%; padding: 14px; background: #111; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+    .btn-cart { width: 100%; padding: 12px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 12px; font-size: 14px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+    .btn-buy:hover { background: #ff6a00; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
+    .btn-cart:hover { background: #fff5eb; }
+
+    .person-selector { background:#fcfcfc; border-radius:24px; border:1px solid #f0f0f0; padding:12px; margin-bottom:10px; }
+    .person-row { margin-bottom: 15px; }
+    .person-row:last-child { margin-bottom: 0; }
+    .person-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .person-price-calc { text-align: right; font-size: 13px; color: #888; font-weight: 600; }
+    .person-price-calc b { color: #333; }
+
+    .total-summary { 
+        padding-top: 10px; 
+        border-top: 2px solid #f8f8f8; 
+        margin-top: 10px; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .total-summary span { font-size: 16px; font-weight: 800; color: #111; }
+    .total-summary b { font-size: 24px; font-weight: 900; color: #ff6a00; letter-spacing: -1px; }
+
+    @media (max-device-width: 1024px) {
+        .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
+        .reservation-box { display: none; }
+        .total-summary { display: none !important; }
+        .mobile-bottom-bar { 
+            display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
+            background: white; padding: 12px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); 
+            z-index: 9000; align-items: center;
+        }
+        .m-btn-buy { flex: 1; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 17px; font-weight: 800; }
+    }
+</style>
+</head>
+<body>
+<div class="side-menu-overlay" id="overlay"></div>
+<div class="side-menu" id="sideMenu">
+    <div class="side-menu-header">
+        <div class="side-logo">BORACAY SEAN</div>
+        <div class="side-close" id="sideClose">✕</div>
+    </div>
+    <div class="side-menu-list">
+        <a href="essential-tours.html">보라카이 필수투어</a>
+        <a href="activities.html">액티비티</a>
+        <a href="massage.html">마사지</a>
+        <a href="price-list.html">한눈에 요금표</a>
+        <a href="resort-quote.html">리조트 견적</a>
+        <a href="cart.html">장바구니</a>
+        <a href="mypage.html" style="margin-top:20px; font-size:14px; opacity:0.6;">마이페이지 (예약확인)</a>
+    </div>
+</div>
+
+<div class="top-bar">
+    <div class="header-left">
+        <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
+        <div class="logo">
+            <a href="index.html">
+                <img src="logo.png" class="logo-img" alt="로고"><span class="logo-text">BORACAY SEAN</span></a>
+        </div>
+    </div>
+
+    <div class="menu pc-only">
+        <a href="essential-tours.html" class="tab-link" data-category="essential">보라카이 필수투어</a>
+        <a href="activities.html" class="tab-link active" data-category="activity">액티비티</a>
+        <a href="massage.html" class="tab-link" data-category="massage">마사지</a>
+        <a href="price-list.html" class="tab-link">한눈에 요금표</a>
+        <a href="resort-quote.html" class="tab-link">리조트 견적</a>
+        <a href="cart.html" class="tab-link">장바구니</a>
+    </div>
+
+    <div class="header-right">
+        <!-- main.js에서 동적으로 버튼들이 삽입됩니다 -->
+    </div>
+</div>
+<div class="tour-detail-container">
+    <div class="tour-content">
+        <h1>카티클란 공항 왕복 픽업샌딩</h1>
+        <div class="section-title">투어 일정</div>
+        <div class="itinerary">
+            <div class="itinerary-img"><img src="pickup.jpg"></div>
+            <div class="itinerary-img"><img src="pickup2.jpg"></div>
+            <div class="itinerary-img"><img src="pickup3.jpg"></div>
+            <div class="itinerary-img"><img src="pickup4.jpg"></div>
+            <div class="itinerary-img"><img src="pickup5.jpg"></div>
+        </div>
+        
+        <div class="section-title">서비스 이용 절차</div>
+        <ul class="process-list" style="list-style: none; padding: 0;">
+            <li class="process-item" style="display: flex; align-items: flex-start; margin-bottom: 20px; gap: 15px;">
+                <div class="process-num" style="background: #ff6a00; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; margin-top: 2px;">1</div>
+                <div class="process-text">
+                    <b style="display: block; font-size: 18px; margin-bottom: 5px;">카티클란 공항 미팅</b>
+                    <p style="color: #666; font-size: 15px; margin: 0; line-height: 1.5;">카티클란 공항 출구에서 '보라카이션' 피켓을 든 직원을 만납니다.</p>
+                </div>
+            </li>
+            <li class="process-item" style="display: flex; align-items: flex-start; margin-bottom: 20px; gap: 15px;">
+                <div class="process-num" style="background: #ff6a00; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; margin-top: 2px;">2</div>
+                <div class="process-text">
+                    <b style="display: block; font-size: 18px; margin-bottom: 5px;">전용 차량 및 보트 이동</b>
+                    <p style="color: #666; font-size: 15px; margin: 0; line-height: 1.5;">차량으로 이동 후 보트를 타고 보라카이 섬으로 이동하여 숙소까지 안전하게 모십니다.</p>
+                </div>
+            </li>
+        </ul>
+
+        <div class="section-title">포함 사항</div>
+        <p style="color:#666; line-height:1.8; font-size:16px; margin-bottom: 40px;">
+            - 카티클란 공항 ↔ 보라카이 숙소 왕복 이동 서비스<br>
+            - 모든 환경세, 터미널 피 포함<br>
+            - 전용 차량 및 보트 이용료<br>
+            - 한국인 전담 매니저 카톡 케어 서비스
+        </p>
+
+        <div class="section-title">환불 규정</div>
+        <img src="refund.png" style="width:100%; border-radius:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+    </div>
+
+    <div class="reservation-box">
+
+        <div class="date-tabs" id="pc-date-tabs">
+            <div class="date-tab active" onclick="setMode('pickup')">픽업 날짜<span id="pc-pickup-display" class="date-display">선택 안함</span></div>
+            <div class="date-tab" onclick="setMode('sending')">샌딩 날짜<span id="pc-sending-display" class="date-display" style="color:#00c4ff;">선택 안함</span></div>
+        </div>
+
+        <div class="calendar-wrap" style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 10px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&lt;</button>
+                <strong id="pc-month">2026년 3월</strong>
+                <button onclick="changeMonth(1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&gt;</button>
+            </div>
+            <div class="calendar-grid" id="pc-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
+        </div>
+
+        <div class="person-selector">
+            <div class="person-row">
+                <div class="person-info">
+                    <span style="font-weight:800; font-size:15px;">예약 인원 (36개월~성인)</span>
+                    <div class="counter">
+                        <button class="count-btn" onclick="updateAdultCount(-1)">-</button>
+                        <strong id="pc-adult-count">1</strong>
+                        <button class="count-btn" onclick="updateAdultCount(1)">+</button>
+                    </div>
+                </div>
+                <div class="person-price-calc">
+                    ₩ <span id="adult-price-text"></span> × <span id="adult-count-text">1</span> = <b id="adult-subtotal">₩ 0</b>
+                </div>
+            </div>
+        </div>
+
+        <div class="total-summary">
+            <span>총 합계 금액</span>
+            <b id="display-total-price">₩ 0</b>
+        </div>
+
+        <button class="btn-buy" onclick="handleBuy()" id="buy-btn">구매하기</button>
+        <button class="btn-cart" onclick="addToCart()" style="margin-top:6px; width:100%;">장바구니 담기</button>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="footer-left">
+        <b class="important">상호 : 보라카이션 | 대표 : 윤오현</b><br>
+        서울특별시 중랑구 상봉로 16길 25-3<br>
+        사업자번호 : 498-31-00593 | daemit@naver.com
+    </div>
+    <div class="footer-right">
+        <a href="http://pf.kakao.com/_zBArM/chat" target="_blank" class="kakao-banner"><div class="kb-text"><span>무엇이든 물어보세요!</span><b>실시간 카톡 상담하기</b></div></a>
+        <a href="https://m.cafe.naver.com/jesupblue.cafe?" target="_blank" class="naver-banner"><div class="nb-text"><span>정보가 가득!</span><b>보라카이션 카페 바로가기</b></div></a>
+    </div>
+</footer>
+
+<div class="mobile-bottom-bar">
+    <button class="m-btn-buy" onclick="openBookingDrawer()">구매하기</button>
+</div>
+
+<script src="main.js"></script>
+<script>
+    let adultCount = 1;
+    const ADULT_PRICE = 54900;
+
+    let currentDate = new Date(2026, 2, 1);
+    let selectedPickupDate = new Date().toISOString().split('T')[0]; 
+    let selectedSendingDate = new Date(new Date().getTime() + 4*24*60*60*1000).toISOString().split('T')[0];
+    let currentMode = 'pickup';
+
+    function setMode(mode) {
+        currentMode = mode;
+        const tabs = document.querySelectorAll('.date-tab');
+        tabs.forEach(tab => {
+            if (tab.innerText.includes(mode === 'pickup' ? '픽업' : '샌딩')) {
+                tab.classList.add('active');
+            } else {
+                tab.classList.remove('active');
+            }
+        });
+        renderCalendar('pc-days', 'pc-month');
+    }
+
+    function updateTotalPrice() {
+        if(document.getElementById('adult-price-text')) document.getElementById('adult-price-text').innerText = ADULT_PRICE.toLocaleString();
+        const adultSubtotal = adultCount * ADULT_PRICE;
+        const total = adultSubtotal;
+
+        document.getElementById('pc-adult-count').innerText = adultCount;
+        document.getElementById('adult-count-text').innerText = adultCount;
+        document.getElementById('adult-subtotal').innerText = '₩ ' + adultSubtotal.toLocaleString();
+        
+        const totalStr = BSUtils.formatPrice(total);
+        const totalDisp = document.getElementById('display-total-price');
+        if (totalDisp) totalDisp.innerText = totalStr;
+        document.querySelectorAll('.btn-buy, .m-btn-buy').forEach(btn => {
+            if (btn.tagName === 'BUTTON') btn.innerText = totalStr + ' 구매하기';
+        });
+
+    }
+
+    function updateAdultCount(delta) {
+        adultCount = Math.max(1, adultCount + delta);
+        updateTotalPrice();
+    }
+
+    function changeMonth(delta) {
+        currentDate.setMonth(currentDate.getMonth() + delta);
+        renderCalendar('pc-days', 'pc-month');
+    }
+
+    function renderCalendar(cid, tid) {
+        const container = document.getElementById(cid);
+        const title = document.getElementById(tid);
+        if(!container || !title) return;
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        title.innerText = `${year}년 ${month + 1}월`;
+        container.innerHTML = '';
+        ['일','월','화','수','목','금','토'].forEach(d => container.innerHTML += `<div style="color:#bbb; font-weight:800; font-size:12px;">${d}</div>`);
+        const firstDay = new Date(year, month, 1).getDay();
+        const lastDate = new Date(year, month + 1, 0).getDate();
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+
+        for (let i = 0; i < firstDay; i++) container.appendChild(document.createElement('div'));
+        for (let i = 1; i <= lastDate; i++) {
+            const dateStr = `${year}-${(month+1).toString().padStart(2,'0')}-${i.toString().padStart(2,'0')}`;
+            const targetDate = new Date(year, month, i);
+            const div = document.createElement('div');
+            
+            if (targetDate < today) {
+                div.className = 'day disabled';
+            } else {
+                div.className = 'day';
+                if (dateStr === selectedPickupDate) div.classList.add('selected-pickup');
+                if (dateStr === selectedSendingDate) div.classList.add('selected-sending');
+                
+                div.onclick = function() {
+                    if (currentMode === 'pickup') {
+                        selectedPickupDate = dateStr;
+                        const pd = document.getElementById('pc-pickup-display');
+                        if(pd) pd.innerText = dateStr;
+                        setMode('sending');
+                    } else {
+                        selectedSendingDate = dateStr;
+                        const sd = document.getElementById('pc-sending-display');
+                        if(sd) sd.innerText = dateStr;
+                        setMode('pickup');
+                    }
+                    renderCalendar('pc-days', 'pc-month');
+                };
+            }
+            div.innerText = i;
+            container.appendChild(div);
+        }
+    }
+
+    function handleBuy() {
+        const total = adultCount * ADULT_PRICE;
+        const item = { 
+            name: "카티클란 공항 왕복 픽업샌딩", 
+            price: ADULT_PRICE, 
+            count: adultCount, 
+            totalPrice: total,
+            pickupDate: selectedPickupDate,
+            sendingDate: selectedSendingDate,
+            details: `인원 ${adultCount}명 (36개월~성인)`
+        };
+        BSUtils.buyNow(item);
+    }
+
+    function addToCart() {
+        const total = adultCount * ADULT_PRICE;
+        const item = { 
+            name: "카티클란 공항 왕복 픽업샌딩", 
+            price: ADULT_PRICE, 
+            count: adultCount, 
+            totalPrice: total,
+            pickupDate: selectedPickupDate,
+            sendingDate: selectedSendingDate,
+            details: `인원 ${adultCount}명 (36개월~성인)`
+        };
+        BSUtils.saveToCart(item);
+    }
+
+    window.onload = () => { 
+        const pd = document.getElementById('pc-pickup-display');
+        const sd = document.getElementById('pc-sending-display');
+        if(pd) pd.innerText = selectedPickupDate;
+        if(sd) sd.innerText = selectedSendingDate;
+        renderCalendar('pc-days', 'pc-month'); 
+        updateTotalPrice();
+    };
+</script>
+</body>
+</html>

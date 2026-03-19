@@ -124,7 +124,9 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Black Pearl Yacht Hopping:** Updated description to: "럭셔리 요트위에서 즐기는 보라카이 선셋과 신나는 음악과 파티가 함께하는 1등 선상 파티 호핑".
         * **Secret Garden Malumpati:** Updated description to: "우리끼리 프라이빗하게 즐기고 신비로운 블루라군과 튜빙".
         * **Bora-Ajae Hopping:** Updated description to: "카라바오 섬에서 즐기는 호핑투어".
-    * **Badge Removal:** Removed the "HOT" badge from the Bora-Ajae Hopping Tour in `main.js`.
+    * **Badge Removal:** 
+        * Removed the "HOT" badge from the Bora-Ajae Hopping Tour in `main.js`.
+        * Removed the "HOT" badge from "Experience Diving" (체험 다이빙) and "S-SPA" (에스파) in `main.js`.
     * **Pickup & Sending Label Update:**
         * **Child Category Deletion:** Removed the "Child" (소인) selection row from `pickup-sending.html`.
         * **Unified Age Range:** Updated the person selection label to "예약 인원 (36개월~성인)" to reflect unified pricing for that range.
@@ -166,6 +168,16 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * Formatted the initial date as `YYYY-MM-DD`.
         * Added logic in `window.onload` to automatically update the visible date display element (`#pc-date-display`) with the current date.
         * Affected all detail pages including `aspa.html`, `golf.html`, `spa.html`, `pickup-sending.html`, etc.
+
+    ### 13. Recommendation Badge Redesign (HOT & MD)
+    * **Objective:** Improve the visual design of 'HOT' and 'MD추천' (MD Pick) badges to look more modern and premium.
+    * **Implementation:**
+        * **Glassmorphism Effect:** Added `backdrop-filter: blur(8px)` and semi-transparent backgrounds.
+        * **Gradients:** Applied vibrant gradients (Red for HOT, Gold/Orange for MD, Blue for NEW).
+        * **Typography:** Refined font-size (11px), weight (800), and letter-spacing (0.5px).
+        * **Pill Shape:** Standardized with `border-radius: 50px`.
+        * **Refined Animation:** Smoothed the 'HOT' badge pulse animation.
+        * **Border:** Added a subtle white border (`1px solid rgba(255,255,255,0.4)`) for better visibility.
 
 
 ## Previous Milestone: Admin & Login Redesign

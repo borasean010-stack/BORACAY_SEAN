@@ -36,14 +36,14 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: "JL 스냅사진 촬영", img: "jl1.jpg", url: "jl-snap.html", desc: "보라카이의 아름다운 풍경과 함께 인생샷을 남겨보세요.", price: 300000 },
             { title: "보라아재 호핑투어", img: "bora1.jpg", url: "bora-ajae-hopping.html", desc: "카라바오 섬에서 즐기는 호핑투어", price: 180000 },
             { title: "파라세일링", img: "para1.jpg", url: "parasailing.html", desc: "하늘 높이 날아올라 보라카이 전경을 한눈에 담아보세요.", price: 55000 },
-            { title: "체험 다이빙", img: "diving1.jpg", url: "scuba-diving.html", badge: "HOT", mdBadge: true, desc: "전문 강사와 함께하는 환상적인 수중 세계 탐험.", price: 55000 },
+            { title: "체험 다이빙", img: "diving1.jpg", url: "scuba-diving.html", mdBadge: true, desc: "전문 강사와 함께하는 환상적인 수중 세계 탐험.", price: 55000 },
             { title: "헬멧 다이빙", img: "he1.jpg", url: "helmet-diving.html", desc: "머리 젖지 않고 바다 속을 걷는 신비로운 경험.", price: 44000 },
-            { title: "제트스키", img: "ze1.jpg", url: "jetski.html", desc: "보라카이 바다 위를 시원하게 질주하는 짜릿한 속도감.", price: 55000 },
+            { title: "제트스키", img: "jetski.html", desc: "보라카이 바다 위를 시원하게 질주하는 짜릿한 속도감.", price: 55000 },
             { title: "페어웨이 골프클럽", img: "Golf1.jpg", url: "golf.html", badge: "NEW", desc: "보라카이 유일의 18홀 골프 코스에서 즐기는 환상적인 라운딩.", price: 192000 }
-        ],
-        massage: [
+            ],
+            massage: [
             { title: "아유르베다 스파", img: "aspa1.jpg", url: "aspa.html", desc: "분위기에 취하고 마사지에 반하는 마사지샵", price: 55000 },
-            { title: "에스파 (S-SPA)", img: "spa1.jpg", url: "spa.html", badge: "HOT", mdBadge: true, desc: "보라카이 최초 포핸드 마사지 런칭", price: 55000 },
+            { title: "에스파 (S-SPA)", img: "spa1.jpg", url: "spa.html", mdBadge: true, desc: "보라카이 최초 포핸드 마사지 런칭", price: 55000 },
             { title: "포세이돈 스파", img: "poseidon1.jpg", url: "poseidon.html", desc: "연예인이 운영하는 스파 모든 룸 안 개별 수영장 + 자쿠지", price: 105000 },
             { title: "마리스 스파", img: "maris1.jpg", url: "maris.html", desc: "로멘틱 마리스 스파,허니문이나 커플 연인들에게 인기만점", price: 91000 },
             { title: "카바얀 스파", img: "kabayan1.jpg", url: "kabayan.html", desc: "디몰 버젯마트 근처 마사지샵", price: 49000 },

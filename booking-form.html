@@ -195,6 +195,7 @@
         if (cartData.length === 0) { alert('상품이 없습니다.'); return; }
 
         const list = document.getElementById('summary-list');
+        let totalSum = 0;
         cartData.forEach(item => {
             if (item.name.includes('픽업샌딩')) hasPickup = true;
             if (item.name.includes('호핑')) hasHopping = true;
@@ -211,6 +212,7 @@
             const countStr = ` | 인원: ${item.count}명`;
             const detailStr = (item.details && typeof item.details === 'string') ? `<br><small style="color:#999;">(${item.details})</small>` : '';
             const finalItemPrice = item.totalPrice || (item.price * item.count);
+            totalSum += finalItemPrice;
 
             list.innerHTML += `
                 <div class="order-item" style="flex-direction: column; align-items: flex-start;">
@@ -223,6 +225,15 @@
                     </div>
                 </div>`;
         });
+
+        // 총 결제 예정 금액 표시 추가
+        if (totalSum > 0) {
+            list.innerHTML += `
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #f8f8f8; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 16px; font-weight: 800; color: #111;">총 결제 예정 금액</span>
+                    <b style="font-size: 24px; font-weight: 900; color: #ff6a00;">₩ ${totalSum.toLocaleString()}</b>
+                </div>`;
+        }
 
         // ✈️ 픽업샌딩 필드 노출
         if (hasPickup) {

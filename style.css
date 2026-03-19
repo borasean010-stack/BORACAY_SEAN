@@ -895,16 +895,21 @@ body {
     position: absolute;
     top: 15px;
     left: 15px;
-    background: #ff6a00;
+    background: rgba(255, 106, 0, 0.85); /* Default fallback */
     color: white;
-    padding: 6px 14px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 900;
+    padding: 4px 12px;
+    border-radius: 50px; /* Pill shape */
+    font-size: 11px;
+    font-weight: 800;
     z-index: 10;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    backdrop-filter: blur(8px); /* Glassmorphism */
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .badge-container {
@@ -921,23 +926,23 @@ body {
 }
 
 .badge-hot {
-    background: #ff3b30 !important; /* Vivid Red */
-    animation: badge-pulse 2s infinite;
+    background: linear-gradient(135deg, #FF4B2B, #FF416C) !important; /* Vibrant Red Gradient */
+    animation: badge-pulse 2.5s infinite ease-in-out;
 }
 
 .badge-new {
-    background: #007aff !important; /* Blue */
+    background: linear-gradient(135deg, #00d2ff, #3a7bd5) !important; /* Fresh Blue Gradient */
 }
 
 .badge-md {
-    background: #ffcc00 !important; /* Yellow */
-    color: #333 !important;
+    background: linear-gradient(135deg, #FDC830, #F37335) !important; /* Premium Gold/Orange Gradient */
+    color: white !important; /* Better contrast on gradient */
 }
 
 @keyframes badge-pulse {
-    0% { transform: scale(1); box-shadow: 0 4px 15px rgba(255,59,48,0.3); }
-    50% { transform: scale(1.05); box-shadow: 0 4px 20px rgba(255,59,48,0.5); }
-    100% { transform: scale(1); box-shadow: 0 4px 15px rgba(255,59,48,0.3); }
+    0% { transform: scale(1); box-shadow: 0 4px 12px rgba(255,75,43,0.3); }
+    50% { transform: scale(1.05); box-shadow: 0 4px 18px rgba(255,75,43,0.5); }
+    100% { transform: scale(1); box-shadow: 0 4px 12px rgba(255,75,43,0.3); }
 }
 
 /* 💰 Sophisticated Price Button */

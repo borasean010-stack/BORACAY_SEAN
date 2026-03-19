@@ -342,13 +342,17 @@
         for (const name in selectedQuantities) {
             const qty = selectedQuantities[name];
             const opt = massageOptions.find(o => o.name === name);
-            items.push({
-                name: "카바얀 - " + name,
-                price: opt.price,
-                count: qty,
-                date: selectedDate,
-                time: selectedTime
-            , totalPrice: opt.price * qty});
+            if (qty > 0) {
+                items.push({
+                    name: "카바얀 - " + name,
+                    details: name,
+                    price: opt.price,
+                    count: qty,
+                    date: selectedDate,
+                    time: selectedTime,
+                    totalPrice: opt.price * qty
+                });
+            }
         }
         return items;
     }

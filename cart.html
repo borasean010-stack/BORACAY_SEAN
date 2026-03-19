@@ -121,12 +121,17 @@
                 itemDate = `${item.pickupDate} ~ ${item.sendingDate}`;
             }
 
+            let detailsText = item.details || '';
+            if (detailsText && (item.name.includes('마사지') || item.name.includes('스파'))) {
+                detailsText = `종류: ${detailsText}`;
+            }
+
             listContainer.innerHTML += `
                 <div class="cart-item">
                     <div class="item-info">
                         <h4>${item.name}</h4>
                         <p style="font-size:14px; color:#666;">예약일: ${itemDate} ${item.time || ''}</p>
-                        <p style="font-size:14px; color:#666;">인원: ${item.count}명 (${item.details || ''})</p>
+                        <p style="font-size:14px; color:#666;">인원: ${item.count}명 ${detailsText ? `| ${detailsText}` : ''}</p>
                         <button class="remove-btn" onclick="removeItem(${index})">삭제하기</button>
                     </div>
                     <div class="item-price">₩ ${itemTotal.toLocaleString()}</div>

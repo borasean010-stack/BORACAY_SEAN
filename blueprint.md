@@ -179,15 +179,22 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * Added logic in `window.onload` to automatically update the visible date display element (`#pc-date-display`) with the current date.
         * Affected all detail pages including `aspa.html`, `golf.html`, `spa.html`, `pickup-sending.html`, etc.
 
-    ### 13. Recommendation Badge Redesign (HOT & MD)
-    * **Objective:** Improve the visual design of 'HOT' and 'MD추천' (MD Pick) badges to look more modern and premium.
+    ### 14. Mobile Booking Drawer UX Optimization
+    * **Objective:** Ensure the "Add to Cart" and "Buy Now" buttons are always accessible at the bottom of the screen when using the mobile booking drawer.
     * **Implementation:**
-        * **Glassmorphism Effect:** Added `backdrop-filter: blur(8px)` and semi-transparent backgrounds.
-        * **Gradients:** Applied vibrant gradients (Red for HOT, Gold/Orange for MD, Blue for NEW).
-        * **Typography:** Refined font-size (11px), weight (800), and letter-spacing (0.5px).
-        * **Pill Shape:** Standardized with `border-radius: 50px`.
-        * **Refined Animation:** Smoothed the 'HOT' badge pulse animation.
-        * **Border:** Added a subtle white border (`1px solid rgba(255,255,255,0.4)`) for better visibility.
+        * **Restructured HTML:** Divided the `.reservation-box` into three parts: `drawer-header`, `drawer-scroll-area`, and `drawer-footer`.
+        * **Fixed Footer:** Moved the purchase buttons into the `drawer-footer`, ensuring they stay fixed at the bottom of the viewport even while scrolling.
+        * **Scrollable Area:** Wrapped all selection options (calendar, time slots, person count) in the `drawer-scroll-area` to allow users to navigate through all options independently of the buttons.
+        * **Native-like UI:** Added a `drawer-handle` and header title ("예약 옵션 선택") to the drawer for a more professional, app-like feel.
+        * **Affected Pages:** All 21 product detail pages (Spas, Activities, Pickup-Sending).
+
+    ### 15. Massage Type Persistence in Cart
+    * **Objective:** Ensure specific massage types (e.g., Placenta, Stone) are explicitly captured and displayed in the cart and booking summary.
+    * **Implementation:**
+        * Updated all spa detail pages (`aspa.html`, `boraspa.html`, `helios.html`, `kabayan.html`, `luna.html`, `maris.html`, `poseidon.html`, `spa.html`) to include the specific massage name in the `details` field of the item object.
+        * Refined `cart.html` rendering logic to prominently display "종류: [Massage Type]" for spa/massage items.
+        * Verified that `booking-form.html` displays these details in the order summary for user confirmation.
+        * This ensures clear communication of the selected service throughout the booking flow.
 
 
 ## Previous Milestone: Admin & Login Redesign

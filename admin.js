@@ -279,10 +279,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         <b style="width:70px; color:#d35400;">픽업</b> 
                         <div style="font-weight:700;">${res.pickupDate} / ${res.pickupFlight || '-'} / ${res.pickupResort || '-'}</div>
                     </div>
-                    <div style="display:flex;">
+                    <div style="display:flex; ${res.exchangeAmount ? 'border-bottom:1px dashed #ffd591; padding-bottom:12px; margin-bottom:12px;' : ''}">
                         <b style="width:70px; color:#d35400;">샌딩</b> 
                         <div style="font-weight:700;">${res.sendingDate} / ${res.sendingFlight || '-'} / ${res.sendingResort || '-'}</div>
                     </div>
+                    ${res.exchangeAmount ? `
+                    <div style="display:flex;">
+                        <b style="width:100px; color:#d35400;">환전 요청</b> 
+                        <div style="font-weight:900; color:#ff6a00;">${res.exchangeAmount}</div>
+                    </div>` : ''}
                 </div>
             </div>` : ''}
 

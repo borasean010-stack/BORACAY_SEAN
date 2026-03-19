@@ -128,6 +128,7 @@
                     <div class="input-group"><label>픽업 호텔</label><input type="text" id="pickup-resort" placeholder="리조트명"></div>
                     <div class="input-group"><label>샌딩 항공편명</label><input type="text" id="sending-flight" placeholder="예: TW126"></div>
                     <div class="input-group"><label>샌딩 호텔</label><input type="text" id="sending-resort" placeholder="리조트명"></div>
+                    <div class="input-group"><label>환전 요청 금액</label><input type="text" id="exchange-amount" placeholder="예: 10,000페소 (필요 시 입력)"></div>
                 </div>
 
                 <button type="submit" class="next-btn">다음 단계로 (결제수단 선택)</button>
@@ -300,6 +301,7 @@
             pickupResort: document.getElementById('pickup-resort').value || '',
             sendingFlight: document.getElementById('sending-flight').value || '',
             sendingResort: document.getElementById('sending-resort').value || '',
+            exchangeAmount: document.getElementById('exchange-amount') ? document.getElementById('exchange-amount').value : '',
             // 리조트 전용 날짜 추출
             resortCheckin: (resortItem && resortItem.details) ? resortItem.details.checkin : '',
             resortCheckout: (resortItem && resortItem.details) ? resortItem.details.checkout : ''

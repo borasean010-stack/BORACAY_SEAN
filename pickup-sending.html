@@ -315,8 +315,15 @@
             const targetDate = new Date(year, month, i);
             const div = document.createElement('div');
             
-            if (targetDate < today) {
+            // Logic: Sending date cannot be earlier than Pickup date
+            let isSelectable = true;
+            if (targetDate < today) isSelectable = false;
+            if (currentMode === 'sending' && dateStr < selectedPickupDate) isSelectable = false;
+
+            if (!isSelectable) {
                 div.className = 'day disabled';
+                div.style.opacity = '0.3';
+                div.style.cursor = 'not-allowed';
             } else {
                 div.className = 'day';
                 if (dateStr === selectedPickupDate) div.classList.add('selected-pickup');
@@ -327,6 +334,13 @@
                         selectedPickupDate = dateStr;
                         const pd = document.getElementById('pc-pickup-display');
                         if(pd) pd.innerText = dateStr;
+                        
+                        // If new pickup date is after current sending date, reset sending date to match
+                        if (selectedPickupDate > selectedSendingDate) {
+                            selectedSendingDate = selectedPickupDate;
+                            const sd = document.getElementById('pc-sending-display');
+                            if(sd) sd.innerText = selectedSendingDate;
+                        }
                         setMode('sending');
                     } else {
                         selectedSendingDate = dateStr;

@@ -540,16 +540,17 @@
             defaultDate: "today",
             onChange: function(selectedDates, dateStr) {
                 fpCheckout.set('minDate', dateStr);
-                const nextDay = new Date(selectedDates[0]);
-                nextDay.setDate(nextDay.getDate() + 3);
-                fpCheckout.setDate(nextDay);
+                // 체크아웃 날짜가 변경된 체크인 날짜보다 빠르면 체크인 날짜로 맞춤
+                if (fpCheckout.selectedDates[0] && fpCheckout.selectedDates[0] < selectedDates[0]) {
+                    fpCheckout.setDate(selectedDates[0]);
+                }
             }
         });
 
         const fpCheckout = flatpickr(checkoutInput, {
             locale: "ko",
             dateFormat: "Y-m-d",
-            minDate: new Date().fp_incr(1),
+            minDate: "today",
             defaultDate: new Date().fp_incr(3)
         });
     }

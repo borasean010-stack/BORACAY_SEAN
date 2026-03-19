@@ -167,7 +167,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 actionMarkup = `<span style="color:var(--ss-green); font-weight:800; font-size:11px;">확정 완료</span>`;
             }
 
-            const itemsText = res.items ? res.items.map(i => i.name.split('-').pop().trim()).join(', ') : '-';
+            const itemsCount = res.items ? res.items.length : 0;
+            let itemsText = '-';
+            if (itemsCount > 0) {
+                const firstItemName = res.items[0].name.split('-').pop().trim();
+                itemsText = itemsCount > 1 ? `${firstItemName} 외 ${itemsCount - 1}건` : firstItemName;
+            }
+            
             const dateStr = res.createdAt?.toDate ? res.createdAt.toDate().toLocaleDateString() : '-';
 
             tr.innerHTML = `
@@ -175,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td style="color:#bbb;">${filtered.length - index}</td>
                 <td style="font-weight:700;">${res.reservationNumber || '-'}</td>
                 <td><b>${res.customerKorName || '미입력'}</b></td>
-                <td style="max-width:250px; overflow:hidden; text-overflow:ellipsis;">${itemsText}</td>
+                <td style="max-width:250px; overflow:hidden; text-overflow:ellipsis; font-weight:600; color:#555;">${itemsText}</td>
                 <td style="font-weight:800; color:#111;">₩ ${(res.totalPrice || 0).toLocaleString()}</td>
                 <td style="color:#888;">${dateStr}</td>
                 <td style="text-align:center;"><span class="n-badge ${badgeClass}">${status}</span></td>
@@ -211,13 +217,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!res) return;
         const modalBody = document.getElementById('modal-body');
         
-        const itemsHtml = res.items ? res.items.map(i => {
+        const itemsHtml = res.items ? res.items.map((i, idx) => {
             let detailsHtml = '';
             if (i.details) {
                 if (typeof i.details === 'string') {
                     detailsHtml = `<div style="margin-top:12px; padding-top:12px; border-top:1px dashed #eee; font-size:14px; color:#666; line-height:1.5;">${i.details}</div>`;
                 } else if (typeof i.details === 'object') {
-                    // 객체인 경우 주요 정보 추출 (리조트 견적 등)
                     const d = i.details;
                     detailsHtml = `
                         <div style="margin-top:12px; padding-top:12px; border-top:1px dashed #eee; font-size:13px; color:#777; line-height:1.6;">
@@ -230,19 +235,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
+            const itemTotalPrice = i.totalPrice || (i.price * i.count) || 0;
+
             return `
-                <div style="padding:18px; background:#fff; border-radius:10px; margin-bottom:12px; border:1px solid #e2e6e9; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                <div style="padding:20px; background:#fff; border-radius:12px; margin-bottom:15px; border:1px solid #e2e6e9; box-shadow: 0 4px 6px rgba(0,0,0,0.02); position:relative; overflow:hidden;">
+                    <div style="position:absolute; top:0; left:0; width:4px; height:100%; background:var(--ss-green);"></div>
                     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
-                        <div style="font-size:18px; font-weight:900; color:#111;">${i.name}</div>
-                        <div style="font-size:18px; font-weight:900; color:var(--ss-green);">${i.count || i.qty || 0}명</div>
+                        <div>
+                            <span style="display:inline-block; background:#333; color:white; font-size:10px; padding:2px 6px; border-radius:4px; margin-bottom:5px; font-weight:800;">ITEM ${idx + 1}</span>
+                            <div style="font-size:19px; font-weight:900; color:#111;">${i.name}</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:18px; font-weight:900; color:var(--ss-green);">${i.count || i.qty || 0}명</div>
+                            <div style="font-size:14px; font-weight:700; color:#ff6a00; margin-top:4px;">₩ ${itemTotalPrice.toLocaleString()}</div>
+                        </div>
                     </div>
-                    <div style="display:flex; gap:10px;">
-                        <div style="background:#fff5eb; color:#ff6a00; padding:6px 12px; border-radius:6px; font-size:16px; font-weight:800; border:1px solid #ffe0d1;">
-                            📅 ${i.date || '-'}
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <div style="background:#fff5eb; color:#ff6a00; padding:6px 12px; border-radius:6px; font-size:15px; font-weight:800; border:1px solid #ffe0d1;">
+                            📅 ${i.date || (res.pickupDate && i.name.includes('픽업샌딩') ? res.pickupDate : '-')}
                         </div>
-                        <div style="background:#f0f7ff; color:#007bff; padding:6px 12px; border-radius:6px; font-size:16px; font-weight:800; border:1px solid #d1e9ff;">
-                            ⏰ ${i.time || '-'}
-                        </div>
+                        ${i.time ? `
+                        <div style="background:#f0f7ff; color:#007bff; padding:6px 12px; border-radius:6px; font-size:15px; font-weight:800; border:1px solid #d1e9ff;">
+                            ⏰ ${i.time}
+                        </div>` : ''}
                     </div>
                     ${detailsHtml}
                 </div>

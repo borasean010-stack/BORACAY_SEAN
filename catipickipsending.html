@@ -257,12 +257,9 @@
     
     const now = new Date();
     let currentDate = new Date(now.getFullYear(), now.getMonth(), 1);
-    const yyyy = now.getFullYear();
-    const mm = String(now.getMonth() + 1).padStart(2, '0');
-    const dd = String(now.getDate()).padStart(2, '0');
     
-    let selectedPickupDate = `${yyyy}-${mm}-${dd}`; 
-    let selectedSendingDate = `${yyyy}-${mm}-${dd}`;
+    let selectedPickupDate = null; 
+    let selectedSendingDate = null;
     let currentMode = 'pickup';
 
     function setMode(mode) {
@@ -310,7 +307,7 @@
             // Logic: Sending date cannot be earlier than Pickup date
             let isSelectable = true;
             if (targetDate < today) isSelectable = false;
-            if (currentMode === 'sending' && dateStr < selectedPickupDate) isSelectable = false;
+            if (currentMode === 'sending' && selectedPickupDate && dateStr < selectedPickupDate) isSelectable = false;
 
             if (!isSelectable) {
                 div.className = 'day disabled';
@@ -325,9 +322,9 @@
                         selectedPickupDate = dateStr; 
                         document.getElementById('pc-pickup-display').innerText = dateStr; 
                         // If new pickup date is after current sending date, reset sending date to match
-                        if (selectedPickupDate > selectedSendingDate) {
-                            selectedSendingDate = selectedPickupDate;
-                            document.getElementById('pc-sending-display').innerText = selectedSendingDate;
+                        if (selectedSendingDate && selectedPickupDate > selectedSendingDate) {
+                            selectedSendingDate = null;
+                            document.getElementById('pc-sending-display').innerText = '선택 안함';
                         }
                         setMode('sending'); 
                     }
@@ -345,16 +342,23 @@
     }
 
     function handleBuy() {
+        if (!selectedPickupDate || !selectedSendingDate) { alert('픽업 및 샌딩 날짜를 모두 선택해주세요.'); return; }
         const item = { name: "카티클란 왕복 픽업샌딩", price: ADULT_PRICE, count: adultCount, totalPrice: adultCount * ADULT_PRICE, pickupDate: selectedPickupDate, sendingDate: selectedSendingDate, details: `인원 ${adultCount}명 (36개월~성인)` };
         BSUtils.buyNow(item);
     }
 
     function addToCart() {
+        if (!selectedPickupDate || !selectedSendingDate) { alert('픽업 및 샌딩 날짜를 모두 선택해주세요.'); return; }
         const item = { name: "카티클란 왕복 픽업샌딩", price: ADULT_PRICE, count: adultCount, totalPrice: adultCount * ADULT_PRICE, pickupDate: selectedPickupDate, sendingDate: selectedSendingDate, details: `인원 ${adultCount}명 (36개월~성인)` };
         BSUtils.saveToCart(item);
     }
 
-    window.onload = () => { document.getElementById('pc-pickup-display').innerText = selectedPickupDate; document.getElementById('pc-sending-display').innerText = selectedSendingDate; renderCalendar('pc-days', 'pc-month'); updateTotalPrice(); };
+    window.onload = () => { 
+        document.getElementById('pc-pickup-display').innerText = '선택 안함'; 
+        document.getElementById('pc-sending-display').innerText = '선택 안함'; 
+        renderCalendar('pc-days', 'pc-month'); 
+        updateTotalPrice(); 
+    };
 </script>
 </body>
 </html>

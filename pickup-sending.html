@@ -266,11 +266,9 @@
 
     const now = new Date();
     let currentDate = new Date(now.getFullYear(), now.getMonth(), 1);
-    const yyyy = now.getFullYear();
-    const mm = String(now.getMonth() + 1).padStart(2, '0');
-    const dd = String(now.getDate()).padStart(2, '0');
-    let selectedPickupDate = `${yyyy}-${mm}-${dd}`;
-    let selectedSendingDate = `${yyyy}-${mm}-${dd}`; 
+    
+    let selectedPickupDate = null;
+    let selectedSendingDate = null; 
     
     let currentMode = 'pickup';
 
@@ -337,7 +335,7 @@
             // Logic: Sending date cannot be earlier than Pickup date
             let isSelectable = true;
             if (targetDate < today) isSelectable = false;
-            if (currentMode === 'sending' && dateStr < selectedPickupDate) isSelectable = false;
+            if (currentMode === 'sending' && selectedPickupDate && dateStr < selectedPickupDate) isSelectable = false;
 
             if (!isSelectable) {
                 div.className = 'day disabled';
@@ -355,10 +353,10 @@
                         if(pd) pd.innerText = dateStr;
                         
                         // If new pickup date is after current sending date, reset sending date to match
-                        if (selectedPickupDate > selectedSendingDate) {
-                            selectedSendingDate = selectedPickupDate;
+                        if (selectedSendingDate && selectedPickupDate > selectedSendingDate) {
+                            selectedSendingDate = null;
                             const sd = document.getElementById('pc-sending-display');
-                            if(sd) sd.innerText = selectedSendingDate;
+                            if(sd) sd.innerText = '선택 안함';
                         }
                         setMode('sending');
                     } else {
@@ -376,6 +374,7 @@
     }
 
     function handleBuy() {
+        if (!selectedPickupDate || !selectedSendingDate) { alert('픽업 및 샌딩 날짜를 모두 선택해주세요.'); return; }
         const total = adultCount * ADULT_PRICE;
         const item = { 
             name: "공항 왕복 픽업샌딩", 
@@ -390,6 +389,7 @@
     }
 
     function addToCart() {
+        if (!selectedPickupDate || !selectedSendingDate) { alert('픽업 및 샌딩 날짜를 모두 선택해주세요.'); return; }
         const total = adultCount * ADULT_PRICE;
         const item = { 
             name: "공항 왕복 픽업샌딩", 
@@ -406,8 +406,8 @@
     window.onload = () => { 
         const pd = document.getElementById('pc-pickup-display');
         const sd = document.getElementById('pc-sending-display');
-        if(pd) pd.innerText = selectedPickupDate;
-        if(sd) sd.innerText = selectedSendingDate;
+        if(pd) pd.innerText = '선택 안함';
+        if(sd) sd.innerText = '선택 안함';
         renderCalendar('pc-days', 'pc-month'); 
         updateTotalPrice();
     };

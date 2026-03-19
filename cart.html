@@ -16,6 +16,17 @@
         .remove-btn { background: #f8f8f8; color: #bbb; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-size: 14px; margin-top: 15px; }
         .checkout-bar { background: white; border-top: 1px solid #eee; padding: 30px 60px; display: flex; justify-content: space-between; align-items: center; position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000; }
         .order-btn { background: #ff6a00; color: white; border: none; padding: 20px 60px; border-radius: 18px; font-size: 18px; font-weight: 800; cursor: pointer; }
+
+        @media (max-device-width: 600px) {
+            .cart-container { margin-top: 80px; margin-bottom: 100px; }
+            .cart-title { font-size: 24px; margin-bottom: 25px; }
+            .cart-item { padding: 20px; }
+            .item-info h4 { font-size: 18px; }
+            .item-price { font-size: 18px; }
+            .checkout-bar { padding: 15px 20px; }
+            #final-price { font-size: 22px !important; }
+            .order-btn { padding: 12px 30px; font-size: 15px; border-radius: 12px; }
+        }
     </style>
 </head>
 <body>

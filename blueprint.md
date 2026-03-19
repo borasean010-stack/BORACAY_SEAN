@@ -127,6 +127,7 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Pickup-Sending:** Users cannot select a sending date earlier than the pickup date. Selecting a pickup date after the current sending date automatically updates the sending date. Dates before the pickup date are visually disabled in sending mode.
         * **Resort Quote:** The checkout date cannot be set earlier than the check-in date. Changing the check-in date automatically updates the checkout date if it becomes invalid.
     * **Currency Exchange Request:** Added a "Currency Exchange Request Amount" (환전 요청 금액) field to the pickup/sending details section in `booking-form.html`. This information is collected during booking and displayed in the admin panel (`admin.js`).
+    * **Mobile Layout Optimization (Pickup-Sending):** Refined the mobile booking drawer for pickup-sending products by optimizing font sizes, calendar spacing, and padding to ensure a better fit on small screens.
     * **Thumbnail Information Update:**
         * **Black Pearl Yacht Hopping:** Updated description to: "럭셔리 요트위에서 즐기는 보라카이 선셋과 신나는 음악과 파티가 함께하는 1등 선상 파티 호핑".
         * **Secret Garden Malumpati:** Updated description to: "우리끼리 프라이빗하게 즐기고 신비로운 블루라군과 튜빙".

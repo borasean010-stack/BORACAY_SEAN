@@ -280,4 +280,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         startAutoSlide();
     }
+
+    // --- Hero Video Mobile Compatibility ---
+    const heroVideo = document.getElementById('hero-video');
+    if (heroVideo) {
+        // Try to play programmatically (sometimes helps on mobile)
+        const playVideo = async () => {
+            try {
+                await heroVideo.play();
+                console.log("Hero video playing");
+            } catch (err) {
+                console.warn("Hero video autoplay failed:", err);
+                // If it fails, we keep the poster/background fallback
+            }
+        };
+        
+        playVideo();
+
+        // If video error occurs, hide video to show CSS background
+        heroVideo.addEventListener('error', function() {
+            console.error("Hero video error");
+            heroVideo.style.display = 'none';
+        });
+    }
 });

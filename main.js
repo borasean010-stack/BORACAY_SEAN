@@ -179,6 +179,68 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // --- Mobile Booking Drawer ---
+    window.openBookingDrawer = function() {
+        const box = document.querySelector('.reservation-box');
+        if (!box) return;
+        
+        // Create overlay if not exists
+        let overlay = document.getElementById('drawer-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'drawer-overlay';
+            overlay.className = 'drawer-overlay';
+            overlay.onclick = window.closeBookingDrawer;
+            document.body.appendChild(overlay);
+        }
+        
+        // Add close button if not exists
+        if (!box.querySelector('.drawer-close')) {
+            const closeBtn = document.createElement('div');
+            closeBtn.className = 'drawer-close';
+            closeBtn.innerHTML = '✕';
+            closeBtn.style.cssText = 'position:absolute; top:15px; right:15px; width:30px; height:30px; background:#f0f0f0; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:900; z-index:10;';
+            closeBtn.onclick = window.closeBookingDrawer;
+            box.prepend(closeBtn);
+        }
+        
+        box.classList.add('mobile-drawer');
+        overlay.style.display = 'block';
+        setTimeout(() => {
+            box.classList.add('active');
+            overlay.classList.add('active');
+        }, 10);
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.closeBookingDrawer = function() {
+        const box = document.querySelector('.reservation-box');
+        const overlay = document.getElementById('drawer-overlay');
+        if (box) box.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
+        setTimeout(() => {
+            if (box) box.classList.remove('mobile-drawer');
+            if (overlay) overlay.style.display = 'none';
+            document.body.style.overflow = '';
+        }, 400);
+    };
+
+    window.openOptionSheet = function() {
+        if (document.getElementById('optionSheet')) {
+            document.getElementById('sheetOverlay')?.classList.add('active');
+            document.getElementById('optionSheet')?.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        } else {
+            window.openBookingDrawer();
+        }
+    };
+
+    window.closeOptionSheet = function() {
+        document.getElementById('sheetOverlay')?.classList.remove('active');
+        document.getElementById('optionSheet')?.classList.remove('active');
+        document.body.style.overflow = '';
+    };
+
     // --- Main Banner Slider Logic ---
     let currentSlide = 0;
     const bannerWrapper = document.getElementById('bannerWrapper');

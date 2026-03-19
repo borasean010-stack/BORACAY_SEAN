@@ -167,6 +167,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.BSUtils = {
         formatPrice: amount => '₩ ' + (amount || 0).toLocaleString(),
+        calculateTotal: (adultCount, adultPrice, childCount, childPrice) => {
+            return (adultCount * (adultPrice || 0)) + (childCount * (childPrice || 0));
+        },
         saveToCart: item => {
             let cart = JSON.parse(localStorage.getItem('cart') || '[]');
             cart.push(item);

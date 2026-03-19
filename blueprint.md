@@ -122,6 +122,7 @@ This project is a reservation website for tours and activities in Boracay (BORAC
     ### 10. Product & Label Updates (March 2026)
     * **Caticlan Pickup-Sending Name Update:** Changed "카티클란 공항 왕복 픽업샌딩" to "카티클란 왕복 픽업샌딩" in `main.js` for consistency.
     * **Naver Cafe Link Optimization (Mobile):** Updated the main page's "알려드립니다 !!" section with mobile-optimized URLs for Announcements, Reviews, and FAQ (`https://m.cafe.naver.com/ca-fe/web/cafes/17953658/menus/...`).
+    * **Calendar Rendering Fix:** Fixed a bug in `catipickipsending.html` where the calendar was missing due to an undefined `currentDate` variable. Initialized the date selection logic to match other product pages.
     * **Thumbnail Information Update:**
         * **Black Pearl Yacht Hopping:** Updated description to: "럭셔리 요트위에서 즐기는 보라카이 선셋과 신나는 음악과 파티가 함께하는 1등 선상 파티 호핑".
         * **Secret Garden Malumpati:** Updated description to: "우리끼리 프라이빗하게 즐기고 신비로운 블루라군과 튜빙".

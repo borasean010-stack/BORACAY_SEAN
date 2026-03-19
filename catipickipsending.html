@@ -236,8 +236,14 @@
     let adultCount = 1;
     const ADULT_PRICE = 54900;
     
-    let selectedPickupDate = new Date().toISOString().split('T')[0]; 
-    let selectedSendingDate = new Date(new Date().getTime() + 4*24*60*60*1000).toISOString().split('T')[0];
+    const now = new Date();
+    let currentDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    
+    let selectedPickupDate = `${yyyy}-${mm}-${dd}`; 
+    let selectedSendingDate = `${yyyy}-${mm}-${dd}`;
     let currentMode = 'pickup';
 
     function setMode(mode) {

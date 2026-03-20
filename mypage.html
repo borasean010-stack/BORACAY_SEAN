@@ -12,6 +12,29 @@
     <meta property="og:type" content="website">
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        .ai-recommend-section { margin-bottom: 40px; }
+        .ai-card { background: #fff; border-radius: 32px; padding: 0; border: 1px solid #f0f0f0; box-shadow: 0 20px 60px rgba(0,0,0,0.05); display: flex; flex-direction: column; height: 650px; overflow: hidden; }
+        .ai-header { padding: 25px 30px; background: #111; color: white; display: flex; align-items: center; gap: 15px; position: relative; }
+        .ai-status-dot { width: 10px; height: 10px; background: #00ff88; border-radius: 50%; box-shadow: 0 0 10px #00ff88; }
+        .ai-info h3 { font-size: 18px; font-weight: 800; margin: 0; }
+        .ai-info p { font-size: 13px; opacity: 0.6; margin: 2px 0 0; }
+        .ai-kakao-btn { margin-left: auto; background: #fee500; color: #3c1e1e; padding: 8px 15px; border-radius: 12px; font-size: 12px; font-weight: 800; text-decoration: none; }
+        .ai-chat-window { flex: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 20px; background: #fcfcfc; scroll-behavior: smooth; }
+        .chat-message { max-width: 85%; padding: 18px 22px; border-radius: 24px; font-size: 15px; line-height: 1.6; position: relative; word-break: keep-all; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .chat-message.ai { background: white; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #f0f0f0; }
+        .chat-message.user { background: #ff6a00; color: white; align-self: flex-end; border-bottom-right-radius: 4px; font-weight: 600; }
+        .ai-button-container { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; width: 100%; }
+        .ai-action-btn { background: white; border: 1.5px solid #ff6a00; color: #ff6a00; padding: 12px 20px; border-radius: 15px; font-size: 14px; font-weight: 800; cursor: pointer; transition: 0.3s; text-align: left; display: flex; justify-content: space-between; align-items: center; }
+        .ai-action-btn:hover { background: #ff6a00; color: white; }
+        .ai-action-btn span { font-size: 12px; opacity: 0.8; font-weight: 400; }
+        .ai-chat-input-wrap { padding: 20px 25px; background: white; border-top: 1px solid #f5f5f5; display: flex; gap: 12px; align-items: center; }
+        .ai-chat-input-wrap input { flex: 1; padding: 15px 20px; border: 2px solid #f0f0f0; border-radius: 18px; outline: none; font-size: 15px; transition: 0.3s; background: #f9f9f9; }
+        .ai-chat-input-wrap input:focus { border-color: #ff6a00; background: white; }
+        .ai-chat-input-wrap button { background: #111; color: white; border: none; width: 50px; height: 50px; border-radius: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; flex-shrink: 0; }
+        .ai-chat-input-wrap button:hover { background: #ff6a00; transform: scale(1.05); }
+        #ai-typing-indicator { display: none; padding: 0 25px 15px; font-size: 13px; color: #ff6a00; font-weight: 600; font-style: italic; }
+    </style>
 </head>
 <body>
 <div class="side-menu-overlay" id="overlay"></div>
@@ -49,17 +72,15 @@
         <a href="cart.html" class="tab-link">장바구니</a>
     </div>
 
-    <div class="header-right">
-        <!-- main.js에서 동적으로 버튼들이 삽입됩니다 -->
-    </div>
+    <div class="header-right"></div>
 </div>
+
 <div class="mypage-container">
     <div class="mypage-header">
         <h2>마이페이지</h2>
         <p>예약 내역 확인과 AI 여행 상담을 한곳에서 이용해보세요.</p>
     </div>
 
-    <!-- 🔥 보라카이션 전용 AI 플래너 채팅 섹션 -->
     <div class="ai-recommend-section">
         <div class="ai-card">
             <div class="ai-header">
@@ -79,61 +100,45 @@
                 </div>
             </div>
 
-            <div id="ai-typing-indicator" style="display:none; padding: 0 20px 10px; font-size: 12px; color: #999;">션이 답변을 생각 중입니다...</div>
+            <div id="ai-typing-indicator">션이 답변을 생각 중입니다...</div>
 
             <div class="ai-chat-input-wrap">
-                <input type="text" id="aiInput" placeholder="예: 3월에 가족 4명 여행가는데 추천해줘" onkeypress="if(event.keyCode==13) sendMessage()">
-                <button onclick="sendMessage()" id="sendBtn">
+                <input type="text" id="aiInput" placeholder="예: 3월에 가족 4명 여행가는데 추천해줘" onkeypress="if(event.keyCode==13) window.sendMessage()">
+                <button onclick="window.sendMessage()" id="sendBtn">
                     <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                 </button>
             </div>
         </div>
     </div>
 
-    <div id="booking-list-container">
-        <!-- 예약 내역 렌더링 영역 -->
-    </div>
+    <div id="booking-list-container"></div>
 </div>
 
-<style>
-    .ai-recommend-section { margin-bottom: 40px; }
-    .ai-card { background: #fff; border-radius: 32px; padding: 0; border: 1px solid #f0f0f0; box-shadow: 0 20px 60px rgba(0,0,0,0.05); display: flex; flex-direction: column; height: 650px; overflow: hidden; }
-    
-    .ai-header { padding: 25px 30px; background: #111; color: white; display: flex; align-items: center; gap: 15px; position: relative; }
-    .ai-status-dot { width: 10px; height: 10px; background: #00ff88; border-radius: 50%; box-shadow: 0 0 10px #00ff88; }
-    .ai-info h3 { font-size: 18px; font-weight: 800; margin: 0; }
-    .ai-info p { font-size: 13px; opacity: 0.6; margin: 2px 0 0; }
-    .ai-kakao-btn { margin-left: auto; background: #fee500; color: #3c1e1e; padding: 8px 15px; border-radius: 12px; font-size: 12px; font-weight: 800; text-decoration: none; }
+<script type="importmap">
+    {
+      "imports": {
+        "@google/generative-ai": "https://esm.run/@google/generative-ai"
+      }
+    }
+</script>
 
-    .ai-chat-window { flex: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 20px; background: #fcfcfc; scroll-behavior: smooth; }
-    .chat-message { max-width: 85%; padding: 18px 22px; border-radius: 24px; font-size: 15px; line-height: 1.6; position: relative; word-break: keep-all; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
-    .chat-message.ai { background: white; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #f0f0f0; }
-    .chat-message.user { background: #ff6a00; color: white; align-self: flex-end; border-bottom-right-radius: 4px; font-weight: 600; }
-    
-    /* 추천 상품 버튼 스타일 */
-    .ai-button-container { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; width: 100%; }
-    .ai-action-btn { background: white; border: 1.5px solid #ff6a00; color: #ff6a00; padding: 12px 20px; border-radius: 15px; font-size: 14px; font-weight: 800; cursor: pointer; transition: 0.3s; text-align: left; display: flex; justify-content: space-between; align-items: center; }
-    .ai-action-btn:hover { background: #ff6a00; color: white; }
-    .ai-action-btn span { font-size: 12px; opacity: 0.8; font-weight: 400; }
+<script type="module">
+    import { GoogleGenerativeAI } from "@google/generative-ai";
 
-    .ai-chat-input-wrap { padding: 20px 25px; background: white; border-top: 1px solid #f5f5f5; display: flex; gap: 12px; align-items: center; }
-    .ai-chat-input-wrap input { flex: 1; padding: 15px 20px; border: 2px solid #f0f0f0; border-radius: 18px; outline: none; font-size: 15px; transition: 0.3s; background: #f9f9f9; }
-    .ai-chat-input-wrap input:focus { border-color: #ff6a00; background: white; }
-    .ai-chat-input-wrap button { background: #111; color: white; border: none; width: 50px; height: 50px; border-radius: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; flex-shrink: 0; }
-    .ai-chat-input-wrap button:hover { background: #ff6a00; transform: scale(1.05); }
-</style>
+    const API_KEY = "AIzaSyCS9ti9qzKttrbART5Gu2A241Y1iIARgS0";
+    const genAI = new GoogleGenerativeAI(API_KEY);
 
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-functions-compat.js"></script>
-
-<script>
-    // Firebase Functions 연동 (실제 환경에 맞춰 초기화 필요)
-    // const functions = firebase.functions();
-    // if (location.hostname === "localhost") functions.useEmulator("localhost", 5001);
+    const BORACAY_PRODUCTS = [
+        { id: "hopping", name: "블랙펄 요트 호핑투어", url: "hopping-tour.html" },
+        { id: "malumpati", name: "시크릿가든 말룸파티", url: "malumpati.html" },
+        { id: "pickup", name: "공항 왕복 픽업샌딩", url: "pickup-sending.html" },
+        { id: "poseidon", name: "포세이돈 스파", url: "poseidon.html" },
+        { id: "aspa", name: "아유르베다 스파", url: "aspa.html" }
+    ];
 
     let chatHistory = [];
 
-    async function sendMessage() {
+    window.sendMessage = async function() {
         const input = document.getElementById('aiInput');
         const text = input.value.trim();
         if (!text) return;
@@ -145,25 +150,45 @@
         indicator.style.display = 'block';
 
         try {
-            // --- 실제 구현 시 아래 호출 사용 ---
-            // const chatWithAI = firebase.functions().httpsCallable('chatWithAI');
-            // const result = await chatWithAI({ message: text, history: chatHistory });
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+            const systemPrompt = `당신은 '보라카이션(Boracay Sean)'의 수석 여행 상담원 '션'입니다.
+            반드시 아래 제공된 보라카이션 공식 상품 정보만을 바탕으로 답변하세요.
+            1. 타사 상품 언급 금지.
+            2. 보라카이션의 '블랙펄 호핑', '말룸파티', '마사지' 등으로 유도.
+            3. 여행 날짜, 인원, 목적을 물어보고 맞춤형 제안.
+            4. 모든 답변의 끝은 예약을 묻는 질문으로 마무리.
+            5. 모르는 내용은 실시간 카톡 상담으로 안내.
+            상품 정보: ${JSON.stringify(BORACAY_PRODUCTS)}`;
+
+            const chat = model.startChat({
+                history: [
+                    { role: "user", parts: [{ text: systemPrompt }] },
+                    { role: "model", parts: [{ text: "알겠습니다. 보라카이션 전용 상담을 시작합니다!" }] },
+                    ...chatHistory.map(h => ({
+                        role: h.role === "assistant" ? "model" : "user",
+                        parts: [{ text: h.content }]
+                    }))
+                ],
+            });
+
+            const result = await chat.sendMessage(text);
+            const aiResponse = result.response.text();
+
+            indicator.style.display = 'none';
+            const recommendedButtons = BORACAY_PRODUCTS.filter(p => aiResponse.includes(p.name));
+            appendAIMessage(aiResponse, recommendedButtons);
             
-            // --- 프로토타입/테스트용 시뮬레이션 로직 ---
-            setTimeout(() => {
-                indicator.style.display = 'none';
-                const simulatedResult = generateSimulatedResponse(text);
-                appendAIMessage(simulatedResult.text, simulatedResult.buttons);
-                
-                chatHistory.push({ role: 'user', content: text });
-                chatHistory.push({ role: 'assistant', content: simulatedResult.text });
-                if (chatHistory.length > 10) chatHistory.shift();
-            }, 1500);
+            chatHistory.push({ role: 'user', content: text });
+            chatHistory.push({ role: 'assistant', content: aiResponse });
+            if (chatHistory.length > 10) chatHistory.shift();
 
         } catch (error) {
             console.error("AI Error:", error);
             indicator.style.display = 'none';
-            appendMessage('ai', "죄송합니다. 서버와 연결이 원활하지 않습니다. 카톡으로 문의주시면 감사하겠습니다!");
+            appendAIMessage("죄송합니다. 통신이 원활하지 않네요. 카톡으로 문의주시면 즉시 도와드릴게요!", [
+                { name: "💬 카톡 상담 바로가기", url: "http://pf.kakao.com/_zBArM/chat" }
+            ]);
         }
     }
 
@@ -180,64 +205,22 @@
         const chatWindow = document.getElementById('aiChatWindow');
         const msgDiv = document.createElement('div');
         msgDiv.className = 'chat-message ai';
-        
         let html = `<div>${text}</div>`;
-        
         if (buttons.length > 0) {
             html += `<div class="ai-button-container">`;
             buttons.forEach(btn => {
-                html += `
-                    <button class="ai-action-btn" onclick="location.href='${btn.url}'">
-                        ${btn.name} <span>상세보기 ❯</span>
-                    </button>
-                `;
+                html += `<button class="ai-action-btn" onclick="location.href='${btn.url}'">${btn.name} <span>상세보기 ❯</span></button>`;
             });
             html += `</div>`;
         }
-        
         msgDiv.innerHTML = html;
         chatWindow.appendChild(msgDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
     }
-
-    // OpenAI 연동 전까지 사용할 정교한 시뮬레이션 로직
-    function generateSimulatedResponse(input) {
-        const text = input.toLowerCase();
-        if (text.includes("투어") || text.includes("추천") || text.includes("뭐해")) {
-            return {
-                text: "보라카이에서 가장 인기 있는 투어들을 추천해 드릴게요! 커플이시라면 **블랙펄 호핑**을, 활동적인 걸 좋아하신다면 **말룸파티**를 추천드립니다. 😊",
-                buttons: [
-                    { name: "⛵ 블랙펄 요트 호핑", url: "hopping-tour.html" },
-                    { name: "🌴 시크릿가든 말룸파티", url: "malumpati.html" }
-                ]
-            };
-        }
-        if (text.includes("가족") || text.includes("애기") || text.includes("아이")) {
-            return {
-                text: "아이와 함께하는 여행이시군요! 안전하고 편안한 **단독 픽업샌딩**과 아이들이 정말 좋아하는 **말룸파티** 일정을 추천드려요. 예약을 도와드릴까요?",
-                buttons: [
-                    { name: "🚐 공항 단독 픽업샌딩", url: "pickup-sending.html" },
-                    { name: "🍗 말룸파티 (닭백숙 포함)", url: "malumpati.html" }
-                ]
-            };
-        }
-        if (text.includes("마사지") || text.includes("스파") || text.includes("피곤")) {
-            return {
-                text: "보라카이 여행의 꽃은 역시 마사지죠! 럭셔리한 휴식을 원하시면 **포세이돈**을, 가성비를 생각하신다면 **아유르베다**가 딱입니다.",
-                buttons: [
-                    { name: "💆 포세이돈 럭셔리 스파", url: "poseidon.html" },
-                    { name: "✨ 아유르베다 가성비 스파", url: "aspa.html" }
-                ]
-            };
-        }
-        return {
-            text: "정말 좋은 질문이네요! 고객님의 일정에 맞춰 최고의 플랜을 짜드릴 수 있습니다. 혹시 몇 분이서 언제쯤 방문하실 예정인가요? 실시간 예약을 원하시면 말씀해 주세요!",
-            buttons: [
-                { name: "💬 카톡으로 맞춤 일정 받기", url: "http://pf.kakao.com/_zBArM/chat" }
-            ]
-        };
-    }
 </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
         const container = document.getElementById('booking-list-container');
         const completedBookings = JSON.parse(localStorage.getItem('completed_bookings') || '[]');
         const lastBooking = JSON.parse(localStorage.getItem('last_booking_info'));
@@ -258,48 +241,23 @@
 
     function renderBooking(container, booking) {
         const info = booking.info;
-        // items가 없는 경우 info.items를 사용 (최근 예약 대응)
         const items = booking.items && booking.items.length > 0 ? booking.items : (info.items || []);
         const date = booking.timestamp ? new Date(booking.timestamp).toLocaleDateString() : '최근 예약';
-        
         const card = document.createElement('div');
         card.className = 'booking-card';
-        
         let itemsHtml = '';
         items.forEach(item => {
-            // 날짜 및 상세 정보 구성
             let dateStr = item.date || '날짜 미지정';
-            if (item.name.includes('픽업샌딩')) {
-                dateStr = `${item.pickupDate || '픽업일 미정'} ~ ${item.sendingDate || '샌딩일 미정'}`;
-            } else if (item.name.includes('리조트 견적') && item.details) {
-                dateStr = `${item.details.checkin} ~ ${item.details.checkout}`;
-            }
-
-            const timeStr = item.time ? ` | 시간: ${item.time}` : '';
-            const countStr = ` | 인원: ${item.count}명`;
-            const detailStr = (item.details && typeof item.details === 'string') ? `<br><small style="color:#999;">(${item.details})</small>` : '';
-
-            // 통일된 금액 계산 로직: item.totalPrice 우선
             const itemPrice = item.totalPrice || (item.price * item.count);
-
             itemsHtml += `
                 <div class="reserved-item" style="flex-direction: column; align-items: flex-start; gap: 8px;">
                     <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
                         <div class="item-title" style="margin-bottom: 0;">${item.name}</div>
                         <div class="item-price">₩ ${itemPrice.toLocaleString()}</div>
                     </div>
-                    <div class="item-meta">
-                        📅 ${dateStr}${timeStr}${countStr}${detailStr}
-                    </div>
+                    <div class="item-meta">📅 ${dateStr} | 인원: ${item.count}명</div>
                 </div>`;
         });
-
-        const requestsHtml = info.requests ? `
-            <div style="margin-top: 20px; padding: 15px; background: #fafafa; border-radius: 12px; border: 1px solid #eee;">
-                <label style="font-size: 12px; color: #999; font-weight: 700; display: block; margin-bottom: 5px;">나의 요청사항</label>
-                <div style="font-size: 14px; color: #444; white-space: pre-wrap;">${info.requests}</div>
-            </div>` : '';
-
         card.innerHTML = `
             <h3><span>●</span> 예약 내역 (${date})</h3>
             <div class="info-grid">
@@ -308,16 +266,10 @@
                 <div class="info-item"><label>예약번호</label><span style="color:#ff6a00;">${info.reservationNumber || '-'}</span></div>
                 <div class="info-item"><label>예약상태</label><span>${info.status || '확인중'}</span></div>
             </div>
-            <div style="margin-top:20px;">
-                <label style="font-size: 12px; color: #999; font-weight: 700; display: block; margin-bottom: 10px;">선택한 상품</label>
-                ${itemsHtml}
-            </div>
-            ${requestsHtml}
+            <div style="margin-top:20px;">${itemsHtml}</div>
             <div style="margin-top: 25px; padding-top: 20px; border-top: 2px solid #f9f9f9; text-align: right;">
-                <span style="font-size: 14px; color: #888; font-weight: 600; margin-right: 10px;">총 결제 금액</span>
                 <span style="font-size: 24px; font-weight: 900; color: #ff6a00;">₩ ${(info.totalPrice || 0).toLocaleString()}</span>
-            </div>
-        `;
+            </div>`;
         container.appendChild(card);
     }
 </script>
@@ -325,8 +277,7 @@
 <footer class="footer">
     <div class="footer-left">
         <b class="important">상호 : 보라카이션 | 대표 : 윤오현</b><br>
-        서울특별시 중랑구 상봉로 16길 25-3<br>
-        사업자번호 : 498-31-00593
+        서울특별시 중랑구 상봉로 16길 25-3<br>daemit@naver.com
     </div>
 </footer>
 <script src="main.js"></script>

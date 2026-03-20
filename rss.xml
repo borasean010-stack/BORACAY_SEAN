@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>보라카이션 (BORACAY SEAN)</title>
+    <link>https://www.boracaysean.com</link>
+    <description>보라카이 NO.1 자유여행사 - 호핑투어, 마사지, 리조트, 픽업샌딩</description>
+    <language>ko-kr</language>
+    <lastBuildDate>Fri, 20 Mar 2026 00:00:00 +0900</lastBuildDate>
+    <atom:link href="https://www.boracaysean.com/rss.xml" rel="self" type="application/rss+xml" />
+
+    <item>
+      <title>보라카이션 메인</title>
+      <link>https://www.boracaysean.com/index.html</link>
+      <description>가장 완벽한 보라카이 여행의 시작, 보라카이션과 함께하세요.</description>
+      <guid>https://www.boracaysean.com/index.html</guid>
+    </item>
+
+    <item>
+      <title>보라카이 필수투어</title>
+      <link>https://www.boracaysean.com/essential-tours.html</link>
+      <description>호핑투어, 말룸파티 등 보라카이에서 꼭 해야 할 필수 투어 모음</description>
+      <guid>https://www.boracaysean.com/essential-tours.html</guid>
+    </item>
+
+    <item>
+      <title>보라카이 액티비티</title>
+      <link>https://www.boracaysean.com/activities.html</link>
+      <description>파라세일링, 제트스키, 다이빙 등 짜릿한 해양 스포츠 액티비티</description>
+      <guid>https://www.boracaysean.com/activities.html</guid>
+    </item>
+
+    <item>
+      <title>보라카이 마사지</title>
+      <link>https://www.boracaysean.com/massage.html</link>
+      <description>보라카이 최고급 스파와 마사지 샵 추천 및 예약</description>
+      <guid>https://www.boracaysean.com/massage.html</guid>
+    </item>
+
+    <item>
+      <title>한눈에 요금표</title>
+      <link>https://www.boracaysean.com/price-list.html</link>
+      <description>보라카이션의 모든 투어와 서비스 요금을 한눈에 확인하세요.</description>
+      <guid>https://www.boracaysean.com/price-list.html</guid>
+    </item>
+
+    <item>
+      <title>리조트 실시간 견적</title>
+      <link>https://www.boracaysean.com/resort-quote.html</link>
+      <description>헤난, 크림슨, 샹그릴라 등 보라카이 주요 리조트 최저가 견적 문의</description>
+      <guid>https://www.boracaysean.com/resort-quote.html</guid>
+    </item>
+
+    <item>
+      <title>공항 왕복 픽업샌딩</title>
+      <link>https://www.boracaysean.com/pickup-sending.html</link>
+      <description>카티클란 공항에서 숙소까지 안전하고 편안한 왕복 픽업샌딩 서비스</description>
+      <guid>https://www.boracaysean.com/pickup-sending.html</guid>
+    </item>
+
+  </channel>
+</rss>

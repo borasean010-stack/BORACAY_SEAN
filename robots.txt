@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://boracaysean.com/sitemap.xml
+Sitemap: https://www.boracaysean.com/sitemap.xml
+RSS: https://www.boracaysean.com/rss.xml

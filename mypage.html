@@ -63,26 +63,29 @@
     <div class="ai-recommend-section">
         <div class="ai-card">
             <div class="ai-header">
-                <div class="ai-badge">PREMIUM AI</div>
-                <h3>보라카이션 AI 상품 추천 가이드</h3>
-                <p style="font-size:14px; color:#888;">보라카이션의 모든 투어 상품을 기반으로 최적의 여행을 설계해드립니다.</p>
+                <div class="ai-status-dot"></div>
+                <div class="ai-info">
+                    <h3>실시간 여행 상담원 '션'</h3>
+                    <p>15년 경력 보라카이 전문가 AI</p>
+                </div>
+                <a href="http://pf.kakao.com/_zBArM/chat" target="_blank" class="ai-kakao-btn">카톡 전환</a>
             </div>
             
             <div class="ai-chat-window" id="aiChatWindow">
                 <div class="chat-message ai">
-                    안녕하세요! 보라카이 여행의 모든 것을 해결해드리는 **보라카이션 전용 AI 플래너**입니다. 😊<br><br>
-                    무엇을 도와드릴까요? 원하시는 항목을 선택해 주세요!
-                </div>
-                <div class="ai-quick-options" id="initialOptions">
-                    <button onclick="handleQuickClick('투어 추천')">🎡 투어 추천</button>
-                    <button onclick="handleQuickClick('추천 일정')">📅 추천 일정</button>
-                    <button onclick="handleQuickClick('맛집 추천')">🍴 맛집 추천</button>
+                    안녕하세요! 보라카이 여행 전문가 **션(Sean)**입니다. 😊<br><br>
+                    가장 완벽한 보라카이 여행을 위해 무엇을 도와드릴까요?<br>
+                    여행 날짜나 인원, 원하시는 투어 스타일을 말씀해 주세요!
                 </div>
             </div>
 
+            <div id="ai-typing-indicator" style="display:none; padding: 0 20px 10px; font-size: 12px; color: #999;">션이 답변을 생각 중입니다...</div>
+
             <div class="ai-chat-input-wrap">
-                <input type="text" id="aiInput" placeholder="직접 질문을 입력하셔도 좋아요!" onkeypress="if(event.keyCode==13) sendMessage()">
-                <button onclick="sendMessage()" id="sendBtn">전송</button>
+                <input type="text" id="aiInput" placeholder="예: 3월에 가족 4명 여행가는데 추천해줘" onkeypress="if(event.keyCode==13) sendMessage()">
+                <button onclick="sendMessage()" id="sendBtn">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                </button>
             </div>
         </div>
     </div>
@@ -94,58 +97,74 @@
 
 <style>
     .ai-recommend-section { margin-bottom: 40px; }
-    .ai-card { background: #fff; border-radius: 28px; padding: 30px; border: 1px solid #eee; box-shadow: 0 15px 40px rgba(0,0,0,0.03); display: flex; flex-direction: column; height: 600px; }
-    .ai-header { margin-bottom: 20px; border-bottom: 1px solid #f5f5f5; padding-bottom: 20px; }
-    .ai-badge { display: inline-block; background: #ff6a00; color: white; padding: 4px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; margin-bottom: 10px; }
-    .ai-card h3 { font-size: 20px; font-weight: 900; margin-bottom: 5px; }
-    .ai-chat-window { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; scroll-behavior: smooth; }
-    .chat-message { max-width: 85%; padding: 15px 20px; border-radius: 20px; font-size: 15px; line-height: 1.6; position: relative; word-break: keep-all; }
-    .chat-message.ai { background: #f0f2f5; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; }
+    .ai-card { background: #fff; border-radius: 32px; padding: 0; border: 1px solid #f0f0f0; box-shadow: 0 20px 60px rgba(0,0,0,0.05); display: flex; flex-direction: column; height: 650px; overflow: hidden; }
+    
+    .ai-header { padding: 25px 30px; background: #111; color: white; display: flex; align-items: center; gap: 15px; position: relative; }
+    .ai-status-dot { width: 10px; height: 10px; background: #00ff88; border-radius: 50%; box-shadow: 0 0 10px #00ff88; }
+    .ai-info h3 { font-size: 18px; font-weight: 800; margin: 0; }
+    .ai-info p { font-size: 13px; opacity: 0.6; margin: 2px 0 0; }
+    .ai-kakao-btn { margin-left: auto; background: #fee500; color: #3c1e1e; padding: 8px 15px; border-radius: 12px; font-size: 12px; font-weight: 800; text-decoration: none; }
+
+    .ai-chat-window { flex: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 20px; background: #fcfcfc; scroll-behavior: smooth; }
+    .chat-message { max-width: 85%; padding: 18px 22px; border-radius: 24px; font-size: 15px; line-height: 1.6; position: relative; word-break: keep-all; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+    .chat-message.ai { background: white; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #f0f0f0; }
     .chat-message.user { background: #ff6a00; color: white; align-self: flex-end; border-bottom-right-radius: 4px; font-weight: 600; }
-    .ai-quick-options { display: flex; flex-wrap: wrap; gap: 8px; padding-left: 10px; }
-    .ai-quick-options button { background: white; border: 1.5px solid #ff6a00; color: #ff6a00; padding: 8px 16px; border-radius: 50px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.3s; }
-    .ai-quick-options button:hover { background: #ff6a00; color: white; transform: translateY(-2px); }
-    .ai-chat-input-wrap { display: flex; gap: 10px; padding-top: 15px; border-top: 1px solid #f5f5f5; }
-    .ai-chat-input-wrap input { flex: 1; padding: 15px 20px; border: 1.5px solid #eee; border-radius: 15px; outline: none; font-size: 15px; transition: 0.3s; }
-    .ai-chat-input-wrap button { background: #111; color: white; border: none; padding: 0 25px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-    .typing { font-style: italic; color: #aaa; font-size: 13px; }
+    
+    /* 추천 상품 버튼 스타일 */
+    .ai-button-container { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; width: 100%; }
+    .ai-action-btn { background: white; border: 1.5px solid #ff6a00; color: #ff6a00; padding: 12px 20px; border-radius: 15px; font-size: 14px; font-weight: 800; cursor: pointer; transition: 0.3s; text-align: left; display: flex; justify-content: space-between; align-items: center; }
+    .ai-action-btn:hover { background: #ff6a00; color: white; }
+    .ai-action-btn span { font-size: 12px; opacity: 0.8; font-weight: 400; }
+
+    .ai-chat-input-wrap { padding: 20px 25px; background: white; border-top: 1px solid #f5f5f5; display: flex; gap: 12px; align-items: center; }
+    .ai-chat-input-wrap input { flex: 1; padding: 15px 20px; border: 2px solid #f0f0f0; border-radius: 18px; outline: none; font-size: 15px; transition: 0.3s; background: #f9f9f9; }
+    .ai-chat-input-wrap input:focus { border-color: #ff6a00; background: white; }
+    .ai-chat-input-wrap button { background: #111; color: white; border: none; width: 50px; height: 50px; border-radius: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; flex-shrink: 0; }
+    .ai-chat-input-wrap button:hover { background: #ff6a00; transform: scale(1.05); }
 </style>
 
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-functions-compat.js"></script>
+
 <script>
-    const products = [
-        { name: "공항 왕복 픽업샌딩", desc: "15년 경력의 노하우로 가장 안전하고 빠르게 리조트까지 모십니다. 보라카이 여행의 필수 상품!", tags: ["첫날", "마지막날", "가족", "필수"] },
-        { name: "블랙펄 요트 호핑투어", desc: "보라카이 최고급 요트에서 즐기는 스노클링과 선셋 파티. 인생샷 보장!", tags: ["호핑", "인생샷", "커플", "오후"] },
-        { name: "시크릿가든 말룸파티", desc: "천연 계곡 물놀이와 튜빙, 다이빙을 한 번에! 현지 특식이 포함된 알찬 투어.", tags: ["물놀이", "액티비티", "계곡", "점심"] },
-        { name: "다이아몬드 마사지", desc: "여행의 피로를 풀어줄 프리미엄 전신 스파 서비스.", tags: ["힐링", "마사지", "피로회복"] }
-    ];
+    // Firebase Functions 연동 (실제 환경에 맞춰 초기화 필요)
+    // const functions = firebase.functions();
+    // if (location.hostname === "localhost") functions.useEmulator("localhost", 5001);
 
-    // --- AI 채팅 함수 ---
-    function handleQuickClick(keyword) {
-        processResponse(keyword);
-    }
+    let chatHistory = [];
 
-    function sendMessage() {
+    async function sendMessage() {
         const input = document.getElementById('aiInput');
         const text = input.value.trim();
         if (!text) return;
-        input.value = '';
-        processResponse(text);
-    }
 
-    function processResponse(text) {
         appendMessage('user', text);
-        setTimeout(() => {
-            const loadingMsg = appendMessage('ai', '<span class="typing">데이터 분석 중...</span>');
+        input.value = '';
+        
+        const indicator = document.getElementById('ai-typing-indicator');
+        indicator.style.display = 'block';
+
+        try {
+            // --- 실제 구현 시 아래 호출 사용 ---
+            // const chatWithAI = firebase.functions().httpsCallable('chatWithAI');
+            // const result = await chatWithAI({ message: text, history: chatHistory });
+            
+            // --- 프로토타입/테스트용 시뮬레이션 로직 ---
             setTimeout(() => {
-                const aiResponse = generateResponse(text);
-                loadingMsg.innerHTML = aiResponse;
-                const window = document.getElementById('aiChatWindow');
-                window.scrollTop = window.scrollHeight;
-                setTimeout(() => {
-                    appendMessage('ai', getFollowUpQuestion(text));
-                }, 800);
-            }, 1200);
-        }, 400);
+                indicator.style.display = 'none';
+                const simulatedResult = generateSimulatedResponse(text);
+                appendAIMessage(simulatedResult.text, simulatedResult.buttons);
+                
+                chatHistory.push({ role: 'user', content: text });
+                chatHistory.push({ role: 'assistant', content: simulatedResult.text });
+                if (chatHistory.length > 10) chatHistory.shift();
+            }, 1500);
+
+        } catch (error) {
+            console.error("AI Error:", error);
+            indicator.style.display = 'none';
+            appendMessage('ai', "죄송합니다. 서버와 연결이 원활하지 않습니다. 카톡으로 문의주시면 감사하겠습니다!");
+        }
     }
 
     function appendMessage(type, content) {
@@ -155,32 +174,70 @@
         msgDiv.innerHTML = content;
         chatWindow.appendChild(msgDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
-        return msgDiv;
     }
 
-    function generateResponse(input) {
-        if (input.includes("투어 추천")) {
-            return `보라카이션 베스트 투어입니다!<br><br>1. <a href="hopping-tour.html" target="_blank" style="color:#ff6a00;font-weight:800;">[블랙펄 요트 호핑]</a><br>2. <a href="#" style="color:#ff6a00;font-weight:800;">[시크릿가든 말룸파티]</a><br>3. <a href="pickup-sending.html" target="_blank" style="color:#ff6a00;font-weight:800;">[공항 왕복 픽업샌딩]</a>`;
+    function appendAIMessage(text, buttons = []) {
+        const chatWindow = document.getElementById('aiChatWindow');
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'chat-message ai';
+        
+        let html = `<div>${text}</div>`;
+        
+        if (buttons.length > 0) {
+            html += `<div class="ai-button-container">`;
+            buttons.forEach(btn => {
+                html += `
+                    <button class="ai-action-btn" onclick="location.href='${btn.url}'">
+                        ${btn.name} <span>상세보기 ❯</span>
+                    </button>
+                `;
+            });
+            html += `</div>`;
         }
-        if (input.includes("추천 일정")) {
-            return `3박 4일 골든 코스!<br><br>- 1일차: 픽업샌딩<br>- 2일차: 말룸파티 투어<br>- 3일차: 블랙펄 선셋 호핑<br>- 4일차: 마사지 후 샌딩`;
-        }
-        if (input.includes("맛집 추천")) {
-            return `현지 추천 맛집!<br><br>- 해산물: 게 부수기<br>- 현지식: 메사(Mesa)<br>- 디저트: 할로망고`;
-        }
-        let matched = products.filter(p => p.tags.some(t => input.includes(t)) || p.name.includes(input));
-        if (matched.length > 0) return `추천 상품: **[${matched[0].name}]**<br><br>${matched[0].desc}`;
-        return "보라카이션의 투어, 맛집, 일정에 대해 무엇이든 말씀해 주세요!";
+        
+        msgDiv.innerHTML = html;
+        chatWindow.appendChild(msgDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
     }
 
-    function getFollowUpQuestion(input) {
-        if (input.includes("투어")) return "투어 예약을 도와드릴까요?";
-        if (input.includes("일정")) return "이대로 일정을 확정해 드릴까요?";
-        return "더 궁금하신 점이 있나요? 😊";
+    // OpenAI 연동 전까지 사용할 정교한 시뮬레이션 로직
+    function generateSimulatedResponse(input) {
+        const text = input.toLowerCase();
+        if (text.includes("투어") || text.includes("추천") || text.includes("뭐해")) {
+            return {
+                text: "보라카이에서 가장 인기 있는 투어들을 추천해 드릴게요! 커플이시라면 **블랙펄 호핑**을, 활동적인 걸 좋아하신다면 **말룸파티**를 추천드립니다. 😊",
+                buttons: [
+                    { name: "⛵ 블랙펄 요트 호핑", url: "hopping-tour.html" },
+                    { name: "🌴 시크릿가든 말룸파티", url: "malumpati.html" }
+                ]
+            };
+        }
+        if (text.includes("가족") || text.includes("애기") || text.includes("아이")) {
+            return {
+                text: "아이와 함께하는 여행이시군요! 안전하고 편안한 **단독 픽업샌딩**과 아이들이 정말 좋아하는 **말룸파티** 일정을 추천드려요. 예약을 도와드릴까요?",
+                buttons: [
+                    { name: "🚐 공항 단독 픽업샌딩", url: "pickup-sending.html" },
+                    { name: "🍗 말룸파티 (닭백숙 포함)", url: "malumpati.html" }
+                ]
+            };
+        }
+        if (text.includes("마사지") || text.includes("스파") || text.includes("피곤")) {
+            return {
+                text: "보라카이 여행의 꽃은 역시 마사지죠! 럭셔리한 휴식을 원하시면 **포세이돈**을, 가성비를 생각하신다면 **아유르베다**가 딱입니다.",
+                buttons: [
+                    { name: "💆 포세이돈 럭셔리 스파", url: "poseidon.html" },
+                    { name: "✨ 아유르베다 가성비 스파", url: "aspa.html" }
+                ]
+            };
+        }
+        return {
+            text: "정말 좋은 질문이네요! 고객님의 일정에 맞춰 최고의 플랜을 짜드릴 수 있습니다. 혹시 몇 분이서 언제쯤 방문하실 예정인가요? 실시간 예약을 원하시면 말씀해 주세요!",
+            buttons: [
+                { name: "💬 카톡으로 맞춤 일정 받기", url: "http://pf.kakao.com/_zBArM/chat" }
+            ]
+        };
     }
-
-    // --- 예약 내역 렌더링 함수 ---
-    document.addEventListener('DOMContentLoaded', function() {
+</script>
         const container = document.getElementById('booking-list-container');
         const completedBookings = JSON.parse(localStorage.getItem('completed_bookings') || '[]');
         const lastBooking = JSON.parse(localStorage.getItem('last_booking_info'));

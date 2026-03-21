@@ -286,28 +286,41 @@ document.addEventListener('DOMContentLoaded', () => {
             ${res.pickupDate ? `
             <div style="padding:25px; background:#fffbe6; border:2px solid #ffe58f; border-radius:15px; margin-bottom:30px; box-shadow: 0 4px 12px rgba(255,106,0,0.05);">
                 <h4 style="font-size:16px; color:#d48806; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
-                    <span class="material-icons" style="font-size:22px;">flight_takeoff</span> 
+                    <span class="material-icons" style="font-size:22px;">flight_takeoff</span>
                     <span style="font-weight:900; font-size:18px;">픽업/샌딩 상세 정보 (최우선 확인)</span>
                 </h4>
                 <div style="font-size:16px; line-height:2; color:#111;">
                     <div style="display:flex; border-bottom:1px dashed #ffd591; padding-bottom:12px; margin-bottom:12px;">
-                        <b style="width:70px; color:#d35400;">픽업</b> 
+                        <b style="width:70px; color:#d35400;">픽업</b>
                         <div style="font-weight:700;">${res.pickupDate} / ${res.pickupFlight || '-'} / ${res.pickupResort || '-'}</div>
                     </div>
                     <div style="display:flex; ${res.exchangeAmount ? 'border-bottom:1px dashed #ffd591; padding-bottom:12px; margin-bottom:12px;' : ''}">
-                        <b style="width:70px; color:#d35400;">샌딩</b> 
+                        <b style="width:70px; color:#d35400;">샌딩</b>
                         <div style="font-weight:700;">${res.sendingDate} / ${res.sendingFlight || '-'} / ${res.sendingResort || '-'}</div>
                     </div>
                     ${res.exchangeAmount ? `
                     <div style="display:flex;">
-                        <b style="width:100px; color:#d35400;">환전 요청</b> 
+                        <b style="width:100px; color:#d35400;">환전 요청</b>
                         <div style="font-weight:900; color:#ff6a00;">${res.exchangeAmount}</div>
                     </div>` : ''}
                 </div>
             </div>` : ''}
 
-            <div style="margin-bottom:30px;">
-                <h4 style="font-size:15px; color:#111; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
+            ${res.activityPickupResort ? `
+            <div style="padding:25px; background:#f6ffed; border:2px solid #b7eb8f; border-radius:15px; margin-bottom:30px; box-shadow: 0 4px 12px rgba(82,196,26,0.05);">
+                <h4 style="font-size:16px; color:#389e0d; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
+                    <span class="material-icons" style="font-size:22px;">directions_car</span>
+                    <span style="font-weight:900; font-size:18px;">투어/스파 픽업 리조트 정보</span>
+                </h4>
+                <div style="font-size:16px; line-height:2; color:#111;">
+                    <div style="display:flex;">
+                        <b style="width:100px; color:#389e0d;">픽업 리조트</b>
+                        <div style="font-weight:700;">${res.activityPickupResort}</div>
+                    </div>
+                </div>
+            </div>` : ''}
+
+            <div style="margin-bottom:30px;">                <h4 style="font-size:15px; color:#111; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
                     <span class="material-icons" style="font-size:20px; color:var(--ss-green);">shopping_cart</span> 
                     <span style="font-weight:800;">예약 상품 정보</span>
                 </h4>

@@ -136,6 +136,15 @@
                     <div class="input-group"><label>환전 요청 금액 (달러 ➔ 페소)</label><input type="text" id="exchange-amount" placeholder="예: 100달러 (현지에서 페소로 전달해 드립니다)"></div>
                 </div>
 
+                <div id="activity-pickup-fields" class="conditional-fields" style="display: none;">
+                    <div class="section-subtitle" style="color:#ff6a00;">🏨 투어/스파 픽업 리조트 정보</div>
+                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">예약하신 상품은 리조트 픽업이 지원됩니다. 머무시는 리조트명을 정확히 기재해 주세요.</p>
+                    <div class="input-group">
+                        <label>픽업 받으실 리조트명<span class="required-mark">*</span></label>
+                        <input type="text" id="activity-pickup-resort" placeholder="예: 헤난 가든 리조트">
+                    </div>
+                </div>
+
                 <div class="input-group" id="requests-group">
                     <label id="requests-label">기타 요청사항</label>
                     <textarea id="requests" placeholder="추가 문의사항이나 요청하실 내용을 적어주세요."></textarea>
@@ -186,6 +195,7 @@
     let hasPickup = false;
     let hasHopping = false;
     let isResortQuote = false;
+    let hasActivityPickup = false;
     let cartData = [];
     let selectedPayment = '무통장';
 
@@ -206,6 +216,11 @@
             if (item.name.includes('픽업샌딩')) hasPickup = true;
             if (item.name.includes('호핑')) hasHopping = true;
             if (item.name.includes('리조트 견적')) isResortQuote = true;
+            
+            const pickupRequiredItems = ['체험 다이빙', '제트스키', '헬멧다이빙', '파라세일링', '프리다이빙 체험', '페어웨이 골프', '포세이돈 스파', '아유르베다 스파', '마리스 스파', '헬리오스 스파'];
+            if (pickupRequiredItems.some(n => item.name.includes(n))) {
+                hasActivityPickup = true;
+            }
             
             let dateStr = item.date || '날짜 미지정';
             if (item.name.includes('픽업샌딩')) {
@@ -251,6 +266,12 @@
         // ⛵ 호핑투어도 영문 이름 필요할 수 있음 (선택사항 또는 필요 시 강제)
         if (hasHopping) {
             document.getElementById('eng-name-group').style.display = 'block';
+        }
+
+        // 🏨 투어/스파 픽업 리조트 노출
+        if (hasActivityPickup) {
+            document.getElementById('activity-pickup-fields').style.display = 'block';
+            document.getElementById('activity-pickup-resort').required = true;
         }
 
         // 🏨 리조트 견적 전용 UI
@@ -330,6 +351,7 @@
             pickupResort: document.getElementById('pickup-resort').value || '',
             sendingFlight: document.getElementById('sending-flight').value || '',
             sendingResort: document.getElementById('sending-resort').value || '',
+            activityPickupResort: document.getElementById('activity-pickup-resort') ? document.getElementById('activity-pickup-resort').value : '',
             exchangeAmount: document.getElementById('exchange-amount') ? document.getElementById('exchange-amount').value : '',
             resortCheckin: (resortItem && resortItem.details) ? resortItem.details.checkin : '',
             resortCheckout: (resortItem && resortItem.details) ? resortItem.details.checkout : ''

@@ -258,6 +258,12 @@
                     <div class="item-meta">📅 ${dateStr} | 인원: ${item.count}명</div>
                 </div>`;
         });
+        
+        let pickupHtml = '';
+        if (info.activityPickupResort) {
+            pickupHtml = `<div class="info-item" style="grid-column: span 2;"><label>투어/스파 픽업 리조트</label><span style="color:#007bff; font-weight:700;">${info.activityPickupResort}</span></div>`;
+        }
+
         card.innerHTML = `
             <h3><span>●</span> 예약 내역 (${date})</h3>
             <div class="info-grid">
@@ -265,6 +271,7 @@
                 <div class="info-item"><label>연락처</label><span>${info.contact}</span></div>
                 <div class="info-item"><label>예약번호</label><span style="color:#ff6a00;">${info.reservationNumber || '-'}</span></div>
                 <div class="info-item"><label>예약상태</label><span>${info.status || '확인중'}</span></div>
+                ${pickupHtml}
             </div>
             <div style="margin-top:20px;">${itemsHtml}</div>
             <div style="margin-top: 25px; padding-top: 20px; border-top: 2px solid #f9f9f9; text-align: right;">

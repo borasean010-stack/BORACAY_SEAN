@@ -14,26 +14,24 @@
     <link rel="stylesheet" href="style.css">
     <style>
         .ai-recommend-section { margin-bottom: 40px; }
-        .ai-card { background: #fff; border-radius: 32px; padding: 0; border: 1px solid #f0f0f0; box-shadow: 0 20px 60px rgba(0,0,0,0.05); display: flex; flex-direction: column; height: 650px; overflow: hidden; }
-        .ai-header { padding: 25px 30px; background: #111; color: white; display: flex; align-items: center; gap: 15px; position: relative; }
+        .ai-card { background: #fff; border-radius: 32px; padding: 0; border: 1px solid #f0f0f0; box-shadow: 0 20px 60px rgba(0,0,0,0.05); display: flex; flex-direction: column; height: 600px; overflow: hidden; }
+        .ai-header { padding: 20px 25px; background: #111; color: white; display: flex; align-items: center; gap: 12px; position: relative; }
         .ai-status-dot { width: 10px; height: 10px; background: #00ff88; border-radius: 50%; box-shadow: 0 0 10px #00ff88; }
-        .ai-info h3 { font-size: 18px; font-weight: 800; margin: 0; }
-        .ai-info p { font-size: 13px; opacity: 0.6; margin: 2px 0 0; }
-        .ai-kakao-btn { margin-left: auto; background: #fee500; color: #3c1e1e; padding: 8px 15px; border-radius: 12px; font-size: 12px; font-weight: 800; text-decoration: none; }
-        .ai-chat-window { flex: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 20px; background: #fcfcfc; scroll-behavior: smooth; }
-        .chat-message { max-width: 85%; padding: 18px 22px; border-radius: 24px; font-size: 15px; line-height: 1.6; position: relative; word-break: keep-all; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
-        .chat-message.ai { background: white; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #f0f0f0; }
+        .ai-info h3 { font-size: 17px; font-weight: 800; margin: 0; }
+        .ai-info p { font-size: 12px; opacity: 0.6; margin: 2px 0 0; }
+        .ai-kakao-btn { margin-left: auto; background: #fee500; color: #3c1e1e; padding: 6px 12px; border-radius: 10px; font-size: 11px; font-weight: 800; text-decoration: none; }
+        .ai-chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; background: #fcfcfc; scroll-behavior: smooth; }
+        .chat-message { max-width: 85%; padding: 15px 18px; border-radius: 20px; font-size: 14px; line-height: 1.6; position: relative; word-break: keep-all; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .chat-message.ai { background: white; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #eee; }
         .chat-message.user { background: #ff6a00; color: white; align-self: flex-end; border-bottom-right-radius: 4px; font-weight: 600; }
-        .ai-button-container { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; width: 100%; }
-        .ai-action-btn { background: white; border: 1.5px solid #ff6a00; color: #ff6a00; padding: 12px 20px; border-radius: 15px; font-size: 14px; font-weight: 800; cursor: pointer; transition: 0.3s; text-align: left; display: flex; justify-content: space-between; align-items: center; }
+        .ai-button-container { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; width: 100%; }
+        .ai-action-btn { background: white; border: 1px solid #ff6a00; color: #ff6a00; padding: 10px 15px; border-radius: 12px; font-size: 13px; font-weight: 800; cursor: pointer; transition: 0.2s; text-align: left; display: flex; justify-content: space-between; align-items: center; }
         .ai-action-btn:hover { background: #ff6a00; color: white; }
-        .ai-action-btn span { font-size: 12px; opacity: 0.8; font-weight: 400; }
-        .ai-chat-input-wrap { padding: 20px 25px; background: white; border-top: 1px solid #f5f5f5; display: flex; gap: 12px; align-items: center; }
-        .ai-chat-input-wrap input { flex: 1; padding: 15px 20px; border: 2px solid #f0f0f0; border-radius: 18px; outline: none; font-size: 15px; transition: 0.3s; background: #f9f9f9; }
+        .ai-chat-input-wrap { padding: 15px 20px; background: white; border-top: 1px solid #f5f5f5; display: flex; gap: 10px; align-items: center; }
+        .ai-chat-input-wrap input { flex: 1; padding: 12px 18px; border: 2px solid #f0f0f0; border-radius: 15px; outline: none; font-size: 14px; transition: 0.3s; background: #f9f9f9; }
         .ai-chat-input-wrap input:focus { border-color: #ff6a00; background: white; }
-        .ai-chat-input-wrap button { background: #111; color: white; border: none; width: 50px; height: 50px; border-radius: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; flex-shrink: 0; }
-        .ai-chat-input-wrap button:hover { background: #ff6a00; transform: scale(1.05); }
-        #ai-typing-indicator { display: none; padding: 0 25px 15px; font-size: 13px; color: #ff6a00; font-weight: 600; font-style: italic; }
+        .ai-chat-input-wrap button { background: #111; color: white; border: none; width: 45px; height: 45px; border-radius: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; flex-shrink: 0; }
+        #ai-typing-indicator { display: none; padding: 0 20px 10px; font-size: 12px; color: #ff6a00; font-weight: 600; font-style: italic; }
     </style>
 </head>
 <body>
@@ -87,25 +85,25 @@
                 <div class="ai-status-dot"></div>
                 <div class="ai-info">
                     <h3>실시간 여행 상담원 '션'</h3>
-                    <p>15년 경력 보라카이 전문가 AI</p>
+                    <p>보라카이 자유여행 전문가 AI</p>
                 </div>
-                <a href="http://pf.kakao.com/_zBArM/chat" target="_blank" class="ai-kakao-btn">카톡 전환</a>
+                <a href="http://pf.kakao.com/_zBArM/chat" target="_blank" class="ai-kakao-btn">카톡 상담</a>
             </div>
             
             <div class="ai-chat-window" id="aiChatWindow">
                 <div class="chat-message ai">
                     안녕하세요! 보라카이 여행 전문가 **션(Sean)**입니다. 😊<br><br>
                     가장 완벽한 보라카이 여행을 위해 무엇을 도와드릴까요?<br>
-                    여행 날짜나 인원, 원하시는 투어 스타일을 말씀해 주세요!
+                    여행 일정이나 궁금한 점을 편하게 말씀해 주세요!
                 </div>
             </div>
 
-            <div id="ai-typing-indicator">션이 답변을 생각 중입니다...</div>
+            <div id="ai-typing-indicator">션이 답변을 준비 중입니다...</div>
 
             <div class="ai-chat-input-wrap">
-                <input type="text" id="aiInput" placeholder="예: 3월에 가족 4명 여행가는데 추천해줘" onkeypress="if(event.keyCode==13) window.sendMessage()">
+                <input type="text" id="aiInput" placeholder="질문을 입력하세요..." onkeypress="if(event.keyCode==13) window.sendMessage()">
                 <button onclick="window.sendMessage()" id="sendBtn">
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                 </button>
             </div>
         </div>
@@ -125,6 +123,7 @@
 <script type="module">
     import { GoogleGenerativeAI } from "@google/generative-ai";
 
+    // API Key (사용자 환경에 맞게 유지)
     const API_KEY = "AIzaSyCS9ti9qzKttrbART5Gu2A241Y1iIARgS0";
     const genAI = new GoogleGenerativeAI(API_KEY);
 
@@ -132,8 +131,8 @@
         { id: "hopping", name: "블랙펄 요트 호핑투어", url: "hopping-tour.html" },
         { id: "malumpati", name: "시크릿가든 말룸파티", url: "malumpati.html" },
         { id: "pickup", name: "공항 왕복 픽업샌딩", url: "pickup-sending.html" },
-        { id: "poseidon", name: "포세이돈 스파", url: "poseidon.html" },
-        { id: "aspa", name: "아유르베다 스파", url: "aspa.html" }
+        { id: "diving", name: "체험 다이빙", url: "scuba-diving.html" },
+        { id: "spa", name: "에스파 (S-SPA)", url: "spa.html" }
     ];
 
     let chatHistory = [];
@@ -153,41 +152,29 @@
             const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
             const systemPrompt = `당신은 '보라카이션(Boracay Sean)'의 수석 여행 상담원 '션'입니다.
-            반드시 아래 제공된 보라카이션 공식 상품 정보만을 바탕으로 답변하세요.
-            1. 타사 상품 언급 금지.
-            2. 보라카이션의 '블랙펄 호핑', '말룸파티', '마사지' 등으로 유도.
-            3. 여행 날짜, 인원, 목적을 물어보고 맞춤형 제안.
-            4. 모든 답변의 끝은 예약을 묻는 질문으로 마무리.
-            5. 모르는 내용은 실시간 카톡 상담으로 안내.
+            보라카이션 공식 상품 정보만을 바탕으로 답변하고 친절하게 응대하세요.
             상품 정보: ${JSON.stringify(BORACAY_PRODUCTS)}`;
 
             const chat = model.startChat({
                 history: [
                     { role: "user", parts: [{ text: systemPrompt }] },
-                    { role: "model", parts: [{ text: "알겠습니다. 보라카이션 전용 상담을 시작합니다!" }] },
-                    ...chatHistory.map(h => ({
-                        role: h.role === "assistant" ? "model" : "user",
-                        parts: [{ text: h.content }]
-                    }))
+                    { role: "model", parts: [{ text: "준비되었습니다. 무엇을 도와드릴까요?" }] }
                 ],
             });
 
             const result = await chat.sendMessage(text);
-            const aiResponse = result.response.text();
+            const response = await result.response;
+            const aiResponse = response.text();
 
             indicator.style.display = 'none';
             const recommendedButtons = BORACAY_PRODUCTS.filter(p => aiResponse.includes(p.name));
             appendAIMessage(aiResponse, recommendedButtons);
             
-            chatHistory.push({ role: 'user', content: text });
-            chatHistory.push({ role: 'assistant', content: aiResponse });
-            if (chatHistory.length > 10) chatHistory.shift();
-
         } catch (error) {
             console.error("AI Error:", error);
             indicator.style.display = 'none';
-            appendAIMessage("죄송합니다. 통신이 원활하지 않네요. 카톡으로 문의주시면 즉시 도와드릴게요!", [
-                { name: "💬 카톡 상담 바로가기", url: "http://pf.kakao.com/_zBArM/chat" }
+            appendAIMessage("죄송합니다. 현재 상담이 폭주하여 잠시 연결이 원활하지 않습니다. 카카오톡 채널로 문의주시면 실시간 상담원에게 바로 연결해 드릴게요!", [
+                { name: "💬 카카오톡 실시간 상담", url: "http://pf.kakao.com/_zBArM/chat" }
             ]);
         }
     }
@@ -209,7 +196,7 @@
         if (buttons.length > 0) {
             html += `<div class="ai-button-container">`;
             buttons.forEach(btn => {
-                html += `<button class="ai-action-btn" onclick="location.href='${btn.url}'">${btn.name} <span>상세보기 ❯</span></button>`;
+                html += `<button class="ai-action-btn" onclick="location.href='${btn.url}'">${btn.name} <span>보기 ❯</span></button>`;
             });
             html += `</div>`;
         }
@@ -222,60 +209,55 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const container = document.getElementById('booking-list-container');
-        const completedBookings = JSON.parse(localStorage.getItem('completed_bookings') || '[]');
         const lastBooking = JSON.parse(localStorage.getItem('last_booking_info'));
 
-        if (completedBookings.length === 0 && !lastBooking) {
-            container.innerHTML = `<div style="text-align:center; padding:80px 0; background:white; border-radius:24px; border:1px dashed #ddd;"><p style="color:#888; font-size:16px;">예약 내역이 없습니다.</p></div>`;
+        if (!lastBooking) {
+            container.innerHTML = `<div style="text-align:center; padding:60px 0; background:white; border-radius:24px; border:1px dashed #ddd;"><p style="color:#888; font-size:15px;">예약 내역이 없습니다.</p></div>`;
             return;
         }
 
-        container.innerHTML = '';
-        const all = [...completedBookings];
-        if (all.length === 0 && lastBooking) {
-            renderBooking(container, { info: lastBooking, items: [] });
-        } else {
-            all.reverse().forEach(b => renderBooking(container, b));
-        }
+        renderBooking(container, { info: lastBooking });
     });
 
     function renderBooking(container, booking) {
         const info = booking.info;
-        const items = booking.items && booking.items.length > 0 ? booking.items : (info.items || []);
-        const date = booking.timestamp ? new Date(booking.timestamp).toLocaleDateString() : '최근 예약';
+        const items = info.items || [];
+        const date = info.createdAt ? (new Date(info.createdAt.seconds * 1000).toLocaleDateString()) : '최근 예약';
         const card = document.createElement('div');
         card.className = 'booking-card';
+        
         let itemsHtml = '';
         items.forEach(item => {
-            let dateStr = item.date || '날짜 미지정';
-            const itemPrice = item.totalPrice || (item.price * item.count);
             itemsHtml += `
-                <div class="reserved-item" style="flex-direction: column; align-items: flex-start; gap: 8px;">
-                    <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
-                        <div class="item-title" style="margin-bottom: 0;">${item.name}</div>
-                        <div class="item-price">₩ ${itemPrice.toLocaleString()}</div>
+                <div class="reserved-item" style="padding: 15px 0; border-bottom: 1px dashed #f0f0f0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="font-weight: 800; color: #111;">${item.name}</div>
+                        <div style="font-weight: 800; color: #ff6a00;">₩ ${(item.totalPrice || 0).toLocaleString()}</div>
                     </div>
-                    <div class="item-meta">📅 ${dateStr} | 인원: ${item.count}명</div>
+                    <div style="font-size: 13px; color: #888; margin-top: 5px;">📅 ${item.date || '-'} | 인원: ${item.count}명</div>
                 </div>`;
         });
         
         let pickupHtml = '';
         if (info.activityPickupResort) {
-            pickupHtml = `<div class="info-item" style="grid-column: span 2;"><label>투어/스파 픽업 리조트</label><span style="color:#007bff; font-weight:700;">${info.activityPickupResort}</span></div>`;
+            pickupHtml = `<div class="info-item" style="grid-column: span 2; background: #f0f7ff; padding: 10px; border-radius: 10px; margin-top: 5px;">
+                <label style="color:#007bff;">🏨 투어/스파 픽업 리조트</label>
+                <span style="font-weight:800; color:#0056b3;">${info.activityPickupResort}</span>
+            </div>`;
         }
 
         card.innerHTML = `
-            <h3><span>●</span> 예약 내역 (${date})</h3>
-            <div class="info-grid">
-                <div class="info-item"><label>대표자명</label><span>${info.customerKorName}</span></div>
-                <div class="info-item"><label>연락처</label><span>${info.contact}</span></div>
-                <div class="info-item"><label>예약번호</label><span style="color:#ff6a00;">${info.reservationNumber || '-'}</span></div>
-                <div class="info-item"><label>예약상태</label><span>${info.status || '확인중'}</span></div>
+            <h3 style="font-size:18px; font-weight:900; margin-bottom:20px; display:flex; align-items:center; gap:8px;"><span style="color:#ff6a00;">●</span> 예약 확인 (${date})</h3>
+            <div class="info-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #fcfcfc; padding: 20px; border-radius: 15px; border: 1px solid #f0f0f0;">
+                <div class="info-item"><label style="display:block; font-size:11px; color:#999; margin-bottom:3px;">대표자명</label><span>${info.customerKorName}</span></div>
+                <div class="info-item"><label style="display:block; font-size:11px; color:#999; margin-bottom:3px;">예약번호</label><span style="color:#ff6a00; font-weight:800;">${info.reservationNumber || '-'}</span></div>
+                <div class="info-item" style="grid-column: span 2;"><label style="display:block; font-size:11px; color:#999; margin-bottom:3px;">연락처</label><span>${info.contact}</span></div>
                 ${pickupHtml}
             </div>
-            <div style="margin-top:20px;">${itemsHtml}</div>
-            <div style="margin-top: 25px; padding-top: 20px; border-top: 2px solid #f9f9f9; text-align: right;">
-                <span style="font-size: 24px; font-weight: 900; color: #ff6a00;">₩ ${(info.totalPrice || 0).toLocaleString()}</span>
+            <div style="margin-top:15px;">${itemsHtml}</div>
+            <div style="margin-top: 20px; text-align: right;">
+                <span style="font-size: 13px; color: #999;">최종 결제 금액</span>
+                <div style="font-size: 24px; font-weight: 900; color: #ff6a00; margin-top: 2px;">₩ ${(info.totalPrice || 0).toLocaleString()}</div>
             </div>`;
         container.appendChild(card);
     }

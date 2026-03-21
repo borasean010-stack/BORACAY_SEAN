@@ -123,7 +123,6 @@
 <script type="module">
     import { GoogleGenerativeAI } from "@google/generative-ai";
 
-    // API Key (Note: Ensure this key has sufficient quota and no restrictions)
     const API_KEY = "AIzaSyCS9ti9qzKttrbART5Gu2A241Y1iIARgS0";
     const genAI = new GoogleGenerativeAI(API_KEY);
 
@@ -135,7 +134,16 @@
         { id: "spa", name: "에스파 (S-SPA)", url: "spa.html" }
     ];
 
-    let chatHistory = [];
+    let chatHistory = [
+        {
+            role: "user",
+            parts: [{ text: "너는 보라카이 자유여행사 '보라카이션(Boracay Sean)'의 수석 상담원 '션'이야. 15년 경력의 보라카이 전문가로서 맛집, 투어, 날씨, 옷차림 등을 매우 친절하고 상세하게 안내해줘야 해. 모든 답변은 한국어로 하고, 답변 끝에는 항상 '더 궁금하신 점이 있으신가요?'라고 물어봐줘. 또한 답변 중간에 보라카이션의 인기 상품(블랙펄 호핑, 말룸파티, 픽업샌딩, 체험다이빙, 에스파 마사지 등)을 상황에 맞게 자연스럽게 한두 개 추천해줘. 다른 여행사 추천은 절대 하지 마." }]
+        },
+        {
+            role: "model",
+            parts: [{ text: "네! 보라카이션의 수석 상담원 '션'으로서 고객님께 가장 완벽한 보라카이 여행을 안내해 드릴게요. 무엇이든 물어보세요!" }]
+        }
+    ];
 
     window.sendMessage = async function() {
         const input = document.getElementById('aiInput');
@@ -150,21 +158,7 @@
 
         try {
             const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-            // Start chat session with history
-            const chat = model.startChat({
-                history: [
-                    {
-                        role: "user",
-                        parts: [{ text: "너는 보라카이 자유여행사 '보라카이션(Boracay Sean)'의 수석 상담원 '션'이야. 15년 경력의 전문가답게 보라카이 맛집, 투어, 날씨 등을 친절하고 상세하게 안내해줘. 답변 끝에는 항상 더 궁금한 점이 있는지 물어보고, 보라카이션의 상품(블랙펄 호핑, 말룸파티, 픽업샌딩, 체험다이빙, 에스파 등)을 자연스럽게 추천해줘. 다른 여행사 이야기는 절대 하지 마." }]
-                    },
-                    {
-                        role: "model",
-                        parts: [{ text: "반가워요! 보라카이 전문가 션입니다. 무엇을 도와드릴까요?" }]
-                    },
-                    ...chatHistory
-                ]
-            });
+            const chat = model.startChat({ history: chatHistory });
 
             const result = await chat.sendMessage(text);
             const response = await result.response;
@@ -172,27 +166,18 @@
 
             indicator.style.display = 'none';
             
-            // Save to local history for context
             chatHistory.push({ role: "user", parts: [{ text: text }] });
             chatHistory.push({ role: "model", parts: [{ text: aiResponse }] });
-            if (chatHistory.length > 10) chatHistory.splice(0, 2);
+            if (chatHistory.length > 12) chatHistory.splice(2, 2);
 
-            // Extract recommended products for UI buttons
             const recommendedButtons = BORACAY_PRODUCTS.filter(p => aiResponse.includes(p.name) || text.includes(p.name.split(' ')[0]));
-            
             appendAIMessage(aiResponse, recommendedButtons);
             
         } catch (error) {
-            console.error("AI Error Details:", error);
+            console.error("AI Error:", error);
             indicator.style.display = 'none';
-            
-            let errorMsg = "죄송합니다. 현재 보라카이 현지 통신 사정으로 인해 응답이 지연되고 있습니다. 😂";
-            if (error.message && error.message.includes('quota')) {
-                errorMsg = "오늘 준비된 무료 상담량이 모두 소진되었습니다. 내일 다시 이용하시거나 카톡으로 문의주세요!";
-            }
-            
-            appendAIMessage(errorMsg + "<br><br>상담원과 직접 대화하시려면 아래 버튼을 눌러주세요.", [
-                { name: "💬 실시간 카톡 상담원 연결", url: "http://pf.kakao.com/_zBArM/chat" }
+            appendAIMessage("아차! 잠시 보라카이 바다 날씨가 안 좋은지 연결이 끊겼네요. 😂 다시 한번 말씀해 주시겠어요? 계속 안 된다면 카톡 상담을 이용해 주세요!", [
+                { name: "💬 실시간 카톡으로 물어보기", url: "http://pf.kakao.com/_zBArM/chat" }
             ]);
         }
     }
@@ -211,15 +196,12 @@
         const msgDiv = document.createElement('div');
         msgDiv.className = 'chat-message ai';
         
-        // Convert markdown-like bold to HTML bold
-        let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-        formattedText = formattedText.replace(/\n/g, '<br>');
-        
+        let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
         let html = `<div>${formattedText}</div>`;
         if (buttons.length > 0) {
             html += `<div class="ai-button-container">`;
             buttons.forEach(btn => {
-                html += `<button class="ai-action-btn" onclick="location.href='${btn.url}'">${btn.name} <span>상세보기 ❯</span></button>`;
+                html += `<button class="ai-action-btn" onclick="location.href='${btn.url}'">${btn.name} <span>보기 ❯</span></button>`;
             });
             html += `</div>`;
         }
@@ -235,7 +217,7 @@
         const lastBooking = JSON.parse(localStorage.getItem('last_booking_info'));
 
         if (!lastBooking) {
-            container.innerHTML = `<div style="text-align:center; padding:60px 0; background:white; border-radius:24px; border:1px dashed #ddd;"><p style="color:#888; font-size:15px;">최근 예약 내역이 없습니다.</p></div>`;
+            container.innerHTML = `<div style="text-align:center; padding:60px 0; background:white; border-radius:24px; border:1px dashed #ddd;"><p style="color:#888; font-size:15px;">예약 내역이 없습니다.</p></div>`;
             return;
         }
 
@@ -280,7 +262,7 @@
             <div style="margin-top:10px;">${itemsHtml}</div>
             <div style="margin-top: 15px; text-align: right;">
                 <span style="font-size: 12px; color: #999;">최종 결제 금액</span>
-                <div style="font-size: 24px; font-weight: 900; color: #ff6a00; margin-top: 1px;">₩ ${(info.totalPrice || 0).toLocaleString()}</div>
+                <div style="font-size: 22px; font-weight: 900; color: #ff6a00; margin-top: 1px;">₩ ${(info.totalPrice || 0).toLocaleString()}</div>
             </div>`;
         container.appendChild(card);
     }

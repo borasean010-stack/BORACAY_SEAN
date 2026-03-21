@@ -208,6 +208,20 @@ This project is a reservation website for tours and activities in Boracay (BORAC
     * **Affected Files:** `index.html`, `activities.html`, `massage.html`, `essential-tours.html`, `price-list.html`, `resort-quote.html`.
     * **Action Required:** Request a re-crawl in Google Search Console to speed up the update in search results.
 
+    ### 17. UI Scaling & Booking Flow Enhancement
+    * **Objective:** Improve visual density on desktop and collect more accurate activity/massage pickup info.
+    * **Implementation:**
+        * **UI Scaling:** Reduced font sizes, padding, and margins by ~10% for desktop screens to match a "90% zoom" look. Added `max-width: 1200px` constraints.
+        * **Activity Pickup Field:** Added a conditional "Pickup Resort" field in `booking-form.html` for specific activities and spa services.
+        * **Admin/Mypage Sync:** Updated `admin.js` and `mypage.html` to display the newly collected activity pickup information.
+
+    ### 18. Booking Completion UX Improvement (March 2026)
+    * **Objective:** Streamline the post-booking process and reduce confirmation delays caused by missing communication.
+    * **Implementation:**
+        * **Account Copy Feature:** Added a "Copy" button next to the bank account number in `booking-complete.html` with a toast notification feedback.
+        * **Strengthened Confirmation Guidance:** Replaced generic guidance with a clear, bold message stating that depositing is not enough—customers **must** send their Korean name to the Boracay Sean Kakao channel for final confirmation.
+        * **Visual Hierarchy:** Used bolding and color highlighting to emphasize the "Final Confirmation" (최종 확정) and the penalty of not contacting (missed confirmation).
+
 
 ## Previous Milestone: Admin & Login Redesign
 

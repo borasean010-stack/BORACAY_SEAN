@@ -15,7 +15,25 @@
     <style>
         body { background: #f8f9fa; color: #333; }
         .complete-container { max-width: 600px; margin: 150px auto; padding: 0 20px; text-align: center; }
-        .success-icon { font-size: 80px; color: #ff6a00; margin-bottom: 30px; }
+        
+        /* 🔥 성공 로고 애니메이션 */
+        .success-logo-wrap {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .success-logo {
+            width: 120px;
+            height: auto;
+            filter: drop-shadow(0 10px 20px rgba(255,106,0,0.2));
+            animation: logo-appear 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+        }
+        @keyframes logo-appear {
+            0% { opacity: 0; transform: scale(0.3) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
         .complete-card { background: white; padding: 50px 40px; border-radius: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); border: 1px solid #eee; }
         h1 { font-size: 32px; font-weight: 900; margin-bottom: 15px; letter-spacing: -1px; }
         p.msg { color: #444; font-size: 17px; line-height: 1.7; margin-bottom: 40px; word-break: keep-all; }
@@ -128,7 +146,10 @@
 </div>
 <div class="complete-container">
     <div class="complete-card">
-        <div class="success-icon">✅</div>
+        <!-- 🔥 변경된 부분: 체크 아이콘 대신 애니메이션 로고 적용 -->
+        <div class="success-logo-wrap">
+            <img src="logo.png" class="success-logo" alt="보라카이션 로고">
+        </div>
         <h1 id="complete-title">예약 신청 완료!</h1>
         <p class="msg" id="complete-msg">
             예약 신청이 정상적으로 접수되었습니다 😊<br><br>

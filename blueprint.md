@@ -196,6 +196,18 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * Verified that `booking-form.html` displays these details in the order summary for user confirmation.
         * This ensures clear communication of the selected service throughout the booking flow.
 
+    ### 16. SEO & Favicon Optimization (March 2026)
+    * **Objective:** Ensure the brand logo (mark) and correct site information appear in Google search results and social media thumbnails.
+    * **Issue:** The previous favicon (`logo.png`) was not square (400x343), which caused Google to not display the site icon in search results.
+    * **Fixes:**
+        * **Favicon Update:** Standardized on `og-image.png` (1080x1080 square) for `link rel="icon"` and `apple-touch-icon`.
+        * **Open Graph (OG) Tags:** Updated `og:image` to use the square `og-image.png` for better visibility in mobile search results and SNS sharing.
+        * **Twitter Cards:** Added `twitter:card`, `twitter:title`, `twitter:description`, and `twitter:image` tags for optimized sharing on X (Twitter).
+        * **Structured Data:** Enhanced the `Organization` JSON-LD in `index.html` to include the site name and official social links (Naver Cafe).
+        * **Favicon File:** Created `favicon.png` in the root directory for better crawler recognition.
+    * **Affected Files:** `index.html`, `activities.html`, `massage.html`, `essential-tours.html`, `price-list.html`, `resort-quote.html`.
+    * **Action Required:** Request a re-crawl in Google Search Console to speed up the update in search results.
+
 
 ## Previous Milestone: Admin & Login Redesign
 

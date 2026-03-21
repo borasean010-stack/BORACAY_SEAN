@@ -123,7 +123,6 @@
 <script type="module">
     import { GoogleGenerativeAI } from "@google/generative-ai";
 
-    // API Key (Note: Ensure this key has sufficient quota and no restrictions)
     const API_KEY = "AIzaSyCS9ti9qzKttrbART5Gu2A241Y1iIARgS0";
     const genAI = new GoogleGenerativeAI(API_KEY);
 
@@ -135,23 +134,14 @@
         { id: "spa", name: "에스파 (S-SPA)", url: "spa.html" }
     ];
 
-    const SYSTEM_INSTRUCTION = `너는 보라카이 자유여행사 '보라카이션(Boracay Sean)'의 수석 상담원 '션'이야. 
-    15년 경력의 보라카이 전문가답게 아래 지식을 바탕으로 고객과 대화해.
-
-    [맛집 지식]
-    - 스테이션1: 조나스(망고쉐이크), 써니사이드 카페(브런치)
-    - 스테이션2: 게리스그릴(오징어구이), 아이러브비비큐(폭립)
-    - 기타: 도스 메스티조스(감바스), 할로망고(디저트)
-
-    [일정/환전/날씨]
-    - 일정: 1일차 입국&마사지, 2일차 블랙펄 호핑, 3일차 말룸파티, 4일차 쇼핑&출국 추천.
-    - 환전: 디몰 내 '니코 환전소' 추천. 보라카이션 픽업 예약 시 환전 대행 서비스도 가능.
-    - 날씨: 건기(11-5월)는 화창, 우기(6-10월)는 바람이 강함. 래쉬가드 필수.
-
-    [대화 규칙]
-    - 모든 답변은 한국어로 하고, 아주 친절하고 싹싹한 전문가처럼 대답해.
-    - 답변 끝엔 항상 '더 궁금한 게 있으신가요?'라고 물어봐.
-    - 보라카이션의 상품을 자연스럽게 추천해 (다른 업체 언급 금지).`;
+    // --- [확실한 로컬 지식 엔진] API 실패 시나 특정 키워드 시 즉각 응답 ---
+    const LOCAL_ANSWERS = {
+        "맛집": "보라카이 맛집은 제가 꽉 잡고 있죠! 😎\n\n1. **스테이션1**: 망고쉐이크의 원조 '조나스', 브런치 성지 '써니사이드 카페' 추천드려요.\n2. **스테이션2**: 오징어구이가 일품인 '게리스그릴', 폭립 맛집 '아이러브비비큐'는 필수 코스!\n3. **디몰 주변**: 감바스가 맛있는 '도스 메스티조스'와 망고 아이스크림 '할로망고'도 꼭 가보세요.\n\n맛있는 식사 후에는 저희 **에스파(S-SPA)**에서 마사지 한 번 받으시면 피로가 싹 풀리실 거예요!",
+        "환전": "보라카이에서 환율이 가장 좋은 곳은 **디몰(D'Mall) 내 니코 환전소**나 그린머니입니다.\n\n**션의 꿀팁!** 🍯\n저희 **픽업샌딩** 서비스를 예약하실 때 미리 '달러➔페소' 환전을 요청해 주시면, 현지 도착하자마자 안전하고 편리하게 환전된 페소를 전달해 드린답니다! 번거롭게 환전소 줄 설 필요 없어요~",
+        "일정": "3박 4일 완벽 코스 알려드릴게요! ✨\n\n- **1일차**: 공항 도착 ➔ 보라카이션 전용 픽업샌딩으로 편하게 숙소 이동 ➔ 호텔 체크인 후 마사지로 휴식\n- **2일차**: 낮에는 자유시간 ➔ 오후 1시 **블랙펄 요트 호핑투어** (선셋까지 완벽!)\n- **3일차**: 아침부터 즐기는 **시크릿가든 말룸파티** (다이빙과 튜빙의 끝판왕!)\n- **4일차**: 디몰에서 쇼핑 ➔ 보라카이션 전용 샌딩 서비스로 안전하게 공항 이동\n\n이 일정대로만 하시면 보라카이 200% 즐기기 성공입니다!",
+        "날씨": "보라카이 날씨는 크게 건기와 우기로 나뉘어요! ☀️☔\n\n- **건기(11월~5월)**: 하늘이 아주 화창하고 파도가 잔잔해서 화이트비치가 가장 예쁠 때예요. 래쉬가드와 선크림 필수!\n- **우기(6월~10월)**: 비가 가끔 오고 바람이 불지만 호핑투어는 문제없이 진행 가능해요.\n\n날씨 상관없이 신나게 즐길 수 있는 **체험 다이빙**도 강력 추천합니다!",
+        "추천": "보라카이 No.1 자유여행사답게 **'블랙펄 호핑투어'**와 **'말룸파티'**는 꼭 해보셔야 해요! \n최근에는 보라카이 최초로 런칭한 **'에스파(S-SPA) 포핸드 마사지'**가 정말 인기가 많으니 예약 서둘러 주세요! 😊"
+    };
 
     window.sendMessage = async function() {
         const input = document.getElementById('aiInput');
@@ -164,31 +154,38 @@
         const indicator = document.getElementById('ai-typing-indicator');
         indicator.style.display = 'block';
 
+        // 1. 키워드 기반 로컬 응답 먼저 체크 (빠르고 확실함)
+        let localResponse = "";
+        for (let key in LOCAL_ANSWERS) {
+            if (text.includes(key)) {
+                localResponse = LOCAL_ANSWERS[key];
+                break;
+            }
+        }
+
         try {
+            // 2. AI 호출 시도
             const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-            
-            // Simplified prompt combining system instruction and user query
-            const prompt = `${SYSTEM_INSTRUCTION}\n\n사용자 질문: ${text}`;
+            const prompt = `너는 보라카이 전문가 '션'이야. 아래 정보를 바탕으로 친구처럼 대답해줘.\n정보: ${JSON.stringify(LOCAL_ANSWERS)}\n사용자 질문: ${text}`;
             
             const result = await model.generateContent(prompt);
             const response = await result.response;
             const aiResponse = response.text();
 
             indicator.style.display = 'none';
-            
             const recommendedButtons = BORACAY_PRODUCTS.filter(p => aiResponse.includes(p.name) || text.includes(p.name.split(' ')[0]));
             appendAIMessage(aiResponse, recommendedButtons);
             
         } catch (error) {
-            console.error("AI Connection Error:", error);
+            console.warn("AI Connection failed, using local engine.");
             indicator.style.display = 'none';
             
-            // If it's a specific API error, log it more clearly
-            let errorDetail = "네트워크가 잠시 불안정합니다. 😂";
-            if(error.message?.includes('API_KEY_INVALID')) errorDetail = "API 인증에 문제가 발생했습니다. 관리자에게 문의해 주세요.";
+            // 3. AI 실패 시 로컬 응답 출력 (절대 에러 메시지 안 보여줌)
+            const finalAnswer = localResponse || "오호, 그 부분은 제가 더 상세히 알아봐 드릴 수 있어요! 하지만 지금 바로 추천드리고 싶은 건 보라카이션의 인기 투어들이에요. 블랙펄 호핑이나 말룸파티에 대해 궁금하신가요? 아니면 맛집이나 환전 정보가 필요하신가요? 😊";
             
-            appendAIMessage(`${errorDetail}<br><br>계속 응답이 없다면 카카오톡으로 즉시 문의해 주세요!`, [
-                { name: "💬 실시간 카톡 상담하기", url: "http://pf.kakao.com/_zBArM/chat" }
+            appendAIMessage(finalAnswer, [
+                { name: "🚢 블랙펄 호핑투어", url: "hopping-tour.html" },
+                { name: "🥗 보라카이 맛집 정보", url: "price-list.html" }
             ]);
         }
     }

@@ -76,7 +76,7 @@
 <div class="mypage-container">
     <div class="mypage-header">
         <h2>마이페이지</h2>
-        <p>예약 내역 확인과 AI 여행 상담을 한곳에서 이용해보세요.</p>
+        <p>보라카이 15년 차 전문가 AI '션'과 대화해보세요.</p>
     </div>
 
     <div class="ai-recommend-section">
@@ -84,24 +84,24 @@
             <div class="ai-header">
                 <div class="ai-status-dot"></div>
                 <div class="ai-info">
-                    <h3>실시간 여행 상담원 '션'</h3>
-                    <p>보라카이 자유여행 전문가 AI</p>
+                    <h3>보라카이 전문가 '션'</h3>
+                    <p>현지 정보 & 투어 마스터</p>
                 </div>
                 <a href="http://pf.kakao.com/_zBArM/chat" target="_blank" class="ai-kakao-btn">카톡 상담</a>
             </div>
             
             <div class="ai-chat-window" id="aiChatWindow">
                 <div class="chat-message ai">
-                    안녕하세요! 보라카이 여행 전문가 **션(Sean)**입니다. 😊<br><br>
-                    가장 완벽한 보라카이 여행을 위해 무엇을 도와드릴까요?<br>
-                    맛집, 일정, 날씨, 환전 등 무엇이든 물어보세요!
+                    안녕하세요! 보라카이에서 15년째 살고 있는 **션(Sean)**입니다. 😊<br><br>
+                    단순한 안내가 아니라 진짜 현지인만 아는 **맛집 메뉴, 환전 꿀팁, 투어 일정**을 다 알려드릴게요!<br>
+                    궁금한 건 뭐든지 편하게 물어봐 주세요!
                 </div>
             </div>
 
-            <div id="ai-typing-indicator">션이 답변을 준비 중입니다...</div>
+            <div id="ai-typing-indicator">션이 꿀팁을 생각 중입니다...</div>
 
             <div class="ai-chat-input-wrap">
-                <input type="text" id="aiInput" placeholder="션에게 질문하기..." onkeypress="if(event.keyCode==13) window.sendMessage()">
+                <input type="text" id="aiInput" placeholder="예: 맛집 추천해줘, 환전 어디가 좋아?" onkeypress="if(event.keyCode==13) window.sendMessage()">
                 <button onclick="window.sendMessage()" id="sendBtn">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                 </button>
@@ -134,14 +134,33 @@
         { id: "spa", name: "에스파 (S-SPA)", url: "spa.html" }
     ];
 
-    // --- [확실한 로컬 지식 엔진] API 실패 시나 특정 키워드 시 즉각 응답 ---
-    const LOCAL_ANSWERS = {
-        "맛집": "보라카이 맛집은 제가 꽉 잡고 있죠! 😎\n\n1. **스테이션1**: 망고쉐이크의 원조 '조나스', 브런치 성지 '써니사이드 카페' 추천드려요.\n2. **스테이션2**: 오징어구이가 일품인 '게리스그릴', 폭립 맛집 '아이러브비비큐'는 필수 코스!\n3. **디몰 주변**: 감바스가 맛있는 '도스 메스티조스'와 망고 아이스크림 '할로망고'도 꼭 가보세요.\n\n맛있는 식사 후에는 저희 **에스파(S-SPA)**에서 마사지 한 번 받으시면 피로가 싹 풀리실 거예요!",
-        "환전": "보라카이에서 환율이 가장 좋은 곳은 **디몰(D'Mall) 내 니코 환전소**나 그린머니입니다.\n\n**션의 꿀팁!** 🍯\n저희 **픽업샌딩** 서비스를 예약하실 때 미리 '달러➔페소' 환전을 요청해 주시면, 현지 도착하자마자 안전하고 편리하게 환전된 페소를 전달해 드린답니다! 번거롭게 환전소 줄 설 필요 없어요~",
-        "일정": "3박 4일 완벽 코스 알려드릴게요! ✨\n\n- **1일차**: 공항 도착 ➔ 보라카이션 전용 픽업샌딩으로 편하게 숙소 이동 ➔ 호텔 체크인 후 마사지로 휴식\n- **2일차**: 낮에는 자유시간 ➔ 오후 1시 **블랙펄 요트 호핑투어** (선셋까지 완벽!)\n- **3일차**: 아침부터 즐기는 **시크릿가든 말룸파티** (다이빙과 튜빙의 끝판왕!)\n- **4일차**: 디몰에서 쇼핑 ➔ 보라카이션 전용 샌딩 서비스로 안전하게 공항 이동\n\n이 일정대로만 하시면 보라카이 200% 즐기기 성공입니다!",
-        "날씨": "보라카이 날씨는 크게 건기와 우기로 나뉘어요! ☀️☔\n\n- **건기(11월~5월)**: 하늘이 아주 화창하고 파도가 잔잔해서 화이트비치가 가장 예쁠 때예요. 래쉬가드와 선크림 필수!\n- **우기(6월~10월)**: 비가 가끔 오고 바람이 불지만 호핑투어는 문제없이 진행 가능해요.\n\n날씨 상관없이 신나게 즐길 수 있는 **체험 다이빙**도 강력 추천합니다!",
-        "추천": "보라카이 No.1 자유여행사답게 **'블랙펄 호핑투어'**와 **'말룸파티'**는 꼭 해보셔야 해요! \n최근에는 보라카이 최초로 런칭한 **'에스파(S-SPA) 포핸드 마사지'**가 정말 인기가 많으니 예약 서둘러 주세요! 😊"
-    };
+    const SYSTEM_INSTRUCTION = `너는 보라카이 자유여행사 '보라카이션(Boracay Sean)'의 수석 상담원 '션'이야. 
+    보라카이에서 15년 거주한 전문가로서, 단순한 정보가 아니라 고객이 감동할 만한 구체적인 꿀팁을 제공해야 해.
+
+    [보라카이 전문가 지식]
+    1. 맛집 추천:
+       - 게리스그릴: '이니아우 나 푸싯(오징어구이)'과 '포크 바베큐'는 필수. 스테이션 2 해변가에 있어.
+       - 써니사이드 카페: 스테이션 1 화이트비치 보며 먹는 '베이컨 팬케이크'가 일품.
+       - 도스 메스티조스: 현지 최고 스페인 요리집. '감바스'와 '빠에야' 추천. 금요일 밤 뷔페가 유명해.
+       - 할로망고: 디몰 입구 망고 아이스크림 줄 서서 먹는 곳.
+    2. 환전/환율:
+       - 공항은 환율이 최악이니 50달러 정도만 해.
+       - 디몰 내 '니코(Nikko) 환전소'나 '그린머니'가 가장 좋아.
+       - **보라카이션 전용**: 픽업샌딩 예약 시 달러➔페소 환전 요청하면 현지 도착 즉시 전달해 줌.
+    3. 일정 추천:
+       - 1일차: 입국 -> 보라카이션 픽업 -> 에스파(S-SPA) 포핸드 마사지 (첫날 피로 회복).
+       - 2일차: 오전 자유 -> 오후 '블랙펄 요트 호핑' (럭셔리 파티 & 선셋 감상).
+       - 3일차: '시크릿가든 말룸파티' (에메랄드빛 계곡에서 다이빙과 튜빙, 백숙 점심).
+       - 4일차: 화이트비치 산책 -> 디몰 쇼핑 -> 샌딩.
+    4. 현지 꿀팁:
+       - 트라이시클: 스테이션 이동 시 일반 20페소, 단독(프라이빗) 100~150페소.
+       - 날씨: 건기(11-5월)는 파도가 없고 잔잔함. 우기(6-10월)는 뒷바다(불라복) 쪽이 잔잔함.
+       - 매너팁: 마사지나 투어 매너팁은 보통 50~100페소면 충분해.
+
+    [대화 규칙]
+    - 활기차고 친절하게 대답해. (예: "오셨군요!", "이건 저만 아는 꿀팁인데~")
+    - 답변 끝엔 항상 궁금한 점을 더 물어보고, 보라카이션 상품을 상황에 맞춰 자연스럽게 추천해.
+    - 다른 여행사 비난은 하지 말되, 우리 상품이 왜 최고인지(예: 고퀄리티 사진 서비스 등) 강조해.`;
 
     window.sendMessage = async function() {
         const input = document.getElementById('aiInput');
@@ -154,19 +173,9 @@
         const indicator = document.getElementById('ai-typing-indicator');
         indicator.style.display = 'block';
 
-        // 1. 키워드 기반 로컬 응답 먼저 체크 (빠르고 확실함)
-        let localResponse = "";
-        for (let key in LOCAL_ANSWERS) {
-            if (text.includes(key)) {
-                localResponse = LOCAL_ANSWERS[key];
-                break;
-            }
-        }
-
         try {
-            // 2. AI 호출 시도
             const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-            const prompt = `너는 보라카이 전문가 '션'이야. 아래 정보를 바탕으로 친구처럼 대답해줘.\n정보: ${JSON.stringify(LOCAL_ANSWERS)}\n사용자 질문: ${text}`;
+            const prompt = `${SYSTEM_INSTRUCTION}\n\n고객 질문: ${text}\n션의 답변:`;
             
             const result = await model.generateContent(prompt);
             const response = await result.response;
@@ -177,15 +186,15 @@
             appendAIMessage(aiResponse, recommendedButtons);
             
         } catch (error) {
-            console.warn("AI Connection failed, using local engine.");
+            console.warn("AI Error, using emergency expert system.");
             indicator.style.display = 'none';
             
-            // 3. AI 실패 시 로컬 응답 출력 (절대 에러 메시지 안 보여줌)
-            const finalAnswer = localResponse || "오호, 그 부분은 제가 더 상세히 알아봐 드릴 수 있어요! 하지만 지금 바로 추천드리고 싶은 건 보라카이션의 인기 투어들이에요. 블랙펄 호핑이나 말룸파티에 대해 궁금하신가요? 아니면 맛집이나 환전 정보가 필요하신가요? 😊";
+            // Emergency Local Response
+            let emergencyMsg = "아이고, 보라카이 바다 바람이 세서 잠시 연결이 튀었네요! 😂 대신 제가 정말 자신 있는 맛집 리스트나 환전 팁, 혹은 저희 자랑인 **블랙펄 호핑투어**에 대해 먼저 알려드릴까요? 궁금하신 키워드를 말씀해 주세요!";
             
-            appendAIMessage(finalAnswer, [
-                { name: "🚢 블랙펄 호핑투어", url: "hopping-tour.html" },
-                { name: "🥗 보라카이 맛집 정보", url: "price-list.html" }
+            appendAIMessage(emergencyMsg, [
+                { name: "🚢 블랙펄 호핑투어 보기", url: "hopping-tour.html" },
+                { name: "🏦 환전/요금 정보", url: "price-list.html" }
             ]);
         }
     }
@@ -209,7 +218,7 @@
         if (buttons.length > 0) {
             html += `<div class="ai-button-container">`;
             buttons.forEach(btn => {
-                html += `<button class="ai-action-btn" onclick="location.href='${btn.url}'">${btn.name} <span>보기 ❯</span></button>`;
+                html += `<button class="ai-action-btn" onclick="location.href='${btn.url}'">${btn.name} <span>상세보기 ❯</span></button>`;
             });
             html += `</div>`;
         }

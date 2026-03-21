@@ -16,7 +16,7 @@
         .ai-recommend-section { margin-bottom: 40px; }
         .ai-card { background: #fff; border-radius: 32px; padding: 0; border: 1px solid #f0f0f0; box-shadow: 0 20px 60px rgba(0,0,0,0.05); display: flex; flex-direction: column; height: 600px; overflow: hidden; }
         .ai-header { padding: 20px 25px; background: #111; color: white; display: flex; align-items: center; gap: 12px; position: relative; }
-        .ai-status-dot { width: 10px; height: 10px; background: #00ff88; border-radius: 50%; box-shadow: 0 0 10px #00ff88; }
+        .ai-status-dot { width: 10px; height: 10px; background: #00ff88; border-radius: 50%; box-shadow: 0 0 10 #00ff88; }
         .ai-info h3 { font-size: 17px; font-weight: 800; margin: 0; }
         .ai-info p { font-size: 12px; opacity: 0.6; margin: 2px 0 0; }
         .ai-kakao-btn { margin-left: auto; background: #fee500; color: #3c1e1e; padding: 6px 12px; border-radius: 10px; font-size: 11px; font-weight: 800; text-decoration: none; }
@@ -93,7 +93,7 @@
             <div class="ai-chat-window" id="aiChatWindow">
                 <div class="chat-message ai">
                     안녕하세요! 보라카이에서 15년째 살고 있는 **션(Sean)**입니다. 😊<br><br>
-                    단순한 안내가 아니라 진짜 현지인만 아는 **맛집 메뉴, 환전 꿀팁, 투어 일정, 툭툭이 요금**까지 다 알려드릴게요!<br>
+                    단순한 안내가 아니라 진짜 현지인만 아는 **맛집 메뉴, 환전 꿀팁, 투어 일정, 툭툭이 요금, 공항세 정보**까지 다 알려드릴게요!<br>
                     궁금한 건 뭐든지 편하게 물어봐 주세요!
                 </div>
             </div>
@@ -101,7 +101,7 @@
             <div id="ai-typing-indicator">션이 꿀팁을 생각 중입니다...</div>
 
             <div class="ai-chat-input-wrap">
-                <input type="text" id="aiInput" placeholder="예: 맛집 추천, 툭툭이 비용 얼마야?" onkeypress="if(event.keyCode==13) window.sendMessage()">
+                <input type="text" id="aiInput" placeholder="예: 맛집 추천, 공항세 얼마야?" onkeypress="if(event.keyCode==13) window.sendMessage()">
                 <button onclick="window.sendMessage()" id="sendBtn">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                 </button>
@@ -134,33 +134,22 @@
         { id: "spa", name: "에스파 (S-SPA)", url: "spa.html" }
     ];
 
+    // --- [확실한 로컬 지식 엔진] ---
+    const LOCAL_ANSWERS = {
+        "맛집": "보라카이 맛집은 제가 꽉 잡고 있죠! 😎\n\n1. **점보크랩**: 블랙페퍼 크랩과 칠리 크랩이 예술입니다. 갈릭 라이스 필수!\n2. **게리스그릴**: 오징어구이(푸싯)와 돼지 바베큐 꼬치는 꼭 드세요.\n3. **써니사이드 카페**: 스테이션 1 해변을 보며 먹는 베이컨 팬케이크가 유명해요.\n4. **도스 메스티조스**: 정통 스페인 요리(감바스, 빠에야)를 즐길 수 있는 곳이에요.\n\n맛있는 식사 후에는 저희 **에스파(S-SPA)**에서 마사지 한 번 받으시면 피로가 싹 풀리실 거예요!",
+        "환전": "보라카이에서 환율이 가장 좋은 곳은 **디몰(D'Mall) 내 니코 환전소**나 그린머니입니다.\n\n**션의 꿀팁!** 🍯\n저희 **픽업샌딩** 서비스를 예약하실 때 미리 '달러➔페소' 환전을 요청해 주시면, 현지 도착하자마자 안전하고 편리하게 환전된 페소를 전달해 드린답니다!",
+        "일정": "3박 4일 완벽 코스 알려드릴게요! ✨\n\n- **1일차**: 보라카이션 픽업샌딩 ➔ 호텔 체크인 ➔ 첫날 피로를 푸는 에스파 마사지\n- **2일차**: 자유시간 ➔ 오후 **블랙펄 요트 호핑투어** (선셋 감상)\n- **3일차**: 하루 종일 신나는 **시크릿가든 말룸파티** (다이빙/튜빙)\n- **4일차**: 디몰 기념품 쇼핑 ➔ 샌딩 서비스로 공항 이동\n\n이 코스가 가장 인기 많고 만족도가 높아요!",
+        "툭툭": "보라카이 툭툭이(트라이시클) 요금표입니다! 🛺\n\n- **일반 합승**: 인당 **20페소** (가까운 거리)\n- **단독 대절**: 한 대당 **100~150페소** (스테이션 간 이동 시)\n- **장거리(푸카비치 등)**: **200~300페소** 내외 협의\n\n바가지 쓰지 않도록 주의하시고, 가급적이면 프라이빗하게 대절해서 타시는 게 편해요!",
+        "공항세": "중요한 정보예요! 칼리보 공항에서 출국하실 때 **공항세(터미널 피)**를 내야 합니다. 🛫\n\n- **금액**: 인당 **784페소**\n- **주의**: 반드시 **현금(페소)**으로만 결제 가능합니다! (카드 불가)\n- **꿀팁**: 마지막 날 쇼핑하실 때 공항세 낼 페소는 꼭 따로 남겨두셔야 당황하지 않아요!",
+        "날씨": "보라카이 날씨는 건기(11-5월)와 우기(6-10월)로 나뉩니다! ☀️☔\n\n- **건기**: 화이트비치가 가장 예쁘고 파도가 잔잔해요. 래쉬가드 필수!\n- **우기**: 바람이 좀 불지만 뒷바다(불라복) 쪽에서 액티비티를 즐길 수 있습니다.\n\n날씨에 상관없이 즐길 수 있는 **체험 다이빙**도 강력 추천합니다!",
+        "추천": "보라카이션의 자부심! **'블랙펄 호핑투어'**와 **'말룸파티'**는 만족도 1위 상품이에요. 꼭 한 번 이용해 보세요! 😊"
+    };
+
     const SYSTEM_INSTRUCTION = `너는 보라카이 자유여행사 '보라카이션(Boracay Sean)'의 수석 상담원 '션'이야. 
     보라카이에서 15년 거주한 전문가로서, 단순한 정보가 아니라 고객이 감동할 만한 구체적인 꿀팁을 제공해야 해.
-
-    [보라카이 전문가 지식]
-    1. 맛집 추천:
-       - 점보크랩: 보라카이 최고의 크랩 맛집! '블랙페퍼 크랩'과 '칠리 크랩'이 메인 메뉴야. 갈릭 라이스에 소스를 비벼 먹는 건 필수! 스테이션 2 메인로드에 있어.
-       - 게리스그릴: '이니아우 나 푸싯(오징어구이)'과 '포크 바베큐'는 필수. 스테이션 2 해변가에 있어.
-       - 써니사이드 카페: 스테이션 1 화이트비치 보며 먹는 '베이컨 팬케이크'가 일품.
-       - 도스 메스티조스: 현지 최고 스페인 요리집. '감바스'와 '빠에야' 추천. 금요일 밤 뷔페가 유명해.
-    2. 교통 (툭툭이/트라이시클):
-       - 일반 합승: 인당 20페소 (스테이션 1, 2, 3 메인로드 이동 시).
-       - 단독 대절 (프라이빗): 한 대당 100~150페소.
-       - 장거리 (시티몰, 푸카비치): 200~300페소 내외 협의.
-       - 보라카이에서는 '툭툭이'를 '트라이시클'이라고 불러.
-    3. 기념품 & 쇼핑:
-       - 7D 건망고, 조비스 바나나칩, 코코넛 오일, 악마의 잼(명물) 추천.
-       - 이니셜 열쇠고리는 디몰 해변가에서 즉석 제작 가능.
-    4. 환전/환율:
-       - 디몰 내 '니코(Nikko) 환전소'나 '그린머니' 추천. 
-       - 보라카이션 픽업 예약 시 달러➔페소 환전 서비스 이용하면 가장 편해.
-    5. 투어 일정:
-       - 1일차 입국&마사지, 2일차 블랙펄 호핑, 3일차 말룸파티 투어 코스 추천.
-
-    [대화 규칙]
-    - 활기차고 친절하게 대답해. (예: "오셨군요!", "툭툭이 비용 궁금하시죠?")
-    - 모든 대답은 한국어로 하고, 답변 끝엔 항상 궁금한 점을 더 물어봐.
-    - 보라카이션 상품을 상황에 맞춰 자연스럽게 추천해.`;
+    맛집, 일정, 환전, 툭툭이 비용, 특히 '공항세(784페소, 현금 지불)' 정보를 아주 상세하게 알려줘.
+    모든 답변은 한국어로 아주 친절하고 활기차게 하고, 답변 끝엔 항상 궁금한 점을 더 물어봐.
+    보라카이션 상품을 자연스럽게 추천해줘.`;
 
     window.sendMessage = async function() {
         const input = document.getElementById('aiInput');
@@ -173,9 +162,15 @@
         const indicator = document.getElementById('ai-typing-indicator');
         indicator.style.display = 'block';
 
+        // 1. 키워드 기반 로컬 응답 체크
+        let localResponse = "";
+        for (let key in LOCAL_ANSWERS) {
+            if (text.includes(key)) { localResponse = LOCAL_ANSWERS[key]; break; }
+        }
+
         try {
             const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-            const prompt = `${SYSTEM_INSTRUCTION}\n\n고객 질문: ${text}\n션의 답변:`;
+            const prompt = `${SYSTEM_INSTRUCTION}\n\n정보: ${JSON.stringify(LOCAL_ANSWERS)}\n고객 질문: ${text}\n션의 답변:`;
             
             const result = await model.generateContent(prompt);
             const response = await result.response;
@@ -186,17 +181,11 @@
             appendAIMessage(aiResponse, recommendedButtons);
             
         } catch (error) {
-            console.warn("AI Error, using emergency expert system.");
+            console.warn("AI Error, using local engine.");
             indicator.style.display = 'none';
-            
-            let emergencyMsg = "아이고, 연결이 잠시 튀었네요! 😂 툭툭이(트라이시클) 비용이 궁금하시죠? 일반 합승은 인당 20페소, 단독 대절은 100~150페소 정도예요. 더 궁금하신 점이 있나요?";
-            
-            if(!text.includes("툭툭") && !text.includes("비용")) {
-                emergencyMsg = "잠시 연결이 원활하지 않네요. 😂 대신 제가 맛집이나 투어 일정을 바로 알려드릴까요? 궁금하신 내용을 말씀해 주세요!";
-            }
-
-            appendAIMessage(emergencyMsg, [
-                { name: "🚢 블랙펄 호핑투어 보기", url: "hopping-tour.html" },
+            const finalAnswer = localResponse || "오호, 그 부분은 제가 더 상세히 알아봐 드릴 수 있어요! 하지만 지금 바로 추천드리고 싶은 건 보라카이션의 인기 투어들이에요. 궁금하신 키워드(맛집, 환전, 공항세 등)를 말씀해 주세요! 😊";
+            appendAIMessage(finalAnswer, [
+                { name: "🚢 블랙펄 호핑투어", url: "hopping-tour.html" },
                 { name: "🏦 환전/요금 정보", url: "price-list.html" }
             ]);
         }
@@ -215,7 +204,6 @@
         const chatWindow = document.getElementById('aiChatWindow');
         const msgDiv = document.createElement('div');
         msgDiv.className = 'chat-message ai';
-        
         let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
         let html = `<div>${formattedText}</div>`;
         if (buttons.length > 0) {
@@ -235,12 +223,10 @@
     document.addEventListener('DOMContentLoaded', function() {
         const container = document.getElementById('booking-list-container');
         const lastBooking = JSON.parse(localStorage.getItem('last_booking_info'));
-
         if (!lastBooking) {
             container.innerHTML = `<div style="text-align:center; padding:60px 0; background:white; border-radius:24px; border:1px dashed #ddd;"><p style="color:#888; font-size:15px;">최근 예약 내역이 없습니다.</p></div>`;
             return;
         }
-
         renderBooking(container, { info: lastBooking });
     });
 
@@ -250,7 +236,6 @@
         const date = info.createdAt ? (new Date(info.createdAt.seconds * 1000).toLocaleDateString()) : '최근 예약';
         const card = document.createElement('div');
         card.className = 'booking-card';
-        
         let itemsHtml = '';
         items.forEach(item => {
             itemsHtml += `
@@ -262,15 +247,7 @@
                     <div style="font-size: 12px; color: #888; margin-top: 4px;">📅 ${item.date || '-'} | 인원: ${item.count}명</div>
                 </div>`;
         });
-        
-        let pickupHtml = '';
-        if (info.activityPickupResort) {
-            pickupHtml = `<div class="info-item" style="grid-column: span 2; background: #f0f7ff; padding: 12px; border-radius: 12px; margin-top: 8px;">
-                <label style="color:#007bff; font-weight:700; font-size:11px; margin-bottom:4px; display:block;">🏨 투어/스파 픽업 리조트</label>
-                <span style="font-weight:800; color:#0056b3; font-size:14px;">${info.activityPickupResort}</span>
-            </div>`;
-        }
-
+        let pickupHtml = info.activityPickupResort ? `<div class="info-item" style="grid-column: span 2; background: #f0f7ff; padding: 12px; border-radius: 12px; margin-top: 8px;"><label style="color:#007bff; font-weight:700; font-size:11px; margin-bottom:4px; display:block;">🏨 투어/스파 픽업 리조트</label><span style="font-weight:800; color:#0056b3; font-size:14px;">${info.activityPickupResort}</span></div>` : '';
         card.innerHTML = `
             <h3 style="font-size:17px; font-weight:900; margin-bottom:15px; display:flex; align-items:center; gap:8px;"><span style="color:#ff6a00;">●</span> 예약 확인 (${date})</h3>
             <div class="info-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #fcfcfc; padding: 18px; border-radius: 15px; border: 1px solid #f0f0f0;">

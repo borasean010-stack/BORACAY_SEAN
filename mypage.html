@@ -94,7 +94,7 @@
                 <div class="chat-message ai">
                     안녕하세요! 보라카이 여행 전문가 **션(Sean)**입니다. 😊<br><br>
                     가장 완벽한 보라카이 여행을 위해 무엇을 도와드릴까요?<br>
-                    여행 일정이나 궁금한 점을 편하게 말씀해 주세요!
+                    맛집, 일정, 날씨, 환전 등 무엇이든 물어보세요!
                 </div>
             </div>
 
@@ -123,6 +123,7 @@
 <script type="module">
     import { GoogleGenerativeAI } from "@google/generative-ai";
 
+    // API Key (Note: Ensure this key has sufficient quota and no restrictions)
     const API_KEY = "AIzaSyCS9ti9qzKttrbART5Gu2A241Y1iIARgS0";
     const genAI = new GoogleGenerativeAI(API_KEY);
 
@@ -133,42 +134,24 @@
         { id: "diving", name: "체험 다이빙", url: "scuba-diving.html" },
         { id: "spa", name: "에스파 (S-SPA)", url: "spa.html" }
     ];
-// AI Context & History (Full Knowledge Base Injected)
-let chatHistory = [
-    {
-        role: "user",
-        parts: [{ text: `너는 보라카이 자유여행사 '보라카이션(Boracay Sean)'의 수석 상담원 '션'이야. 15년 경력의 보라카이 전문가답게 아래 지식을 바탕으로 고객과 대화해줘.
 
-        [필수 지식 베이스]
-        1. 맛집:
-           - 스테이션1: 조나스(망고쉐이크), 써니사이드 카페(팬케이크/브런치)
-           - 스테이션2: 게리스그릴(오징어구이/포크바베큐), 아이러브비비큐(어니언링/폭립)
-           - 기타: 도스 메스티조스(감바스/빠에야), 할로망고(망고아이스크림)
-        2. 투어 일정 추천:
-           - 1일차: 칼리보 공항 도착 -> 보라카이션 픽업샌딩으로 숙소 이동 -> 에스파(S-SPA) 마사지로 피로 풀기
-           - 2일차: 오전 자유시간 -> 오후 '블랙펄 요트 호핑투어' (선셋 감상 포함)
-           - 3일차: '시크릿가든 말룸파티' 투어 (다이빙/튜빙/백숙 점심)
-           - 4일차: 디몰 기념품 쇼핑 -> 보라카이션 샌딩 서비스로 공항 이동
-        3. 환전 및 환율:
-           - 가장 환율이 좋은 곳은 디몰(D'Mall) 내 니코(Nikko) 환전소나 그린머니.
-           - **꿀팁**: 보라카이션 픽업샌딩 예약 시 '달러➔페소' 환전 요청을 미리 하시면 현지에서 안전하게 바로 전달해 드립니다.
-        4. 날씨 및 복장:
-           - 건기(11월~5월): 화창하고 파도가 잔잔함. 래쉬가드와 선크림 필수.
-           - 우기(6월~10월): 비가 자주 오고 바람이 강함. 우산이나 가벼운 바람막이 추천.
-        5. 보라카이션 상품: 블랙펄 호핑, 말룸파티, 픽업샌딩, 체험다이빙, 에스파, 아유르베다 스파 등.
+    const SYSTEM_INSTRUCTION = `너는 보라카이 자유여행사 '보라카이션(Boracay Sean)'의 수석 상담원 '션'이야. 
+    15년 경력의 보라카이 전문가답게 아래 지식을 바탕으로 고객과 대화해.
 
-        [대화 원칙]
-        - 모든 답변은 한국어로, 아주 친절하고 활기차게 '션' 오빠/형처럼 대답해줘.
-        - 질문한 내용에 대해 위 지식을 활용해 구체적으로 답변해줘.
-        - 답변 끝에는 항상 '더 궁금하신 점이 있으신가요?'라고 물어봐.
-        - 보라카이션의 상품을 자연스럽게 한두 개 추천하고 다른 여행사는 언급하지 마.` }]
-    },
-    {
-        role: "model",
-        parts: [{ text: "반가워요! 보라카이에서 15년 살며 구석구석 모르는 게 없는 '션'입니다. 맛집부터 환전 꿀팁까지 다 알려드릴게요. 무엇이 궁금하신가요? 😊" }]
-    }
-];
+    [맛집 지식]
+    - 스테이션1: 조나스(망고쉐이크), 써니사이드 카페(브런치)
+    - 스테이션2: 게리스그릴(오징어구이), 아이러브비비큐(폭립)
+    - 기타: 도스 메스티조스(감바스), 할로망고(디저트)
 
+    [일정/환전/날씨]
+    - 일정: 1일차 입국&마사지, 2일차 블랙펄 호핑, 3일차 말룸파티, 4일차 쇼핑&출국 추천.
+    - 환전: 디몰 내 '니코 환전소' 추천. 보라카이션 픽업 예약 시 환전 대행 서비스도 가능.
+    - 날씨: 건기(11-5월)는 화창, 우기(6-10월)는 바람이 강함. 래쉬가드 필수.
+
+    [대화 규칙]
+    - 모든 답변은 한국어로 하고, 아주 친절하고 싹싹한 전문가처럼 대답해.
+    - 답변 끝엔 항상 '더 궁금한 게 있으신가요?'라고 물어봐.
+    - 보라카이션의 상품을 자연스럽게 추천해 (다른 업체 언급 금지).`;
 
     window.sendMessage = async function() {
         const input = document.getElementById('aiInput');
@@ -183,26 +166,29 @@ let chatHistory = [
 
         try {
             const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-            const chat = model.startChat({ history: chatHistory });
-
-            const result = await chat.sendMessage(text);
+            
+            // Simplified prompt combining system instruction and user query
+            const prompt = `${SYSTEM_INSTRUCTION}\n\n사용자 질문: ${text}`;
+            
+            const result = await model.generateContent(prompt);
             const response = await result.response;
             const aiResponse = response.text();
 
             indicator.style.display = 'none';
             
-            chatHistory.push({ role: "user", parts: [{ text: text }] });
-            chatHistory.push({ role: "model", parts: [{ text: aiResponse }] });
-            if (chatHistory.length > 12) chatHistory.splice(2, 2);
-
             const recommendedButtons = BORACAY_PRODUCTS.filter(p => aiResponse.includes(p.name) || text.includes(p.name.split(' ')[0]));
             appendAIMessage(aiResponse, recommendedButtons);
             
         } catch (error) {
-            console.error("AI Error:", error);
+            console.error("AI Connection Error:", error);
             indicator.style.display = 'none';
-            appendAIMessage("아차! 잠시 보라카이 바다 날씨가 안 좋은지 연결이 끊겼네요. 😂 다시 한번 말씀해 주시겠어요? 계속 안 된다면 카톡 상담을 이용해 주세요!", [
-                { name: "💬 실시간 카톡으로 물어보기", url: "http://pf.kakao.com/_zBArM/chat" }
+            
+            // If it's a specific API error, log it more clearly
+            let errorDetail = "네트워크가 잠시 불안정합니다. 😂";
+            if(error.message?.includes('API_KEY_INVALID')) errorDetail = "API 인증에 문제가 발생했습니다. 관리자에게 문의해 주세요.";
+            
+            appendAIMessage(`${errorDetail}<br><br>계속 응답이 없다면 카카오톡으로 즉시 문의해 주세요!`, [
+                { name: "💬 실시간 카톡 상담하기", url: "http://pf.kakao.com/_zBArM/chat" }
             ]);
         }
     }
@@ -242,7 +228,7 @@ let chatHistory = [
         const lastBooking = JSON.parse(localStorage.getItem('last_booking_info'));
 
         if (!lastBooking) {
-            container.innerHTML = `<div style="text-align:center; padding:60px 0; background:white; border-radius:24px; border:1px dashed #ddd;"><p style="color:#888; font-size:15px;">예약 내역이 없습니다.</p></div>`;
+            container.innerHTML = `<div style="text-align:center; padding:60px 0; background:white; border-radius:24px; border:1px dashed #ddd;"><p style="color:#888; font-size:15px;">최근 예약 내역이 없습니다.</p></div>`;
             return;
         }
 

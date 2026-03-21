@@ -45,7 +45,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function showAdminPanel() {
         loginContainer.style.display = 'none';
         adminContainer.style.display = 'flex';
-        document.getElementById('display-admin-id').innerText = sessionStorage.getItem('adminId') || '관리자';
+        const adminId = sessionStorage.getItem('adminId') || '관리자';
+        document.getElementById('display-admin-id').innerText = adminId;
+        
+        // 🔐 권한 제어: 'luca' 아이디만 시스템 설정(데이터 삭제) 메뉴 노출
+        const systemMenu = document.getElementById('menu-system');
+        if (systemMenu) {
+            systemMenu.style.display = (adminId === 'luca') ? 'flex' : 'none';
+        }
+
         fetchData();
     }
 

@@ -216,142 +216,41 @@ document.addEventListener('DOMContentLoaded', () => {
         const res = allReservations.find(r => r.id === id);
         if (!res) return;
         const modalBody = document.getElementById('modal-body');
-        
-        const itemsHtml = res.items ? res.items.map((i, idx) => {
-            let detailsHtml = '';
-            if (i.details) {
-                if (typeof i.details === 'string') {
-                    detailsHtml = `<div style="margin-top:12px; padding-top:12px; border-top:1px dashed #eee; font-size:14px; color:#666; line-height:1.5;">${i.details}</div>`;
-                } else if (typeof i.details === 'object') {
-                    const d = i.details;
-                    detailsHtml = `
-                        <div style="margin-top:12px; padding-top:12px; border-top:1px dashed #eee; font-size:13px; color:#777; line-height:1.6;">
-                            ${d.resort ? `<b>리조트:</b> ${d.resort}<br>` : ''}
-                            ${d.roomType ? `<b>객실:</b> ${d.roomType}<br>` : ''}
-                            ${d.checkin ? `<b>체크인:</b> ${d.checkin} / <b>체크아웃:</b> ${d.checkout}<br>` : ''}
-                            ${d.adults ? `<b>인원:</b> 성인 ${d.adults}, 소인 ${d.children}` : ''}
-                        </div>
-                    `;
-                }
-            }
-
-            const itemTotalPrice = i.totalPrice || (i.price * i.count) || 0;
-
-            return `
-                <div style="padding:20px; background:#fff; border-radius:12px; margin-bottom:15px; border:1px solid #e2e6e9; box-shadow: 0 4px 6px rgba(0,0,0,0.02); position:relative; overflow:hidden;">
-                    <div style="position:absolute; top:0; left:0; width:4px; height:100%; background:var(--ss-green);"></div>
-                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
-                        <div>
-                            <span style="display:inline-block; background:#333; color:white; font-size:10px; padding:2px 6px; border-radius:4px; margin-bottom:5px; font-weight:800;">ITEM ${idx + 1}</span>
-                            <div style="font-size:19px; font-weight:900; color:#111;">${i.name}</div>
-                        </div>
-                        <div style="text-align:right;">
-                            <div style="font-size:18px; font-weight:900; color:var(--ss-green);">${i.count || i.qty || 0}명</div>
-                            <div style="font-size:14px; font-weight:700; color:#ff6a00; margin-top:4px;">₩ ${itemTotalPrice.toLocaleString()}</div>
-                        </div>
-                    </div>
-                    <div style="display:flex; gap:10px; margin-top:10px;">
-                        <div style="background:#fff5eb; color:#ff6a00; padding:6px 12px; border-radius:6px; font-size:15px; font-weight:800; border:1px solid #ffe0d1;">
-                            📅 ${i.date || (res.pickupDate && i.name.includes('픽업샌딩') ? res.pickupDate : '-')}
-                        </div>
-                        ${i.time ? `
-                        <div style="background:#f0f7ff; color:#007bff; padding:6px 12px; border-radius:6px; font-size:15px; font-weight:800; border:1px solid #d1e9ff;">
-                            ⏰ ${i.time}
-                        </div>` : ''}
-                    </div>
-                    ${detailsHtml}
-                </div>
-            `;
-        }).join('') : '<div style="padding:30px; text-align:center; color:#ccc;">상품 정보가 없습니다.</div>';
-
-        modalBody.innerHTML = `
-            ${res.resortCheckin ? `
-            <div style="padding:25px; background:#f0f7ff; border:2px solid #007bff; border-radius:15px; margin-bottom:30px; box-shadow: 0 4px 12px rgba(0,123,255,0.05);">
-                <h4 style="font-size:16px; color:#0056b3; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
-                    <span class="material-icons" style="font-size:22px;">hotel</span> 
-                    <span style="font-weight:900; font-size:18px;">리조트 숙박 일정 (최우선 확인)</span>
-                </h4>
-                <div style="font-size:16px; line-height:2; color:#111;">
-                    <div style="display:flex; border-bottom:1px dashed #d1e9ff; padding-bottom:12px; margin-bottom:12px;">
-                        <b style="width:100px; color:#0056b3;">체크인</b> 
-                        <div style="font-weight:700;">${res.resortCheckin}</div>
-                    </div>
-                    <div style="display:flex;">
-                        <b style="width:100px; color:#0056b3;">체크아웃</b> 
-                        <div style="font-weight:700;">${res.resortCheckout}</div>
-                    </div>
-                </div>
-            </div>` : ''}
-
-            ${res.pickupDate ? `
-            <div style="padding:25px; background:#fffbe6; border:2px solid #ffe58f; border-radius:15px; margin-bottom:30px; box-shadow: 0 4px 12px rgba(255,106,0,0.05);">
-                <h4 style="font-size:16px; color:#d48806; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
-                    <span class="material-icons" style="font-size:22px;">flight_takeoff</span>
-                    <span style="font-weight:900; font-size:18px;">픽업/샌딩 상세 정보 (최우선 확인)</span>
-                </h4>
-                <div style="font-size:16px; line-height:2; color:#111;">
-                    <div style="display:flex; border-bottom:1px dashed #ffd591; padding-bottom:12px; margin-bottom:12px;">
-                        <b style="width:70px; color:#d35400;">픽업</b>
-                        <div style="font-weight:700;">${res.pickupDate} / ${res.pickupFlight || '-'} / ${res.pickupResort || '-'}</div>
-                    </div>
-                    <div style="display:flex; ${res.exchangeAmount ? 'border-bottom:1px dashed #ffd591; padding-bottom:12px; margin-bottom:12px;' : ''}">
-                        <b style="width:70px; color:#d35400;">샌딩</b>
-                        <div style="font-weight:700;">${res.sendingDate} / ${res.sendingFlight || '-'} / ${res.sendingResort || '-'}</div>
-                    </div>
-                    ${res.exchangeAmount ? `
-                    <div style="display:flex;">
-                        <b style="width:100px; color:#d35400;">환전 요청</b>
-                        <div style="font-weight:900; color:#ff6a00;">${res.exchangeAmount}</div>
-                    </div>` : ''}
-                </div>
-            </div>` : ''}
-
-            ${res.activityPickupResort ? `
-            <div style="padding:25px; background:#f6ffed; border:2px solid #b7eb8f; border-radius:15px; margin-bottom:30px; box-shadow: 0 4px 12px rgba(82,196,26,0.05);">
-                <h4 style="font-size:16px; color:#389e0d; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
-                    <span class="material-icons" style="font-size:22px;">directions_car</span>
-                    <span style="font-weight:900; font-size:18px;">투어/스파 픽업 리조트 정보</span>
-                </h4>
-                <div style="font-size:16px; line-height:2; color:#111;">
-                    <div style="display:flex;">
-                        <b style="width:100px; color:#389e0d;">픽업 리조트</b>
-                        <div style="font-weight:700;">${res.activityPickupResort}</div>
-                    </div>
-                </div>
-            </div>` : ''}
-
-            <div style="margin-bottom:30px;">                <h4 style="font-size:15px; color:#111; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
-                    <span class="material-icons" style="font-size:20px; color:var(--ss-green);">shopping_cart</span> 
-                    <span style="font-weight:800;">예약 상품 정보</span>
-                </h4>
-                ${itemsHtml}
-            </div>
-
-            <div style="margin-bottom:10px;">
-                <h4 style="font-size:15px; color:#111; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
-                    <span class="material-icons" style="font-size:20px; color:var(--ss-green);">person</span> 
-                    <span style="font-weight:800;">예약자 및 결제 정보</span>
-                </h4>
-                <div class="res-detail-grid" style="background:#fff; border:1px solid #eee; padding:25px; border-radius:10px; border-top:3px solid #333; row-gap:20px;">
-                    <div class="detail-item"><label style="font-size:12px; color:#999;">예약번호</label><div style="color:#ff6a00; font-size:16px;">${res.reservationNumber}</div></div>
-                    <div class="detail-item"><label style="font-size:12px; color:#999;">카카오 ID</label><div style="font-size:14px; font-family:monospace; color:#666;">${res.kakaoUserId || '비로그인 예약'}</div></div>
-                    <div class="detail-item"><label style="font-size:12px; color:#999;">예약상태</label><div><span class="n-badge badge-blue" style="font-size:13px; padding:4px 10px;">${res.status}</span></div></div>
-                    <div class="detail-item"><label style="font-size:12px; color:#999;">고객명(한글/영문)</label><div style="font-size:17px;">${res.customerKorName} / ${res.engName || '-'}</div></div>
-                    <div class="detail-item"><label style="font-size:12px; color:#999;">연락처(카톡ID)</label><div style="font-size:17px;">${res.contact}</div></div>
-                    <div class="detail-item" style="grid-column: span 2; background: #fffcf0; padding: 15px; border-radius: 10px; border: 1px solid #ffe58f;">
-                        <label style="font-size:12px; color:#d48806; font-weight:800;">📝 고객 요청사항</label>
-                        <div style="font-size:15px; color:#444; margin-top:8px; white-space: pre-wrap; line-height:1.6;">${res.requests || '없음'}</div>
-                    </div>
-                    <div class="detail-item" style="grid-column: span 2; margin-top:10px; padding-top:20px; border-top:1px solid #f1f1f1;">
-                        <label style="font-size:13px; color:#666; font-weight:700;">최종 입금액</label>
-                        <div style="color:var(--ss-green); font-size:26px; font-weight:900; letter-spacing:-1px;">₩ ${(res.totalPrice || 0).toLocaleString()}</div>
-                    </div>
-                    <div class="detail-item" style="grid-column: span 2;"><label style="font-size:12px; color:#999;">신청일시</label><div style="font-weight:400; color:#888; font-size:14px;">${res.createdAt?.toDate ? res.createdAt.toDate().toLocaleString() : '-'}</div></div>
-                </div>
-            </div>
-        `;
-        document.getElementById('res-detail-modal').style.display = 'flex';
+        // ... (existing showDetail code)
     };
 
     window.closeModal = () => document.getElementById('res-detail-modal').style.display = 'none';
+
+    // --- 6. Full Data Cleanup ---
+    window.handleClearAllData = async () => {
+        if (!confirm("⚠️ 주의: 모든 예약 데이터를 영구적으로 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.")) return;
+        
+        const btn = document.getElementById('clear-all-btn');
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = "삭제 중...";
+
+        try {
+            const snap = await getDocs(collection(db, "reservations"));
+            if (snap.empty) {
+                alert("삭제할 데이터가 없습니다.");
+                return;
+            }
+
+            const deletePromises = snap.docs.map(d => deleteDoc(doc(db, "reservations", d.id)));
+            await Promise.all(deletePromises);
+            
+            alert(`총 ${snap.size}개의 예약 데이터가 삭제되었습니다.`);
+        } catch (e) {
+            console.error("Cleanup Error:", e);
+            alert("삭제 도중 오류가 발생했습니다.");
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+    };
+
+    // Bind event listener for the button
+    const clearBtn = document.getElementById('clear-all-btn');
+    if (clearBtn) clearBtn.onclick = window.handleClearAllData;
 });

@@ -254,11 +254,13 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
 
         body.innerHTML = `
+            <!-- 안내문 복사 버튼 (상단 독립 배치) -->
+            <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #eee; text-align: right;">
+                <button class="btn-action-received" onclick="copyGuidance('${res.id}')" style="background:#ff6a00; border:none; padding:10px 20px; font-size:14px; font-weight:800; border-radius:10px;">👉 예약 안내문 복사</button>
+            </div>
+
             <div class="detail-section">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <h4 style="margin:0;">👤 예약자 정보</h4>
-                    <button class="btn-action-received" onclick="copyGuidance('${res.id}')" style="background:#ff6a00; border:none; padding:8px 15px; font-size:12px;">👉 예약 안내문 복사</button>
-                </div>
+                <h4>👤 예약자 정보</h4>
                 <p><b>성함:</b> ${res.customerKorName} (${res.engName || '영문미입력'})</p>
                 <p><b>연락처:</b> ${res.contact}</p>
             </div>

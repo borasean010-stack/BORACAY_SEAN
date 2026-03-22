@@ -227,9 +227,9 @@
                 <div class="person-info">
                     <span style="font-weight:800; font-size:15px;">인원 선택</span>
                     <div class="counter">
-                        <button class="count-btn" onclick="updateAdultCount(-1)">-</button>
+                        <button class="count-btn" onclick="updateCount('adult', -1)">-</button>
                         <strong id="pc-count">1</strong>
-                        <button class="count-btn" onclick="updateAdultCount(1)">+</button>
+                        <button class="count-btn" onclick="updateCount('adult', 1)">+</button>
                     </div>
                 </div>
                 <div class="person-price-calc">
@@ -290,9 +290,9 @@
     <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#fcfcfc; border-radius:15px; margin-bottom:12px; border:1px solid #f0f0f0;">
         <span style="font-weight:700;">인원 (성인)</span>
         <div class="counter">
-            <button class="count-btn" onclick="updateCount(-1)">-</button>
+            <button class="count-btn" onclick="updateCount('adult', -1)">-</button>
             <strong id="m-count">1</strong>
-            <button class="count-btn" onclick="updateCount(1)">+</button>
+            <button class="count-btn" onclick="updateCount('adult', 1)">+</button>
         </div>
     </div>
     <button class="btn-buy" onclick="handleBuy()" style="background:#ff6a00;">선택 완료 / 구매하기</button>
@@ -331,10 +331,12 @@
         });
     }
 
-    function updateCount(delta) {
-        adultCount = Math.max(1, adultCount + delta);
-        document.getElementById('pc-count').innerText = adultCount;
-        document.getElementById('m-count').innerText = adultCount;
+    function updateCount(type, delta) {
+        if (type === 'adult') {
+            adultCount = Math.max(1, adultCount + delta);
+        }
+        if (document.getElementById('pc-count')) document.getElementById('pc-count').innerText = adultCount;
+        if (document.getElementById('m-count')) document.getElementById('m-count').innerText = adultCount;
     }
     function changeMonth(delta, view) {
         if (view === 'pc') {

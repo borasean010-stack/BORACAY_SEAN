@@ -227,9 +227,9 @@
                 <div class="person-info">
                     <span style="font-weight:800; font-size:15px;">인원 선택</span>
                     <div class="counter">
-                        <button class="count-btn" onclick="updateAdultCount(-1)">-</button>
-                        <strong id="pc-count">1</strong>
-                        <button class="count-btn" onclick="updateAdultCount(1)">+</button>
+                        <button class="count-btn" onclick="updateCount('adult', -1)">-</button>
+                        <strong id="pc-adult-count">1</strong>
+                        <button class="count-btn" onclick="updateCount('adult', 1)">+</button>
                     </div>
                 </div>
                 <div class="person-price-calc">
@@ -301,8 +301,12 @@
 
     }
 
-    function updateAdultCount(delta) {
-        adultCount = Math.max(1, adultCount + delta);
+    function updateCount(type, delta) {
+        if (type === 'adult') {
+            adultCount = Math.max(1, adultCount + delta);
+        } else {
+            childCount = Math.max(0, childCount + delta);
+        }
         updateTotalPrice();
     }
 

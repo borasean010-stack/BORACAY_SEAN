@@ -100,7 +100,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         customer: res.customerKorName,
                         count: item.count,
                         resNo: res.reservationNumber,
-                        status: res.status
+                        status: res.status,
+                        id: res.id
                     });
                 }
             });
@@ -114,14 +115,25 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        container.innerHTML = todayItems.map(item => `
-            <div class="schedule-card">
-                <div class="sc-time"><span class="material-icons">access_time</span> ${item.time}</div>
-                <div class="sc-item">${item.name}</div>
-                <div class="sc-customer"><b>${item.customer}</b> (${item.count}명)</div>
-                <div style="margin-top:5px; font-size:10px; color:${item.status==='예약확정'?'#03c75a':'#ff8c00'}; font-weight:800;">● ${item.status}</div>
-            </div>
-        `).join('');
+        container.innerHTML = todayItems.map(item => {
+            const isConfirmed = item.status === '예약확정';
+            const statusClass = isConfirmed ? 'confirmed' : 'pending';
+            const statusText = isConfirmed ? '확정' : '입금대기';
+            
+            return `
+                <div class="schedule-card" onclick="showDetail('${item.id}')" style="cursor:pointer; border-top-color: ${isConfirmed ? '#03c75a' : '#ff8c00'}">
+                    <div class="sc-status ${statusClass}">${statusText}</div>
+                    <div class="sc-time"><span class="material-icons">access_time</span> ${item.time}</div>
+                    <div class="sc-item">${item.name}</div>
+                    <div class="sc-customer">
+                        <b>${item.customer}</b> <span style="color:#999; margin-left:4px;">${item.count}명</span>
+                    </div>
+                    <div class="sc-status-tag" style="color:${isConfirmed ? '#03c75a' : '#ff8c00'}">
+                        <span class="material-icons" style="font-size:12px;">circle</span> ${item.status}
+                    </div>
+                </div>
+            `;
+        }).join('');
     }
 
     // --- 4. Sidebar & Tab 연동 ---

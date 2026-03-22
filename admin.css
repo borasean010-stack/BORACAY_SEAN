@@ -59,22 +59,94 @@ body.smartstore-admin { margin: 0; padding: 0; background: var(--ss-bg); font-fa
 .ss-content { flex: 1; padding: 25px; overflow-y: auto; }
 
 /* 📅 Today's Schedule Timeline Styles */
-.schedule-section { margin-bottom: 30px; }
-.schedule-title { font-size: 16px; font-weight: 800; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; color: #111; }
-.schedule-title .material-icons { color: var(--ss-orange); }
-
-.schedule-timeline { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: thin; }
-.schedule-card { 
-    flex: 0 0 180px; background: #fff; border-radius: 12px; padding: 15px; 
-    border: 1px solid var(--ss-border); border-top: 4px solid var(--ss-orange);
-    box-shadow: var(--ss-shadow); transition: 0.3s;
+.schedule-section {
+    margin-bottom: 40px;
+    background: #fff;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border: 1px solid var(--ss-border);
 }
-.schedule-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
-.sc-time { font-size: 18px; font-weight: 900; color: #111; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
-.sc-time .material-icons { font-size: 16px; color: #999; }
-.sc-item { font-size: 12px; font-weight: 700; color: #555; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sc-customer { font-size: 11px; color: #888; }
-.sc-empty { padding: 40px; text-align: center; background: #fff; border-radius: 12px; border: 1px dashed #ccc; color: #999; font-size: 13px; width: 100%; }
+.schedule-title {
+    font-size: 18px;
+    font-weight: 900;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #111;
+}
+.schedule-title .material-icons { font-size: 24px; color: var(--ss-green); }
+
+.schedule-timeline {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding: 5px 5px 20px;
+    scrollbar-width: none;
+}
+.schedule-timeline::-webkit-scrollbar { display: none; }
+
+.schedule-card { 
+    flex: 0 0 240px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px; 
+    border: 1px solid #eee;
+    border-top: 6px solid var(--ss-green);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+}
+.schedule-card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+
+.sc-time {
+    font-size: 24px;
+    font-weight: 900;
+    color: #111;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.sc-time .material-icons { font-size: 20px; color: #03c75a; }
+
+.sc-item {
+    font-size: 15px;
+    font-weight: 800;
+    color: #333;
+    margin-bottom: 10px;
+    line-height: 1.3;
+    word-break: keep-all;
+}
+.sc-customer {
+    font-size: 13px;
+    color: #666;
+    background: #f8f9fa;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #f1f1f1;
+}
+.sc-status-tag {
+    margin-top: 10px;
+    font-size: 11px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.sc-empty {
+    width: 100%;
+    padding: 80px 40px;
+    text-align: center;
+    background: #fafafa;
+    border-radius: 16px;
+    border: 2px dashed #ddd;
+    color: #bbb;
+    font-size: 15px;
+    font-weight: 600;
+}
 
 /* 💎 Luxury Cleanup Tab View */
 .system-view { background: #fff; border-radius: 12px; padding: 40px; border: 1px solid var(--ss-border); text-align: center; box-shadow: var(--ss-shadow); }

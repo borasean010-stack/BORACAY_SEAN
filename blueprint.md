@@ -237,9 +237,12 @@ This project is a reservation website for tours and activities in Boracay (BORAC
             * **Validation:** Injects customer name, headcount, dates, flights, and resorts directly into the message.
         * **User Feedback:** Shows an alert once the text is successfully copied to the clipboard.
 
-    ### 20. Event Banner Update (March 2026)
-    * **Objective:** Add a new event banner to the main page slider.
-    * **Implementation:** Added `event.png` as the first slide in the `.banner-wrapper` section of `index.html`. The slider navigation and dots automatically adjust to the new content via `main.js`.
+    ### 20. Event Banner Update & Fix (March 2026)
+    * **Objective:** Add a new event banner to the main page slider and fix broken image issues.
+    * **Implementation:** 
+        * Added `event.png` as a slide in the `.banner-wrapper` section of `index.html`. 
+        * **Fix:** Addressed the "broken image" (X-box) issue by updating the version query string (`?v=20260322_v2`) for `event.png` and adding versioning to `main-popup1.png` and `main-popup2.png` to force browser cache refresh.
+    * **Results:** Ensures users see the latest banner and popup designs without caching conflicts.
 
 
 ## Previous Milestone: Admin & Login Redesign

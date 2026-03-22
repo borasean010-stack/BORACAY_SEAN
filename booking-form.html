@@ -358,7 +358,9 @@
             activityPickupResort: document.getElementById('activity-pickup-resort') ? document.getElementById('activity-pickup-resort').value : '',
             exchangeAmount: document.getElementById('exchange-amount') ? document.getElementById('exchange-amount').value : '',
             resortCheckin: (resortItem && resortItem.details) ? resortItem.details.checkin : '',
-            resortCheckout: (resortItem && resortItem.details) ? resortItem.details.checkout : ''
+            resortCheckout: (resortItem && resortItem.details) ? resortItem.details.checkout : '',
+            // Flag if any item has private transfer
+            hasPrivateTransfer: cartData.some(i => i.privateTransfer === true)
         };
 
         const finalize = () => {

@@ -239,7 +239,50 @@ document.addEventListener('DOMContentLoaded', () => {
     window.showDetail = (id) => {
         const res = allReservations.find(r => r.id === id);
         if (!res) return;
-        // ... (Modal logic same as previous)
-        alert(JSON.stringify(res, null, 2)); // 임시 상세 보기
+
+        const modal = document.getElementById('res-detail-modal');
+        const body = document.getElementById('modal-body');
+        
+        const itemsHtml = res.items.map(item => `
+            <div style="padding:10px; background:#f9f9f9; border-radius:8px; margin-bottom:5px;">
+                <div style="font-weight:800;">${item.name}</div>
+                <div style="font-size:12px; color:#666;">
+                    ${item.date || ''} ${item.time || ''} | ${item.count}명
+                    ${item.details ? `<br>(${item.details})` : ''}
+                </div>
+            </div>
+        `).join('');
+
+        body.innerHTML = `
+            <div class="detail-section">
+                <h4>👤 예약자 정보</h4>
+                <p><b>성함:</b> ${res.customerKorName} (${res.engName || '영문미입력'})</p>
+                <p><b>연락처:</b> ${res.contact}</p>
+            </div>
+            <div class="detail-section">
+                <h4>✈️ 항공 및 호텔 정보</h4>
+                <p><b>픽업:</b> ${res.pickupDate || '-'} / ${res.pickupFlight || '-'} / ${res.pickupResort || '-'}</p>
+                <p><b>샌딩:</b> ${res.sendingDate || '-'} / ${res.sendingFlight || '-'} / ${res.sendingResort || '-'}</p>
+                <p><b>단독 차량 이용:</b> <b style="color:${res.hasPrivateTransfer ? '#ff6a00' : '#999'}">${res.hasPrivateTransfer ? '사용' : '미사용'}</b></p>
+                ${res.exchangeAmount ? `<p><b>환전 요청:</b> ${res.exchangeAmount}</p>` : ''}
+            </div>
+            <div class="detail-section">
+                <h4>🛒 예약 상품 (${res.items.length})</h4>
+                ${itemsHtml}
+                <div style="text-align:right; margin-top:10px; font-weight:900; font-size:18px; color:#ff6a00;">
+                    총 금액: ₩ ${res.totalPrice.toLocaleString()}
+                </div>
+            </div>
+            <div class="detail-section">
+                <h4>📝 요청사항</h4>
+                <p style="background:#fff9f5; padding:10px; border-radius:8px;">${res.requests || '없음'}</p>
+            </div>
+        `;
+
+        modal.style.display = 'flex';
+    };
+
+    window.closeModal = () => {
+        document.getElementById('res-detail-modal').style.display = 'none';
     };
 });

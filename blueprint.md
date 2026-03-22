@@ -140,6 +140,7 @@ This project is a reservation website for tours and activities in Boracay (BORAC
     * **Pickup & Sending Label Update:**
         * **Child Category Deletion:** Removed the "Child" (소인) selection row from `pickup-sending.html`.
         * **Unified Age Range:** Updated the person selection label to "예약 인원 (36개월~성인)" to reflect unified pricing for that range.
+        * **Private Transfer Option:** Added a "Private Transfer" (단독 차량 이용) option for $40 (approx. 54,000 KRW) per team. This is a one-time fixed fee regardless of the number of people.
     * **Secret Garden Malumpati Age Ranges:**
         * Updated Adult label to "성인 인원 (중1학년~성인)".
         * Updated Child label to "소인 인원 (36개월~초6학년)".

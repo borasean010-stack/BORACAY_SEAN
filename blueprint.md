@@ -152,11 +152,10 @@ This project is a reservation website for tours and activities in Boracay (BORAC
     *   **New Pricing (2 Persons):** Type A - 750,000 KRW, Type B - 450,000 KRW, Type C - 300,000 KRW.
     *   **UI Update:** Added a Type selection tab in `jl-snap.html` to allow users to choose between sessions. Updated `main.js` to reflect the starting price of 300,000 KRW.
     * **Hero Video Optimization (March 2026):**
-        * **Objective:** Ensure the hero video appears as quickly as possible and eliminate the "black screen" during loading.
+        * **Objective:** Ensure the hero video appears as quickly as possible and eliminate the "black screen" and any thumbnail delay.
         * **Preloading:** Added `<link rel="preload" href="hero-video.mp4" as="video" type="video/mp4">` to the HTML head to prioritize video download.
-        * **Visual Fallback:** Implemented a beach-themed CSS gradient (`#007bb5` to `#00a8cc`) and a placeholder image (`beach1.jpg`) on the hero container to provide an immediate visual experience.
-        * **Smooth Transition:** Used CSS `opacity` and `transition` to fade in the video smoothly only after it begins playing.
-        * **Event-Driven Loading:** Updated `main.js` to add the `.loaded` class specifically on the `playing` event, ensuring the first frame is ready before the video is shown.
+        * **Immediate Appearance:** Removed visual fallbacks (thumbnail images) and transition delays to allow the video to be visible as soon as the first frame is ready.
+        * **Speed Optimization:** Configured the video tag with `autoplay`, `muted`, `loop`, `playsinline`, and `preload="auto"` for maximum performance.
     * **Massage Description Update (March 2026):**
         * **Bora Spa:** "보라카이 꿀 마사지 원조"
         * **Poseidon Spa:** "연예인이 운영하는 스파 모든 룸 안 개별 수영장 + 자쿠지"

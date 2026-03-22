@@ -273,7 +273,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #007bb5 linear-gradient(135deg, #007bb5 0%, #00a8cc 100%); /* 비디오 로딩 전 배경색 (보라카이 바다느낌) */
+    background: #007bb5; /* 비디오 로딩 전 배경색 */
 }
 .video-background { 
     position: absolute; 
@@ -282,18 +282,12 @@ body {
     width: 100%; 
     height: 100%; 
     z-index: 1;
-    background: url('beach1.jpg') no-repeat center center; /* 대체 이미지 */
-    background-size: cover;
 }
 .video-background video { 
     width: 100%; 
     height: 100%; 
     object-fit: cover; 
-    opacity: 0; 
-    transition: opacity 0.8s ease-in-out; 
-}
-.video-background video.loaded {
-    opacity: 0.85;
+    opacity: 0.85; /* 바로 보이도록 설정 */
 }
 .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.5)); z-index: 2; }
 .hero-content { position: relative; z-index: 3; text-align: center; color: white; }

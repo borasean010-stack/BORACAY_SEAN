@@ -285,17 +285,22 @@ document.addEventListener('DOMContentLoaded', () => {
         startAutoSlide();
     }
 
-    // --- Hero Video Mobile Compatibility ---
+    // --- Hero Video Mobile Compatibility & Smooth Loading ---
     const heroVideo = document.getElementById('hero-video');
     if (heroVideo) {
+        // Handle smooth fade-in when video actually starts playing
+        heroVideo.addEventListener('playing', () => {
+            heroVideo.classList.add('loaded');
+            console.log("Hero video playing & visible");
+        });
+
         // Try to play programmatically (sometimes helps on mobile)
         const playVideo = async () => {
             try {
                 await heroVideo.play();
-                console.log("Hero video playing");
             } catch (err) {
                 console.warn("Hero video autoplay failed:", err);
-                // If it fails, we keep the poster/background fallback
+                // If it fails, the CSS background image remains visible
             }
         };
         

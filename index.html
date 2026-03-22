@@ -11,6 +11,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=1.2">
     <meta name="naver-site-verification" content="c1297da2a73a23240be37bef6dcfc8fdc2680b16" />
+    
+    <!-- Hero Video Preload -->
+    <link rel="preload" href="hero-video.mp4" as="video" type="video/mp4">
 
     <!-- Google Structured Data (JSON-LD) for Logo -->
     <script type="application/ld+json">
@@ -79,7 +82,7 @@
 </div>
 <section class="hero">
     <div class="video-background">
-        <video autoplay muted loop playsinline preload="auto" id="hero-video" class="loaded">
+        <video autoplay muted loop playsinline preload="auto" id="hero-video">
             <source src="hero-video.mp4" type="video/mp4">
         </video>
     </div>

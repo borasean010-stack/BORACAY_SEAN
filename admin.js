@@ -244,36 +244,71 @@ document.addEventListener('DOMContentLoaded', () => {
         const body = document.getElementById('modal-body');
 
         const itemsHtml = res.items.map(item => `
-            <div style="padding:10px; background:#f5f5f5; border-radius:4px; margin-bottom:5px; font-size:13px;">
-                <div style="font-weight:bold;">${item.name}</div>
-                <div style="color:#666;">
-                    ${item.date || ''} ${item.time || ''} | ${item.count}명
-                    ${item.details ? `<br>(${item.details})` : ''}
+            <div style="padding:12px; background:#f8f9fa; border:1px solid #eee; border-radius:8px; margin-bottom:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:start;">
+                    <div style="font-size:15px; font-weight:800; color:#333;">${item.name}</div>
+                    <div style="font-size:14px; font-weight:800; color:#ff6a00;">${item.count}명</div>
+                </div>
+                <div style="margin-top:6px; font-size:13px; color:#666; line-height:1.5;">
+                    <span style="background:#eee; padding:2px 6px; border-radius:4px; margin-right:5px; font-weight:700;">일정</span> ${item.date || ''} ${item.time || ''}
+                    ${item.details ? `<br><span style="background:#eee; padding:2px 6px; border-radius:4px; margin-right:5px; font-weight:700;">옵션</span> ${item.details}` : ''}
                 </div>
             </div>
         `).join('');
 
         body.innerHTML = `
-            <div style="margin-bottom:15px; text-align:right;">
-                <button class="btn-action-received" onclick="copyGuidance('${res.id}')" style="background:#ff6a00; color:white; border:none; padding:8px 16px; border-radius:4px; font-weight:bold; cursor:pointer;">👉 예약 안내문 복사</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:1px solid #eee;">
+                <h3 style="margin:0; font-size:18px; color:#111;">예약 상세 정보</h3>
+                <button onclick="copyGuidance('${res.id}')" style="background:#ff6a00; color:white; border:none; padding:8px 14px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:13px;">👉 안내문 복사</button>
             </div>
 
-            <div style="margin-bottom:20px; line-height:1.6; font-size:14px;">
-                <p><b>성함:</b> ${res.customerKorName} (${res.engName || '-'})</p>
-                <p><b>연락처:</b> ${res.contact}</p>
-                <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
-                <p><b>픽업:</b> ${res.pickupDate || '-'} / ${res.pickupFlight || '-'} / ${res.pickupResort || '-'}</p>
-                <p><b>샌딩:</b> ${res.sendingDate || '-'} / ${res.sendingFlight || '-'} / ${res.sendingResort || '-'}</p>
-                <p><b>단독 차량 이용:</b> ${res.hasPrivateTransfer ? '사용' : '미사용'}</p>
-                ${res.exchangeAmount ? `<p><b>환전 요청:</b> ${res.exchangeAmount}</p>` : ''}
-                ${res.activityPickupResort ? `<p><b>투어/스파 픽업지:</b> ${res.activityPickupResort}</p>` : ''}
-                <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
-                <p><b>예약 상품:</b></p>
+            <!-- 1. 예약 상품 (최상단 배치) -->
+            <div style="margin-bottom:25px;">
+                <div style="font-size:14px; font-weight:700; color:#888; margin-bottom:10px; display:flex; align-items:center; gap:5px;">
+                    <span class="material-icons" style="font-size:16px;">shopping_cart</span> 예약 상품
+                </div>
                 ${itemsHtml}
-                <p style="margin-top:10px; text-align:right; font-weight:bold; font-size:16px;">총 금액: ₩ ${res.totalPrice.toLocaleString()}</p>
-                <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
-                <p><b>요청사항:</b></p>
-                <div style="background:#fffbe6; padding:10px; border-radius:4px; font-size:13px; border:1px solid #ffe58f;">${res.requests || '없음'}</div>
+                <div style="text-align:right; margin-top:10px; padding:10px; background:#fff5eb; border-radius:8px;">
+                    <span style="font-size:14px; color:#666;">총 합계 금액</span>
+                    <div style="font-size:20px; font-weight:900; color:#ff6a00;">₩ ${res.totalPrice.toLocaleString()}</div>
+                </div>
+            </div>
+
+            <!-- 2. 예약자 및 일정 정보 -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:25px;">
+                <div style="background:#fcfcfc; padding:15px; border-radius:10px; border:1px solid #f0f0f0;">
+                    <div style="font-size:13px; font-weight:700; color:#888; margin-bottom:8px;">👤 예약자 정보</div>
+                    <div style="font-size:14px; line-height:1.6;">
+                        <p style="margin:4px 0;"><b>성함:</b> ${res.customerKorName}</p>
+                        <p style="margin:4px 0; font-size:12px; color:#999;">(${res.engName || '영문 미입력'})</p>
+                        <p style="margin:4px 0;"><b>연락처:</b> ${res.contact}</p>
+                    </div>
+                </div>
+                <div style="background:#fcfcfc; padding:15px; border-radius:10px; border:1px solid #f0f0f0;">
+                    <div style="font-size:13px; font-weight:700; color:#888; margin-bottom:8px;">✈️ 항공/호텔</div>
+                    <div style="font-size:13px; line-height:1.6;">
+                        <p style="margin:4px 0;"><b>픽업:</b> ${res.pickupDate?.slice(5) || '-'} / ${res.pickupFlight || '-'}</p>
+                        <p style="margin:4px 0;"><b>샌딩:</b> ${res.sendingDate?.slice(5) || '-'} / ${res.sendingFlight || '-'}</p>
+                        <p style="margin:4px 0;"><b>리조트:</b> ${res.pickupResort || '-'}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. 기타 세부 정보 -->
+            <div style="margin-bottom:25px; background:#fcfcfc; padding:15px; border-radius:10px; border:1px solid #f0f0f0;">
+                <div style="font-size:13px; font-weight:700; color:#888; margin-bottom:8px;">📝 추가 정보 및 요청</div>
+                <div style="font-size:13px; line-height:1.6; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <p style="margin:0;"><b>단독 차량:</b> ${res.hasPrivateTransfer ? '<span style="color:#ff6a00; font-weight:bold;">사용</span>' : '미사용'}</p>
+                    ${res.exchangeAmount ? `<p style="margin:0;"><b>환전:</b> ${res.exchangeAmount}</p>` : ''}
+                    ${res.activityPickupResort ? `<p style="margin:0; grid-column:span 2;"><b>투어 픽업지:</b> ${res.activityPickupResort}</p>` : ''}
+                </div>
+                <div style="margin-top:12px; padding:10px; background:white; border:1px dashed #ddd; border-radius:6px; font-size:13px; color:#555;">
+                    <b>요청사항:</b> ${res.requests || '없음'}
+                </div>
+            </div>
+
+            <div style="text-align:center;">
+                <button onclick="closeModal()" style="width:100%; padding:12px; background:#333; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">창 닫기</button>
             </div>
         `;
 

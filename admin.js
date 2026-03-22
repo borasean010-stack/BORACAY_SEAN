@@ -242,11 +242,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const modal = document.getElementById('res-detail-modal');
         const body = document.getElementById('modal-body');
-        
+
         const itemsHtml = res.items.map(item => `
-            <div style="padding:10px; background:#f9f9f9; border-radius:8px; margin-bottom:5px;">
-                <div style="font-weight:800;">${item.name}</div>
-                <div style="font-size:12px; color:#666;">
+            <div style="padding:10px; background:#f5f5f5; border-radius:4px; margin-bottom:5px; font-size:13px;">
+                <div style="font-weight:bold;">${item.name}</div>
+                <div style="color:#666;">
                     ${item.date || ''} ${item.time || ''} | ${item.count}명
                     ${item.details ? `<br>(${item.details})` : ''}
                 </div>
@@ -254,40 +254,31 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
 
         body.innerHTML = `
-            <!-- 안내문 복사 버튼 (상단 독립 배치) -->
-            <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #eee; text-align: right;">
-                <button class="btn-action-received" onclick="copyGuidance('${res.id}')" style="background:#ff6a00; border:none; padding:10px 20px; font-size:14px; font-weight:800; border-radius:10px;">👉 예약 안내문 복사</button>
+            <div style="margin-bottom:15px; text-align:right;">
+                <button class="btn-action-received" onclick="copyGuidance('${res.id}')" style="background:#ff6a00; color:white; border:none; padding:8px 16px; border-radius:4px; font-weight:bold; cursor:pointer;">👉 예약 안내문 복사</button>
             </div>
 
-            <div class="detail-section">
-                <h4>👤 예약자 정보</h4>
-                <p><b>성함:</b> ${res.customerKorName} (${res.engName || '영문미입력'})</p>
+            <div style="margin-bottom:20px; line-height:1.6; font-size:14px;">
+                <p><b>성함:</b> ${res.customerKorName} (${res.engName || '-'})</p>
                 <p><b>연락처:</b> ${res.contact}</p>
-            </div>
-            <div class="detail-section">
-                <h4>✈️ 항공 및 호텔 정보</h4>
+                <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
                 <p><b>픽업:</b> ${res.pickupDate || '-'} / ${res.pickupFlight || '-'} / ${res.pickupResort || '-'}</p>
                 <p><b>샌딩:</b> ${res.sendingDate || '-'} / ${res.sendingFlight || '-'} / ${res.sendingResort || '-'}</p>
-                <p><b>단독 차량 이용:</b> <b style="color:${res.hasPrivateTransfer ? '#ff6a00' : '#999'}">${res.hasPrivateTransfer ? '사용' : '미사용'}</b></p>
+                <p><b>단독 차량 이용:</b> ${res.hasPrivateTransfer ? '사용' : '미사용'}</p>
                 ${res.exchangeAmount ? `<p><b>환전 요청:</b> ${res.exchangeAmount}</p>` : ''}
                 ${res.activityPickupResort ? `<p><b>투어/스파 픽업지:</b> ${res.activityPickupResort}</p>` : ''}
-            </div>
-            <div class="detail-section">
-                <h4>🛒 예약 상품 (${res.items.length})</h4>
+                <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
+                <p><b>예약 상품:</b></p>
                 ${itemsHtml}
-                <div style="text-align:right; margin-top:10px; font-weight:900; font-size:18px; color:#ff6a00;">
-                    총 금액: ₩ ${res.totalPrice.toLocaleString()}
-                </div>
-            </div>
-            <div class="detail-section">
-                <h4>📝 요청사항</h4>
-                <p style="background:#fff9f5; padding:10px; border-radius:8px;">${res.requests || '없음'}</p>
+                <p style="margin-top:10px; text-align:right; font-weight:bold; font-size:16px;">총 금액: ₩ ${res.totalPrice.toLocaleString()}</p>
+                <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
+                <p><b>요청사항:</b></p>
+                <div style="background:#fffbe6; padding:10px; border-radius:4px; font-size:13px; border:1px solid #ffe58f;">${res.requests || '없음'}</div>
             </div>
         `;
 
         modal.style.display = 'flex';
     };
-
     // --- 📱 자동 안내문 생성 로직 ---
     window.copyGuidance = (id) => {
         const res = allReservations.find(r => r.id === id);

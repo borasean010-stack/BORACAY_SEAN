@@ -255,7 +255,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         body.innerHTML = `
             <div class="detail-section">
-                <h4>👤 예약자 정보</h4>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h4 style="margin:0;">👤 예약자 정보</h4>
+                    <button class="btn-action-received" onclick="copyGuidance('${res.id}')" style="background:#ff6a00; border:none; padding:8px 15px; font-size:12px;">👉 예약 안내문 복사</button>
+                </div>
                 <p><b>성함:</b> ${res.customerKorName} (${res.engName || '영문미입력'})</p>
                 <p><b>연락처:</b> ${res.contact}</p>
             </div>
@@ -265,6 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p><b>샌딩:</b> ${res.sendingDate || '-'} / ${res.sendingFlight || '-'} / ${res.sendingResort || '-'}</p>
                 <p><b>단독 차량 이용:</b> <b style="color:${res.hasPrivateTransfer ? '#ff6a00' : '#999'}">${res.hasPrivateTransfer ? '사용' : '미사용'}</b></p>
                 ${res.exchangeAmount ? `<p><b>환전 요청:</b> ${res.exchangeAmount}</p>` : ''}
+                ${res.activityPickupResort ? `<p><b>투어/스파 픽업지:</b> ${res.activityPickupResort}</p>` : ''}
             </div>
             <div class="detail-section">
                 <h4>🛒 예약 상품 (${res.items.length})</h4>
@@ -280,6 +284,68 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         modal.style.display = 'flex';
+    };
+
+    // --- 📱 자동 안내문 생성 로직 ---
+    window.copyGuidance = (id) => {
+        const res = allReservations.find(r => r.id === id);
+        if (!res) return;
+
+        let messages = [];
+
+        res.items.forEach(item => {
+            let msg = "";
+            const name = item.name;
+            const isSending = name.includes('샌딩') || (item.details && item.details.includes('샌딩'));
+            
+            // 건기/우기 판단 (11-5월 건기, 6-10월 우기)
+            const tourMonth = item.date ? parseInt(item.date.split('-')[1]) : new Date().getMonth() + 1;
+            const isDrySeason = tourMonth <= 5 || tourMonth >= 11;
+
+            if (name.includes('블랙펄')) {
+                const meetingPlace = isDrySeason ? "8 Eight by the Beach" : "블라복 비치 목샤";
+                const mapLink = isDrySeason ? "https://maps.app.goo.gl/Wa491bdTXuKZ2BtB8" : "https://www.google.co.kr/maps/place/Moksha+Cafe/@11.9676741,121.9274171,21z";
+                msg = `블랙펄 호핑투어 예약 확정 안내 문자\n\n대표자 성함 : ${res.customerKorName}\n인원 : ${item.count}\n투어 : ${name}\n투어날짜 : ${item.date}\n\n투어 미팅 시간 / 장소 : 13:30 / ${meetingPlace}\n${mapLink}\n\n-트라이씨클로 미팅장소 이동 시-\n트라이씨클 기사에게 “${meetingPlace}" 라고 꼭 말해주세요!\n내리신 후 비치로 이동하셔서 좌측편으로 미팅장소 확인 가능합니다.\n\n★★ 주의 사항 및 준비물 ★★\n\n*주의 사항 - 미팅시간에서 10분이상 늦으시면 노쇼처리되며, 별도 연락없이 출항합니다. 이 경우 환불 및 일정 변경 불가하오니 꼭 미팅시간을 지켜주세요\n\n편한 물놀이 복장, 비치타올1인 1장\n스노클 마스크(보유시)\n보트맨팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품\n\n🎉 블랙펄 기념일 이벤트 안내\n호핑투어 중 생일, 결혼기념일, 프로포즈, 기념일 축하가 있으시면 저희 블랙펄에서 작게 축하 이벤트를 진행해드립니다!\n👉 해당되는 경우 미팅 전까지 카카오톡으로 알려주세요! 사전 요청 필수 / 무료 서비스`;
+            } 
+            else if (name.includes('말룸파티')) {
+                if (isSending) {
+                    msg = `말룸파티 시크릿가든(샌딩) 예약 확정 안내 문자\n\n대표자 성함 : ${res.customerKorName}\n인원 : ${item.count}\n투어 : ${name}\n투어날짜 : ${item.date}\n투어 미팅 시간 / 장소 : 09:00 / ${res.activityPickupResort || res.pickupResort || '리조트 로비'}\n\n★★ 주의 사항 및 준비물 ★★\n\n*주의 사항 - 미팅시간에서 10분이상 늦으시면 노쇼처리되며, 별도 연락 없이 출발합니다. 이 경우 환불 및 일정 변경 불가하오니 꼭 미리 체크아웃과 룸체크를 진행하고 기다려주세요\n\n편한 물놀이 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n튜빙 진행시 1인 350페소 준비해 주세요\n여권 정보면과 호텔 바우쳐 사진으로 폰에 저장(선택)\n그외 개인적으로 필요한 물품\n\n칼리보 공항 공항세 1인 900페소(공항 현지불 / 필수사항)\nBK라운지 샤워실 이용비용 1인 100페소(라운지 현지불)`;
+                } else {
+                    msg = `말룸파티 시크릿가든(데이) 예약 확정 안내 문자\n\n대표자 성함 : ${res.customerKorName}\n인원 : ${item.count}\n투어 : ${name}\n투어날짜 : ${item.date}\n시간 / 장소 : 09:40 / 보라카이션 사무실\nhttps://goo.gl/maps/pQkmCErHLjmQGRYM9\n\n★★ 주의 사항 및 준비물 ★★\n\n*주의 사항 - 미팅시간에서 10분이상 늦으시면 노쇼처리되며, 별도 연락없이 출발합니다. 이 경우 환불 및 일정 변경 불가하오니 꼭 미팅시간을 지켜주세요\n\n편한 물놀이 복장, 비치타올1인 1장\n매너팁 1인 100페소 (성인, 소인 동일)\n튜빙 진행시 1인 350페소 준비해 주세요\n여권 정보면과 호텔 바우쳐 사진으로 폰에 저장(선택)\n그외 개인적으로 필요한 물품`;
+                }
+            }
+            else if (name.includes('픽업샌딩')) {
+                msg = `보라카이션 왕복픽업샌딩 예약 확정 안내 문자\n\n대표자 성함 : ${res.customerKorName}\n인원 : ${item.count}\n투어 : 왕복픽업샌딩\n픽업시 환전 요청 금액 : ${res.exchangeAmount || '$'}\n\n픽업항공 : ${res.pickupDate} ${res.pickupFlight}\n픽업시 리조트 : ${res.pickupResort}\n★공항 밖에서 보라카이션 픽업 직원이 보라카이션 피켓을 들고 대기 하고 있습니다.\n픽업 직원과 대표자 성함 확인 후 안내에 따라 주시기 바랍니다. 항공이 딜레이가 되도 기다립니다.\n\n샌딩항공 : ${res.sendingDate} ${res.sendingFlight}\n샌딩 시간/장소 : 09:00 ${res.sendingResort}\n*교통상황에 따라 샌딩 미팅 시간과 장소가 변경될 수있습니다\n\n★지정된 장소와 시간전에 먼저 도착 하셔서 대기 해주셔야 합니다.\n리조트 체크아웃을 완료하고 샌딩 출발 하는 시간 입니다.\n늦어서 별도로 이동을 해야 하는 경우 추가 요금이 발생 합니다.`;
+            }
+            else if (['에스파', '포세이돈', '아유르베다', '마리스', '힐롯', '루나', '보라스파', '헬리오스', '카바얀'].some(s => name.includes(s))) {
+                const shuttleShops = ['포세이돈', '아유르베다', '마리스', '헬리오스'];
+                const hasShuttle = shuttleShops.some(s => name.includes(s));
+                const meetingPlace = hasShuttle ? `${res.activityPickupResort || '리조트 로비'} (셔틀 픽업)` : `${name} 개별이동`;
+                msg = `마사지 예약 확정 안내 문자\n\n대표자 성함 : ${res.customerKorName}\n인원 : ${item.count}\n투어 : ${name}\n투어날짜 : ${item.date} ${item.time || ''}\n투어 미팅 시간 / 장소 : ${item.time || ''} ${meetingPlace}\n\n★ 준비물\n편한 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품`;
+            }
+            else if (name.includes('VIP라운지') || name.includes('라운지')) {
+                msg = `VIP라운지 예약 확인 안내 문자\n\n이용 날짜 : ${item.date}\n항공편명 : ${res.sendingFlight || '-'}\n예약자 성함 : ${res.customerKorName}\n인원 : ${item.count}PAX\n\nCONFIRMED BY ZOHAN\n\nVIP 라운지 (공항 내부)\nVIP 라운지는 공항 내부에 있는 라운지 입니다.\n라운지에 입장 하기 위해서는 공항 입장 후 모든 출국절차를 끝내시고 마지막 이민국까지 통과를 하시고 이용 하실 수 있습니다.\n출국절차 완료 후 2층 라운지 가셔서 성함말씀 혹은 이 예약문자 보여주시고 이용하시면 됩니다\n*선착순 예약 특성상 예약과 동시에 자리가 배정이 됩니다. 출국수속이 지체되어 라운지 도착 후 이용시간이 예상했던 시간보다 부족하여도 또는 이용을 못하신다 하더라도 당일 취소 및 환불은 불가 합니다.`;
+            }
+            else if (name.includes('골프')) {
+                msg = `페어웨이 골프 예약 확정 안내 문자\n\n대표자 성함 : ${res.customerKorName}\n인원 : ${item.count}\n투어날짜 : ${item.date}\n투어 미팅 시간 / 장소 : ${item.time || '07:40'} / ${res.activityPickupResort || '리조트 로비'}\n점심 포함 : 점보크랩\n\n★ 준비물\n→ 불포함사항\n- 골프채, 골프공, 골프슈즈, 골프글로브\n- 개인음료(그늘집 있음)\n- 캐디팁 - 1인 100페소(18홀기준, 캐디에게 직접 페이)\n- 복귀 트라이시클비용(편도 약 150페소)`;
+            }
+            else {
+                // 일반 액티비티 (리조트 픽업)
+                msg = `액티비티 예약 확정 안내 문자\n\n대표자 성함 : ${res.customerKorName}\n인원 : ${item.count}\n투어 : ${name}\n투어날짜 : ${item.date}\n투어 미팅 시간 / 장소 : ${item.time || ''} ${res.activityPickupResort || '리조트 로비'}\n\n★ 준비물\n편한 물놀이 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품`;
+            }
+
+            if (msg) messages.push(msg);
+        });
+
+        const finalMsg = messages.join('\n\n--------------------------------------\n\n');
+        
+        // 클립보드 복사
+        navigator.clipboard.writeText(finalMsg).then(() => {
+            alert('안내문이 클립보드에 복사되었습니다. 카카오톡에 붙여넣기 하세요.');
+        }).catch(err => {
+            console.error('복사 실패:', err);
+            alert('복사에 실패했습니다. 상세 정보에서 수동으로 복사해주세요.');
+        });
     };
 
     window.closeModal = () => {

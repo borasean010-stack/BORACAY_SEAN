@@ -225,6 +225,18 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Strengthened Confirmation Guidance:** Replaced generic guidance with a clear, bold message stating that depositing is not enough—customers **must** send their Korean name to the Boracay Sean Kakao channel for final confirmation.
         * **Visual Hierarchy:** Used bolding and color highlighting to emphasize the "Final Confirmation" (최종 확정) and the penalty of not contacting (missed confirmation).
 
+    ### 19. Admin Automated Guidance Generation (March 2026)
+    * **Objective:** Enable admins to generate and copy reservation confirmation messages with a single click.
+    * **Implementation:**
+        * **One-Click Copy:** Added a "👉 예약 안내문 복사" button in the admin reservation detail modal.
+        * **Template Logic:** Implemented dynamic templates for all major product categories (Hopping, Malumpati, Massage, Pickup-Sending, VIP Lounge, Golf, etc.).
+        * **Smart Logic:** 
+            * **Hopping:** Automatically selects meeting location based on Dry/Rainy season (White Beach vs. Bulabog).
+            * **Massage:** Distinguishes between shuttle-supported shops (Resort Pickup) and others (Individual Movement).
+            * **Malumpati:** Handles both Day tour and Sending tour (includes airport tax info) variations.
+            * **Validation:** Injects customer name, headcount, dates, flights, and resorts directly into the message.
+        * **User Feedback:** Shows an alert once the text is successfully copied to the clipboard.
+
 
 ## Previous Milestone: Admin & Login Redesign
 

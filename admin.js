@@ -272,10 +272,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="material-icons" style="font-size:16px;">shopping_cart</span> 예약 상품
                 </div>
                 ${itemsHtml}
+                ${res.status !== '견적' ? `
                 <div style="text-align:right; margin-top:10px; padding:10px; background:#fff5eb; border-radius:8px;">
                     <span style="font-size:14px; color:#666;">총 합계 금액</span>
                     <div style="font-size:20px; font-weight:900; color:#ff6a00;">₩ ${res.totalPrice.toLocaleString()}</div>
-                </div>
+                </div>` : ''}
             </div>
 
             <!-- 2. 예약자 정보 -->

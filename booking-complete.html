@@ -181,7 +181,7 @@
         <div class="booking-details" id="booking-details">
             <div class="detail-row"><span>예약번호</span><b id="res-no-val">-</b></div>
             <div class="detail-row"><span>예약자명</span><b id="res-name">-</b></div>
-            <div class="detail-row"><span>신청 총액</span><b id="res-total" style="color:#ff6a00; font-size:18px;">₩ 0</b></div>
+            <div class="detail-row" id="total-price-row"><span>신청 총액</span><b id="res-total" style="color:#ff6a00; font-size:18px;">₩ 0</b></div>
         </div>
 
         <div class="btn-group">
@@ -235,12 +235,13 @@
                 document.getElementById('res-total').innerText = totalPriceStr;
                 document.getElementById('bank-total').innerText = totalPriceStr;
 
-                // 리조트 견적인 경우 문구 변경
+                // 리조트 견적인 경우 문구 변경 및 금액 숨김
                 const isQuote = lastBooking.status === '견적';
                 if (isQuote) {
                     document.getElementById('complete-title').innerText = '견적 신청 완료!';
                     document.getElementById('complete-msg').innerHTML = '성공적으로 리조트 견적 신청이 접수되었습니다.<br>상담원 확인 후 상세 견적을 안내해 드립니다.';
                     document.getElementById('bank-info').style.display = 'none';
+                    document.getElementById('total-price-row').style.display = 'none'; // 신청 총액 숨김
                     document.getElementById('kakao-btn').innerText = '카카오톡 견적 상담하기';
                     document.getElementById('notice-box').innerHTML = '* 버튼 클릭 시 보라카이션 카카오톡 채널로 연결됩니다.<br>* 상담원에게 성함을 말씀해 주시면 빠른 견적 안내가 가능합니다.';
                 }

@@ -246,7 +246,7 @@
                         <small style="color:#888; font-size:11px;">다른 팀과 합승 없이 단독 차량 이동</small>
                     </div>
                     <label class="toggle-switch" style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 13px; font-weight: 700; color: #ff6a00;">+$40 (₩ 54,000)</span>
+                        <span style="font-size: 13px; font-weight: 700; color: #ff6a00;">+$40 (현지 지불)</span>
                         <input type="checkbox" id="private-transfer-toggle" onchange="updateTotalPrice()" style="width: 20px; height: 20px; accent-color: #ff6a00; cursor: pointer;">
                     </label>
                 </div>
@@ -283,7 +283,6 @@
 <script>
     let adultCount = 1;
     const ADULT_PRICE = 54900;
-    const PRIVATE_PRICE = 54000; // $40 fixed
 
     const now = new Date();
     let currentDate = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -310,8 +309,8 @@
         if(document.getElementById('adult-price-text')) document.getElementById('adult-price-text').innerText = ADULT_PRICE.toLocaleString();
         const adultSubtotal = adultCount * ADULT_PRICE;
         
-        const isPrivate = document.getElementById('private-transfer-toggle').checked;
-        const total = adultSubtotal + (isPrivate ? PRIVATE_PRICE : 0);
+        // 단독 요금은 현지 지불이므로 온라인 합계에서 제외
+        const total = adultSubtotal;
 
         document.getElementById('pc-adult-count').innerText = adultCount;
         document.getElementById('adult-count-text').innerText = adultCount;
@@ -399,7 +398,7 @@
     function handleBuy() {
         if (!selectedPickupDate || !selectedSendingDate) { alert('픽업 및 샌딩 날짜를 모두 선택해주세요.'); return; }
         const isPrivate = document.getElementById('private-transfer-toggle').checked;
-        const total = (adultCount * ADULT_PRICE) + (isPrivate ? PRIVATE_PRICE : 0);
+        const total = (adultCount * ADULT_PRICE); // 단독 요금 제외
         const item = { 
             name: "공항 왕복 픽업샌딩", 
             price: ADULT_PRICE, 
@@ -408,7 +407,7 @@
             pickupDate: selectedPickupDate,
             sendingDate: selectedSendingDate,
             privateTransfer: isPrivate,
-            details: `인원 ${adultCount}명 (36개월~성인)${isPrivate ? ' | 단독 추가' : ''}`
+            details: `인원 ${adultCount}명 (36개월~성인)${isPrivate ? ' | 단독 추가 (현지 지불 $40)' : ''}`
         };
         BSUtils.buyNow(item);
     }
@@ -416,7 +415,7 @@
     function addToCart() {
         if (!selectedPickupDate || !selectedSendingDate) { alert('픽업 및 샌딩 날짜를 모두 선택해주세요.'); return; }
         const isPrivate = document.getElementById('private-transfer-toggle').checked;
-        const total = (adultCount * ADULT_PRICE) + (isPrivate ? PRIVATE_PRICE : 0);
+        const total = (adultCount * ADULT_PRICE); // 단독 요금 제외
         const item = { 
             name: "공항 왕복 픽업샌딩", 
             price: ADULT_PRICE, 
@@ -425,7 +424,7 @@
             pickupDate: selectedPickupDate,
             sendingDate: selectedSendingDate,
             privateTransfer: isPrivate,
-            details: `인원 ${adultCount}명 (36개월~성인)${isPrivate ? ' | 단독 추가' : ''}`
+            details: `인원 ${adultCount}명 (36개월~성인)${isPrivate ? ' | 단독 추가 (현지 지불 $40)' : ''}`
         };
         BSUtils.saveToCart(item);
     }

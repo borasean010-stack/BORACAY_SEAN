@@ -332,14 +332,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 <!-- 3. 항공/호텔 정보 -->
                 <div style="margin-bottom:20px; background:#fcfcfc; padding:15px; border-radius:10px; border:1px solid #f0f0f0;">
-                    <div style="font-size:13px; font-weight:700; color:#888; margin-bottom:8px;">✈️ 항공 및 호텔 정보</div>
+                    <div style="font-size:13px; font-weight:700; color:#888; margin-bottom:8px;">✈️ 공항 픽업/샌딩 정보</div>
                     <div style="font-size:13px; line-height:1.6; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                         ${res.pickupDate ? `<p style="margin:0;"><b>픽업일:</b> ${res.pickupDate}</p>` : ''}
                         ${res.pickupFlight ? `<p style="margin:0;"><b>픽업편:</b> ${res.pickupFlight}</p>` : ''}
                         ${res.sendingDate ? `<p style="margin:0;"><b>샌딩일:</b> ${res.sendingDate}</p>` : ''}
                         ${res.sendingFlight ? `<p style="margin:0;"><b>샌딩편:</b> ${res.sendingFlight}</p>` : ''}
-                        ${res.pickupResort ? `<p style="margin:0; grid-column:span 2;"><b>리조트:</b> ${res.pickupResort}</p>` : ''}
-                        ${res.sendingResort ? `<p style="margin:0; grid-column:span 2;"><b>샌딩리조트:</b> ${res.sendingResort}</p>` : ''}
+                        ${res.pickupResort ? `<p style="margin:0; grid-column:span 2;"><b>이용 리조트:</b> ${res.pickupResort}</p>` : ''}
+                        ${res.sendingResort ? `<p style="margin:0; grid-column:span 2;"><b>샌딩 픽업 리조트:</b> ${res.sendingResort}</p>` : ''}
                     </div>
                 </div>
 
@@ -478,6 +478,7 @@ document.addEventListener('DOMContentLoaded', () => {
             sendingDate: document.getElementById('edit-s-date').value,
             sendingFlight: document.getElementById('edit-s-flight').value,
             pickupResort: document.getElementById('edit-resort').value,
+            sendingResort: res.sendingResort, // Keep existing if not in edit form, or add field
             activityPickupResort: document.getElementById('edit-act-pickup').value,
             totalPrice: parseInt(document.getElementById('edit-total').value) || 0,
             requests: document.getElementById('edit-requests').value

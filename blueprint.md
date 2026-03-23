@@ -335,6 +335,15 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **UI Clarity:** Added a dedicated "🛒 예약 상품 일정 수정" (Edit Item Schedule) section at the top of the edit form for better focus on activity logistics.
     * **Benefits:** Provides full flexibility for handling complex rescheduling requests from customers who book multiple tours at once.
 
+    ### 28. Data Integrity & Sync Fix (March 2026)
+    * **Objective:** Ensure "Airport Pickup/Sending" data is correctly captured, displayed, and editable across the entire system.
+    * **Implementation:**
+        * **Capture Fix:** Updated `booking-form.html` to correctly identify the pickup item in the cart even when multiple products are present, ensuring `pickupDate` and `sendingDate` are properly saved to the top-level reservation document.
+        * **Admin Detail Visibility:** Refined `admin.js` to explicitly pull airport transfer details from the correct Firestore fields and display them prominently in the detail modal.
+        * **My Page Real-time Sync:** Enhanced `mypage.html` to fetch the latest reservation data directly from Firestore based on the customer's contact info, ensuring that any administrative changes to pickup/sending logistics are immediately visible to the user.
+        * **Admin Edit Stability:** Restructured the admin modal to separate the "Save/Close" buttons from the scrollable content, preventing UI breakage during data updates.
+    * **Benefits:** Guarantees that both administrators and customers always have access to the most accurate and up-to-date travel logistics.
+
 ## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (HanaTour Seller Style)

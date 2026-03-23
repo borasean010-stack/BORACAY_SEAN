@@ -330,7 +330,7 @@
             btn.disabled = true;
         }
 
-        const pickupItem = cartData.find(i => i.name.includes('픽업샌딩'));
+        const pickupItem = cartData.find(i => i.name.includes('픽업샌딩') || i.name.includes('공항'));
         const resortItem = cartData.find(i => i.name.includes('리조트 견적'));
 
         // 예약번호 생성 (YYMMDD 형식)

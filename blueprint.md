@@ -327,6 +327,14 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Dynamic Layout:** Uses a clean, card-based UI with background shading for instructions to ensure critical information like "Meeting Place" is highly visible.
     * **Benefits:** Provides a clear "Day-by-Day" plan for the customer, reducing confusion and support inquiries regarding meeting locations and times.
 
+    ### 27. Granular Reservation Editing (March 2026)
+    * **Objective:** Allow administrators to modify specific dates and times for each individual item within a reservation (e.g., changing only the hopping tour date without affecting other activities).
+    * **Implementation:**
+        * **Per-Item Edit Fields:** Updated the admin edit mode in `admin.js` to dynamically generate date and time input fields for every product in the `items` array.
+        * **Data Collection:** Modified `handleSaveEdit` to map through the reservation's items and capture the updated values from the corresponding input fields.
+        * **UI Clarity:** Added a dedicated "🛒 예약 상품 일정 수정" (Edit Item Schedule) section at the top of the edit form for better focus on activity logistics.
+    * **Benefits:** Provides full flexibility for handling complex rescheduling requests from customers who book multiple tours at once.
+
 ## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (HanaTour Seller Style)

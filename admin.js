@@ -379,11 +379,34 @@ document.addEventListener('DOMContentLoaded', () => {
             editBtn.innerText = '저장하기';
             editBtn.style.background = '#03c75a';
 
+            // 상품별 수정 필드 생성
+            const itemsEditHtml = res.items.map((item, idx) => `
+                <div style="padding:12px; background:#fff; border:1px solid #eee; border-radius:8px; margin-bottom:10px;">
+                    <div style="font-weight:800; font-size:13px; color:#333; margin-bottom:8px;">📦 ${item.name}</div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                        <div>
+                            <span style="font-size:11px; color:#999;">날짜</span>
+                            <input type="text" class="edit-item-date" data-idx="${idx}" value="${item.date || ''}" placeholder="YYYY-MM-DD" style="width:100%; padding:6px; border:1px solid #ddd; border-radius:4px; font-size:12px;">
+                        </div>
+                        <div>
+                            <span style="font-size:11px; color:#999;">시간</span>
+                            <input type="text" class="edit-item-time" data-idx="${idx}" value="${item.time || ''}" placeholder="00:00" style="width:100%; padding:6px; border:1px solid #ddd; border-radius:4px; font-size:12px;">
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
             scrollArea.innerHTML = `
                 <div style="font-size:14px; padding:10px; border:1px solid #ff6a00; border-radius:10px; background:#fff9f5; margin-bottom:20px;">
-                    ⚠️ 필드값을 수정한 후 [저장하기] 버튼을 눌러주세요.
+                    ⚠️ 정보를 수정한 후 하단의 [저장하기] 버튼을 눌러주세요.
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                
+                <div style="margin-bottom:20px;">
+                    <label style="font-size:12px; font-weight:bold; color:#ff6a00; display:block; margin-bottom:10px;">🛒 예약 상품 일정 수정</label>
+                    ${itemsEditHtml}
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;">
                     <div class="edit-group">
                         <label style="font-size:12px; color:#888;">대표자 성함</label>
                         <input type="text" id="edit-name" value="${res.customerKorName}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px;">
@@ -393,8 +416,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         <input type="text" id="edit-contact" value="${res.contact}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px;">
                     </div>
                 </div>
-                <div style="margin-top:15px; padding:15px; background:#f8f9fa; border-radius:10px;">
-                    <label style="font-size:12px; font-weight:bold; color:#ff6a00; display:block; margin-bottom:10px;">✈️ 항공/픽업 정보 수정</label>
+
+                <div style="padding:15px; background:#f8f9fa; border-radius:10px; margin-bottom:20px;">
+                    <label style="font-size:12px; font-weight:bold; color:#ff6a00; display:block; margin-bottom:10px;">✈️ 공항 픽업/샌딩 정보 수정</label>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                         <div><span style="font-size:11px; color:#999;">픽업일</span><input type="text" id="edit-p-date" value="${res.pickupDate || ''}" placeholder="YYYY-MM-DD"></div>
                         <div><span style="font-size:11px; color:#999;">픽업편</span><input type="text" id="edit-p-flight" value="${res.pickupFlight || ''}" placeholder="항공편"></div>
@@ -402,23 +426,28 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div><span style="font-size:11px; color:#999;">샌딩편</span><input type="text" id="edit-s-flight" value="${res.sendingFlight || ''}" placeholder="항공편"></div>
                     </div>
                 </div>
-                <div style="margin-top:15px;">
-                    <label style="font-size:12px; color:#888;">리조트 / 픽업 리조트</label>
+
+                <div style="margin-bottom:20px;">
+                    <label style="font-size:12px; color:#888;">리조트 정보</label>
                     <input type="text" id="edit-resort" value="${res.pickupResort || ''}" placeholder="숙소 리조트" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; margin-bottom:5px;">
-                    <input type="text" id="edit-act-pickup" value="${res.activityPickupResort || ''}" placeholder="투어/마사지 픽업지" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px;">
+                    <input type="text" id="edit-act-pickup" value="${res.activityPickupResort || ''}" placeholder="픽업샌딩/마사지 픽업지" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px;">
                 </div>
-                <div style="margin-top:15px;">
+
+                <div style="margin-bottom:20px;">
                     <label style="font-size:12px; color:#888;">총 합계 금액</label>
                     <input type="number" id="edit-total" value="${res.totalPrice}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px;">
                 </div>
-                <div style="margin-top:15px;">
+
+                <div style="margin-bottom:20px;">
                     <label style="font-size:12px; color:#888;">요청사항</label>
                     <textarea id="edit-requests" style="width:100%; height:80px; padding:10px; border:1px solid #ddd; border-radius:6px;">${res.requests || ''}</textarea>
                 </div>
             `;
             // 공통 스타일 적용
             scrollArea.querySelectorAll('input').forEach(el => {
-                if(!el.style.width) el.style.cssText = "width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; margin-top:2px;";
+                if(!el.className.includes('edit-item')) {
+                    if(!el.style.width) el.style.cssText = "width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; margin-top:2px;";
+                }
             });
         } else {
             handleSaveEdit(id);
@@ -426,7 +455,22 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     async function handleSaveEdit(id) {
+        const res = allReservations.find(r => r.id === id);
+        if (!res) return;
+
+        // 개별 상품 데이터 수집
+        const updatedItems = res.items.map((item, idx) => {
+            const dateInput = document.querySelector(`.edit-item-date[data-idx="${idx}"]`);
+            const timeInput = document.querySelector(`.edit-item-time[data-idx="${idx}"]`);
+            return {
+                ...item,
+                date: dateInput ? dateInput.value : item.date,
+                time: timeInput ? timeInput.value : item.time
+            };
+        });
+
         const newData = {
+            items: updatedItems,
             customerKorName: document.getElementById('edit-name').value,
             contact: document.getElementById('edit-contact').value,
             pickupDate: document.getElementById('edit-p-date').value,

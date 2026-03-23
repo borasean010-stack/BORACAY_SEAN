@@ -270,6 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const modal = document.getElementById('res-detail-modal');
         const body = document.getElementById('modal-body');
+        const adminId = sessionStorage.getItem('adminId');
 
         // 예약 상품 렌더링
         // 예약 상품 렌더링 시작 부분에 전체 일정표 버튼 추가

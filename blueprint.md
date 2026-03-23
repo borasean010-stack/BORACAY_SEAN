@@ -301,6 +301,15 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Label Update:** Changed "🏨 투어/스파 픽업 리조트" to "픽업샌딩 / 마사지 픽업 리조트" in `mypage.html` and `booking-form.html`.
         * **Consistency:** Applied the same terminology across both the booking entry form and the customer's personal reservation history page to ensure a seamless experience.
 
+    ### 25. Unified Itinerary Voucher & Admin Permission Fix (March 2026)
+    * **Objective:** Streamline voucher sharing for cart purchases and ensure admin editing permissions work correctly.
+    * **Implementation:**
+        * **Consolidated Voucher:** Added a "Copy Total Schedule Link" button in the admin detail modal. This generates a unified URL showing all items (tours, pickups, etc.) in a single, chronologically sorted list.
+        * **Dynamic Layout:** Updated `reservation-schedule.html` to automatically detect and display airport pickup/sending information as distinct, sorted entries in the timeline.
+        * **Permission Fix:** Resolved a bug where the "수정하기" (Edit) button was hidden due to an undefined variable. It is now correctly restricted to **'luca'** and **'admin'** IDs.
+        * **Real-time Sync:** Vouchers now fetch the latest data from Firestore, ensuring any administrative edits are instantly visible to the customer.
+    * **Benefits:** Simplifies communication by providing one professional link for multiple bookings and maintains high data security.
+
 ## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (HanaTour Seller Style)

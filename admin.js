@@ -307,14 +307,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h3 style="margin:0; font-size:18px; color:#111;">예약 상세 정보</h3>
                 <button onclick="copyGuidance('${res.id}')" style="background:#ff6a00; color:white; border:none; padding:8px 14px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:13px;">👉 안내문 복사</button>
             </div>
-body.innerHTML = `
-    <!-- 1. 예약 상품 -->
-    <div style="margin-bottom:25px;">
-        <div style="font-size:14px; font-weight:700; color:#888; margin-bottom:10px; display:flex; align-items:center; gap:5px;">
-            <span class="material-icons" style="font-size:16px;">shopping_cart</span> 예약 상품
-        </div>
-        ${totalVoucherBtn}
-        ${itemsHtml}
+
+            <!-- 1. 예약 상품 -->
+            <div style="margin-bottom:25px;">
+                <div style="font-size:14px; font-weight:700; color:#888; margin-bottom:10px; display:flex; align-items:center; gap:5px;">
+                    <span class="material-icons" style="font-size:16px;">shopping_cart</span> 예약 상품
+                </div>
+                ${totalVoucherBtn}
+                ${itemsHtml}
 
                 ${res.status !== '견적' ? `
                 <div style="text-align:right; margin-top:10px; padding:10px; background:#fff5eb; border-radius:8px;">

@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const body = document.getElementById('modal-body');
 
         // 예약 상품 렌더링
-        const itemsHtml = res.items.map(item => `
+        const itemsHtml = res.items.map((item, idx) => `
             <div style="padding:12px; background:#f8f9fa; border:1px solid #eee; border-radius:8px; margin-bottom:8px;">
                 <div style="display:flex; justify-content:space-between; align-items:start;">
                     <div style="font-size:15px; font-weight:800; color:#333;">${item.name}</div>
@@ -282,6 +282,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="margin-top:6px; font-size:13px; color:#666; line-height:1.5;">
                     <span style="background:#eee; padding:2px 6px; border-radius:4px; margin-right:5px; font-weight:700;">일정</span> ${item.date || ''} ${item.time || ''}
                     ${item.details ? `<br><span style="background:#eee; padding:2px 6px; border-radius:4px; margin-right:5px; font-weight:700;">옵션</span> ${item.details}` : ''}
+                </div>
+                <div style="margin-top:10px; display:flex; gap:5px;">
+                    <a href="reservation-schedule.html?id=${res.id}&itemIndex=${idx}" target="_blank" style="flex:1; text-align:center; padding:6px; background:#fff; border:1px solid #ddd; border-radius:4px; font-size:11px; font-weight:700; color:#555; text-decoration:none;">바우처 보기</a>
+                    <button onclick="copyVoucherLink('${res.id}', ${idx})" style="flex:1; padding:6px; background:#03c75a; border:none; border-radius:4px; font-size:11px; font-weight:700; color:white; cursor:pointer;">링크 복사</button>
                 </div>
             </div>
         `).join('');
@@ -407,6 +411,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }).catch(err => {
             console.error('복사 실패:', err);
             alert('복사에 실패했습니다. 상세 정보에서 수동으로 복사해주세요.');
+        });
+    };
+
+    window.copyVoucherLink = (id, idx) => {
+        const url = `${window.location.origin}/reservation-schedule.html?id=${id}&itemIndex=${idx}`;
+        navigator.clipboard.writeText(url).then(() => {
+            alert('바우처 링크가 복사되었습니다. 고객님께 전달해주세요.');
+        }).catch(err => {
+            console.error('링크 복사 실패:', err);
+            alert('링크 복사에 실패했습니다.');
         });
     };
 

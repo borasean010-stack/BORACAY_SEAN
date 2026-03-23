@@ -253,6 +253,15 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Functionality:** Integrated Firestore `deleteDoc` logic to remove specific reservation records permanently upon confirmation.
         * **Styling:** Added `.btn-action-danger` to `admin.css` for a consistent and warning-oriented button design.
 
+    ### 22. Tour-Specific Voucher Generation (March 2026)
+    * **Objective:** Allow administrators to generate separate schedules/vouchers for each tour item in a multi-product reservation (cart purchase).
+    * **Implementation:**
+        * **Parameter Support:** Updated `reservation-schedule.html` to accept an `itemIndex` parameter via URL.
+        * **Dynamic Filtering:** If `itemIndex` is provided, the voucher only displays the specific tour at that index from the reservation data.
+        * **Admin UI:** Added "바우처 보기" (View Voucher) and "링크 복사" (Copy Link) buttons for each item within the reservation detail modal in `admin.js`.
+        * **Firebase Integration:** `reservation-schedule.html` now fetches real-time data directly from Firestore for accuracy.
+    * **Benefits:** Provides a more professional and organized way to share tour details with customers who book multiple items simultaneously.
+
 ## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (HanaTour Seller Style)

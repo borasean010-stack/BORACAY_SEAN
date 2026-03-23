@@ -288,6 +288,13 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Pickup Detail Logic:** Specifically handled airport pickup/sending details so they appear as independent entries in the timeline, even if they aren't explicitly listed in the items array.
     * **Benefits:** Eliminates the need for multiple separate links and ensures the customer always sees the most up-to-date schedule managed by the admin.
 
+    ### 26. Restricted Admin Editing Access (March 2026)
+    * **Objective:** Enhance security by limiting who can modify reservation data within the admin panel.
+    * **Implementation:**
+        * **Permission Logic:** Updated the `showDetail` function in `admin.js` to check the logged-in administrator's ID.
+        * **Access Control:** The "수정하기" (Edit) button is now exclusively visible to users with IDs **'luca'** or **'admin'**. Other administrators can view details but cannot initiate changes.
+        * **Context:** This ensures that critical data updates are handled only by authorized high-level managers while maintaining standard visibility for other staff members.
+
 ## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (HanaTour Seller Style)

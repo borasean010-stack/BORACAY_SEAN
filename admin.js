@@ -358,7 +358,9 @@ body.innerHTML = `
             </div>
 
             <div style="text-align:center; display:flex; gap:10px;">
-                <button id="edit-btn" onclick="toggleEditMode('${res.id}')" style="flex:1; padding:12px; background:#ff6a00; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">수정하기</button>
+                ${(adminId === 'luca' || adminId === 'admin') ? `
+                    <button id="edit-btn" onclick="toggleEditMode('${res.id}')" style="flex:1; padding:12px; background:#ff6a00; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">수정하기</button>
+                ` : ''}
                 <button onclick="closeModal()" style="flex:1; padding:12px; background:#333; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">창 닫기</button>
             </div>
         `;

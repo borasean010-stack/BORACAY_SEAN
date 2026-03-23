@@ -473,9 +473,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
 
                 <div style="margin-bottom:20px;">
-                    <label style="font-size:12px; color:#888;">리조트 정보</label>
-                    <input type="text" id="edit-resort" value="${res.pickupResort || ''}" placeholder="숙소 리조트" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; margin-bottom:5px;">
-                    <input type="text" id="edit-act-pickup" value="${res.activityPickupResort || ''}" placeholder="픽업샌딩/마사지 픽업지" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px;">
+                    <label style="font-size:12px; color:#888;">리조트 정보 (픽업 / 샌딩)</label>
+                    <input type="text" id="edit-resort" value="${res.pickupResort || ''}" placeholder="픽업 리조트" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; margin-bottom:5px;">
+                    <input type="text" id="edit-sending-resort" value="${res.sendingResort || ''}" placeholder="샌딩 리조트" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; margin-bottom:5px;">
+                    <input type="text" id="edit-act-pickup" value="${res.activityPickupResort || ''}" placeholder="투어/마사지 개별 픽업지" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px;">
                 </div>
 
                 <div style="margin-bottom:20px;">
@@ -523,7 +524,7 @@ document.addEventListener('DOMContentLoaded', () => {
             sendingDate: document.getElementById('edit-s-date').value,
             sendingFlight: document.getElementById('edit-s-flight').value,
             pickupResort: document.getElementById('edit-resort').value,
-            sendingResort: res.sendingResort, // Keep existing if not in edit form, or add field
+            sendingResort: document.getElementById('edit-sending-resort').value,
             activityPickupResort: document.getElementById('edit-act-pickup').value,
             totalPrice: parseInt(document.getElementById('edit-total').value) || 0,
             requests: document.getElementById('edit-requests').value

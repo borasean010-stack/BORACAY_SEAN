@@ -360,6 +360,14 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Time-Based Sorting:** Maintained sorting where 픽업 (Pickup) appears at the start (00:00) and 샌딩 (Sending) appears at the end (23:59) of the daily timeline.
     * **Benefits:** Provides a clean and accurate daily operational view for staff, eliminating clutter from future or past dates within the same reservation.
 
+    ### 31. Granular Resort Location Management (March 2026)
+    * **Objective:** Allow for different pickup and sending resort locations, improving logistical accuracy for travelers moving between hotels.
+    * **Implementation:**
+        * **UI Separation:** Split the single "Use Resort" label into "Pickup Resort" and "Sending Resort" across `mypage.html`, `reservation-schedule.html`, and `admin.js`.
+        * **Admin Editing:** Added a dedicated "Sending Resort" input field to the admin edit form, allowing managers to update both locations independently.
+        * **Voucher Timeline:** Individual transfer cards in the customer voucher now display the specific resort associated with that leg of the trip (Pickup leg shows pickup resort, Sending leg shows sending resort).
+    * **Benefits:** Eliminates ambiguity for transfers, especially when a customer stays at multiple hotels during their trip.
+
 ## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (HanaTour Seller Style)

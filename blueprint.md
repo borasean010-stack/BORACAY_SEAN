@@ -310,6 +310,14 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Real-time Sync:** Vouchers now fetch the latest data from Firestore, ensuring any administrative edits are instantly visible to the customer.
     * **Benefits:** Simplifies communication by providing one professional link for multiple bookings and maintains high data security.
 
+    ### 26. Admin Edit UI Fix & Real-time Info Sync (March 2026)
+    * **Objective:** Fix the disappearing "Save" button in admin mode and ensure pickup/sending details are visible across all user touchpoints.
+    * **Implementation:**
+        * **UI Structural Change:** Reorganized the admin detail modal in `admin.js` to place action buttons (Edit, Close) outside the scrollable content area. This prevents them from being overwritten or hidden during the transition to "Save" mode.
+        * **My Page Enhancement:** Updated `mypage.html` to fetch real-time data from Firestore. It now prominently displays "Airport Pickup/Sending" details (dates, flights, resorts) at the top of the booking card.
+        * **Data Visibility:** Ensured that airport transfer information is correctly mapped from the database to the "My Page" view, making it visible to customers even if it was edited by an admin.
+    * **Benefits:** Provides a more reliable administrative editing experience and keeps customers fully informed of their finalized logistics.
+
 ## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (HanaTour Seller Style)

@@ -271,6 +271,14 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Voucher Enhancement:** `reservation-schedule.html` now displays a dedicated card for "Airport Pickup-Sending" details if that information is present in the reservation, regardless of its position in the items array.
     * **Benefits:** Provides administrators with full control over reservation data, allowing for quick adjustments based on customer requests.
 
+    ### 24. Admin Panel Cleanup & Data Reorganization (March 2026)
+    * **Objective:** Restore the clean look of the main reservation tabs and move the delete functionality to a dedicated "System Setup" view.
+    * **Implementation:**
+        * **Tab Reversion:** Reverted the action column in "New", "Confirmed", and "Resort" tabs to only show "입금확인" (Received) and "상세" (Detail) buttons.
+        * **System Setup Enhancement:** The "System Setup" tab now displays a full list of all reservations with a red "취소/삭제" (Cancel/Delete) button for each row, allowing for selective data management without cluttering the daily workflow.
+        * **Pickup/Sending Fix:** Ensured that airport pickup and sending flight/date details are prominently displayed in both the admin detail modal and the tour-specific vouchers.
+        * **Editing Capability:** Administrators can now edit all critical reservation fields (names, dates, flights, totals) directly from the detail modal to handle customer change requests efficiently.
+
 ## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (HanaTour Seller Style)

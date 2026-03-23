@@ -154,16 +154,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (tab === 'system') {
             scheduleSection.style.display = 'none';
             statusLayer.style.display = 'none';
-            dataViewSection.style.display = 'none';
+            dataViewSection.style.display = 'block'; // 시스템 탭에서도 테이블 보임
             systemSection.style.display = 'block';
-            document.getElementById('current-view-title').innerText = '시스템 설정';
+            document.getElementById('current-view-title').innerText = '데이터 관리 (삭제)';
             document.getElementById('breadcrumb-active').innerText = '설정';
         } else {
             scheduleSection.style.display = 'block';
             statusLayer.style.display = 'flex';
             dataViewSection.style.display = 'block';
             systemSection.style.display = 'none';
-            
+
             document.querySelectorAll('.ss-status-card').forEach(el => el.classList.remove('active'));
             const statusCard = document.getElementById(`tab-${tab}`);
             if(statusCard) statusCard.classList.add('active');
@@ -174,14 +174,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         renderTable();
-    };
+        };
 
-    // --- 5. Main Rendering ---
-    function renderTable() {
+        // --- 5. Main Rendering ---
+        function renderTable() {
         if (!tableBody) return;
         tableBody.innerHTML = '';
-
-        if (activeTab === 'system') return; // 시스템 탭에서는 테이블 안그림
 
         const searchTerm = document.getElementById('header-global-search').value.toLowerCase();
 
@@ -189,12 +187,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const name = (r.customerKorName || '').toLowerCase();
             const resNo = (r.reservationNumber || '').toLowerCase();
             const matchesSearch = name.includes(searchTerm) || resNo.includes(searchTerm);
-            
+
             let matchesTab = false;
             if (activeTab === 'new') matchesTab = (r.status === '입금대기' || r.status === '예약접수');
             else if (activeTab === 'confirmed') matchesTab = (r.status === '예약확정');
             else if (activeTab === 'resorts') matchesTab = (r.status === '견적');
-            
+            else if (activeTab === 'system') matchesTab = true; // 시스템 탭에서는 모든 데이터 표시
+
             return matchesSearch && matchesTab;
         });
 
@@ -207,14 +206,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const tr = document.createElement('tr');
             const status = res.status || '대기';
             let badgeClass = status === '예약확정' ? 'badge-green' : (status === '견적' ? 'badge-blue' : 'badge-yellow');
-            
+
             const firstItemName = res.items && res.items.length > 0 ? res.items[0].name : '-';
             const itemsText = res.items && res.items.length > 1 ? `${firstItemName} 외 ${res.items.length - 1}건` : firstItemName;
             const dateStr = res.createdAt?.toDate ? res.createdAt.toDate().toLocaleDateString() : '-';
 
-            // 'luca' 아이디에게만 개별 삭제(취소) 버튼 노출
-            const adminId = sessionStorage.getItem('adminId');
-            const deleteBtn = (adminId === 'luca') ? `<button class="btn-action-danger" onclick="handleDeleteReservation('${res.id}')">취소/삭제</button>` : '';
+            // 시스템 탭(삭제 관리)에서만 '취소/삭제' 버튼 노출
+            const deleteBtn = (activeTab === 'system') ? `<button class="btn-action-danger" onclick="handleDeleteReservation('${res.id}')">취소/삭제</button>` : '';
+            const actionButtons = (activeTab === 'system') ? deleteBtn : `
+                ${status !== '예약확정' ? `<button class="btn-action-received" onclick="handleAutoConfirm('${res.id}')">입금확인</button>` : ''}
+                <button class="btn-action-outline" onclick="showDetail('${res.id}')">상세</button>
+            `;
 
             tr.innerHTML = `
                 <td><input type="checkbox"></td>
@@ -227,16 +229,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td style="text-align:center;"><span class="n-badge ${badgeClass}">${status}</span></td>
                 <td>
                     <div style="display:flex; gap:5px; flex-wrap:wrap;">
-                        ${status !== '예약확정' ? `<button class="btn-action-received" onclick="handleAutoConfirm('${res.id}')">입금확인</button>` : ''}
-                        <button class="btn-action-outline" onclick="showDetail('${res.id}')">상세</button>
-                        ${deleteBtn}
+                        ${actionButtons}
                     </div>
                 </td>
             `;
             tableBody.appendChild(tr);
         });
-    }
-
+        }
     document.getElementById('header-global-search').oninput = renderTable;
 
     window.handleAutoConfirm = async (id) => {

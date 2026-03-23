@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>
                     <div style="font-size:12px; color:#888; line-height:1.4;">
                         이름(한글) | <b style="color:#111; font-size:14px;">${res.customerKorName || '미입력'}</b><br>
-                        이름(영문) | <b style="color:#555;">${res.engName || '-'}</b>
+                        이름(영문) | <b style="color:#111; font-size:14px;">${res.engName || '-'}</b>
                     </div>
                 </td>
                 <td style="font-weight:600; color:#555;">${itemsText}</td>
@@ -369,7 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div style="font-size:13px; font-weight:700; color:#888; margin-bottom:10px;">👤 예약자 정보</div>
                     <div style="font-size:14px; line-height:1.8;">
                         <p style="margin:0;">이름(한글) | <b style="font-size:16px; color:#111;">${res.customerKorName}</b></p>
-                        <p style="margin:0;">이름(영문) | <b style="color:#555;">${res.engName || '-'}</b></p>
+                        <p style="margin:0;">이름(영문) | <b style="font-size:16px; color:#111;">${res.engName || '-'}</b></p>
                         <p style="margin:5px 0 0 0; color:#888;">연락처 | <b>${res.contact}</b></p>
                     </div>
                 </div>

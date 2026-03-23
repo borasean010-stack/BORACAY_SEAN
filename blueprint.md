@@ -376,6 +376,14 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Data Persistence:** Modified `handleSaveEdit` to ensure any changes to the English name are synchronized with Firestore.
     * **Benefits:** Streamlines on-site operations by providing all necessary naming conventions in one view.
 
+    ### 33. Unified Naming Format in Admin (March 2026)
+    * **Objective:** Standardize the customer identification layout for better operational clarity across both the reservation list and detail views.
+    * **Implementation:**
+        * **Format Standard:** Adopted a "Label | Value" side-by-side format for names: `이름(한글) | 루카 이름(영문) | luca`.
+        * **Consistency:** Applied this format to both the main reservation table and the information section within the detail modal in `admin.js`.
+        * **Styling:** Used contrasting colors (dark black for Korean, gray for English) and bold font weights to ensure the primary name is easily scannable while keeping passport information accessible.
+    * **Benefits:** Reduces cognitive load for staff by providing a consistent, labeled structure for customer naming conventions.
+
 ## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (HanaTour Seller Style)

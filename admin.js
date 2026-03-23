@@ -254,8 +254,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td style="color:#bbb;">${filtered.length - index}</td>
                 <td style="font-weight:700;">${res.reservationNumber || '-'}</td>
                 <td>
-                    <b>${res.customerKorName || '미입력'}</b>
-                    ${res.engName ? `<br><small style="color:#999; font-size:11px;">${res.engName}</small>` : ''}
+                    <div style="font-size:12px; color:#888; line-height:1.4;">
+                        이름(한글) | <b style="color:#111; font-size:14px;">${res.customerKorName || '미입력'}</b><br>
+                        이름(영문) | <b style="color:#555;">${res.engName || '-'}</b>
+                    </div>
                 </td>
                 <td style="font-weight:600; color:#555;">${itemsText}</td>
                 <td style="font-weight:800; color:#111;">₩ ${(res.totalPrice || 0).toLocaleString()}</td>
@@ -364,10 +366,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 <!-- 2. 예약자 정보 -->
                 <div style="margin-bottom:20px; background:#fcfcfc; padding:15px; border-radius:10px; border:1px solid #f0f0f0;">
-                    <div style="font-size:13px; font-weight:700; color:#888; margin-bottom:8px;">👤 예약자 정보</div>
-                    <div style="font-size:14px; line-height:1.6; display:grid; grid-template-columns:1fr 1fr;">
-                        <p style="margin:0;"><b>성함:</b> ${res.customerKorName} <span style="font-size:12px; color:#999;">(${res.engName || '-'})</span></p>
-                        <p style="margin:0;"><b>연락처:</b> ${res.contact}</p>
+                    <div style="font-size:13px; font-weight:700; color:#888; margin-bottom:10px;">👤 예약자 정보</div>
+                    <div style="font-size:14px; line-height:1.8;">
+                        <p style="margin:0;">이름(한글) | <b style="font-size:16px; color:#111;">${res.customerKorName}</b></p>
+                        <p style="margin:0;">이름(영문) | <b style="color:#555;">${res.engName || '-'}</b></p>
+                        <p style="margin:5px 0 0 0; color:#888;">연락처 | <b>${res.contact}</b></p>
                     </div>
                 </div>
 

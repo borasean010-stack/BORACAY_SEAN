@@ -245,6 +245,14 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Fix:** Addressed the "broken image" (X-box) issue by updating the version query string (`?v=20260322_v2`) for `event.png` and adding versioning to `main-popup1.png` and `main-popup2.png` to force browser cache refresh.
     * **Results:** Ensures users see the latest banner and popup designs without caching conflicts.
 
+    ### 21. Admin Individual Reservation Management (March 2026)
+    * **Objective:** Allow administrators to delete or cancel specific reservations individually, in addition to the bulk "Delete All" feature.
+    * **Implementation:**
+        * **Access Control:** The "취소/삭제" (Cancel/Delete) button is only visible to the user with the ID **'luca'**, ensuring high-level security for destructive actions.
+        * **UI:** Added a red-bordered "취소/삭제" button to each row in the reservation table across all management tabs (New, Confirmed, Resorts).
+        * **Functionality:** Integrated Firestore `deleteDoc` logic to remove specific reservation records permanently upon confirmation.
+        * **Styling:** Added `.btn-action-danger` to `admin.css` for a consistent and warning-oriented button design.
+
 ## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (HanaTour Seller Style)

@@ -212,6 +212,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const itemsText = res.items && res.items.length > 1 ? `${firstItemName} 외 ${res.items.length - 1}건` : firstItemName;
             const dateStr = res.createdAt?.toDate ? res.createdAt.toDate().toLocaleDateString() : '-';
 
+            // 'luca' 아이디에게만 개별 삭제(취소) 버튼 노출
+            const adminId = sessionStorage.getItem('adminId');
+            const deleteBtn = (adminId === 'luca') ? `<button class="btn-action-danger" onclick="handleDeleteReservation('${res.id}')">취소/삭제</button>` : '';
+
             tr.innerHTML = `
                 <td><input type="checkbox"></td>
                 <td style="color:#bbb;">${filtered.length - index}</td>
@@ -222,9 +226,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td style="color:#888;">${dateStr}</td>
                 <td style="text-align:center;"><span class="n-badge ${badgeClass}">${status}</span></td>
                 <td>
-                    <div style="display:flex; gap:5px;">
+                    <div style="display:flex; gap:5px; flex-wrap:wrap;">
                         ${status !== '예약확정' ? `<button class="btn-action-received" onclick="handleAutoConfirm('${res.id}')">입금확인</button>` : ''}
                         <button class="btn-action-outline" onclick="showDetail('${res.id}')">상세</button>
+                        ${deleteBtn}
                     </div>
                 </td>
             `;
@@ -237,6 +242,18 @@ document.addEventListener('DOMContentLoaded', () => {
     window.handleAutoConfirm = async (id) => {
         if (confirm("입금을 확인하셨습니까? 예약확정 처리를 진행합니다.")) {
             await updateDoc(doc(db, "reservations", id), { status: "예약확정" });
+        }
+    };
+
+    window.handleDeleteReservation = async (id) => {
+        if (confirm("이 예약을 삭제(취소)하시겠습니까? 데이터가 영구적으로 제거됩니다.")) {
+            try {
+                await deleteDoc(doc(db, "reservations", id));
+                alert("삭제되었습니다.");
+            } catch (err) {
+                console.error("Delete Error", err);
+                alert("삭제 중 오류가 발생했습니다.");
+            }
         }
     };
 

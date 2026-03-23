@@ -193,6 +193,8 @@ body.smartstore-admin { margin: 0; padding: 0; background: var(--ss-bg); font-fa
 /* Actions */
 .btn-action-received { background: var(--ss-orange); color: white; border: none; padding: 5px 12px; border-radius: 2px; font-size: 11px; font-weight: 700; cursor: pointer; }
 .btn-action-outline { background: #fff; border: 1px solid #ccc; padding: 4px 10px; border-radius: 2px; font-size: 11px; font-weight: 600; cursor: pointer; color: #555; }
+.btn-action-danger { background: #fff; border: 1px solid #f5222d; padding: 4px 10px; border-radius: 2px; font-size: 11px; font-weight: 600; cursor: pointer; color: #f5222d; }
+.btn-action-danger:hover { background: #fff1f0; }
 
 /* Admin Login Redesign (HanaTour Partner Style) */
 .admin-login-wrapper { 

@@ -245,15 +245,6 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Fix:** Addressed the "broken image" (X-box) issue by updating the version query string (`?v=20260322_v2`) for `event.png` and adding versioning to `main-popup1.png` and `main-popup2.png` to force browser cache refresh.
     * **Results:** Ensures users see the latest banner and popup designs without caching conflicts.
 
-
-    ### 21. Notice Section UI Enhancement (March 2026)
-    * **Objective:** Add a visual icon to the "알려드립니다 !!" section to make it more noticeable and professional.
-    * **Implementation:**
-        * **Icon Addition:** Inserted `notice_title.png` (renamed from uploaded file) next to the section title.
-        * **Layout:** Wrapped the title and icon in a `.title-with-icon` flex container for perfect alignment.
-        * **Styling:** Added a `drop-shadow` filter to the icon to create depth and ensured responsive scaling using `clamp()`.
-        * **NFD Fix:** Handled Korean filename normalization issues during the file renaming process.
-
 ## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (HanaTour Seller Style)

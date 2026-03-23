@@ -320,9 +320,21 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         const itemsHtml = res.items.map((item, idx) => {
+            const isResortItem = item.name.includes('리조트');
             let itemDateStr = item.date || '';
+            
+            // 픽업샌딩 날짜 처리
             if (!itemDateStr && item.pickupDate && item.sendingDate) {
                 itemDateStr = `${item.pickupDate} ~ ${item.sendingDate}`;
+            }
+
+            // 리조트 견적일 경우 전용 라벨 및 날짜 표시
+            let dateLabel = "일정";
+            if (isResortItem) {
+                dateLabel = "숙박 일정";
+                const checkin = res.resortCheckin || (item.details && item.details.checkin) || '-';
+                const checkout = res.resortCheckout || (item.details && item.details.checkout) || '-';
+                itemDateStr = `${checkin} (체크인) ~ ${checkout} (체크아웃)`;
             }
 
             return `
@@ -332,8 +344,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div style="font-size:14px; font-weight:800; color:#ff6a00;">${item.count}명</div>
                     </div>
                     <div style="margin-top:6px; font-size:13px; color:#666; line-height:1.5;">
-                        <span style="background:#eee; padding:2px 6px; border-radius:4px; margin-right:5px; font-weight:700;">일정</span> ${itemDateStr} ${item.time || ''}
-                        ${item.details ? `<br><span style="background:#eee; padding:2px 6px; border-radius:4px; margin-right:5px; font-weight:700;">옵션</span> ${item.details}` : ''}
+                        <span style="background:#eee; padding:2px 6px; border-radius:4px; margin-right:5px; font-weight:700;">${dateLabel}</span> ${itemDateStr} ${(!isResortItem && item.time) ? item.time : ''}
+                        ${(item.details && typeof item.details === 'string') ? `<br><span style="background:#eee; padding:2px 6px; border-radius:4px; margin-right:5px; font-weight:700;">옵션</span> ${item.details}` : ''}
                     </div>
                     ${!isQuote ? `
                     <div style="margin-top:10px; display:flex; gap:5px;">
@@ -427,9 +439,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 상품별 수정 필드 생성
             const itemsEditHtml = res.items.map((item, idx) => {
+                const isResort = item.name.includes('리조트');
                 let itemDateStr = item.date || '';
                 if (!itemDateStr && item.pickupDate && item.sendingDate) {
                     itemDateStr = `${item.pickupDate} ~ ${item.sendingDate}`;
+                }
+
+                if (isResort) {
+                    const checkin = res.resortCheckin || (item.details && item.details.checkin) || '';
+                    const checkout = res.resortCheckout || (item.details && item.details.checkout) || '';
+                    return `
+                        <div style="padding:12px; background:#fff; border:1px solid #eee; border-radius:8px; margin-bottom:10px;">
+                            <div style="font-weight:800; font-size:13px; color:#333; margin-bottom:8px;">🏨 ${item.name}</div>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                                <div>
+                                    <span style="font-size:11px; color:#999;">체크인</span>
+                                    <input type="text" id="edit-resort-checkin" value="${checkin}" placeholder="YYYY-MM-DD" style="width:100%; padding:6px; border:1px solid #ddd; border-radius:4px; font-size:12px;">
+                                </div>
+                                <div>
+                                    <span style="font-size:11px; color:#999;">체크아웃</span>
+                                    <input type="text" id="edit-resort-checkout" value="${checkout}" placeholder="YYYY-MM-DD" style="width:100%; padding:6px; border:1px solid #ddd; border-radius:4px; font-size:12px;">
+                                </div>
+                            </div>
+                        </div>
+                    `;
                 }
 
                 return `
@@ -518,6 +551,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 개별 상품 데이터 수집
         const updatedItems = res.items.map((item, idx) => {
+            const isResort = item.name.includes('리조트');
+            if (isResort) {
+                const cin = document.getElementById('edit-resort-checkin')?.value;
+                const cout = document.getElementById('edit-resort-checkout')?.value;
+                return {
+                    ...item,
+                    details: (typeof item.details === 'object') ? { ...item.details, checkin: cin, checkout: cout } : item.details
+                };
+            }
             const dateInput = document.querySelector(`.edit-item-date[data-idx="${idx}"]`);
             const timeInput = document.querySelector(`.edit-item-time[data-idx="${idx}"]`);
             return {
@@ -540,7 +582,10 @@ document.addEventListener('DOMContentLoaded', () => {
             sendingResort: document.getElementById('edit-sending-resort').value,
             activityPickupResort: document.getElementById('edit-act-pickup').value,
             totalPrice: parseInt(document.getElementById('edit-total').value) || 0,
-            requests: document.getElementById('edit-requests').value
+            requests: document.getElementById('edit-requests').value,
+            // 리조트 최상단 필드도 업데이트
+            resortCheckin: document.getElementById('edit-resort-checkin')?.value || res.resortCheckin || '',
+            resortCheckout: document.getElementById('edit-resort-checkout')?.value || res.resortCheckout || ''
         };
 
         if (confirm("변경 사항을 저장하시겠습니까?")) {

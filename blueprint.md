@@ -400,6 +400,14 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Header Customization:** Changed the modal title to "리조트 견적 신청 상세" (Resort Quote Request Detail) and updated the icon to a hotel symbol for better context.
     * **Benefits:** Provides a cleaner, more appropriate workflow for managing resort inquiries without showing tour-specific logistics tools.
 
+    ### 35. Specialized Resort Date Management (March 2026)
+    * **Objective:** Ensure "Resort Quote" items display and manage their specific "Check-in" and "Check-out" dates correctly, rather than using a generic tour date label.
+    * **Implementation:**
+        * **Detail Modal Logic:** Updated `admin.js` to identify resort-related items and automatically switch the date label to "숙박 일정" (Stay Schedule).
+        * **Date Display:** Combined top-level `resortCheckin` and `resortCheckout` fields to show a clear range (e.g., "YYYY-MM-DD (Check-in) ~ YYYY-MM-DD (Check-out)").
+        * **Granular Edit Mode:** Refined the edit form to provide separate "Check-in" and "Check-out" input fields for resort items, ensuring all updates are synced back to both the item object and top-level Firestore fields.
+    * **Benefits:** Prevents data loss and provides a context-aware administrative view for hotel logistics.
+
 ## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (HanaTour Seller Style)

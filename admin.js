@@ -307,9 +307,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const modal = document.getElementById('res-detail-modal');
         const body = document.getElementById('modal-body');
         const adminId = sessionStorage.getItem('adminId');
+        const isQuote = res.status === '견적';
 
         // 예약 상품 렌더링
-        const totalVoucherBtn = `
+        const totalVoucherBtn = isQuote ? '' : `
             <div style="margin-bottom:15px;">
                 <button onclick="copyVoucherLink('${res.id}', null)" style="width:100%; padding:12px; background:#03c75a; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
                     <span class="material-icons" style="font-size:18px;">share</span> 전체 일정표(바우처) 링크 복사
@@ -334,30 +335,31 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span style="background:#eee; padding:2px 6px; border-radius:4px; margin-right:5px; font-weight:700;">일정</span> ${itemDateStr} ${item.time || ''}
                         ${item.details ? `<br><span style="background:#eee; padding:2px 6px; border-radius:4px; margin-right:5px; font-weight:700;">옵션</span> ${item.details}` : ''}
                     </div>
+                    ${!isQuote ? `
                     <div style="margin-top:10px; display:flex; gap:5px;">
                         <a href="reservation-schedule.html?id=${res.id}&itemIndex=${idx}" target="_blank" style="flex:1; text-align:center; padding:6px; background:#fff; border:1px solid #ddd; border-radius:4px; font-size:11px; font-weight:700; color:#555; text-decoration:none;">바우처 보기</a>
                         <button onclick="copyVoucherLink('${res.id}', ${idx})" style="flex:1; padding:6px; background:#03c75a; border:none; border-radius:4px; font-size:11px; font-weight:700; color:white; cursor:pointer;">링크 복사</button>
-                    </div>
+                    </div>` : ''}
                 </div>
             `;
         }).join('');
 
         body.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:1px solid #eee;">
-                <h3 style="margin:0; font-size:18px; color:#111;">예약 상세 정보</h3>
-                <button onclick="copyGuidance('${res.id}')" style="background:#ff6a00; color:white; border:none; padding:8px 14px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:13px;">👉 안내문 복사</button>
+                <h3 style="margin:0; font-size:18px; color:#111;">${isQuote ? '리조트 견적 신청 상세' : '예약 상세 정보'}</h3>
+                ${!isQuote ? `<button onclick="copyGuidance('${res.id}')" style="background:#ff6a00; color:white; border:none; padding:8px 14px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:13px;">👉 안내문 복사</button>` : ''}
             </div>
 
             <div id="modal-scroll-area" style="max-height: 60vh; overflow-y: auto; padding-right: 10px;">
-                <!-- 1. 예약 상품 -->
+                <!-- 1. 견적/예약 상품 -->
                 <div style="margin-bottom:25px;">
                     <div style="font-size:14px; font-weight:700; color:#888; margin-bottom:10px; display:flex; align-items:center; gap:5px;">
-                        <span class="material-icons" style="font-size:16px;">shopping_cart</span> 예약 상품
+                        <span class="material-icons" style="font-size:16px;">${isQuote ? 'hotel' : 'shopping_cart'}</span> ${isQuote ? '견적 신청 리조트' : '예약 상품'}
                     </div>
                     ${totalVoucherBtn}
                     ${itemsHtml}
 
-                    ${res.status !== '견적' ? `
+                    ${res.totalPrice && !isQuote ? `
                     <div style="text-align:right; margin-top:10px; padding:10px; background:#fff5eb; border-radius:8px;">
                         <span style="font-size:14px; color:#666;">총 합계 금액</span>
                         <div style="font-size:20px; font-weight:900; color:#ff6a00;">₩ ${res.totalPrice.toLocaleString()}</div>

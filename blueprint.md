@@ -392,6 +392,14 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Environment Detection:** The script detects the user's device and screen width to apply the most appropriate URL format instantly upon page load and window resizing.
     * **Benefits:** Guarantees a seamless transition to the Naver Cafe community regardless of the customer's device, eliminating "404" or "Page Not Found" errors caused by incompatible link formats.
 
+    ### 34. Contextual Admin Detail Modal (March 2026)
+    * **Objective:** Streamline the admin interface by hiding irrelevant features (vouchers, guidance messages) for "Resort Quote" status items.
+    * **Implementation:**
+        * **Status Detection:** Added logic to `admin.js` to detect if a reservation's status is "견적" (Quote).
+        * **Dynamic UI:** If the status is a quote, the "Total Schedule Link", "Individual Voucher", and "Copy Guidance" buttons are automatically hidden.
+        * **Header Customization:** Changed the modal title to "리조트 견적 신청 상세" (Resort Quote Request Detail) and updated the icon to a hotel symbol for better context.
+    * **Benefits:** Provides a cleaner, more appropriate workflow for managing resort inquiries without showing tour-specific logistics tools.
+
 ## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (HanaTour Seller Style)

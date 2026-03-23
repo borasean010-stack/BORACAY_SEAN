@@ -156,6 +156,7 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Preloading:** Added `<link rel="preload" href="hero-video.mp4" as="video" type="video/mp4">` to the HTML head to prioritize video download.
         * **Immediate Appearance:** Removed visual fallbacks (thumbnail images) and transition delays to allow the video to be visible as soon as the first frame is ready.
         * **Speed Optimization:** Configured the video tag with `autoplay`, `muted`, `loop`, `playsinline`, and `preload="auto"` for maximum performance.
+        * **Playback Start Time (March 2026):** Set the hero video to start from the 4-second mark to bypass the initial static/low-quality portion. Implemented using both HTML `#t=4` fragment and JavaScript `currentTime` control for cross-browser consistency. The video also loops back to the 4-second mark.
     * **Massage Description Update (March 2026):**
         * **Bora Spa:** "보라카이 꿀 마사지 원조"
         * **Poseidon Spa:** "연예인이 운영하는 스파 모든 룸 안 개별 수영장 + 자쿠지"

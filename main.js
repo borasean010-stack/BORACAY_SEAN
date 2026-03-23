@@ -288,16 +288,29 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Hero Video Mobile Compatibility & Smooth Loading ---
     const heroVideo = document.getElementById('hero-video');
     if (heroVideo) {
-        // Try to play programmatically (sometimes helps on mobile)
+        // Start from 4 seconds
+        heroVideo.currentTime = 4;
+
         const playVideo = async () => {
             try {
                 await heroVideo.play();
-                console.log("Hero video playing");
+                console.log("Hero video playing from 4s");
             } catch (err) {
                 console.warn("Hero video autoplay failed:", err);
             }
         };
         
+        // Ensure it stays at 4s if it hasn't loaded yet
+        heroVideo.addEventListener('loadedmetadata', () => {
+            heroVideo.currentTime = 4;
+        });
+
+        // When video loops, restart from 4s instead of 0s
+        heroVideo.addEventListener('ended', () => {
+            heroVideo.currentTime = 4;
+            heroVideo.play();
+        });
+
         playVideo();
 
         // If video error occurs, hide video to show CSS background

@@ -282,22 +282,29 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-        const itemsHtml = res.items.map((item, idx) => `
-            <div style="padding:12px; background:#f8f9fa; border:1px solid #eee; border-radius:8px; margin-bottom:8px;">
-                <div style="display:flex; justify-content:space-between; align-items:start;">
-                    <div style="font-size:15px; font-weight:800; color:#333;">${item.name}</div>
-                    <div style="font-size:14px; font-weight:800; color:#ff6a00;">${item.count}명</div>
+        const itemsHtml = res.items.map((item, idx) => {
+            let itemDateStr = item.date || '';
+            if (!itemDateStr && item.pickupDate && item.sendingDate) {
+                itemDateStr = `${item.pickupDate} ~ ${item.sendingDate}`;
+            }
+
+            return `
+                <div style="padding:12px; background:#f8f9fa; border:1px solid #eee; border-radius:8px; margin-bottom:8px;">
+                    <div style="display:flex; justify-content:space-between; align-items:start;">
+                        <div style="font-size:15px; font-weight:800; color:#333;">${item.name}</div>
+                        <div style="font-size:14px; font-weight:800; color:#ff6a00;">${item.count}명</div>
+                    </div>
+                    <div style="margin-top:6px; font-size:13px; color:#666; line-height:1.5;">
+                        <span style="background:#eee; padding:2px 6px; border-radius:4px; margin-right:5px; font-weight:700;">일정</span> ${itemDateStr} ${item.time || ''}
+                        ${item.details ? `<br><span style="background:#eee; padding:2px 6px; border-radius:4px; margin-right:5px; font-weight:700;">옵션</span> ${item.details}` : ''}
+                    </div>
+                    <div style="margin-top:10px; display:flex; gap:5px;">
+                        <a href="reservation-schedule.html?id=${res.id}&itemIndex=${idx}" target="_blank" style="flex:1; text-align:center; padding:6px; background:#fff; border:1px solid #ddd; border-radius:4px; font-size:11px; font-weight:700; color:#555; text-decoration:none;">바우처 보기</a>
+                        <button onclick="copyVoucherLink('${res.id}', ${idx})" style="flex:1; padding:6px; background:#03c75a; border:none; border-radius:4px; font-size:11px; font-weight:700; color:white; cursor:pointer;">링크 복사</button>
+                    </div>
                 </div>
-                <div style="margin-top:6px; font-size:13px; color:#666; line-height:1.5;">
-                    <span style="background:#eee; padding:2px 6px; border-radius:4px; margin-right:5px; font-weight:700;">일정</span> ${item.date || ''} ${item.time || ''}
-                    ${item.details ? `<br><span style="background:#eee; padding:2px 6px; border-radius:4px; margin-right:5px; font-weight:700;">옵션</span> ${item.details}` : ''}
-                </div>
-                <div style="margin-top:10px; display:flex; gap:5px;">
-                    <a href="reservation-schedule.html?id=${res.id}&itemIndex=${idx}" target="_blank" style="flex:1; text-align:center; padding:6px; background:#fff; border:1px solid #ddd; border-radius:4px; font-size:11px; font-weight:700; color:#555; text-decoration:none;">바우처 보기</a>
-                    <button onclick="copyVoucherLink('${res.id}', ${idx})" style="flex:1; padding:6px; background:#03c75a; border:none; border-radius:4px; font-size:11px; font-weight:700; color:white; cursor:pointer;">링크 복사</button>
-                </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
 
         body.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:1px solid #eee;">
@@ -380,21 +387,28 @@ document.addEventListener('DOMContentLoaded', () => {
             editBtn.style.background = '#03c75a';
 
             // 상품별 수정 필드 생성
-            const itemsEditHtml = res.items.map((item, idx) => `
-                <div style="padding:12px; background:#fff; border:1px solid #eee; border-radius:8px; margin-bottom:10px;">
-                    <div style="font-weight:800; font-size:13px; color:#333; margin-bottom:8px;">📦 ${item.name}</div>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-                        <div>
-                            <span style="font-size:11px; color:#999;">날짜</span>
-                            <input type="text" class="edit-item-date" data-idx="${idx}" value="${item.date || ''}" placeholder="YYYY-MM-DD" style="width:100%; padding:6px; border:1px solid #ddd; border-radius:4px; font-size:12px;">
-                        </div>
-                        <div>
-                            <span style="font-size:11px; color:#999;">시간</span>
-                            <input type="text" class="edit-item-time" data-idx="${idx}" value="${item.time || ''}" placeholder="00:00" style="width:100%; padding:6px; border:1px solid #ddd; border-radius:4px; font-size:12px;">
+            const itemsEditHtml = res.items.map((item, idx) => {
+                let itemDateStr = item.date || '';
+                if (!itemDateStr && item.pickupDate && item.sendingDate) {
+                    itemDateStr = `${item.pickupDate} ~ ${item.sendingDate}`;
+                }
+
+                return `
+                    <div style="padding:12px; background:#fff; border:1px solid #eee; border-radius:8px; margin-bottom:10px;">
+                        <div style="font-weight:800; font-size:13px; color:#333; margin-bottom:8px;">📦 ${item.name}</div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                            <div>
+                                <span style="font-size:11px; color:#999;">날짜</span>
+                                <input type="text" class="edit-item-date" data-idx="${idx}" value="${itemDateStr}" placeholder="YYYY-MM-DD" style="width:100%; padding:6px; border:1px solid #ddd; border-radius:4px; font-size:12px;">
+                            </div>
+                            <div>
+                                <span style="font-size:11px; color:#999;">시간</span>
+                                <input type="text" class="edit-item-time" data-idx="${idx}" value="${item.time || ''}" placeholder="00:00" style="width:100%; padding:6px; border:1px solid #ddd; border-radius:4px; font-size:12px;">
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
 
             scrollArea.innerHTML = `
                 <div style="font-size:14px; padding:10px; border:1px solid #ff6a00; border-radius:10px; background:#fff9f5; margin-bottom:20px;">

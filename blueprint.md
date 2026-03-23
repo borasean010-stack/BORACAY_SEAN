@@ -344,6 +344,14 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Admin Edit Stability:** Restructured the admin modal to separate the "Save/Close" buttons from the scrollable content, preventing UI breakage during data updates.
     * **Benefits:** Guarantees that both administrators and customers always have access to the most accurate and up-to-date travel logistics.
 
+    ### 29. Pickup-Sending Item Visibility Fix (March 2026)
+    * **Objective:** Ensure the "Schedule" (일정) field for "Airport Pickup-Sending" items displays the correct date range in the product list.
+    * **Implementation:**
+        * **Logic Update:** Modified the `itemsHtml` generation in `admin.js` to detect items without a single `date` property but with `pickupDate` and `sendingDate` instead.
+        * **Display:** For these items, the "Schedule" field now automatically displays the range (e.g., "2026-03-23 ~ 2026-03-26").
+        * **Edit Mode Support:** Updated the admin edit form to pre-populate item-level date fields with this range for pickup-sending products, ensuring consistency during rescheduling.
+    * **Benefits:** Prevents confusion by showing complete logistical data within the itemized reservation list.
+
 ## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (HanaTour Seller Style)

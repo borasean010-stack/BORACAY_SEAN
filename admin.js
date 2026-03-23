@@ -85,26 +85,58 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = document.getElementById('schedule-timeline');
         if (!container) return;
 
-        const today = new Date().toISOString().split('T')[0];
-        
-        // 오늘 날짜 예약 추출 및 시간대별 정렬
+        // KST 기준 오늘 날짜 구하기 (YYYY-MM-DD)
+        const now = new Date();
+        const offset = now.getTimezoneOffset() * 60000;
+        const today = new Date(now.getTime() - offset).toISOString().split('T')[0];
+
         let todayItems = [];
         allReservations.forEach(res => {
-            if (!res.items) return;
-            res.items.forEach(item => {
-                // 예약 날짜가 오늘이거나, 픽업일이 오늘인 경우
-                if (item.date === today || res.pickupDate === today) {
-                    todayItems.push({
-                        time: item.time || "00:00",
-                        name: item.name,
-                        customer: res.customerKorName,
-                        count: item.count,
-                        resNo: res.reservationNumber,
-                        status: res.status,
-                        id: res.id
-                    });
-                }
-            });
+            // 1. 일반 투어/마사지 아이템 체크
+            if (res.items) {
+                res.items.forEach(item => {
+                    // 픽업샌딩이 아닌 일반 상품이 오늘 날짜인 경우만 추가
+                    if (item.date === today && !item.name.includes('픽업샌딩')) {
+                        todayItems.push({
+                            time: item.time || "09:00",
+                            name: item.name,
+                            customer: res.customerKorName,
+                            count: item.count,
+                            resNo: res.reservationNumber,
+                            status: res.status,
+                            id: res.id
+                        });
+                    }
+                });
+            }
+
+            // 2. 공항 픽업 체크 (개별 이벤트로 등록)
+            if (res.pickupDate === today) {
+                const pickupItem = res.items ? res.items.find(i => i.name.includes('픽업')) : null;
+                todayItems.push({
+                    time: "00:00", // 타임라인 맨 위
+                    name: `✈️ 공항 픽업 (${res.pickupFlight || '-'})`,
+                    customer: res.customerKorName,
+                    count: pickupItem ? pickupItem.count : '-',
+                    resNo: res.reservationNumber,
+                    status: res.status,
+                    id: res.id
+                });
+            }
+
+            // 3. 공항 샌딩 체크 (개별 이벤트로 등록)
+            if (res.sendingDate === today) {
+                const sendingItem = res.items ? res.items.find(i => i.name.includes('샌딩')) : null;
+                todayItems.push({
+                    time: "23:59", // 타임라인 맨 아래
+                    name: `✈️ 공항 샌딩 (${res.sendingFlight || '-'})`,
+                    customer: res.customerKorName,
+                    count: sendingItem ? sendingItem.count : '-',
+                    resNo: res.reservationNumber,
+                    status: res.status,
+                    id: res.id
+                });
+            }
         });
 
         // 시간순 정렬
@@ -119,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const isConfirmed = item.status === '예약확정';
             const statusClass = isConfirmed ? 'confirmed' : 'pending';
             const statusText = isConfirmed ? '확정' : '입금대기';
-            
+
             return `
                 <div class="schedule-card" onclick="showDetail('${item.id}')" style="cursor:pointer; border-top-color: ${isConfirmed ? '#03c75a' : '#ff8c00'}">
                     <div class="sc-status ${statusClass}">${statusText}</div>
@@ -135,7 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }).join('');
     }
-
     // --- 4. Sidebar & Tab 연동 ---
     window.switchAdminTab = (tab) => {
         activeTab = tab;

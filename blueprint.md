@@ -352,6 +352,14 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Edit Mode Support:** Updated the admin edit form to pre-populate item-level date fields with this range for pickup-sending products, ensuring consistency during rescheduling.
     * **Benefits:** Prevents confusion by showing complete logistical data within the itemized reservation list.
 
+    ### 30. Today's Schedule Filtering Fix (March 2026)
+    * **Objective:** Ensure "Today's Schedule" only shows activities and transfers occurring on the current date, preventing all items from a multi-day booking from appearing simultaneously.
+    * **Implementation:**
+        * **Granular Filtering:** Refactored `renderTodaySchedule` in `admin.js` to iterate through each item independently and verify if its specific `date` matches today.
+        * **Transfer Handling:** Specifically separated "Airport Pickup" and "Airport Sending" into their own logic. They now only appear on the timeline if the `pickupDate` or `sendingDate` exactly matches today.
+        * **Time-Based Sorting:** Maintained sorting where 픽업 (Pickup) appears at the start (00:00) and 샌딩 (Sending) appears at the end (23:59) of the daily timeline.
+    * **Benefits:** Provides a clean and accurate daily operational view for staff, eliminating clutter from future or past dates within the same reservation.
+
 ## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (HanaTour Seller Style)

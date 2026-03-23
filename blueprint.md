@@ -318,6 +318,15 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Data Visibility:** Ensured that airport transfer information is correctly mapped from the database to the "My Page" view, making it visible to customers even if it was edited by an admin.
     * **Benefits:** Provides a more reliable administrative editing experience and keeps customers fully informed of their finalized logistics.
 
+    ### 26. Chronological Itinerary Voucher (March 2026)
+    * **Objective:** Present a professional and easy-to-read schedule for customers who book multiple tours or transfers.
+    * **Implementation:**
+        * **Consolidated Timeline:** Updated `reservation-schedule.html` to group all items (Pickup, Tours, Spas, Sending) into a single chronological timeline.
+        * **Detailed Guidance:** Integrated product-specific meeting times, meeting places, and preparation lists (instructions) directly into each timeline card.
+        * **Smart Sorting:** Logic ensures that "Airport Pickup" always appears first on its date, and "Airport Sending" always appears last on its date, with other activities sorted by time in between.
+        * **Dynamic Layout:** Uses a clean, card-based UI with background shading for instructions to ensure critical information like "Meeting Place" is highly visible.
+    * **Benefits:** Provides a clear "Day-by-Day" plan for the customer, reducing confusion and support inquiries regarding meeting locations and times.
+
 ## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (HanaTour Seller Style)

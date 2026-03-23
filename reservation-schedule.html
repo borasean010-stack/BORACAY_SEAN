@@ -109,6 +109,44 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        function getGuidance(item, res) {
+            const name = item.name;
+            const isSending = name.includes('샌딩') || (item.details && item.details.includes('샌딩'));
+            const tourMonth = item.date ? parseInt(item.date.split('-')[1]) : new Date().getMonth() + 1;
+            const isDrySeason = tourMonth <= 5 || tourMonth >= 11;
+
+            if (name.includes('블랙펄')) {
+                const meetingPlace = isDrySeason ? "8 Eight by the Beach" : "블라복 비치 목샤";
+                return `<b>미팅 시간 / 장소: 13:30 / ${meetingPlace}</b><br><br>
+                        - 트라이씨클 기사에게 “${meetingPlace}" 라고 꼭 말해주세요!<br>
+                        - 10분 이상 늦으시면 노쇼 처리됩니다.<br>
+                        - 준비물: 수영복, 비치타올, 매너팁(1인 100페소)`;
+            } 
+            else if (name.includes('말룸파티')) {
+                if (isSending) {
+                    return `<b>미팅 시간 / 장소: 09:00 / ${res.activityPickupResort || res.pickupResort || '리조트 로비'}</b><br><br>
+                            - 미리 체크아웃과 룸체크를 완료해 주세요.<br>
+                            - 준비물: 수영복, 매너팁(1인 100페소), 튜빙비용(350페소), 공항세(900페소)`;
+                } else {
+                    return `<b>미팅 시간 / 장소: 09:40 / 보라카이션 사무실</b><br><br>
+                            - 준비물: 수영복, 비치타올, 매너팁(1인 100페소), 튜빙비용(350페소)`;
+                }
+            }
+            else if (['에스파', '포세이돈', '아유르베다', '마리스', '힐롯', '루나', '보라스파', '헬리오스', '카바얀'].some(s => name.includes(s))) {
+                const shuttleShops = ['포세이돈', '아유르베다', '마리스', '헬리오스'];
+                const hasShuttle = shuttleShops.some(s => name.includes(s));
+                const meetingPlace = hasShuttle ? `${res.activityPickupResort || '리조트 로비'} (셔틀 픽업)` : `${name} 개별이동`;
+                return `<b>미팅 시간 / 장소: ${item.time || ''} / ${meetingPlace}</b><br><br>
+                        - 매너팁: 1인 100페소 (현지 지불)`;
+            }
+            else if (name.includes('골프')) {
+                return `<b>미팅 시간 / 장소: ${item.time || '07:40'} / ${res.activityPickupResort || '리조트 로비'}</b><br><br>
+                        - 불포함: 클럽렌탈, 캐디팁(100페소), 트라이씨클비용`;
+            }
+            return `<b>미팅 시간 / 장소: ${item.time || ''} / ${res.activityPickupResort || '리조트 로비'}</b><br><br>
+                    - 예약 시간에 맞춰 미팅 장소에서 대기해 주세요.`;
+        }
+
         try {
             const docSnap = await getDoc(doc(db, "reservations", resId));
             if (docSnap.exists()) {
@@ -121,44 +159,52 @@
                 const listContainer = document.getElementById('item-list');
                 let allScheduleItems = [];
 
-                // 1. 공항 픽업/샌딩 정보 추가
-                if (res.pickupDate || res.pickupFlight || res.sendingDate || res.sendingFlight) {
-                    if (itemIndex === null || (res.items && res.items[itemIndex] && res.items[itemIndex].name.includes('픽업샌딩'))) {
-                        if (res.pickupDate) {
-                            allScheduleItems.push({
-                                date: res.pickupDate,
-                                time: "공항도착",
-                                name: "보라카이션 공항 픽업",
-                                details: `항공편: ${res.pickupFlight || '-'}<br>이용 리조트: ${res.pickupResort || '-'}`
-                            });
-                        }
-                        if (res.sendingDate) {
-                            allScheduleItems.push({
-                                date: res.sendingDate,
-                                time: "리조트미팅",
-                                name: "보라카이션 공항 샌딩",
-                                details: `항공편: ${res.sendingFlight || '-'}<br>픽업 리조트: ${res.sendingResort || '-'}`
-                            });
-                        }
+                // 1. 공항 픽업 추가
+                if (res.pickupDate) {
+                    if (itemIndex === null || (res.items && res.items[itemIndex] && res.items[itemIndex].name.includes('픽업'))) {
+                        allScheduleItems.push({
+                            date: res.pickupDate,
+                            time: "00:00", // 가장 먼저 오게 함
+                            name: `✈️ 공항 픽업 (${res.pickupFlight || '-'})`,
+                            isPickup: true,
+                            content: `<b>미팅 장소: 칼리보 공항 밖 피켓 대기</b><br><br>
+                                      - 보라카이션 피켓을 든 직원을 찾아주세요.<br>
+                                      - 이용 리조트: ${res.pickupResort || '-'}<br>
+                                      ${res.exchangeAmount ? `- 환전 요청: ${res.exchangeAmount}` : ''}`
+                        });
                     }
                 }
 
-                // 2. 예약 상품 리스트 추가 (필터링 적용)
+                // 2. 예약 상품 리스트 추가 (픽업샌딩 제외)
                 let rawItems = res.items || [];
-                if (itemIndex !== null && rawItems[itemIndex]) {
-                    // 개별 보기일 때 픽업샌딩 중복 방지 (위에서 추가했으므로)
-                    if (!rawItems[itemIndex].name.includes('픽업샌딩')) {
-                        allScheduleItems.push(rawItems[itemIndex]);
+                rawItems.forEach((item, idx) => {
+                    if (itemIndex !== null && parseInt(itemIndex) !== idx) return;
+                    if (!item.name.includes('픽업샌딩')) {
+                        allScheduleItems.push({
+                            date: item.date,
+                            time: item.time || "09:00",
+                            name: item.name,
+                            content: getGuidance(item, res)
+                        });
                     }
-                } else if (itemIndex === null) {
-                    rawItems.forEach(item => {
-                        if (!item.name.includes('픽업샌딩')) {
-                            allScheduleItems.push(item);
-                        }
-                    });
+                });
+
+                // 3. 공항 샌딩 추가
+                if (res.sendingDate) {
+                    if (itemIndex === null || (res.items && res.items[itemIndex] && res.items[itemIndex].name.includes('샌딩'))) {
+                        allScheduleItems.push({
+                            date: res.sendingDate,
+                            time: "23:59", // 가장 나중에 오게 함
+                            name: `✈️ 공항 샌딩 (${res.sendingFlight || '-'})`,
+                            isSending: true,
+                            content: `<b>미팅 시간 / 장소: 09:00(예정) / ${res.sendingResort || res.pickupResort || '리조트 로비'}</b><br><br>
+                                      - 항공 일정에 따라 미팅 시간이 조절될 수 있습니다.<br>
+                                      - 미팅 장소에서 미리 대기해 주세요.`
+                        });
+                    }
                 }
 
-                // 3. 날짜 및 시간순 정렬
+                // 4. 날짜 및 시간순 정렬
                 allScheduleItems.sort((a, b) => {
                     if (a.date !== b.date) return a.date.localeCompare(b.date);
                     return (a.time || "").localeCompare(b.time || "");
@@ -177,10 +223,10 @@
                             <div class="item-status">확정됨</div>
                         </div>
                         <div class="item-details">
-                            <div class="detail-point">날짜: <b>${item.date}</b></div>
-                            <div class="detail-point">시간: <b>${item.time || '종일'}</b></div>
-                            ${item.count ? `<div class="detail-point">인원: <b>${item.count}명</b></div>` : ''}
-                            ${item.details ? `<div class="detail-point" style="width:100%; margin-top:10px; border-top:1px dashed #eee; padding-top:10px; line-height:1.6;">${item.details}</div>` : ''}
+                            <div class="detail-point" style="margin-bottom:10px;">📅 이용일: <b>${item.date}</b></div>
+                            <div style="font-size:14px; color:#555; line-height:1.6; background:#f8f9fa; padding:15px; border-radius:12px; width:100%;">
+                                ${item.content}
+                            </div>
                         </div>
                     `;
                     listContainer.appendChild(card);

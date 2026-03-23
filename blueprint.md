@@ -368,17 +368,6 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Voucher Timeline:** Individual transfer cards in the customer voucher now display the specific resort associated with that leg of the trip (Pickup leg shows pickup resort, Sending leg shows sending resort).
     * **Benefits:** Eliminates ambiguity for transfers, especially when a customer stays at multiple hotels during their trip.
 
-    ### 32. Google Sheets Integration for Operations (March 2026)
-    * **Objective:** Centralize daily operational visibility by merging reservation data from the official website (Firebase) and the external Google Spreadsheet.
-    * **Implementation:**
-        * **CSV Fetching:** Integrated a real-time fetch logic in `admin.js` that pulls data from the shared Google Spreadsheet using the CSV export endpoint.
-        * **Heuristic Parsing:** Implemented logic to scan the spreadsheet for today's tasks:
-            * **Transfers:** Matches Col A (Pickup) and Col E (Sending) with today's date (M/d format).
-            * **Activities:** Parses Col Q (Remarks) for `M/d TourName Time` patterns to identify scheduled events for the current day.
-        * **Unified Timeline:** Merged sheet-sourced items with Firebase-sourced items into a single, chronologically sorted "Today's Schedule" timeline.
-        * **Visual Distinction:** Added a unique green "Sheet" (시트) badge and border to timeline cards originating from the spreadsheet to prevent data source confusion.
-    * **Benefits:** Staff can now manage all daily pickups and tours from a single dashboard without manually cross-referencing multiple tabs or documents.
-
 ## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (HanaTour Seller Style)

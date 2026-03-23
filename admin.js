@@ -54,114 +54,22 @@ document.addEventListener('DOMContentLoaded', () => {
             systemMenu.style.display = (adminId === 'luca') ? 'flex' : 'none';
         }
 
-        let allReservations = [];
-        let googleSheetTodayItems = []; // 구글 시트에서 가져온 오늘 일정
-        let activeTab = 'new'; 
+        fetchData();
+    }
 
-        const SHEET_URL = "https://docs.google.com/spreadsheets/d/1uvxM_EH_PS3DrcNu6XGUUlXC3PReHIQJP6y4ci_tMu4/export?format=csv&gid=1414807450";
+    // --- 2. Data Handlers ---
+    function fetchData() {
+        if (!db) return;
+        const q = query(collection(db, "reservations"), orderBy("createdAt", "desc"));
+        onSnapshot(q, (snapshot) => {
+            allReservations = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            updateSummaryCounts();
+            renderTodaySchedule();
+            renderTable();
+        });
+    }
 
-        // --- 2. Data Fetching ---
-        function fetchData() {
-            if (!db) return;
-
-            // 1. Firebase 데이터 가져오기
-            const q = query(collection(db, "reservations"), orderBy("createdAt", "desc"));
-            onSnapshot(q, async (snapshot) => {
-                allReservations = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-                // 2. 구글 시트 데이터 병행해서 가져오기
-                await fetchGoogleSheetData();
-
-                updateSummaryCounts();
-                renderTodaySchedule();
-                renderTable();
-            });
-        }
-
-        async function fetchGoogleSheetData() {
-            try {
-                const response = await fetch(SHEET_URL);
-                const csvText = await response.text();
-                const rows = csvText.split('\n').map(row => row.split(',').map(cell => cell.replace(/^\"|\"$/g, '').trim()));
-
-                const now = new Date();
-                const offset = now.getTimezoneOffset() * 60000;
-                const kstNow = new Date(now.getTime() - offset);
-                const todayM = kstNow.getMonth() + 1;
-                const todayD = kstNow.getDate();
-                const todayStrShort = `${todayM}/${todayD}`; // "3/23" 형식
-
-                googleSheetTodayItems = [];
-
-                // 헤더 제외하고 1번 줄부터 순회
-                for (let i = 1; i < rows.length; i++) {
-                    const row = rows[i];
-                    if (!row[10]) continue; // 고객명(K열) 없으면 스킵
-
-                    const pickupDate = row[0]; // A
-                    const sendingDate = row[4]; // E
-                    const customer = row[10]; // K
-                    const resort = row[9]; // J
-                    const pax = row[11]; // L
-                    const flightIn = row[2]; // C
-                    const flightOut = row[3]; // D
-                    const remarks = row[16]; // Q (날짜+투어+시간 등)
-
-                    // 1. 오늘 픽업 체크
-                    if (pickupDate === todayStrShort) {
-                        googleSheetTodayItems.push({
-                            time: "00:00",
-                            name: `[시트] ✈️ 공항 픽업 (${flightIn})`,
-                            customer: customer,
-                            count: pax,
-                            resort: resort,
-                            status: "시트데이터",
-                            id: "sheet_" + i + "_p"
-                        });
-                    }
-
-                    // 2. 오늘 샌딩 체크
-                    if (sendingDate === todayStrShort) {
-                        googleSheetTodayItems.push({
-                            time: "23:59",
-                            name: `[시트] ✈️ 공항 샌딩 (${flightOut})`,
-                            customer: customer,
-                            count: pax,
-                            resort: resort,
-                            status: "시트데이터",
-                            id: "sheet_" + i + "_s"
-                        });
-                    }
-
-                    // 3. 특이사항(Q열) 내 오늘 투어 일정 파싱
-                    if (remarks) {
-                        const lines = remarks.split(/[\n\r\t]/);
-                        lines.forEach(line => {
-                            // "3/23 투어명 13:30" 형태 매칭 시도
-                            if (line.includes(todayStrShort)) {
-                                // 시간(00:00) 추출 시도
-                                const timeMatch = line.match(/(\d{1,2}:\d{2})/);
-                                const tourTime = timeMatch ? timeMatch[0] : "09:00";
-                                googleSheetTodayItems.push({
-                                    time: tourTime,
-                                    name: `[시트] ${line.replace(todayStrShort, '').trim()}`,
-                                    customer: customer,
-                                    count: pax,
-                                    resort: resort,
-                                    status: "시트데이터",
-                                    id: "sheet_" + i + "_t"
-                                });
-                            }
-                        });
-                    }
-                }
-            } catch (err) {
-                console.error("Google Sheet Fetch Error:", err);
-            }
-        }
-
-        function updateSummaryCounts() {
-
+    function updateSummaryCounts() {
         const counts = {
             new: allReservations.filter(r => r.status === '입금대기' || r.status === '예약접수').length,
             confirmed: allReservations.filter(r => r.status === '예약확정').length,
@@ -187,6 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // 1. 일반 투어/마사지 아이템 체크
             if (res.items) {
                 res.items.forEach(item => {
+                    // 픽업샌딩이 아닌 일반 상품이 오늘 날짜인 경우만 추가
                     if (item.date === today && !item.name.includes('픽업샌딩')) {
                         todayItems.push({
                             time: item.time || "09:00",
@@ -201,35 +110,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            // 2. 공항 픽업 체크
+            // 2. 공항 픽업 체크 (개별 이벤트로 등록)
             if (res.pickupDate === today) {
+                const pickupItem = res.items ? res.items.find(i => i.name.includes('픽업')) : null;
                 todayItems.push({
-                    time: "00:00",
+                    time: "00:00", // 타임라인 맨 위
                     name: `✈️ 공항 픽업 (${res.pickupFlight || '-'})`,
                     customer: res.customerKorName,
-                    count: "-",
+                    count: pickupItem ? pickupItem.count : '-',
                     resNo: res.reservationNumber,
                     status: res.status,
                     id: res.id
                 });
             }
 
-            // 3. 공항 샌딩 체크
+            // 3. 공항 샌딩 체크 (개별 이벤트로 등록)
             if (res.sendingDate === today) {
+                const sendingItem = res.items ? res.items.find(i => i.name.includes('샌딩')) : null;
                 todayItems.push({
-                    time: "23:59",
+                    time: "23:59", // 타임라인 맨 아래
                     name: `✈️ 공항 샌딩 (${res.sendingFlight || '-'})`,
                     customer: res.customerKorName,
-                    count: "-",
+                    count: sendingItem ? sendingItem.count : '-',
                     resNo: res.reservationNumber,
                     status: res.status,
                     id: res.id
                 });
             }
         });
-
-        // 4. 구글 시트 데이터 합치기
-        todayItems = [...todayItems, ...googleSheetTodayItems];
 
         // 시간순 정렬
         todayItems.sort((a, b) => a.time.localeCompare(b.time));
@@ -240,22 +148,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         container.innerHTML = todayItems.map(item => {
-            const isSheetData = item.id.toString().startsWith('sheet_');
-            const isConfirmed = item.status === '예약확정' || isSheetData;
+            const isConfirmed = item.status === '예약확정';
             const statusClass = isConfirmed ? 'confirmed' : 'pending';
-            const statusText = isSheetData ? '시트' : (isConfirmed ? '확정' : '입금대기');
-            const borderColor = isSheetData ? '#00c73c' : (isConfirmed ? '#03c75a' : '#ff8c00');
+            const statusText = isConfirmed ? '확정' : '입금대기';
 
             return `
-                <div class="schedule-card" onclick="${isSheetData ? "alert('구글 시트 데이터는 상세 보기가 지원되지 않습니다.')" : `showDetail('${item.id}')`}" style="cursor:pointer; border-top-color: ${borderColor}">
-                    <div class="sc-status ${statusClass}" style="${isSheetData ? 'background:#00c73c;' : ''}">${statusText}</div>
+                <div class="schedule-card" onclick="showDetail('${item.id}')" style="cursor:pointer; border-top-color: ${isConfirmed ? '#03c75a' : '#ff8c00'}">
+                    <div class="sc-status ${statusClass}">${statusText}</div>
                     <div class="sc-time"><span class="material-icons">access_time</span> ${item.time}</div>
                     <div class="sc-item">${item.name}</div>
                     <div class="sc-customer">
                         <b>${item.customer}</b> <span style="color:#999; margin-left:4px;">${item.count}명</span>
                     </div>
-                    <div class="sc-status-tag" style="color:${borderColor}">
-                        <span class="material-icons" style="font-size:12px;">circle</span> ${isSheetData ? '스프레드시트' : item.status}
+                    <div class="sc-status-tag" style="color:${isConfirmed ? '#03c75a' : '#ff8c00'}">
+                        <span class="material-icons" style="font-size:12px;">circle</span> ${item.status}
                     </div>
                 </div>
             `;

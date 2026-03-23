@@ -368,6 +368,14 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Voucher Timeline:** Individual transfer cards in the customer voucher now display the specific resort associated with that leg of the trip (Pickup leg shows pickup resort, Sending leg shows sending resort).
     * **Benefits:** Eliminates ambiguity for transfers, especially when a customer stays at multiple hotels during their trip.
 
+    ### 33. English Name Visibility & Management (March 2026)
+    * **Objective:** Ensure staff can quickly identify customers using both Korean and English (passport) names for easier coordination with local boatmen and resorts.
+    * **Implementation:**
+        * **Table Display:** Updated the main reservation table in `admin.js` to show the English name (`engName`) directly under the Korean name in a smaller, distinct font.
+        * **Edit Mode Integration:** Added an "English Name" input field to the admin edit form, allowing staff to update passport names if they were incorrectly entered or missing.
+        * **Data Persistence:** Modified `handleSaveEdit` to ensure any changes to the English name are synchronized with Firestore.
+    * **Benefits:** Streamlines on-site operations by providing all necessary naming conventions in one view.
+
 ## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (HanaTour Seller Style)

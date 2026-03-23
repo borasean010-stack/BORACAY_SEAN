@@ -253,7 +253,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td><input type="checkbox"></td>
                 <td style="color:#bbb;">${filtered.length - index}</td>
                 <td style="font-weight:700;">${res.reservationNumber || '-'}</td>
-                <td><b>${res.customerKorName || '미입력'}</b></td>
+                <td>
+                    <b>${res.customerKorName || '미입력'}</b>
+                    ${res.engName ? `<br><small style="color:#999; font-size:11px;">${res.engName}</small>` : ''}
+                </td>
                 <td style="font-weight:600; color:#555;">${itemsText}</td>
                 <td style="font-weight:800; color:#111;">₩ ${(res.totalPrice || 0).toLocaleString()}</td>
                 <td style="color:#888;">${dateStr}</td>
@@ -453,13 +456,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;">
                     <div class="edit-group">
-                        <label style="font-size:12px; color:#888;">대표자 성함</label>
+                        <label style="font-size:12px; color:#888;">대표자 성함 (한글)</label>
                         <input type="text" id="edit-name" value="${res.customerKorName}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px;">
                     </div>
                     <div class="edit-group">
-                        <label style="font-size:12px; color:#888;">연락처</label>
-                        <input type="text" id="edit-contact" value="${res.contact}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px;">
+                        <label style="font-size:12px; color:#888;">영문 성함 (여권)</label>
+                        <input type="text" id="edit-eng-name" value="${res.engName || ''}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px;">
                     </div>
+                </div>
+                <div class="edit-group" style="margin-bottom:20px;">
+                    <label style="font-size:12px; color:#888;">연락처</label>
+                    <input type="text" id="edit-contact" value="${res.contact}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px;">
                 </div>
 
                 <div style="padding:15px; background:#f8f9fa; border-radius:10px; margin-bottom:20px;">
@@ -518,6 +525,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const newData = {
             items: updatedItems,
             customerKorName: document.getElementById('edit-name').value,
+            engName: document.getElementById('edit-eng-name').value,
             contact: document.getElementById('edit-contact').value,
             pickupDate: document.getElementById('edit-p-date').value,
             pickupFlight: document.getElementById('edit-p-flight').value,

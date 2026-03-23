@@ -262,6 +262,15 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Firebase Integration:** `reservation-schedule.html` now fetches real-time data directly from Firestore for accuracy.
     * **Benefits:** Provides a more professional and organized way to share tour details with customers who book multiple items simultaneously.
 
+    ### 23. Admin Reservation Editing & Pickup Detail Fix (March 2026)
+    * **Objective:** Allow administrators to modify reservation details and ensure all pickup/sending information is correctly displayed.
+    * **Implementation:**
+        * **Edit Mode:** Added a "수정하기" (Edit) button to the admin detail modal. Administrators can now modify customer names, contact info, flight details, pickup dates, total prices, and requests directly within the dashboard.
+        * **Save Logic:** Implemented `handleSaveEdit` using Firestore `updateDoc` to persist changes.
+        * **Pickup Detail Visibility:** Fixed an issue where airport pickup/sending dates and flight numbers were missing from the admin details and vouchers.
+        * **Voucher Enhancement:** `reservation-schedule.html` now displays a dedicated card for "Airport Pickup-Sending" details if that information is present in the reservation, regardless of its position in the items array.
+    * **Benefits:** Provides administrators with full control over reservation data, allowing for quick adjustments based on customer requests.
+
 ## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (HanaTour Seller Style)

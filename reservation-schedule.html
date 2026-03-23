@@ -121,6 +121,32 @@
 
                 const listContainer = document.getElementById('item-list');
                 
+                // 픽업/샌딩 정보가 있고, 전체 보기이거나 인덱스가 맞는 경우 별도 카드 추가
+                if (res.pickupDate || res.pickupFlight || res.sendingDate || res.sendingFlight) {
+                    const isPickupRelated = (itemIndex === null) || 
+                                          (res.items && res.items[itemIndex] && res.items[itemIndex].name.includes('픽업샌딩'));
+                    
+                    if (isPickupRelated) {
+                        const pickupCard = document.createElement('div');
+                        pickupCard.className = 'item-card';
+                        pickupCard.innerHTML = `
+                            <div class="item-header">
+                                <div class="item-name">공항 왕복 픽업샌딩 상세</div>
+                                <div class="item-status">확정됨</div>
+                            </div>
+                            <div class="item-details">
+                                ${res.pickupDate ? `<div class="detail-point">픽업일: <b>${res.pickupDate}</b></div>` : ''}
+                                ${res.pickupFlight ? `<div class="detail-point">픽업편: <b>${res.pickupFlight}</b></div>` : ''}
+                                ${res.sendingDate ? `<div class="detail-point">샌딩일: <b>${res.sendingDate}</b></div>` : ''}
+                                ${res.sendingFlight ? `<div class="detail-point">샌딩편: <b>${res.sendingFlight}</b></div>` : ''}
+                                ${res.pickupResort ? `<div class="detail-point" style="width:100%;">이용 리조트: <b>${res.pickupResort}</b></div>` : ''}
+                                ${res.exchangeAmount ? `<div class="detail-point" style="width:100%;">환전 요청: <b>${res.exchangeAmount}</b></div>` : ''}
+                            </div>
+                        `;
+                        listContainer.appendChild(pickupCard);
+                    }
+                }
+
                 // 표시할 아이템 필터링
                 let displayItems = res.items || [];
                 if (itemIndex !== null && displayItems[itemIndex]) {

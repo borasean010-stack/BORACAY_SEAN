@@ -321,16 +321,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
 
-            <!-- 3. 항공/호텔 (정보가 있을 때만 표시) -->
-            ${hasFlightInfo ? `
             <div style="margin-bottom:20px; background:#fcfcfc; padding:15px; border-radius:10px; border:1px solid #f0f0f0;">
                 <div style="font-size:13px; font-weight:700; color:#888; margin-bottom:8px;">✈️ 항공 및 호텔 정보</div>
                 <div style="font-size:13px; line-height:1.6; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                    ${res.pickupDate ? `<p style="margin:0;"><b>픽업:</b> ${res.pickupDate.slice(5)} / ${res.pickupFlight || ''}</p>` : ''}
-                    ${res.sendingDate ? `<p style="margin:0;"><b>샌딩:</b> ${res.sendingDate.slice(5)} / ${res.sendingFlight || ''}</p>` : ''}
+                    ${res.pickupDate ? `<p style="margin:0;"><b>픽업일:</b> ${res.pickupDate}</p>` : ''}
+                    ${res.pickupFlight ? `<p style="margin:0;"><b>픽업편:</b> ${res.pickupFlight}</p>` : ''}
+                    ${res.sendingDate ? `<p style="margin:0;"><b>샌딩일:</b> ${res.sendingDate}</p>` : ''}
+                    ${res.sendingFlight ? `<p style="margin:0;"><b>샌딩편:</b> ${res.sendingFlight}</p>` : ''}
                     ${res.pickupResort ? `<p style="margin:0; grid-column:span 2;"><b>리조트:</b> ${res.pickupResort}</p>` : ''}
+                    ${res.sendingResort ? `<p style="margin:0; grid-column:span 2;"><b>샌딩리조트:</b> ${res.sendingResort}</p>` : ''}
                 </div>
-            </div>` : ''}
+            </div>
 
             <!-- 4. 추가 정보 및 요청 -->
             <div style="margin-bottom:25px; background:#fcfcfc; padding:15px; border-radius:10px; border:1px solid #f0f0f0;">
@@ -345,13 +346,97 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
 
-            <div style="text-align:center;">
-                <button onclick="closeModal()" style="width:100%; padding:12px; background:#333; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">창 닫기</button>
+            <div style="text-align:center; display:flex; gap:10px;">
+                <button id="edit-btn" onclick="toggleEditMode('${res.id}')" style="flex:1; padding:12px; background:#ff6a00; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">수정하기</button>
+                <button onclick="closeModal()" style="flex:1; padding:12px; background:#333; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">창 닫기</button>
             </div>
         `;
 
         modal.style.display = 'flex';
     };
+
+    window.toggleEditMode = (id) => {
+        const res = allReservations.find(r => r.id === id);
+        if (!res) return;
+
+        const body = document.getElementById('modal-body');
+        const editBtn = document.getElementById('edit-btn');
+
+        if (editBtn.innerText === '수정하기') {
+            // 수정 모드로 전환
+            editBtn.innerText = '저장하기';
+            editBtn.style.background = '#03c75a';
+
+            body.innerHTML = `
+                <div style="font-size:14px; padding:10px; border:1px solid #ff6a00; border-radius:10px; background:#fff9f5; margin-bottom:20px;">
+                    ⚠️ 필드값을 수정한 후 [저장하기] 버튼을 눌러주세요.
+                </div>
+                <div class="edit-group" style="margin-bottom:15px;">
+                    <label style="font-size:12px; color:#888;">대표자 성함</label>
+                    <input type="text" id="edit-name" value="${res.customerKorName}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; margin-top:5px;">
+                </div>
+                <div class="edit-group" style="margin-bottom:15px;">
+                    <label style="font-size:12px; color:#888;">연락처</label>
+                    <input type="text" id="edit-contact" value="${res.contact}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; margin-top:5px;">
+                </div>
+                <div class="edit-group" style="margin-bottom:15px;">
+                    <label style="font-size:12px; color:#888;">항공/픽업 정보 (픽업일 | 픽업편 | 샌딩일 | 샌딩편)</label>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-top:5px;">
+                        <input type="text" id="edit-p-date" value="${res.pickupDate || ''}" placeholder="픽업일">
+                        <input type="text" id="edit-p-flight" value="${res.pickupFlight || ''}" placeholder="픽업편">
+                        <input type="text" id="edit-s-date" value="${res.sendingDate || ''}" placeholder="샌딩일">
+                        <input type="text" id="edit-s-flight" value="${res.sendingFlight || ''}" placeholder="샌딩편">
+                    </div>
+                </div>
+                <div class="edit-group" style="margin-bottom:15px;">
+                    <label style="font-size:12px; color:#888;">리조트 / 투어 픽업 장소</label>
+                    <input type="text" id="edit-resort" value="${res.pickupResort || ''}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; margin-top:5px;" placeholder="픽업 리조트">
+                    <input type="text" id="edit-act-pickup" value="${res.activityPickupResort || ''}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; margin-top:5px;" placeholder="투어 개별 픽업지">
+                </div>
+                <div class="edit-group" style="margin-bottom:15px;">
+                    <label style="font-size:12px; color:#888;">총 합계 금액 (숫자만 입력)</label>
+                    <input type="number" id="edit-total" value="${res.totalPrice}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; margin-top:5px;">
+                </div>
+                <div class="edit-group">
+                    <label style="font-size:12px; color:#888;">요청사항</label>
+                    <textarea id="edit-requests" style="width:100%; height:100px; padding:10px; border:1px solid #ddd; border-radius:6px; margin-top:5px;">${res.requests || ''}</textarea>
+                </div>
+            `;
+            // input 스타일 간소화 적용
+            body.querySelectorAll('input').forEach(el => {
+                if(!el.style.width) el.style.cssText = "width:100%; padding:10px; border:1px solid #ddd; border-radius:6px;";
+            });
+        } else {
+            // 저장 로직 수행
+            handleSaveEdit(id);
+        }
+    };
+
+    async function handleSaveEdit(id) {
+        const newData = {
+            customerKorName: document.getElementById('edit-name').value,
+            contact: document.getElementById('edit-contact').value,
+            pickupDate: document.getElementById('edit-p-date').value,
+            pickupFlight: document.getElementById('edit-p-flight').value,
+            sendingDate: document.getElementById('edit-s-date').value,
+            sendingFlight: document.getElementById('edit-s-flight').value,
+            pickupResort: document.getElementById('edit-resort').value,
+            activityPickupResort: document.getElementById('edit-act-pickup').value,
+            totalPrice: parseInt(document.getElementById('edit-total').value) || 0,
+            requests: document.getElementById('edit-requests').value
+        };
+
+        if (confirm("변경 사항을 저장하시겠습니까?")) {
+            try {
+                await updateDoc(doc(db, "reservations", id), newData);
+                alert("성공적으로 저장되었습니다.");
+                closeModal();
+            } catch (err) {
+                console.error("Update Error", err);
+                alert("저장 중 오류가 발생했습니다.");
+            }
+        }
+    }
     // --- 📱 자동 안내문 생성 로직 ---
     window.copyGuidance = (id) => {
         const res = allReservations.find(r => r.id === id);

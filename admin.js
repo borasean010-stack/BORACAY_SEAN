@@ -272,6 +272,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const body = document.getElementById('modal-body');
 
         // 예약 상품 렌더링
+        // 예약 상품 렌더링 시작 부분에 전체 일정표 버튼 추가
+        const totalVoucherBtn = `
+            <div style="margin-bottom:15px;">
+                <button onclick="copyVoucherLink('${res.id}', null)" style="width:100%; padding:12px; background:#03c75a; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <span class="material-icons" style="font-size:18px;">share</span> 전체 일정표(바우처) 링크 복사
+                </button>
+                <p style="font-size:11px; color:#888; margin-top:5px; text-align:center;">* 장바구니 구매 고객용 통합 일정표 링크입니다.</p>
+            </div>
+        `;
+
         const itemsHtml = res.items.map((item, idx) => `
             <div style="padding:12px; background:#f8f9fa; border:1px solid #eee; border-radius:8px; margin-bottom:8px;">
                 <div style="display:flex; justify-content:space-between; align-items:start;">
@@ -297,13 +307,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h3 style="margin:0; font-size:18px; color:#111;">예약 상세 정보</h3>
                 <button onclick="copyGuidance('${res.id}')" style="background:#ff6a00; color:white; border:none; padding:8px 14px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:13px;">👉 안내문 복사</button>
             </div>
+body.innerHTML = `
+    <!-- 1. 예약 상품 -->
+    <div style="margin-bottom:25px;">
+        <div style="font-size:14px; font-weight:700; color:#888; margin-bottom:10px; display:flex; align-items:center; gap:5px;">
+            <span class="material-icons" style="font-size:16px;">shopping_cart</span> 예약 상품
+        </div>
+        ${totalVoucherBtn}
+        ${itemsHtml}
 
-            <!-- 1. 예약 상품 -->
-            <div style="margin-bottom:25px;">
-                <div style="font-size:14px; font-weight:700; color:#888; margin-bottom:10px; display:flex; align-items:center; gap:5px;">
-                    <span class="material-icons" style="font-size:16px;">shopping_cart</span> 예약 상품
-                </div>
-                ${itemsHtml}
                 ${res.status !== '견적' ? `
                 <div style="text-align:right; margin-top:10px; padding:10px; background:#fff5eb; border-radius:8px;">
                     <span style="font-size:14px; color:#666;">총 합계 금액</span>
@@ -499,9 +511,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.copyVoucherLink = (id, idx) => {
-        const url = `${window.location.origin}/reservation-schedule.html?id=${id}&itemIndex=${idx}`;
+        const itemParam = (idx !== null) ? `&itemIndex=${idx}` : '';
+        const url = `${window.location.origin}/reservation-schedule.html?id=${id}${itemParam}`;
         navigator.clipboard.writeText(url).then(() => {
-            alert('바우처 링크가 복사되었습니다. 고객님께 전달해주세요.');
+            const type = (idx !== null) ? '개별 상품' : '전체 일정';
+            alert(`${type} 바우처 링크가 복사되었습니다. 고객님께 전달해주세요.`);
         }).catch(err => {
             console.error('링크 복사 실패:', err);
             alert('링크 복사에 실패했습니다.');

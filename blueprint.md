@@ -279,6 +279,15 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Pickup/Sending Fix:** Ensured that airport pickup and sending flight/date details are prominently displayed in both the admin detail modal and the tour-specific vouchers.
         * **Editing Capability:** Administrators can now edit all critical reservation fields (names, dates, flights, totals) directly from the detail modal to handle customer change requests efficiently.
 
+    ### 25. Unified Itinerary & Admin Edit Sync (March 2026)
+    * **Objective:** Provide a professional, consolidated itinerary for cart purchases and ensure it reflects real-time admin edits.
+    * **Implementation:**
+        * **Consolidated Voucher:** Added a "Copy Total Schedule Link" button in the admin modal. This link shows all tours and pickup/sending details in a single, sorted view.
+        * **Smart Sorting:** The itinerary now automatically groups and sorts all items (including airport transfers) by date and time, creating a logical flow for the traveler.
+        * **Admin-Voucher Sync:** Since the voucher fetches data directly from Firestore using the reservation ID, any edits made by the administrator (names, dates, flights) are instantly reflected when the customer clicks their voucher link.
+        * **Pickup Detail Logic:** Specifically handled airport pickup/sending details so they appear as independent entries in the timeline, even if they aren't explicitly listed in the items array.
+    * **Benefits:** Eliminates the need for multiple separate links and ensures the customer always sees the most up-to-date schedule managed by the admin.
+
 ## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (HanaTour Seller Style)

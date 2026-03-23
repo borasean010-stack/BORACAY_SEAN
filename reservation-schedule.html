@@ -87,14 +87,13 @@
     document.addEventListener('DOMContentLoaded', async () => {
         const urlParams = new URLSearchParams(window.location.search);
         const resId = urlParams.get('id');
-        const itemIndex = urlParams.get('itemIndex'); // 특정 항목만 표시하고 싶을 때 사용
+        const itemIndex = urlParams.get('itemIndex'); 
         
         if (!resId) {
             alert('예약 정보를 찾을 수 없습니다.');
             return;
         }
 
-        // Firebase 초기화 (CDN 방식)
         const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
         const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
 
@@ -120,40 +119,56 @@
                 document.getElementById('total-price').textContent = `₩ ${(res.totalPrice || 0).toLocaleString()}`;
 
                 const listContainer = document.getElementById('item-list');
-                
-                // 픽업/샌딩 정보가 있고, 전체 보기이거나 인덱스가 맞는 경우 별도 카드 추가
+                let allScheduleItems = [];
+
+                // 1. 공항 픽업/샌딩 정보 추가
                 if (res.pickupDate || res.pickupFlight || res.sendingDate || res.sendingFlight) {
-                    const isPickupRelated = (itemIndex === null) || 
-                                          (res.items && res.items[itemIndex] && res.items[itemIndex].name.includes('픽업샌딩'));
-                    
-                    if (isPickupRelated) {
-                        const pickupCard = document.createElement('div');
-                        pickupCard.className = 'item-card';
-                        pickupCard.innerHTML = `
-                            <div class="item-header">
-                                <div class="item-name">공항 왕복 픽업샌딩 상세</div>
-                                <div class="item-status">확정됨</div>
-                            </div>
-                            <div class="item-details">
-                                ${res.pickupDate ? `<div class="detail-point">픽업일: <b>${res.pickupDate}</b></div>` : ''}
-                                ${res.pickupFlight ? `<div class="detail-point">픽업편: <b>${res.pickupFlight}</b></div>` : ''}
-                                ${res.sendingDate ? `<div class="detail-point">샌딩일: <b>${res.sendingDate}</b></div>` : ''}
-                                ${res.sendingFlight ? `<div class="detail-point">샌딩편: <b>${res.sendingFlight}</b></div>` : ''}
-                                ${res.pickupResort ? `<div class="detail-point" style="width:100%;">이용 리조트: <b>${res.pickupResort}</b></div>` : ''}
-                                ${res.exchangeAmount ? `<div class="detail-point" style="width:100%;">환전 요청: <b>${res.exchangeAmount}</b></div>` : ''}
-                            </div>
-                        `;
-                        listContainer.appendChild(pickupCard);
+                    if (itemIndex === null || (res.items && res.items[itemIndex] && res.items[itemIndex].name.includes('픽업샌딩'))) {
+                        if (res.pickupDate) {
+                            allScheduleItems.push({
+                                date: res.pickupDate,
+                                time: "공항도착",
+                                name: "보라카이션 공항 픽업",
+                                details: `항공편: ${res.pickupFlight || '-'}<br>이용 리조트: ${res.pickupResort || '-'}`
+                            });
+                        }
+                        if (res.sendingDate) {
+                            allScheduleItems.push({
+                                date: res.sendingDate,
+                                time: "리조트미팅",
+                                name: "보라카이션 공항 샌딩",
+                                details: `항공편: ${res.sendingFlight || '-'}<br>픽업 리조트: ${res.sendingResort || '-'}`
+                            });
+                        }
                     }
                 }
 
-                // 표시할 아이템 필터링
-                let displayItems = res.items || [];
-                if (itemIndex !== null && displayItems[itemIndex]) {
-                    displayItems = [displayItems[itemIndex]];
+                // 2. 예약 상품 리스트 추가 (필터링 적용)
+                let rawItems = res.items || [];
+                if (itemIndex !== null && rawItems[itemIndex]) {
+                    // 개별 보기일 때 픽업샌딩 중복 방지 (위에서 추가했으므로)
+                    if (!rawItems[itemIndex].name.includes('픽업샌딩')) {
+                        allScheduleItems.push(rawItems[itemIndex]);
+                    }
+                } else if (itemIndex === null) {
+                    rawItems.forEach(item => {
+                        if (!item.name.includes('픽업샌딩')) {
+                            allScheduleItems.push(item);
+                        }
+                    });
                 }
 
-                displayItems.forEach(item => {
+                // 3. 날짜 및 시간순 정렬
+                allScheduleItems.sort((a, b) => {
+                    if (a.date !== b.date) return a.date.localeCompare(b.date);
+                    return (a.time || "").localeCompare(b.time || "");
+                });
+
+                if (allScheduleItems.length === 0) {
+                    listContainer.innerHTML = '<p style="text-align:center; padding:40px; color:#999;">등록된 상세 일정이 없습니다.</p>';
+                }
+
+                allScheduleItems.forEach(item => {
                     const card = document.createElement('div');
                     card.className = 'item-card';
                     card.innerHTML = `
@@ -162,20 +177,20 @@
                             <div class="item-status">확정됨</div>
                         </div>
                         <div class="item-details">
-                            <div class="detail-point">이용 일자: <b>${item.date}</b></div>
-                            <div class="detail-point">이용 시간: <b>${item.time || '종일'}</b></div>
+                            <div class="detail-point">날짜: <b>${item.date}</b></div>
+                            <div class="detail-point">시간: <b>${item.time || '종일'}</b></div>
                             ${item.count ? `<div class="detail-point">인원: <b>${item.count}명</b></div>` : ''}
-                            ${item.details ? `<div class="detail-point" style="width:100%; margin-top:10px; border-top:1px dashed #eee; padding-top:10px;">선택 옵션: <b>${item.details}</b></div>` : ''}
+                            ${item.details ? `<div class="detail-point" style="width:100%; margin-top:10px; border-top:1px dashed #eee; padding-top:10px; line-height:1.6;">${item.details}</div>` : ''}
                         </div>
                     `;
                     listContainer.appendChild(card);
                 });
             } else {
-                document.body.innerHTML = '<div style="text-align:center; padding:100px;"><h1>예약 데이터를 불러올 수 없습니다.</h1><p>관리자 페이지에서 다시 시도해 주세요.</p></div>';
+                document.body.innerHTML = '<div style="text-align:center; padding:100px;"><h1>데이터를 찾을 수 없습니다.</h1></div>';
             }
         } catch (err) {
             console.error(err);
-            document.body.innerHTML = '<div style="text-align:center; padding:100px;"><h1>오류가 발생했습니다.</h1></div>';
+            document.body.innerHTML = '<div style="text-align:center; padding:100px;"><h1>데이터 로드 중 오류가 발생했습니다.</h1></div>';
         }
     });
 </script>

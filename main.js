@@ -5,13 +5,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Naver Cafe Link Optimization ---
     function optimizeCafeLinks() {
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 768;
-        const links = document.querySelectorAll('a[href*="cafe.naver.com"]');
+        const links = document.querySelectorAll('a[href*="cafe.naver.com/jesupblue"]');
+        
         links.forEach(link => {
             let href = link.href;
             if (isMobile) {
-                if (href.includes('cafe.naver.com') && !href.includes('m.cafe.naver.com')) link.href = href.replace('cafe.naver.com', 'm.cafe.naver.com');
+                // PC -> Mobile: ArticleList.nhn?search.menuid=21 -> /menus/21
+                if (href.includes('search.menuid=')) {
+                    const menuId = href.split('search.menuid=')[1].split('&')[0];
+                    link.href = `https://m.cafe.naver.com/ca-fe/web/cafes/17953658/menus/${menuId}`;
+                } else if (href.includes('cafe.naver.com') && !href.includes('m.cafe.naver.com')) {
+                    link.href = href.replace('cafe.naver.com', 'm.cafe.naver.com');
+                }
             } else {
-                if (href.includes('m.cafe.naver.com')) link.href = href.replace('m.cafe.naver.com', 'cafe.naver.com');
+                // Mobile -> PC: /menus/21 -> ArticleList.nhn?search.menuid=21
+                if (href.includes('/menus/')) {
+                    const menuId = href.split('/menus/')[1].split('?')[0];
+                    link.href = `https://cafe.naver.com/jesupblue?iframe_url=/ArticleList.nhn%3Fsearch.clubid=17953658%26search.menuid=${menuId}`;
+                } else if (href.includes('m.cafe.naver.com')) {
+                    link.href = href.replace('m.cafe.naver.com', 'cafe.naver.com');
+                }
             }
         });
     }

@@ -384,6 +384,14 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Styling:** Used contrasting colors (dark black for Korean, gray for English) and bold font weights to ensure the primary name is easily scannable while keeping passport information accessible.
     * **Benefits:** Reduces cognitive load for staff by providing a consistent, labeled structure for customer naming conventions.
 
+    ### 34. Naver Cafe Link Optimization Fix (March 2026)
+    * **Objective:** Ensure all Naver Cafe links (Announcements, Reviews, FAQ) work correctly on both PC and mobile by automatically switching between standard and mobile URLs.
+    * **Implementation:**
+        * **Standardized Base Links:** Updated `index.html` to use full PC-style URLs with `iframe_url` parameters for menu-specific redirection.
+        * **Heuristic Converter:** Refactored `optimizeCafeLinks` in `main.js` to intelligently parse menu IDs and convert between `cafe.naver.com/jesupblue?...` (PC) and `m.cafe.naver.com/ca-fe/web/cafes/17953658/menus/...` (Mobile).
+        * **Environment Detection:** The script detects the user's device and screen width to apply the most appropriate URL format instantly upon page load and window resizing.
+    * **Benefits:** Guarantees a seamless transition to the Naver Cafe community regardless of the customer's device, eliminating "404" or "Page Not Found" errors caused by incompatible link formats.
+
 ## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (HanaTour Seller Style)

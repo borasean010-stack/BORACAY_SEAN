@@ -295,6 +295,12 @@ This project is a reservation website for tours and activities in Boracay (BORAC
         * **Access Control:** The "수정하기" (Edit) button is now exclusively visible to users with IDs **'luca'** or **'admin'**. Other administrators can view details but cannot initiate changes.
         * **Context:** This ensures that critical data updates are handled only by authorized high-level managers while maintaining standard visibility for other staff members.
 
+    ### 27. UI Label Standardization (March 2026)
+    * **Objective:** Clarify the purpose of pickup location fields for better user understanding.
+    * **Implementation:**
+        * **Label Update:** Changed "🏨 투어/스파 픽업 리조트" to "픽업샌딩 / 마사지 픽업 리조트" in `mypage.html` and `booking-form.html`.
+        * **Consistency:** Applied the same terminology across both the booking entry form and the customer's personal reservation history page to ensure a seamless experience.
+
 ## Previous Milestone: Admin & Login Redesign
 
 ### 1. Login Page Redesign (HanaTour Seller Style)

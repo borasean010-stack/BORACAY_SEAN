@@ -251,7 +251,7 @@
                     <div style="font-size: 12px; color: #888; margin-top: 4px;">📅 ${item.date || '-'} | 인원: ${item.count}명</div>
                 </div>`;
         });
-        let pickupHtml = info.activityPickupResort ? `<div class="info-item" style="grid-column: span 2; background: #f0f7ff; padding: 12px; border-radius: 12px; margin-top: 8px;"><label style="color:#007bff; font-weight:700; font-size:11px; margin-bottom:4px; display:block;">🏨 투어/스파 픽업 리조트</label><span style="font-weight:800; color:#0056b3; font-size:14px;">${info.activityPickupResort}</span></div>` : '';
+        let pickupHtml = info.activityPickupResort ? `<div class="info-item" style="grid-column: span 2; background: #f0f7ff; padding: 12px; border-radius: 12px; margin-top: 8px;"><label style="color:#007bff; font-weight:700; font-size:11px; margin-bottom:4px; display:block;">픽업샌딩 / 마사지 픽업 리조트</label><span style="font-weight:800; color:#0056b3; font-size:14px;">${info.activityPickupResort}</span></div>` : '';
         card.innerHTML = `
             <h3 style="font-size:17px; font-weight:900; margin-bottom:15px; display:flex; align-items:center; gap:8px;"><span style="color:#ff6a00;">●</span> 예약 확인 (${date})</h3>
             <div class="info-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #fcfcfc; padding: 18px; border-radius: 15px; border: 1px solid #f0f0f0;">

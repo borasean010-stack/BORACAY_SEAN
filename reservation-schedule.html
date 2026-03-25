@@ -110,15 +110,16 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- 📅 날짜 로직 수정 ---
-        // '오늘'이 아니라 '7일 전'부터 보여줌으로써 현재 여행 중인 손님의 앞선 일정도 포함함
+        // --- 📅 날짜 조건 설정 ---
         const now = new Date();
         const offset = now.getTimezoneOffset() * 60000;
         const today = new Date(now.getTime() - offset);
+        const todayStr = today.toISOString().split('T')[0];
         
-        const sevenDaysAgo = new Date(today);
-        sevenDaysAgo.setDate(today.getDate() - 7);
-        const limitDateStr = sevenDaysAgo.toISOString().split('T')[0];
+        // 개별 액티비티용 15일 버퍼
+        const fifteenDaysAgo = new Date(today);
+        fifteenDaysAgo.setDate(today.getDate() - 15);
+        const activityLimitStr = fifteenDaysAgo.toISOString().split('T')[0];
 
         function getGuidance(item, res) {
             const name = item.name;
@@ -185,10 +186,16 @@
                     const isIndividualView = (itemIndex !== null);
                     const selectedItemName = isIndividualView && res.items ? res.items[itemIndex]?.name : "";
 
+                    // --- ✈️ 공항 정보 노출 조건 로직 ---
+                    const isCurrentTrip = res.sendingDate && res.sendingDate >= todayStr; // 샌딩 안 지났으면 이번 여행
+                    
                     // 1. 공항 픽업
-                    if (res.pickupDate && res.pickupDate >= limitDateStr) {
+                    if (res.pickupDate) {
+                        const isRecentActivity = res.pickupDate >= activityLimitStr;
                         const shouldShowPickup = !isIndividualView || selectedItemName.includes('픽업');
-                        if (shouldShowPickup) {
+                        
+                        // (이번 여행 중이거나) OR (최근 15일 이내의 기록인 경우) 표시
+                        if (shouldShowPickup && (isCurrentTrip || isRecentActivity)) {
                             allScheduleItems.push({
                                 date: res.pickupDate,
                                 time: "00:00",
@@ -207,21 +214,28 @@
                     let rawItems = res.items || [];
                     rawItems.forEach((item, idx) => {
                         if (isIndividualView && parseInt(itemIndex) !== idx) return;
-                        if (item.date && item.date >= limitDateStr && !item.name.includes('픽업샌딩')) {
-                            allScheduleItems.push({
-                                date: item.date,
-                                time: item.time || "09:00",
-                                name: item.name,
-                                content: getGuidance(item, res)
-                            });
-                            hasCurrentTripItem = true;
+                        
+                        // (이번 여행 중이거나) OR (해당 투어일로부터 15일이 안 지났으면) 표시
+                        const isWithin15Days = item.date >= activityLimitStr;
+                        if (isWithin15Days || isCurrentTrip) {
+                            if (!item.name.includes('픽업샌딩')) {
+                                allScheduleItems.push({
+                                    date: item.date,
+                                    time: item.time || "09:00",
+                                    name: item.name,
+                                    content: getGuidance(item, res)
+                                });
+                                hasCurrentTripItem = true;
+                            }
                         }
                     });
 
                     // 3. 공항 샌딩
-                    if (res.sendingDate && res.sendingDate >= limitDateStr) {
+                    if (res.sendingDate) {
+                        const isRecentActivity = res.sendingDate >= activityLimitStr;
                         const shouldShowSending = !isIndividualView || selectedItemName.includes('샌딩');
-                        if (shouldShowSending) {
+                        
+                        if (shouldShowSending && (isCurrentTrip || isRecentActivity)) {
                             const sendingFlight = res.sendingFlight || '';
                             const meetingTime = (sendingFlight.toUpperCase() === 'TW126') ? '08:30' : '09:00';
                             allScheduleItems.push({
@@ -256,7 +270,7 @@
                     } else { mergedScheduleItems.push(item); }
                 });
 
-                if (mergedScheduleItems.length === 0) listContainer.innerHTML = '<p style="text-align:center; padding:40px; color:#999;">최근 일정이 없습니다.</p>';
+                if (mergedScheduleItems.length === 0) listContainer.innerHTML = '<p style="text-align:center; padding:40px; color:#999;">진행 중이거나 최근 15일 이내의 일정이 없습니다.</p>';
 
                 mergedScheduleItems.forEach(item => {
                     const card = document.createElement('div');

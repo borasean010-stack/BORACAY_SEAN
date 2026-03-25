@@ -65,7 +65,7 @@
             <div class="info-item"><label>총 결제 금액</label><span id="total-price">-</span></div>
         </div>
 
-        <div class="section-title">통합 투어 및 액티비티 일정</div>
+        <div class="section-title">투어 및 액티비티 일정</div>
         <div id="item-list">
             <!-- JS Render -->
         </div>
@@ -110,7 +110,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 오늘 날짜 구하기 (YYYY-MM-DD)
         const now = new Date();
         const offset = now.getTimezoneOffset() * 60000;
         const todayStr = new Date(now.getTime() - offset).toISOString().split('T')[0];
@@ -157,7 +156,6 @@
         try {
             let reservations = [];
             if (contact) {
-                // 연락처로 '예약확정'인 내역만 조회
                 const q = query(collection(db, "reservations"), where("contact", "==", contact), where("status", "==", "예약확정"));
                 const querySnapshot = await getDocs(q);
                 reservations = querySnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -179,9 +177,15 @@
                 reservations.forEach(res => {
                     let hasCurrentItem = false;
 
-                    // 1. 공항 픽업 (오늘 이후인 경우만)
+                    // 개별 조회 모드인지 확인
+                    const isIndividualView = (itemIndex !== null);
+                    const selectedItemName = isIndividualView && res.items ? res.items[itemIndex]?.name : "";
+
+                    // 1. 공항 픽업
+                    // - 통합 보기(itemIndex == null)이거나, 개별 조회가 '픽업' 관련일 때만 표시
                     if (res.pickupDate && res.pickupDate >= todayStr) {
-                        if (itemIndex === null || (res.items && res.items[itemIndex] && res.items[itemIndex].name.includes('픽업'))) {
+                        const shouldShowPickup = !isIndividualView || (selectedItemName.includes('픽업'));
+                        if (shouldShowPickup) {
                             allScheduleItems.push({
                                 date: res.pickupDate,
                                 time: "00:00",
@@ -196,10 +200,10 @@
                         }
                     }
 
-                    // 2. 예약 상품 리스트 (오늘 이후인 경우만)
+                    // 2. 예약 상품 리스트
                     let rawItems = res.items || [];
                     rawItems.forEach((item, idx) => {
-                        if (itemIndex !== null && parseInt(itemIndex) !== idx) return;
+                        if (isIndividualView && parseInt(itemIndex) !== idx) return;
                         if (item.date && item.date >= todayStr && !item.name.includes('픽업샌딩')) {
                             allScheduleItems.push({
                                 date: item.date,
@@ -211,9 +215,11 @@
                         }
                     });
 
-                    // 3. 공항 샌딩 (오늘 이후인 경우만)
+                    // 3. 공항 샌딩
+                    // - 통합 보기이거나, 개별 조회가 '샌딩' 관련일 때만 표시
                     if (res.sendingDate && res.sendingDate >= todayStr) {
-                        if (itemIndex === null || (res.items && res.items[itemIndex] && res.items[itemIndex].name.includes('샌딩'))) {
+                        const shouldShowSending = !isIndividualView || (selectedItemName.includes('샌딩'));
+                        if (shouldShowSending) {
                             const sendingFlight = res.sendingFlight || '';
                             const meetingTime = (sendingFlight.toUpperCase() === 'TW126') ? '08:30' : '09:00';
                             allScheduleItems.push({
@@ -228,10 +234,7 @@
                         }
                     }
 
-                    // 현재 유효한 일정이 하나라도 있는 예약 건만 금액을 합산함 (재방문 시 과거 금액 제외)
-                    if (hasCurrentItem) {
-                        filteredTotalPrice += (res.totalPrice || 0);
-                    }
+                    if (hasCurrentItem) filteredTotalPrice += (res.totalPrice || 0);
                 });
 
                 document.getElementById('total-price').textContent = `₩ ${filteredTotalPrice.toLocaleString()}`;
@@ -260,7 +263,7 @@
                 });
 
                 if (mergedScheduleItems.length === 0) {
-                    listContainer.innerHTML = '<p style="text-align:center; padding:40px; color:#999;">현재 진행 중이거나 예정된 상세 일정이 없습니다.</p>';
+                    listContainer.innerHTML = '<p style="text-align:center; padding:40px; color:#999;">현재 예정된 일정이 없습니다.</p>';
                 }
 
                 mergedScheduleItems.forEach(item => {

@@ -337,7 +337,13 @@
             const dateStr = `${year}-${(month+1).toString().padStart(2,'0')}-${i.toString().padStart(2,'0')}`;
             const targetDate = new Date(year, month, i);
             const div = document.createElement('div');
-            if (targetDate < today) { div.className = 'day disabled'; }
+            
+            // 홀수일만 선택 가능하게 변경
+            const isOddDay = i % 2 !== 0;
+
+            if (targetDate < today || !isOddDay) { 
+                div.className = 'day disabled'; 
+            }
             else {
                 div.className = 'day' + (dateStr === selectedDate ? ' selected' : '');
                 div.onclick = function() {

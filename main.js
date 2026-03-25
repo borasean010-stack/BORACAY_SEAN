@@ -332,4 +332,43 @@ document.addEventListener('DOMContentLoaded', () => {
             heroVideo.style.display = 'none';
         });
     }
+
+    // --- Popup Modal Logic ---
+    const mainPopup = document.getElementById('mainPopup');
+    const popupSlider = document.getElementById('popupSlider');
+    const popupDots = document.getElementById('popupDots');
+    let currentPopupSlide = 0;
+    const popupSlides = document.querySelectorAll('.popup-slide');
+
+    if (mainPopup && popupSlides.length > 0) {
+        // Create Dots for Popup
+        popupSlides.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.className = 'popup-dot' + (i === 0 ? ' active' : '');
+            dot.onclick = () => { currentPopupSlide = i; updatePopupSlider(); };
+            popupDots.appendChild(dot);
+        });
+
+        window.movePopupSlide = (direction) => {
+            currentPopupSlide = (currentPopupSlide + direction + popupSlides.length) % popupSlides.length;
+            updatePopupSlider();
+        };
+
+        function updatePopupSlider() {
+            popupSlider.style.transform = `translateX(-${currentPopupSlide * 100}%)`;
+            const dots = document.querySelectorAll('.popup-dot');
+            dots.forEach((dot, i) => dot.classList.toggle('active', i === currentPopupSlide));
+        }
+
+        window.closePopup = () => {
+            mainPopup.style.display = 'none';
+        };
+
+        window.closePopupToday = () => {
+            closePopup();
+        };
+
+        // Always show popup
+        mainPopup.style.display = 'flex';
+    }
 });

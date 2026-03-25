@@ -124,7 +124,8 @@
             } 
             else if (name.includes('말룸파티')) {
                 if (isSending) {
-                    return `<b>미팅 시간 / 장소: 09:00 / ${res.activityPickupResort || res.pickupResort || '리조트 로비'}</b><br><br>
+                    const meetingTime = (res.sendingFlight && res.sendingFlight.toUpperCase() === 'TW126') ? '08:30' : '09:00';
+                    return `<b>미팅 시간 / 장소: ${meetingTime} / ${res.activityPickupResort || res.pickupResort || '리조트 로비'}</b><br><br>
                             - 미리 체크아웃과 룸체크를 완료해 주세요.<br>
                             - 준비물: 수영복, 매너팁(1인 100페소), 튜빙비용(350페소), 공항세(900페소)`;
                 } else {
@@ -192,12 +193,16 @@
                 // 3. 공항 샌딩 추가
                 if (res.sendingDate) {
                     if (itemIndex === null || (res.items && res.items[itemIndex] && res.items[itemIndex].name.includes('샌딩'))) {
+                        // TW126 항공편의 경우 샌딩 미팅 시간을 08:30으로 변경
+                        const sendingFlight = res.sendingFlight || '';
+                        const meetingTime = (sendingFlight.toUpperCase() === 'TW126') ? '08:30' : '09:00';
+
                         allScheduleItems.push({
                             date: res.sendingDate,
                             time: "23:59", // 가장 나중에 오게 함
-                            name: `✈️ 공항 샌딩 (${res.sendingFlight || '-'})`,
+                            name: `✈️ 공항 샌딩 (${sendingFlight || '-'})`,
                             isSending: true,
-                            content: `<b>미팅 시간 / 장소: 09:00(예정) / ${res.sendingResort || res.pickupResort || '리조트 로비'}</b><br><br>
+                            content: `<b>미팅 시간 / 장소: ${meetingTime}(예정) / ${res.sendingResort || res.pickupResort || '리조트 로비'}</b><br><br>
                                       - 항공 일정에 따라 미팅 시간이 조절될 수 있습니다.<br>
                                       - 샌딩 리조트: ${res.sendingResort || res.pickupResort || '-'}<br>
                                       - 미팅 장소에서 미리 대기해 주세요.`

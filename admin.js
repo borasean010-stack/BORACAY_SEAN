@@ -620,13 +620,16 @@ document.addEventListener('DOMContentLoaded', () => {
             } 
             else if (name.includes('말룸파티')) {
                 if (isSending) {
-                    msg = `말룸파티 시크릿가든(샌딩) 예약 확정 안내 문자\n\n대표자 성함 : ${res.customerKorName}\n인원 : ${item.count}\n투어 : ${name}\n투어날짜 : ${item.date}\n투어 미팅 시간 / 장소 : 09:00 / ${res.activityPickupResort || res.pickupResort || '리조트 로비'}\n\n★★ 주의 사항 및 준비물 ★★\n\n*주의 사항 - 미팅시간에서 10분이상 늦으시면 노쇼처리되며, 별도 연락 없이 출발합니다. 이 경우 환불 및 일정 변경 불가하오니 꼭 미리 체크아웃과 룸체크를 진행하고 기다려주세요\n\n편한 물놀이 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n튜빙 진행시 1인 350페소 준비해 주세요\n여권 정보면과 호텔 바우쳐 사진으로 폰에 저장(선택)\n그외 개인적으로 필요한 물품\n\n칼리보 공항 공항세 1인 900페소(공항 현지불 / 필수사항)\nBK라운지 샤워실 이용비용 1인 100페소(라운지 현지불)`;
+                    const meetingTime = (res.sendingFlight && res.sendingFlight.toUpperCase() === 'TW126') ? '08:30' : '09:00';
+                    msg = `말룸파티 시크릿가든(샌딩) 예약 확정 안내 문자\n\n대표자 성함 : ${res.customerKorName}\n인원 : ${item.count}\n투어 : ${name}\n투어날짜 : ${item.date}\n투어 미팅 시간 / 장소 : ${meetingTime} / ${res.activityPickupResort || res.pickupResort || '리조트 로비'}\n\n★★ 주의 사항 및 준비물 ★★\n\n*주의 사항 - 미팅시간에서 10분이상 늦으시면 노쇼처리되며, 별도 연락 없이 출발합니다. 이 경우 환불 및 일정 변경 불가하오니 꼭 미리 체크아웃과 룸체크를 진행하고 기다려주세요\n\n편한 물놀이 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n튜빙 진행시 1인 350페소 준비해 주세요\n여권 정보면과 호텔 바우쳐 사진으로 폰에 저장(선택)\n그외 개인적으로 필요한 물품\n\n칼리보 공항 공항세 1인 900페소(공항 현지불 / 필수사항)\nBK라운지 샤워실 이용비용 1인 100페소(라운지 현지불)`;
                 } else {
                     msg = `말룸파티 시크릿가든(데이) 예약 확정 안내 문자\n\n대표자 성함 : ${res.customerKorName}\n인원 : ${item.count}\n투어 : ${name}\n투어날짜 : ${item.date}\n시간 / 장소 : 09:40 / 보라카이션 사무실\nhttps://goo.gl/maps/pQkmCErHLjmQGRYM9\n\n★★ 주의 사항 및 준비물 ★★\n\n*주의 사항 - 미팅시간에서 10분이상 늦으시면 노쇼처리되며, 별도 연락없이 출발합니다. 이 경우 환불 및 일정 변경 불가하오니 꼭 미팅시간을 지켜주세요\n\n편한 물놀이 복장, 비치타올1인 1장\n매너팁 1인 100페소 (성인, 소인 동일)\n튜빙 진행시 1인 350페소 준비해 주세요\n여권 정보면과 호텔 바우쳐 사진으로 폰에 저장(선택)\n그외 개인적으로 필요한 물품`;
                 }
             }
             else if (name.includes('픽업샌딩')) {
-                msg = `보라카이션 왕복픽업샌딩 예약 확정 안내 문자\n\n대표자 성함 : ${res.customerKorName}\n인원 : ${item.count}\n투어 : 왕복픽업샌딩\n픽업시 환전 요청 금액 : ${res.exchangeAmount || '$'}\n\n픽업항공 : ${res.pickupDate} ${res.pickupFlight}\n픽업시 리조트 : ${res.pickupResort}\n★공항 밖에서 보라카이션 픽업 직원이 보라카이션 피켓을 들고 대기 하고 있습니다.\n픽업 직원과 대표자 성함 확인 후 안내에 따라 주시기 바랍니다. 항공이 딜레이가 되도 기다립니다.\n\n샌딩항공 : ${res.sendingDate} ${res.sendingFlight}\n샌딩 시간/장소 : 09:00 ${res.sendingResort}\n*교통상황에 따라 샌딩 미팅 시간과 장소가 변경될 수있습니다\n\n★지정된 장소와 시간전에 먼저 도착 하셔서 대기 해주셔야 합니다.\n리조트 체크아웃을 완료하고 샌딩 출발 하는 시간 입니다.\n늦어서 별도로 이동을 해야 하는 경우 추가 요금이 발생 합니다.`;
+                const sendingFlight = res.sendingFlight || '';
+                const sendingTime = (sendingFlight.toUpperCase() === 'TW126') ? '08:30' : '09:00';
+                msg = `보라카이션 왕복픽업샌딩 예약 확정 안내 문자\n\n대표자 성함 : ${res.customerKorName}\n인원 : ${item.count}\n투어 : 왕복픽업샌딩\n픽업시 환전 요청 금액 : ${res.exchangeAmount || '$'}\n\n픽업항공 : ${res.pickupDate} ${res.pickupFlight}\n픽업시 리조트 : ${res.pickupResort}\n★공항 밖에서 보라카이션 픽업 직원이 보라카이션 피켓을 들고 대기 하고 있습니다.\n픽업 직원과 대표자 성함 확인 후 안내에 따라 주시기 바랍니다. 항공이 딜레이가 되도 기다립니다.\n\n샌딩항공 : ${res.sendingDate} ${sendingFlight}\n샌딩 시간/장소 : ${sendingTime} ${res.sendingResort}\n*교통상황에 따라 샌딩 미팅 시간과 장소가 변경될 수있습니다\n\n★지정된 장소와 시간전에 먼저 도착 하셔서 대기 해주셔야 합니다.\n리조트 체크아웃을 완료하고 샌딩 출발 하는 시간 입니다.\n늦어서 별도로 이동을 해야 하는 경우 추가 요금이 발생 합니다.`;
             }
             else if (['에스파', '포세이돈', '아유르베다', '마리스', '힐롯', '루나', '보라스파', '헬리오스', '카바얀'].some(s => name.includes(s))) {
                 const shuttleShops = ['포세이돈', '아유르베다', '마리스', '헬리오스'];

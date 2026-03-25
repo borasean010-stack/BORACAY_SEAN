@@ -110,6 +110,11 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // 오늘 날짜 구하기 (YYYY-MM-DD)
+        const now = new Date();
+        const offset = now.getTimezoneOffset() * 60000;
+        const todayStr = new Date(now.getTime() - offset).toISOString().split('T')[0];
+
         function getGuidance(item, res) {
             const name = item.name;
             const isSending = name.includes('샌딩') || (item.details && item.details.includes('샌딩'));
@@ -152,33 +157,30 @@
         try {
             let reservations = [];
             if (contact) {
-                // 연락처로 모든 '예약확정' 내역 조회 (통합 바우처)
+                // 연락처로 '예약확정'인 내역만 조회
                 const q = query(collection(db, "reservations"), where("contact", "==", contact), where("status", "==", "예약확정"));
                 const querySnapshot = await getDocs(q);
                 reservations = querySnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
             } else {
-                // 기존 단일 예약 ID 조회
                 const docSnap = await getDoc(doc(db, "reservations", resId));
                 if (docSnap.exists()) reservations.push({ id: docSnap.id, ...docSnap.data() });
             }
 
             if (reservations.length > 0) {
-                // 대표 정보 설정
                 const mainRes = reservations[0];
                 document.getElementById('guest-name').textContent = mainRes.customerKorName;
                 document.getElementById('guest-contact').textContent = mainRes.contact || '정보 없음';
                 document.getElementById('res-id').textContent = contact ? '고객 통합 일정표' : (mainRes.reservationNumber || resId);
                 
-                // 총 결제 금액 합산 (모든 분리된 예약의 합계)
-                const totalAmount = reservations.reduce((acc, curr) => acc + (curr.totalPrice || 0), 0);
-                document.getElementById('total-price').textContent = `₩ ${totalAmount.toLocaleString()}`;
-
                 const listContainer = document.getElementById('item-list');
                 let allScheduleItems = [];
+                let filteredTotalPrice = 0;
 
                 reservations.forEach(res => {
-                    // 1. 공항 픽업 추가
-                    if (res.pickupDate) {
+                    let hasCurrentItem = false;
+
+                    // 1. 공항 픽업 (오늘 이후인 경우만)
+                    if (res.pickupDate && res.pickupDate >= todayStr) {
                         if (itemIndex === null || (res.items && res.items[itemIndex] && res.items[itemIndex].name.includes('픽업'))) {
                             allScheduleItems.push({
                                 date: res.pickupDate,
@@ -188,27 +190,29 @@
                                 content: `<b>미팅 장소: 칼리보 공항 밖 피켓 대기</b><br><br>
                                           - 보라카이션 피켓을 든 직원을 찾아주세요.<br>
                                           - 픽업 리조트: ${res.pickupResort || '-'}<br>
-                                          ${res.exchangeAmount ? `- 환전 요청: ${res.exchangeAmount}` : ''}`
+                                          ${res.exchangeAmount ? `- 💰 환전 요청: ${res.exchangeAmount}` : ''}`
                             });
+                            hasCurrentItem = true;
                         }
                     }
 
-                    // 2. 예약 상품 리스트 추가
+                    // 2. 예약 상품 리스트 (오늘 이후인 경우만)
                     let rawItems = res.items || [];
                     rawItems.forEach((item, idx) => {
                         if (itemIndex !== null && parseInt(itemIndex) !== idx) return;
-                        if (!item.name.includes('픽업샌딩')) {
+                        if (item.date && item.date >= todayStr && !item.name.includes('픽업샌딩')) {
                             allScheduleItems.push({
                                 date: item.date,
                                 time: item.time || "09:00",
                                 name: item.name,
                                 content: getGuidance(item, res)
                             });
+                            hasCurrentItem = true;
                         }
                     });
 
-                    // 3. 공항 샌딩 추가
-                    if (res.sendingDate) {
+                    // 3. 공항 샌딩 (오늘 이후인 경우만)
+                    if (res.sendingDate && res.sendingDate >= todayStr) {
                         if (itemIndex === null || (res.items && res.items[itemIndex] && res.items[itemIndex].name.includes('샌딩'))) {
                             const sendingFlight = res.sendingFlight || '';
                             const meetingTime = (sendingFlight.toUpperCase() === 'TW126') ? '08:30' : '09:00';
@@ -220,17 +224,23 @@
                                 content: `<b>미팅 시간 / 장소: ${meetingTime}(예정) / ${res.sendingResort || res.pickupResort || '리조트 로비'}</b><br><br>
                                           - 샌딩 리조트: ${res.sendingResort || res.pickupResort || '-'}`
                             });
+                            hasCurrentItem = true;
                         }
+                    }
+
+                    // 현재 유효한 일정이 하나라도 있는 예약 건만 금액을 합산함 (재방문 시 과거 금액 제외)
+                    if (hasCurrentItem) {
+                        filteredTotalPrice += (res.totalPrice || 0);
                     }
                 });
 
-                // 4. 날짜 및 시간순 정렬
+                document.getElementById('total-price').textContent = `₩ ${filteredTotalPrice.toLocaleString()}`;
+
                 allScheduleItems.sort((a, b) => {
                     if (a.date !== b.date) return a.date.localeCompare(b.date);
                     return (a.time || "").localeCompare(b.time || "");
                 });
 
-                // 5. 상품 통합 로직 (동일 날짜의 옵션 항목 병합)
                 const mergedScheduleItems = [];
                 allScheduleItems.forEach(item => {
                     if (item.isPickup || item.isSending) {
@@ -250,7 +260,7 @@
                 });
 
                 if (mergedScheduleItems.length === 0) {
-                    listContainer.innerHTML = '<p style="text-align:center; padding:40px; color:#999;">등록된 상세 일정이 없습니다.</p>';
+                    listContainer.innerHTML = '<p style="text-align:center; padding:40px; color:#999;">현재 진행 중이거나 예정된 상세 일정이 없습니다.</p>';
                 }
 
                 mergedScheduleItems.forEach(item => {

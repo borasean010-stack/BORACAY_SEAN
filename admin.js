@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let allReservations = [];
     let activeTab = 'new'; 
 
-    // --- 1. Authentication ---
     if (sessionStorage.getItem('isAdminLoggedIn') === 'true') { showAdminPanel(); }
     
     document.getElementById('login-form').onsubmit = (e) => {
@@ -47,14 +46,11 @@ document.addEventListener('DOMContentLoaded', () => {
         adminContainer.style.display = 'flex';
         const adminId = sessionStorage.getItem('adminId') || '관리자';
         document.getElementById('display-admin-id').innerText = adminId;
-        
         const systemMenu = document.getElementById('menu-system');
         if (systemMenu) systemMenu.style.display = 'flex';
-
         fetchData();
     }
 
-    // --- 2. Data Handlers ---
     function fetchData() {
         if (!db) return;
         const q = query(collection(db, "reservations"), orderBy("createdAt", "desc"));
@@ -77,94 +73,58 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('count-resorts').innerText = counts.resorts;
     }
 
-    // --- 📅 3. Today's Schedule Timeline ---
     function renderTodaySchedule() {
         const container = document.getElementById('schedule-timeline');
         if (!container) return;
-
         const now = new Date();
         const offset = now.getTimezoneOffset() * 60000;
         const today = new Date(now.getTime() - offset).toISOString().split('T')[0];
-
         let todayItems = [];
         allReservations.forEach(res => {
             if (res.items) {
                 res.items.forEach(item => {
                     if (item.date === today && !item.name.includes('픽업샌딩')) {
-                        todayItems.push({
-                            time: item.time || "09:00",
-                            name: item.name,
-                            customer: res.customerKorName,
-                            count: item.count,
-                            status: res.status,
-                            id: res.id
-                        });
+                        todayItems.push({ time: item.time || "09:00", name: item.name, customer: res.customerKorName, count: item.count, status: res.status, id: res.id });
                     }
                 });
             }
-            if (res.pickupDate === today) {
-                todayItems.push({ time: "00:00", name: `✈️ 공항 픽업 (${res.pickupFlight || '-'})`, customer: res.customerKorName, count: '-', status: res.status, id: res.id });
-            }
-            if (res.sendingDate === today) {
-                todayItems.push({ time: "23:59", name: `✈️ 공항 샌딩 (${res.sendingFlight || '-'})`, customer: res.customerKorName, count: '-', status: res.status, id: res.id });
-            }
+            if (res.pickupDate === today) todayItems.push({ time: "00:00", name: `✈️ 공항 픽업 (${res.pickupFlight || '-'})`, customer: res.customerKorName, count: '-', status: res.status, id: res.id });
+            if (res.sendingDate === today) todayItems.push({ time: "23:59", name: `✈️ 공항 샌딩 (${res.sendingFlight || '-'})`, customer: res.customerKorName, count: '-', status: res.status, id: res.id });
         });
-
         todayItems.sort((a, b) => a.time.localeCompare(b.time));
-
         if (todayItems.length === 0) {
             container.innerHTML = '<div class="sc-empty">오늘 예정된 일정이 없습니다.</div>';
             return;
         }
-
         container.innerHTML = todayItems.map(item => {
             const isConfirmed = item.status === '예약확정';
-            return `
-                <div class="schedule-card" onclick="showDetail('${item.id}')" style="cursor:pointer; border-top-color: ${isConfirmed ? '#ff6a00' : '#ff8c00'}">
-                    <div class="sc-status ${isConfirmed ? 'confirmed' : 'pending'}">${isConfirmed ? '확정' : '입금대기'}</div>
-                    <div class="sc-time"><span class="material-icons">access_time</span> ${item.time}</div>
-                    <div class="sc-item">${item.name}</div>
-                    <div class="sc-customer"><b>${item.customer}</b> ${item.count}명</div>
-                </div>
-            `;
+            return `<div class="schedule-card" onclick="showDetail('${item.id}')" style="cursor:pointer; border-top-color: ${isConfirmed ? '#ff6a00' : '#ff8c00'}">
+                <div class="sc-status ${isConfirmed ? 'confirmed' : 'pending'}">${isConfirmed ? '확정' : '입금대기'}</div>
+                <div class="sc-time"><span class="material-icons">access_time</span> ${item.time}</div>
+                <div class="sc-item">${item.name}</div>
+                <div class="sc-customer"><b>${item.customer}</b> ${item.count}명</div>
+            </div>`;
         }).join('');
     }
 
-    // --- 4. Sidebar & Tab 연동 ---
     window.switchAdminTab = (tab) => {
         activeTab = tab;
         document.querySelectorAll('.ss-nav-item').forEach(el => el.classList.remove('active'));
         const sideMenu = document.getElementById(`menu-${tab}`);
         if(sideMenu) sideMenu.classList.add('active');
-
         const scheduleSection = document.getElementById('schedule-section');
         const statusLayer = document.getElementById('status-layer');
         const dataViewSection = document.getElementById('data-view-section');
         const systemSection = document.getElementById('system-setup-section');
-
-        if (tab === 'system') {
-            scheduleSection.style.display = 'none';
-            statusLayer.style.display = 'none';
-            dataViewSection.style.display = 'block';
-            systemSection.style.display = 'block';
-        } else {
-            scheduleSection.style.display = 'block';
-            statusLayer.style.display = 'flex';
-            dataViewSection.style.display = 'block';
-            systemSection.style.display = 'none';
-            document.querySelectorAll('.ss-status-card').forEach(el => el.classList.remove('active'));
-            const statusCard = document.getElementById(`tab-${tab}`);
-            if(statusCard) statusCard.classList.add('active');
-        }
+        if (tab === 'system') { scheduleSection.style.display = 'none'; statusLayer.style.display = 'none'; dataViewSection.style.display = 'block'; systemSection.style.display = 'block'; }
+        else { scheduleSection.style.display = 'block'; statusLayer.style.display = 'flex'; dataViewSection.style.display = 'block'; systemSection.style.display = 'none'; document.querySelectorAll('.ss-status-card').forEach(el => el.classList.remove('active')); const statusCard = document.getElementById(`tab-${tab}`); if(statusCard) statusCard.classList.add('active'); }
         renderTable();
     };
 
-    // --- 5. Main Rendering ---
     function renderTable() {
         if (!tableBody) return;
         tableBody.innerHTML = '';
         const searchTerm = document.getElementById('header-global-search').value.toLowerCase();
-
         let filtered = allReservations.filter(r => {
             const name = (r.customerKorName || '').toLowerCase();
             const resNo = (r.reservationNumber || '').toLowerCase();
@@ -176,94 +136,30 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (activeTab === 'system') matchesTab = true;
             return matchesSearch && matchesTab;
         });
-
-        if (filtered.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:100px;">데이터가 없습니다.</td></tr>';
-            return;
-        }
-
+        if (filtered.length === 0) { tableBody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:100px;">데이터가 없습니다.</td></tr>'; return; }
         filtered.forEach((res, index) => {
             const tr = document.createElement('tr');
             const status = res.status || '대기';
             const firstItemName = res.items && res.items.length > 0 ? res.items[0].name : '-';
             const itemsText = res.items && res.items.length > 1 ? `${firstItemName} 외 ${res.items.length - 1}건` : firstItemName;
-            
-            tr.innerHTML = `
-                <td><input type="checkbox"></td>
-                <td style="color:#bbb;">${filtered.length - index}</td>
-                <td style="font-weight:700;">${res.reservationNumber || '-'}</td>
-                <td>
-                    <div style="font-size:12px; color:#888;">
-                        이름(한글) | <b style="color:#111; font-size:14px;">${res.customerKorName || '미입력'}</b><br>
-                        이름(영문) | <b style="color:#111; font-size:14px;">${res.engName || '-'}</b>
-                    </div>
-                </td>
-                <td style="font-weight:600;">${itemsText}</td>
-                <td style="font-weight:800;">₩ ${(res.totalPrice || 0).toLocaleString()}</td>
-                <td style="color:#888;">${res.createdAt?.toDate ? res.createdAt.toDate().toLocaleDateString() : '-'}</td>
-                <td style="text-align:center;"><span class="n-badge ${status === '예약확정' ? 'badge-green' : (status === '견적' ? 'badge-blue' : 'badge-yellow')}">${status}</span></td>
-                <td>
-                    <div style="display:flex; gap:5px;">
-                        ${status !== '예약확정' && activeTab !== 'system' ? `<button class="btn-action-received" onclick="handleAutoConfirm('${res.id}')">입금확인</button>` : ''}
-                        ${activeTab === 'system' ? `<button class="btn-action-danger" onclick="handleDeleteReservation('${res.id}')">취소/삭제</button>` : `<button class="btn-action-outline" onclick="showDetail('${res.id}')">상세</button>`}
-                    </div>
-                </td>
-            `;
+            tr.innerHTML = `<td><input type="checkbox"></td><td style="color:#bbb;">${filtered.length - index}</td><td style="font-weight:700;">${res.reservationNumber || '-'}</td><td><div style="font-size:12px; color:#888;">이름(한글) | <b style="color:#111; font-size:14px;">${res.customerKorName || '미입력'}</b><br>이름(영문) | <b style="color:#111; font-size:14px;">${res.engName || '-'}</b></div></td><td style="font-weight:600;">${itemsText}</td><td style="font-weight:800;">₩ ${(res.totalPrice || 0).toLocaleString()}</td><td style="color:#888;">${res.createdAt?.toDate ? res.createdAt.toDate().toLocaleDateString() : '-'}</td><td style="text-align:center;"><span class="n-badge ${status === '예약확정' ? 'badge-green' : (status === '견적' ? 'badge-blue' : 'badge-yellow')}">${status}</span></td><td><div style="display:flex; gap:5px;">${status !== '예약확정' && activeTab !== 'system' ? `<button class="btn-action-received" onclick="handleAutoConfirm('${res.id}')">입금확인</button>` : ''}${activeTab === 'system' ? `<button class="btn-action-danger" onclick="handleDeleteReservation('${res.id}')">취소/삭제</button>` : `<button class="btn-action-outline" onclick="showDetail('${res.id}')">상세</button>`}</div></td>`;
             tableBody.appendChild(tr);
         });
     }
     document.getElementById('header-global-search').oninput = renderTable;
 
-    window.handleAutoConfirm = async (id) => {
-        if (confirm("예약확정 처리를 진행합니까?")) await updateDoc(doc(db, "reservations", id), { status: "예약확정" });
-    };
-
-    window.handleDeleteReservation = async (id) => {
-        if (confirm("영구 삭제하시겠습니까?")) await deleteDoc(doc(db, "reservations", id));
-    };
+    window.handleAutoConfirm = async (id) => { if (confirm("예약확정 처리를 진행합니까?")) await updateDoc(doc(db, "reservations", id), { status: "예약확정" }); };
+    window.handleDeleteReservation = async (id) => { if (confirm("영구 삭제하시겠습니까?")) await deleteDoc(doc(db, "reservations", id)); };
 
     window.showDetail = (id) => {
         const res = allReservations.find(r => r.id === id);
         if (!res) return;
-
         const modal = document.getElementById('res-detail-modal');
         const body = document.getElementById('modal-body');
         const isQuote = res.status === '견적';
-
-        // 바우처 버튼 영역 (통합 링크 vs 주문 링크)
-        const totalVoucherBtn = isQuote ? '' : `
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
-                <button onclick="copyCombinedVoucherLink('${res.contact}')" style="padding:12px; background:#00c73c; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
-                    <span class="material-icons" style="font-size:18px;">people</span> 고객 통합 링크 복사
-                </button>
-                <button onclick="copyVoucherLink('${res.id}', null)" style="padding:12px; background:#ff6a00; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
-                    <span class="material-icons" style="font-size:18px;">share</span> 주문 일정 링크 복사
-                </button>
-            </div>
-            <p style="font-size:11px; color:#888; margin-top:-10px; margin-bottom:15px; text-align:center;">* 통합 링크는 해당 연락처의 모든 '확정' 예약 내역을 합쳐서 보여줍니다.</p>
-        `;
-
-        const itemsHtml = res.items.map((item, idx) => `
-            <div style="padding:12px; background:#f8f9fa; border:1px solid #eee; border-radius:8px; margin-bottom:8px;">
-                <div style="display:flex; justify-content:space-between;">
-                    <div style="font-size:15px; font-weight:800;">${item.name}</div>
-                    <div style="font-size:14px; font-weight:800; color:#ff6a00;">${item.count}명</div>
-                </div>
-                <div style="margin-top:6px; font-size:13px; color:#666;">
-                    📅 ${item.date || '-'} ${item.time || ''} ${item.details ? `<br>옵션: ${item.details}` : ''}
-                </div>
-                ${!isQuote ? `<div style="margin-top:10px; display:flex; gap:5px;">
-                    <a href="reservation-schedule.html?id=${res.id}&itemIndex=${idx}" target="_blank" style="flex:1; text-align:center; padding:6px; background:#fff; border:1px solid #ddd; border-radius:4px; font-size:11px; text-decoration:none; color:#333;">개별 바우처</a>
-                    <button onclick="copyVoucherLink('${res.id}', ${idx})" style="flex:1; padding:6px; background:#ff6a00; color:white; border:none; border-radius:4px; font-size:11px;">링크복사</button>
-                </div>` : ''}
-            </div>
-        `).join('');
-
-        body.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:1px solid #eee;">
-                <h3 style="margin:0;">${isQuote ? '견적 신청 상세' : '예약 상세 정보'}</h3>
-                ${!isQuote ? `<button onclick="copyGuidance('${res.id}')" style="background:#ff6a00; color:white; border:none; padding:8px 14px; border-radius:6px; font-weight:bold;">👉 안내문 복사</button>` : ''}
-            </div>
+        const totalVoucherBtn = isQuote ? '' : `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;"><button onclick="copyCombinedVoucherLink('${res.contact}')" style="padding:12px; background:#00c73c; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;"><span class="material-icons" style="font-size:18px;">people</span> 고객 통합 링크 복사</button><button onclick="copyVoucherLink('${res.id}', null)" style="padding:12px; background:#ff6a00; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;"><span class="material-icons" style="font-size:18px;">share</span> 주문 일정 링크 복사</button></div><p style="font-size:11px; color:#888; margin-top:-10px; margin-bottom:15px; text-align:center;">* 통합 링크는 해당 연락처의 <b>현재/미래의 모든 '확정' 예약</b>을 합쳐서 보여줍니다.</p>`;
+        const itemsHtml = res.items.map((item, idx) => `<div style="padding:12px; background:#f8f9fa; border:1px solid #eee; border-radius:8px; margin-bottom:8px;"><div style="display:flex; justify-content:space-between;"><div style="font-size:15px; font-weight:800;">${item.name}</div><div style="font-size:14px; font-weight:800; color:#ff6a00;">${item.count}명</div></div><div style="margin-top:6px; font-size:13px; color:#666;">📅 ${item.date || '-'} ${item.time || ''} ${item.details ? `<br>옵션: ${item.details}` : ''}</div>${!isQuote ? `<div style="margin-top:10px; display:flex; gap:5px;"><a href="reservation-schedule.html?id=${res.id}&itemIndex=${idx}" target="_blank" style="flex:1; text-align:center; padding:6px; background:#fff; border:1px solid #ddd; border-radius:4px; font-size:11px; text-decoration:none; color:#333;">개별 바우처</a><button onclick="copyVoucherLink('${res.id}', ${idx})" style="flex:1; padding:6px; background:#ff6a00; color:white; border:none; border-radius:4px; font-size:11px;">링크복사</button></div>` : ''}</div>`).join('');
+        body.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:1px solid #eee;"><h3 style="margin:0;">${isQuote ? '견적 신청 상세' : '예약 상세 정보'}</h3>${!isQuote ? `<button onclick="copyGuidance('${res.id}')" style="background:#ff6a00; color:white; border:none; padding:8px 14px; border-radius:6px; font-weight:bold;">👉 안내문 복사</button>` : ''}</div>
             <div id="modal-scroll-area" style="max-height: 60vh; overflow-y: auto;">
                 <div style="margin-bottom:25px;">${totalVoucherBtn}${itemsHtml}</div>
                 <div style="background:#fcfcfc; padding:15px; border-radius:10px; border:1px solid #f0f0f0; margin-bottom:20px;">
@@ -271,18 +167,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p style="margin:0;">이름(영문) | <b>${res.engName || '-'}</b></p>
                     <p style="margin:5px 0 0 0;">연락처 | <b>${res.contact}</b></p>
                 </div>
-                <div style="background:#fcfcfc; padding:15px; border-radius:10px; border:1px solid #f0f0f0; margin-bottom:20px;">
-                    <p>픽업: ${res.pickupDate || '-'} ${res.pickupFlight || '-'}</p>
-                    <p>샌딩: ${res.sendingDate || '-'} ${res.sendingFlight || '-'}</p>
-                    <p>리조트: ${res.pickupResort || '-'} / ${res.sendingResort || '-'}</p>
+                <div style="background:#fff5eb; padding:15px; border-radius:10px; border:1px solid #ffe8cc; margin-bottom:20px;">
+                    <div style="font-weight:bold; margin-bottom:10px; color:#ff6a00;">✈️ 공항 픽업/샌딩 및 환전 정보</div>
+                    <p>픽업: ${res.pickupDate || '-'} / ${res.pickupFlight || '-'} / ${res.pickupResort || '-'}</p>
+                    <p>샌딩: ${res.sendingDate || '-'} / ${res.sendingFlight || '-'} / ${res.sendingResort || '-'}</p>
+                    <p style="margin-top:10px; padding-top:10px; border-top:1px dashed #ffd8a8;"><b>💰 환전 요청 금액:</b> <span style="font-size:16px; color:#e67e22;">${res.exchangeAmount || '요청 없음'}</span></p>
                 </div>
-                <div style="padding:10px; background:#f8f9fa; border-radius:6px; font-size:13px;">${res.requests || '요청사항 없음'}</div>
+                <div style="padding:10px; background:#f8f9fa; border-radius:6px; font-size:13px; white-space:pre-wrap;"><b>[요청사항]</b>\n${res.requests || '요청사항 없음'}</div>
             </div>
             <div style="display:flex; gap:10px; margin-top:20px; padding-top:15px; border-top:1px solid #eee;">
                 <button id="edit-btn" onclick="toggleEditMode('${res.id}')" style="flex:1; padding:12px; background:#ff6a00; color:white; border:none; border-radius:8px; font-weight:bold;">수정하기</button>
                 <button onclick="closeModal()" style="flex:1; padding:12px; background:#333; color:white; border:none; border-radius:8px; font-weight:bold;">창 닫기</button>
-            </div>
-        `;
+            </div>`;
         modal.style.display = 'flex';
     };
 
@@ -291,122 +187,43 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!res) return;
         const scrollArea = document.getElementById('modal-scroll-area');
         const editBtn = document.getElementById('edit-btn');
-
         if (editBtn.innerText === '수정하기') {
             editBtn.innerText = '저장하기';
             window.currentEditingItems = JSON.parse(JSON.stringify(res.items));
-
             window.updateItemsUI = () => {
                 const container = document.getElementById('edit-items-container');
-                container.innerHTML = window.currentEditingItems.map((item, idx) => `
-                    <div class="edit-item-row" style="padding:15px; background:#fff; border:1px solid #eee; border-radius:12px; margin-bottom:12px; position:relative;">
-                        <button onclick="deleteEditItem(${idx})" style="position:absolute; top:10px; right:10px; color:#ff4d4f; background:none; border:none; cursor:pointer;"><span class="material-icons" style="font-size:20px;">delete</span></button>
-                        <div style="margin-bottom:10px;">
-                            <label style="font-size:11px; color:#999; display:block;">상품명</label>
-                            <input type="text" class="edit-item-name" value="${item.name}" style="width:80%; padding:8px; font-weight:bold; border:1px solid #ddd; border-radius:6px; background:#f9fafb;">
-                        </div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:10px;">
-                            <div><label style="font-size:11px; color:#999;">날짜</label><input type="text" class="edit-item-date" value="${item.date || ''}" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; font-size:12px;"></div>
-                            <div><label style="font-size:11px; color:#999;">시간</label><input type="text" class="edit-item-time" value="${item.time || ''}" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; font-size:12px;"></div>
-                            <div><label style="font-size:11px; color:#999;">인원</label><input type="number" class="edit-item-count" value="${item.count || 0}" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; font-size:12px;"></div>
-                        </div>
-                        <div>
-                            <label style="font-size:11px; color:#999;">옵션/상세정보</label>
-                            <input type="text" class="edit-item-details" value="${item.details || ''}" placeholder="예: 단품(추가), 장비포함 등" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; font-size:12px;">
-                        </div>
-                        <div style="margin-top:12px; text-align:right;">
-                            <button onclick="addEditOption(${idx})" style="padding:6px 12px; background:#e6f9ed; color:#00c73c; border:1px solid #00c73c; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer;">+ 이 상품의 옵션 추가</button>
-                        </div>
-                    </div>
-                `).join('');
+                container.innerHTML = window.currentEditingItems.map((item, idx) => `<div class="edit-item-row" style="padding:15px; background:#fff; border:1px solid #eee; border-radius:12px; margin-bottom:12px; position:relative;"><button onclick="deleteEditItem(${idx})" style="position:absolute; top:10px; right:10px; color:#ff4d4f; background:none; border:none; cursor:pointer;"><span class="material-icons" style="font-size:20px;">delete</span></button><div style="margin-bottom:10px;"><label style="font-size:11px; color:#999; display:block;">상품명</label><input type="text" class="edit-item-name" value="${item.name}" style="width:80%; padding:8px; font-weight:bold; border:1px solid #ddd; border-radius:6px;"></div><div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:10px;"><div><label style="font-size:11px; color:#999;">날짜</label><input type="text" class="edit-item-date" value="${item.date || ''}" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; font-size:12px;"></div><div><label style="font-size:11px; color:#999;">시간</label><input type="text" class="edit-item-time" value="${item.time || ''}" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; font-size:12px;"></div><div><label style="font-size:11px; color:#999;">인원</label><input type="number" class="edit-item-count" value="${item.count || 0}" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; font-size:12px;"></div></div><div><label style="font-size:11px; color:#999;">옵션/상세정보</label><input type="text" class="edit-item-details" value="${item.details || ''}" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; font-size:12px;"></div><div style="margin-top:12px; text-align:right;"><button onclick="addEditOption(${idx})" style="padding:6px 12px; background:#e6f9ed; color:#00c73c; border:1px solid #00c73c; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer;">+ 이 상품의 옵션 추가</button></div></div>`).join('');
             };
-
-            window.deleteEditItem = (idx) => { 
-                if (confirm('이 항목을 삭제하시겠습니까?')) {
-                    window.currentEditingItems.splice(idx, 1); 
-                    window.updateItemsUI(); 
-                }
-            };
-
-            window.addEditOption = (idx) => {
-                const p = window.currentEditingItems[idx];
-                // 동일한 상품명, 날짜, 시간을 복사하되 '인원'과 '상세'만 새로 입력받도록 추가
-                window.currentEditingItems.splice(idx + 1, 0, { 
-                    name: p.name, 
-                    date: p.date, 
-                    time: p.time, 
-                    count: 1, 
-                    details: '(추가 옵션)' 
-                });
-                window.updateItemsUI();
-            };
-
-            scrollArea.innerHTML = `
-                <div style="margin-bottom:20px;">
-                    <label style="font-size:12px; font-weight:bold; color:#ff6a00; display:block; margin-bottom:10px;">🛒 예약 상품 및 옵션 관리</label>
-                    <div id="edit-items-container"></div>
-                </div>
+            window.deleteEditItem = (idx) => { if (confirm('삭제하시겠습니까?')) { window.currentEditingItems.splice(idx, 1); window.updateItemsUI(); } };
+            window.addEditOption = (idx) => { const p = window.currentEditingItems[idx]; window.currentEditingItems.splice(idx + 1, 0, { name: p.name, date: p.date, time: p.time, count: 1, details: '(추가)' }); window.updateItemsUI(); };
+            scrollArea.innerHTML = `<div style="margin-bottom:20px;"><label style="font-size:12px; font-weight:bold; color:#ff6a00; display:block; margin-bottom:10px;">🛒 예약 상품 및 옵션 관리</label><div id="edit-items-container"></div></div>
                 <div style="background:#f8f9fa; padding:15px; border-radius:12px;">
-                    <label style="font-size:12px; font-weight:bold; color:#333; display:block; margin-bottom:10px;">👤 예약자 기본 정보</label>
+                    <label style="font-size:12px; font-weight:bold; color:#333; display:block; margin-bottom:10px;">👤 기본 정보 및 환전/항공</label>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;"><input type="text" id="edit-name" value="${res.customerKorName}"><input type="text" id="edit-eng-name" value="${res.engName || ''}"></div>
+                    <div style="margin-bottom:10px;"><label style="font-size:11px; color:#999;">연락처</label><input type="text" id="edit-contact" value="${res.contact}"></div>
+                    <div style="margin-bottom:10px;"><label style="font-size:11px; color:#999; font-weight:bold; color:#ff6a00;">💰 환전 요청 금액</label><input type="text" id="edit-exchange" value="${res.exchangeAmount || ''}" placeholder="예: $200" style="background:#fff5eb; border-color:#ffd8a8;"></div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
-                        <input type="text" id="edit-name" value="${res.customerKorName}" placeholder="한글성함" style="padding:10px; border:1px solid #ddd; border-radius:6px;">
-                        <input type="text" id="edit-eng-name" value="${res.engName || ''}" placeholder="영문성함" style="padding:10px; border:1px solid #ddd; border-radius:6px;">
+                        <div><label style="font-size:11px; color:#999;">픽업일/항공</label><input type="text" id="edit-p-date" value="${res.pickupDate || ''}"><input type="text" id="edit-p-flight" value="${res.pickupFlight || ''}"></div>
+                        <div><label style="font-size:11px; color:#999;">샌딩일/항공</label><input type="text" id="edit-s-date" value="${res.sendingDate || ''}"><input type="text" id="edit-s-flight" value="${res.sendingFlight || ''}"></div>
                     </div>
-                    <input type="text" id="edit-contact" value="${res.contact}" placeholder="연락처" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; margin-bottom:10px;">
-                    <label style="font-size:11px; color:#999;">총 결제 합계 (원)</label>
-                    <input type="number" id="edit-total" value="${res.totalPrice}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; margin-bottom:10px;">
-                    <label style="font-size:11px; color:#999;">요청사항</label>
-                    <textarea id="edit-requests" style="width:100%; height:60px; padding:10px; border:1px solid #ddd; border-radius:6px;">${res.requests || ''}</textarea>
-                </div>
-            `;
+                    <div style="margin-bottom:10px;"><label style="font-size:11px; color:#999;">리조트 (픽업/샌딩)</label><input type="text" id="edit-resort" value="${res.pickupResort || ''}"><input type="text" id="edit-sending-resort" value="${res.sendingResort || ''}"></div>
+                    <div style="margin-bottom:10px;"><label style="font-size:11px; color:#999;">총 결제 금액 (원)</label><input type="number" id="edit-total" value="${res.totalPrice}"></div>
+                    <label style="font-size:11px; color:#999;">요청사항</label><textarea id="edit-requests" style="width:100%; height:60px; padding:10px; border:1px solid #ddd; border-radius:6px;">${res.requests || ''}</textarea>
+                </div>`;
+            scrollArea.querySelectorAll('input').forEach(el => { if(!el.className) el.style.cssText = "width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; margin-top:2px; font-size:13px;"; });
             window.updateItemsUI();
-        } else {
-            handleSaveEdit(id);
-        }
+        } else { handleSaveEdit(id); }
     };
 
     async function handleSaveEdit(id) {
         const itemRows = document.querySelectorAll('.edit-item-row');
-        const updatedItems = Array.from(itemRows).map(row => ({
-            name: row.querySelector('.edit-item-name').value,
-            date: row.querySelector('.edit-item-date').value,
-            time: row.querySelector('.edit-item-time').value,
-            count: parseInt(row.querySelector('.edit-item-count').value) || 0,
-            details: row.querySelector('.edit-item-details').value
-        }));
-
-        const newData = {
-            items: updatedItems,
-            customerKorName: document.getElementById('edit-name').value,
-            engName: document.getElementById('edit-eng-name').value,
-            contact: document.getElementById('edit-contact').value,
-            totalPrice: parseInt(document.getElementById('edit-total').value) || 0,
-            requests: document.getElementById('edit-requests').value
-        };
-
-        if (confirm("변경 사항을 저장하시겠습니까?")) {
-            await updateDoc(doc(db, "reservations", id), newData);
-            alert("저장되었습니다.");
-            closeModal();
-        }
+        const updatedItems = Array.from(itemRows).map(row => ({ name: row.querySelector('.edit-item-name').value, date: row.querySelector('.edit-item-date').value, time: row.querySelector('.edit-item-time').value, count: parseInt(row.querySelector('.edit-item-count').value) || 0, details: row.querySelector('.edit-item-details').value }));
+        const newData = { items: updatedItems, customerKorName: document.getElementById('edit-name').value, engName: document.getElementById('edit-eng-name').value, contact: document.getElementById('edit-contact').value, exchangeAmount: document.getElementById('edit-exchange').value, pickupDate: document.getElementById('edit-p-date').value, pickupFlight: document.getElementById('edit-p-flight').value, sendingDate: document.getElementById('edit-s-date').value, sendingFlight: document.getElementById('edit-s-flight').value, pickupResort: document.getElementById('edit-resort').value, sendingResort: document.getElementById('edit-sending-resort').value, totalPrice: parseInt(document.getElementById('edit-total').value) || 0, requests: document.getElementById('edit-requests').value };
+        if (confirm("저장하시겠습니까?")) { await updateDoc(doc(db, "reservations", id), newData); alert("저장되었습니다."); closeModal(); }
     }
 
-    window.copyCombinedVoucherLink = (contact) => {
-        const url = `${window.location.origin}/reservation-schedule.html?contact=${encodeURIComponent(contact)}`;
-        navigator.clipboard.writeText(url).then(() => alert('고객 통합 바우처 링크가 복사되었습니다. 해당 고객의 모든 예약이 포함됩니다.'));
-    };
-
-    window.copyVoucherLink = (id, idx) => {
-        const url = `${window.location.origin}/reservation-schedule.html?id=${id}${idx !== null ? `&itemIndex=${idx}` : ''}`;
-        navigator.clipboard.writeText(url).then(() => alert('바우처 링크가 복사되었습니다.'));
-    };
-
-    window.copyGuidance = (id) => {
-        const res = allReservations.find(r => r.id === id);
-        if (!res) return;
-        let messages = res.items.map(item => `[${item.name}]\n이용일: ${item.date} ${item.time || ''}\n인원: ${item.count}명\n안내: 미팅 10분 전까지 약속 장소에 도착해 주세요.`);
-        navigator.clipboard.writeText(messages.join('\n\n------------------\n\n')).then(() => alert('카톡 안내문이 복사되었습니다.'));
-    };
-
+    window.copyCombinedVoucherLink = (contact) => { const url = `${window.location.origin}/reservation-schedule.html?contact=${encodeURIComponent(contact)}`; navigator.clipboard.writeText(url).then(() => alert('고객 통합 바우처 링크가 복사되었습니다. (현재/미래 일정만 포함)')); };
+    window.copyVoucherLink = (id, idx) => { const url = `${window.location.origin}/reservation-schedule.html?id=${id}${idx !== null ? `&itemIndex=${idx}` : ''}`; navigator.clipboard.writeText(url).then(() => alert('바우처 링크가 복사되었습니다.')); };
+    window.copyGuidance = (id) => { const res = allReservations.find(r => r.id === id); if (!res) return; let messages = res.items.map(item => `[${item.name}]\n이용일: ${item.date} ${item.time || ''}\n인원: ${item.count}명\n안내: 미팅 10분 전까지 약속 장소에 도착해 주세요.`); navigator.clipboard.writeText(messages.join('\n\n---\n\n')).then(() => alert('안내문이 복사되었습니다.')); };
     window.closeModal = () => document.getElementById('res-detail-modal').style.display = 'none';
 });

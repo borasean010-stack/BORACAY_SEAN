@@ -110,9 +110,15 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // --- 📅 날짜 로직 수정 ---
+        // '오늘'이 아니라 '7일 전'부터 보여줌으로써 현재 여행 중인 손님의 앞선 일정도 포함함
         const now = new Date();
         const offset = now.getTimezoneOffset() * 60000;
-        const todayStr = new Date(now.getTime() - offset).toISOString().split('T')[0];
+        const today = new Date(now.getTime() - offset);
+        
+        const sevenDaysAgo = new Date(today);
+        sevenDaysAgo.setDate(today.getDate() - 7);
+        const limitDateStr = sevenDaysAgo.toISOString().split('T')[0];
 
         function getGuidance(item, res) {
             const name = item.name;
@@ -175,16 +181,13 @@
                 let filteredTotalPrice = 0;
 
                 reservations.forEach(res => {
-                    let hasCurrentItem = false;
-
-                    // 개별 조회 모드인지 확인
+                    let hasCurrentTripItem = false;
                     const isIndividualView = (itemIndex !== null);
                     const selectedItemName = isIndividualView && res.items ? res.items[itemIndex]?.name : "";
 
                     // 1. 공항 픽업
-                    // - 통합 보기(itemIndex == null)이거나, 개별 조회가 '픽업' 관련일 때만 표시
-                    if (res.pickupDate && res.pickupDate >= todayStr) {
-                        const shouldShowPickup = !isIndividualView || (selectedItemName.includes('픽업'));
+                    if (res.pickupDate && res.pickupDate >= limitDateStr) {
+                        const shouldShowPickup = !isIndividualView || selectedItemName.includes('픽업');
                         if (shouldShowPickup) {
                             allScheduleItems.push({
                                 date: res.pickupDate,
@@ -196,7 +199,7 @@
                                           - 픽업 리조트: ${res.pickupResort || '-'}<br>
                                           ${res.exchangeAmount ? `- 💰 환전 요청: ${res.exchangeAmount}` : ''}`
                             });
-                            hasCurrentItem = true;
+                            hasCurrentTripItem = true;
                         }
                     }
 
@@ -204,21 +207,20 @@
                     let rawItems = res.items || [];
                     rawItems.forEach((item, idx) => {
                         if (isIndividualView && parseInt(itemIndex) !== idx) return;
-                        if (item.date && item.date >= todayStr && !item.name.includes('픽업샌딩')) {
+                        if (item.date && item.date >= limitDateStr && !item.name.includes('픽업샌딩')) {
                             allScheduleItems.push({
                                 date: item.date,
                                 time: item.time || "09:00",
                                 name: item.name,
                                 content: getGuidance(item, res)
                             });
-                            hasCurrentItem = true;
+                            hasCurrentTripItem = true;
                         }
                     });
 
                     // 3. 공항 샌딩
-                    // - 통합 보기이거나, 개별 조회가 '샌딩' 관련일 때만 표시
-                    if (res.sendingDate && res.sendingDate >= todayStr) {
-                        const shouldShowSending = !isIndividualView || (selectedItemName.includes('샌딩'));
+                    if (res.sendingDate && res.sendingDate >= limitDateStr) {
+                        const shouldShowSending = !isIndividualView || selectedItemName.includes('샌딩');
                         if (shouldShowSending) {
                             const sendingFlight = res.sendingFlight || '';
                             const meetingTime = (sendingFlight.toUpperCase() === 'TW126') ? '08:30' : '09:00';
@@ -230,11 +232,11 @@
                                 content: `<b>미팅 시간 / 장소: ${meetingTime}(예정) / ${res.sendingResort || res.pickupResort || '리조트 로비'}</b><br><br>
                                           - 샌딩 리조트: ${res.sendingResort || res.pickupResort || '-'}`
                             });
-                            hasCurrentItem = true;
+                            hasCurrentTripItem = true;
                         }
                     }
 
-                    if (hasCurrentItem) filteredTotalPrice += (res.totalPrice || 0);
+                    if (hasCurrentTripItem) filteredTotalPrice += (res.totalPrice || 0);
                 });
 
                 document.getElementById('total-price').textContent = `₩ ${filteredTotalPrice.toLocaleString()}`;
@@ -246,41 +248,22 @@
 
                 const mergedScheduleItems = [];
                 allScheduleItems.forEach(item => {
-                    if (item.isPickup || item.isSending) {
-                        mergedScheduleItems.push(item);
-                        return;
-                    }
-                    const existing = mergedScheduleItems.find(m => 
-                        m.date === item.date && 
-                        (m.name === item.name || (m.name.includes('단품') && item.name.includes('단품')))
-                    );
+                    if (item.isPickup || item.isSending) { mergedScheduleItems.push(item); return; }
+                    const existing = mergedScheduleItems.find(m => m.date === item.date && (m.name === item.name || (m.name.includes('단품') && item.name.includes('단품'))));
                     if (existing) {
                         existing.content += `<br><br>--- 추가 항목 ---<br>${item.content}`;
                         if (!existing.name.includes('통합')) existing.name += ' (통합)';
-                    } else {
-                        mergedScheduleItems.push(item);
-                    }
+                    } else { mergedScheduleItems.push(item); }
                 });
 
-                if (mergedScheduleItems.length === 0) {
-                    listContainer.innerHTML = '<p style="text-align:center; padding:40px; color:#999;">현재 예정된 일정이 없습니다.</p>';
-                }
+                if (mergedScheduleItems.length === 0) listContainer.innerHTML = '<p style="text-align:center; padding:40px; color:#999;">최근 일정이 없습니다.</p>';
 
                 mergedScheduleItems.forEach(item => {
                     const card = document.createElement('div');
                     card.className = 'item-card';
-                    card.innerHTML = `
-                        <div class="item-header">
-                            <div class="item-name">${item.name}</div>
-                            <div class="item-status">확정됨</div>
-                        </div>
-                        <div class="item-details">
-                            <div class="detail-point" style="margin-bottom:10px;">📅 이용일: <b>${item.date}</b></div>
-                            <div style="font-size:14px; color:#555; line-height:1.6; background:#f8f9fa; padding:15px; border-radius:12px; width:100%;">
-                                ${item.content}
-                            </div>
-                        </div>
-                    `;
+                    card.innerHTML = `<div class="item-header"><div class="item-name">${item.name}</div><div class="item-status">확정됨</div></div>
+                        <div class="item-details"><div class="detail-point" style="margin-bottom:10px;">📅 이용일: <b>${item.date}</b></div>
+                        <div style="font-size:14px; color:#555; line-height:1.6; background:#f8f9fa; padding:15px; border-radius:12px; width:100%;">${item.content}</div></div>`;
                     listContainer.appendChild(card);
                 });
             } else {

@@ -435,50 +435,85 @@ document.addEventListener('DOMContentLoaded', () => {
             editBtn.innerText = '저장하기';
             editBtn.style.background = '#ff6a00';
 
-            // 상품별 수정 필드 생성
-            const itemsEditHtml = res.items.map((item, idx) => {
-                const isResort = item.name.includes('리조트');
-                let itemDateStr = item.date || '';
-                if (!itemDateStr && item.pickupDate && item.sendingDate) {
-                    itemDateStr = `${item.pickupDate} ~ ${item.sendingDate}`;
-                }
+            // 상품별 수정 필드 생성 함수
+            window.renderEditItems = (items) => {
+                return items.map((item, idx) => {
+                    const isResort = item.name.includes('리조트');
+                    let itemDateStr = item.date || '';
+                    if (!itemDateStr && item.pickupDate && item.sendingDate) {
+                        itemDateStr = `${item.pickupDate} ~ ${item.sendingDate}`;
+                    }
 
-                if (isResort) {
-                    const checkin = res.resortCheckin || (item.details && item.details.checkin) || '';
-                    const checkout = res.resortCheckout || (item.details && item.details.checkout) || '';
+                    if (isResort) {
+                        const checkin = res.resortCheckin || (item.details && item.details.checkin) || '';
+                        const checkout = res.resortCheckout || (item.details && item.details.checkout) || '';
+                        return `
+                            <div class="edit-item-row" style="padding:12px; background:#fff; border:1px solid #eee; border-radius:8px; margin-bottom:10px; position:relative;">
+                                <button onclick="deleteEditItem(${idx})" style="position:absolute; top:8px; right:8px; background:none; border:none; color:#ff4d4f; cursor:pointer;"><span class="material-icons" style="font-size:18px;">delete</span></button>
+                                <div style="font-weight:800; font-size:13px; color:#333; margin-bottom:8px;">🏨 ${item.name}</div>
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                                    <div>
+                                        <span style="font-size:11px; color:#999;">체크인</span>
+                                        <input type="text" class="edit-resort-checkin" value="${checkin}" placeholder="YYYY-MM-DD" style="width:100%; padding:6px; border:1px solid #ddd; border-radius:4px; font-size:12px;">
+                                    </div>
+                                    <div>
+                                        <span style="font-size:11px; color:#999;">체크아웃</span>
+                                        <input type="text" class="edit-resort-checkout" value="${checkout}" placeholder="YYYY-MM-DD" style="width:100%; padding:6px; border:1px solid #ddd; border-radius:4px; font-size:12px;">
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+
                     return `
-                        <div style="padding:12px; background:#fff; border:1px solid #eee; border-radius:8px; margin-bottom:10px;">
-                            <div style="font-weight:800; font-size:13px; color:#333; margin-bottom:8px;">🏨 ${item.name}</div>
-                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                        <div class="edit-item-row" style="padding:12px; background:#fff; border:1px solid #eee; border-radius:8px; margin-bottom:10px; position:relative;">
+                            <button onclick="deleteEditItem(${idx})" style="position:absolute; top:8px; right:8px; background:none; border:none; color:#ff4d4f; cursor:pointer;"><span class="material-icons" style="font-size:18px;">delete</span></button>
+                            <div style="margin-bottom:8px;">
+                                <span style="font-size:11px; color:#999;">상품명</span>
+                                <input type="text" class="edit-item-name" value="${item.name}" style="width:100%; padding:6px; border:1px solid #ddd; border-radius:4px; font-size:12px; font-weight:800;">
+                            </div>
+                            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
                                 <div>
-                                    <span style="font-size:11px; color:#999;">체크인</span>
-                                    <input type="text" id="edit-resort-checkin" value="${checkin}" placeholder="YYYY-MM-DD" style="width:100%; padding:6px; border:1px solid #ddd; border-radius:4px; font-size:12px;">
+                                    <span style="font-size:11px; color:#999;">날짜</span>
+                                    <input type="text" class="edit-item-date" value="${itemDateStr}" placeholder="YYYY-MM-DD" style="width:100%; padding:6px; border:1px solid #ddd; border-radius:4px; font-size:12px;">
                                 </div>
                                 <div>
-                                    <span style="font-size:11px; color:#999;">체크아웃</span>
-                                    <input type="text" id="edit-resort-checkout" value="${checkout}" placeholder="YYYY-MM-DD" style="width:100%; padding:6px; border:1px solid #ddd; border-radius:4px; font-size:12px;">
+                                    <span style="font-size:11px; color:#999;">시간</span>
+                                    <input type="text" class="edit-item-time" value="${item.time || ''}" placeholder="00:00" style="width:100%; padding:6px; border:1px solid #ddd; border-radius:4px; font-size:12px;">
                                 </div>
+                                <div>
+                                    <span style="font-size:11px; color:#999;">인원</span>
+                                    <input type="number" class="edit-item-count" value="${item.count || 0}" style="width:100%; padding:6px; border:1px solid #ddd; border-radius:4px; font-size:12px;">
+                                </div>
+                            </div>
+                            <div style="margin-top:8px;">
+                                <span style="font-size:11px; color:#999;">옵션/상세</span>
+                                <input type="text" class="edit-item-details" value="${(typeof item.details === 'string') ? item.details : ''}" style="width:100%; padding:6px; border:1px solid #ddd; border-radius:4px; font-size:12px;">
                             </div>
                         </div>
                     `;
-                }
+                }).join('');
+            };
 
-                return `
-                    <div style="padding:12px; background:#fff; border:1px solid #eee; border-radius:8px; margin-bottom:10px;">
-                        <div style="font-weight:800; font-size:13px; color:#333; margin-bottom:8px;">📦 ${item.name}</div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-                            <div>
-                                <span style="font-size:11px; color:#999;">날짜</span>
-                                <input type="text" class="edit-item-date" data-idx="${idx}" value="${itemDateStr}" placeholder="YYYY-MM-DD" style="width:100%; padding:6px; border:1px solid #ddd; border-radius:4px; font-size:12px;">
-                            </div>
-                            <div>
-                                <span style="font-size:11px; color:#999;">시간</span>
-                                <input type="text" class="edit-item-time" data-idx="${idx}" value="${item.time || ''}" placeholder="00:00" style="width:100%; padding:6px; border:1px solid #ddd; border-radius:4px; font-size:12px;">
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+            // 전역 변수로 현재 수정 중인 아이템 관리
+            window.currentEditingItems = JSON.parse(JSON.stringify(res.items));
+
+            window.updateItemsUI = () => {
+                const container = document.getElementById('edit-items-container');
+                container.innerHTML = window.renderEditItems(window.currentEditingItems);
+            };
+
+            window.addEditItem = () => {
+                window.currentEditingItems.push({ name: '신규 상품', date: '', time: '', count: 1, details: '' });
+                window.updateItemsUI();
+            };
+
+            window.deleteEditItem = (idx) => {
+                if (confirm('이 상품을 삭제하시겠습니까?')) {
+                    window.currentEditingItems.splice(idx, 1);
+                    window.updateItemsUI();
+                }
+            };
 
             scrollArea.innerHTML = `
                 <div style="font-size:14px; padding:10px; border:1px solid #ff6a00; border-radius:10px; background:#fff9f5; margin-bottom:20px;">
@@ -486,8 +521,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 
                 <div style="margin-bottom:20px;">
-                    <label style="font-size:12px; font-weight:bold; color:#ff6a00; display:block; margin-bottom:10px;">🛒 예약 상품 일정 수정</label>
-                    ${itemsEditHtml}
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <label style="font-size:12px; font-weight:bold; color:#ff6a00;">🛒 예약 상품 및 옵션 수정</label>
+                        <button onclick="addEditItem()" style="padding:4px 8px; background:#00c73c; color:white; border:none; border-radius:4px; font-size:11px; cursor:pointer;">+ 상품 추가</button>
+                    </div>
+                    <div id="edit-items-container">
+                        ${window.renderEditItems(window.currentEditingItems)}
+                    </div>
                 </div>
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;">
@@ -548,22 +588,25 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!res) return;
 
         // 개별 상품 데이터 수집
-        const updatedItems = res.items.map((item, idx) => {
-            const isResort = item.name.includes('리조트');
-            if (isResort) {
-                const cin = document.getElementById('edit-resort-checkin')?.value;
-                const cout = document.getElementById('edit-resort-checkout')?.value;
+        const itemRows = document.querySelectorAll('.edit-item-row');
+        const updatedItems = Array.from(itemRows).map(row => {
+            const name = row.querySelector('.edit-item-name')?.value || (row.querySelector('.edit-resort-checkin') ? '리조트' : '');
+            if (name.includes('리조트')) {
+                const cin = row.querySelector('.edit-resort-checkin')?.value;
+                const cout = row.querySelector('.edit-resort-checkout')?.value;
                 return {
-                    ...item,
-                    details: (typeof item.details === 'object') ? { ...item.details, checkin: cin, checkout: cout } : item.details
+                    name: '리조트 견적',
+                    details: { checkin: cin, checkout: cout },
+                    count: 1
                 };
             }
-            const dateInput = document.querySelector(`.edit-item-date[data-idx="${idx}"]`);
-            const timeInput = document.querySelector(`.edit-item-time[data-idx="${idx}"]`);
+            
             return {
-                ...item,
-                date: dateInput ? dateInput.value : item.date,
-                time: timeInput ? timeInput.value : item.time
+                name: name,
+                date: row.querySelector('.edit-item-date')?.value || '',
+                time: row.querySelector('.edit-item-time')?.value || '',
+                count: parseInt(row.querySelector('.edit-item-count')?.value) || 0,
+                details: row.querySelector('.edit-item-details')?.value || ''
             };
         });
 
@@ -582,8 +625,8 @@ document.addEventListener('DOMContentLoaded', () => {
             totalPrice: parseInt(document.getElementById('edit-total').value) || 0,
             requests: document.getElementById('edit-requests').value,
             // 리조트 최상단 필드도 업데이트
-            resortCheckin: document.getElementById('edit-resort-checkin')?.value || res.resortCheckin || '',
-            resortCheckout: document.getElementById('edit-resort-checkout')?.value || res.resortCheckout || ''
+            resortCheckin: document.querySelector('.edit-resort-checkin')?.value || res.resortCheckin || '',
+            resortCheckout: document.querySelector('.edit-resort-checkout')?.value || res.resortCheckout || ''
         };
 
         if (confirm("변경 사항을 저장하시겠습니까?")) {

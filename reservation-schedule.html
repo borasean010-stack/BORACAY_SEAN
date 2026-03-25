@@ -216,11 +216,35 @@
                     return (a.time || "").localeCompare(b.time || "");
                 });
 
-                if (allScheduleItems.length === 0) {
+                // 5. 상품 통합 로직 (단품, 단품(추가) 등 같은 상품명 그룹화)
+                const mergedScheduleItems = [];
+                allScheduleItems.forEach(item => {
+                    // 픽업/샌딩은 통합 제외
+                    if (item.isPickup || item.isSending) {
+                        mergedScheduleItems.push(item);
+                        return;
+                    }
+
+                    // 같은 날짜, 같은 이름(혹은 단품 키워드 포함) 아이템 찾기
+                    const existing = mergedScheduleItems.find(m => 
+                        m.date === item.date && 
+                        (m.name === item.name || (m.name.includes('단품') && item.name.includes('단품')))
+                    );
+
+                    if (existing) {
+                        // 이미 존재하면 내용만 추가 (또는 인원 합산 로직이 필요하면 여기서 처리)
+                        existing.content += `<br><br>--- 추가 항목 ---<br>${item.content}`;
+                        if (!existing.name.includes('통합')) existing.name += ' (통합)';
+                    } else {
+                        mergedScheduleItems.push(item);
+                    }
+                });
+
+                if (mergedScheduleItems.length === 0) {
                     listContainer.innerHTML = '<p style="text-align:center; padding:40px; color:#999;">등록된 상세 일정이 없습니다.</p>';
                 }
 
-                allScheduleItems.forEach(item => {
+                mergedScheduleItems.forEach(item => {
                     const card = document.createElement('div');
                     card.className = 'item-card';
                     card.innerHTML = `

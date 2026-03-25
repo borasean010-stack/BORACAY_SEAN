@@ -153,14 +153,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const statusText = isConfirmed ? '확정' : '입금대기';
 
             return `
-                <div class="schedule-card" onclick="showDetail('${item.id}')" style="cursor:pointer; border-top-color: ${isConfirmed ? '#03c75a' : '#ff8c00'}">
+                <div class="schedule-card" onclick="showDetail('${item.id}')" style="cursor:pointer; border-top-color: ${isConfirmed ? '#ff6a00' : '#ff8c00'}">
                     <div class="sc-status ${statusClass}">${statusText}</div>
                     <div class="sc-time"><span class="material-icons">access_time</span> ${item.time}</div>
                     <div class="sc-item">${item.name}</div>
                     <div class="sc-customer">
                         <b>${item.customer}</b> <span style="color:#999; margin-left:4px;">${item.count}명</span>
                     </div>
-                    <div class="sc-status-tag" style="color:${isConfirmed ? '#03c75a' : '#ff8c00'}">
+                    <div class="sc-status-tag" style="color:${isConfirmed ? '#ff6a00' : '#ff8c00'}">
                         <span class="material-icons" style="font-size:12px;">circle</span> ${item.status}
                     </div>
                 </div>
@@ -312,7 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 예약 상품 렌더링
         const totalVoucherBtn = isQuote ? '' : `
             <div style="margin-bottom:15px;">
-                <button onclick="copyVoucherLink('${res.id}', null)" style="width:100%; padding:12px; background:#03c75a; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <button onclick="copyVoucherLink('${res.id}', null)" style="width:100%; padding:12px; background:#ff6a00; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
                     <span class="material-icons" style="font-size:18px;">share</span> 전체 일정표(바우처) 링크 복사
                 </button>
                 <p style="font-size:11px; color:#888; margin-top:5px; text-align:center;">* 장바구니 구매 고객용 통합 일정표 링크입니다.</p>
@@ -350,7 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${!isQuote ? `
                     <div style="margin-top:10px; display:flex; gap:5px;">
                         <a href="reservation-schedule.html?id=${res.id}&itemIndex=${idx}" target="_blank" style="flex:1; text-align:center; padding:6px; background:#fff; border:1px solid #ddd; border-radius:4px; font-size:11px; font-weight:700; color:#555; text-decoration:none;">바우처 보기</a>
-                        <button onclick="copyVoucherLink('${res.id}', ${idx})" style="flex:1; padding:6px; background:#03c75a; border:none; border-radius:4px; font-size:11px; font-weight:700; color:white; cursor:pointer;">링크 복사</button>
+                        <button onclick="copyVoucherLink('${res.id}', ${idx})" style="flex:1; padding:6px; background:#ff6a00; border:none; border-radius:4px; font-size:11px; font-weight:700; color:white; cursor:pointer;">링크 복사</button>
                     </div>` : ''}
                 </div>
             `;
@@ -433,7 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (editBtn.innerText === '수정하기') {
             editBtn.innerText = '저장하기';
-            editBtn.style.background = '#03c75a';
+            editBtn.style.background = '#ff6a00';
 
             // 상품별 수정 필드 생성
             const itemsEditHtml = res.items.map((item, idx) => {

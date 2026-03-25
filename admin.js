@@ -48,10 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const adminId = sessionStorage.getItem('adminId') || '관리자';
         document.getElementById('display-admin-id').innerText = adminId;
         
-        // 🔐 권한 제어: 'luca'와 'admin' 아이디만 시스템 설정(데이터 삭제) 메뉴 노출
+        // 🔐 권한 제어: 모든 관리자 계정에 시스템 설정(데이터 삭제) 메뉴 노출
         const systemMenu = document.getElementById('menu-system');
         if (systemMenu) {
-            systemMenu.style.display = (adminId === 'luca' || adminId === 'admin') ? 'flex' : 'none';
+            systemMenu.style.display = 'flex';
         }
 
         fetchData();
@@ -416,9 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
 
             <div style="text-align:center; display:flex; gap:10px; margin-top:20px; padding-top:15px; border-top:1px solid #eee;">
-                ${(adminId === 'luca' || adminId === 'admin') ? `
-                    <button id="edit-btn" onclick="toggleEditMode('${res.id}')" style="flex:1; padding:12px; background:#ff6a00; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">수정하기</button>
-                ` : ''}
+                <button id="edit-btn" onclick="toggleEditMode('${res.id}')" style="flex:1; padding:12px; background:#ff6a00; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">수정하기</button>
                 <button onclick="closeModal()" style="flex:1; padding:12px; background:#333; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">창 닫기</button>
             </div>
         `;

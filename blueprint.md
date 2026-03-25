@@ -248,8 +248,8 @@ This project is a reservation website for tours and activities in Boracay (BORAC
     ### 21. Admin Individual Reservation Management (March 2026)
     * **Objective:** Allow administrators to delete or cancel specific reservations individually, in addition to the bulk "Delete All" feature.
     * **Implementation:**
-        * **Access Control:** The "취소/삭제" (Cancel/Delete) button is only visible to the user with the ID **'luca'**, ensuring high-level security for destructive actions.
-        * **UI:** Added a red-bordered "취소/삭제" button to each row in the reservation table across all management tabs (New, Confirmed, Resorts).
+        * **Access Control:** The "취소/삭제" (Cancel/Delete) button and System Setup menu are visible to users with IDs **'luca'** or **'admin'**, ensuring controlled access to destructive actions.
+        * **UI:** Added a red-bordered "취소/삭제" button to each row in the reservation table when the System tab is active.
         * **Functionality:** Integrated Firestore `deleteDoc` logic to remove specific reservation records permanently upon confirmation.
         * **Styling:** Added `.btn-action-danger` to `admin.css` for a consistent and warning-oriented button design.
 

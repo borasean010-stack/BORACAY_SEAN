@@ -61,11 +61,11 @@
         <div class="info-grid">
             <div class="info-item"><label>대표자명</label><span id="guest-name">-</span></div>
             <div class="info-item"><label>연락처</label><span id="guest-contact">-</span></div>
-            <div class="info-item"><label>예약번호</label><span id="res-id">-</span></div>
-            <div class="info-item"><label>결제금액</label><span id="total-price">-</span></div>
+            <div class="info-item"><label>예약구분</label><span id="res-id">-</span></div>
+            <div class="info-item"><label>총 결제 금액</label><span id="total-price">-</span></div>
         </div>
 
-        <div class="section-title">투어 및 액티비티 일정</div>
+        <div class="section-title">통합 투어 및 액티비티 일정</div>
         <div id="item-list">
             <!-- JS Render -->
         </div>
@@ -87,15 +87,16 @@
     document.addEventListener('DOMContentLoaded', async () => {
         const urlParams = new URLSearchParams(window.location.search);
         const resId = urlParams.get('id');
+        const contact = urlParams.get('contact');
         const itemIndex = urlParams.get('itemIndex'); 
         
-        if (!resId) {
+        if (!resId && !contact) {
             alert('예약 정보를 찾을 수 없습니다.');
             return;
         }
 
         const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
-        const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+        const { getFirestore, doc, getDoc, collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
 
         const firebaseConfig = {
             apiKey: "AIzaSyDkDjmGKQDF-0Vu2S_qtI6W5Hf2-j4tKcM",
@@ -149,66 +150,79 @@
         }
 
         try {
-            const docSnap = await getDoc(doc(db, "reservations", resId));
-            if (docSnap.exists()) {
-                const res = docSnap.data();
-                document.getElementById('guest-name').textContent = res.customerKorName;
-                document.getElementById('guest-contact').textContent = res.contact || '정보 없음';
-                document.getElementById('res-id').textContent = res.reservationNumber || resId;
-                document.getElementById('total-price').textContent = `₩ ${(res.totalPrice || 0).toLocaleString()}`;
+            let reservations = [];
+            if (contact) {
+                // 연락처로 모든 '예약확정' 내역 조회 (통합 바우처)
+                const q = query(collection(db, "reservations"), where("contact", "==", contact), where("status", "==", "예약확정"));
+                const querySnapshot = await getDocs(q);
+                reservations = querySnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            } else {
+                // 기존 단일 예약 ID 조회
+                const docSnap = await getDoc(doc(db, "reservations", resId));
+                if (docSnap.exists()) reservations.push({ id: docSnap.id, ...docSnap.data() });
+            }
+
+            if (reservations.length > 0) {
+                // 대표 정보 설정
+                const mainRes = reservations[0];
+                document.getElementById('guest-name').textContent = mainRes.customerKorName;
+                document.getElementById('guest-contact').textContent = mainRes.contact || '정보 없음';
+                document.getElementById('res-id').textContent = contact ? '고객 통합 일정표' : (mainRes.reservationNumber || resId);
+                
+                // 총 결제 금액 합산 (모든 분리된 예약의 합계)
+                const totalAmount = reservations.reduce((acc, curr) => acc + (curr.totalPrice || 0), 0);
+                document.getElementById('total-price').textContent = `₩ ${totalAmount.toLocaleString()}`;
 
                 const listContainer = document.getElementById('item-list');
                 let allScheduleItems = [];
 
-                // 1. 공항 픽업 추가
-                if (res.pickupDate) {
-                    if (itemIndex === null || (res.items && res.items[itemIndex] && res.items[itemIndex].name.includes('픽업'))) {
-                        allScheduleItems.push({
-                            date: res.pickupDate,
-                            time: "00:00", // 가장 먼저 오게 함
-                            name: `✈️ 공항 픽업 (${res.pickupFlight || '-'})`,
-                            isPickup: true,
-                            content: `<b>미팅 장소: 칼리보 공항 밖 피켓 대기</b><br><br>
-                                      - 보라카이션 피켓을 든 직원을 찾아주세요.<br>
-                                      - 픽업 리조트: ${res.pickupResort || '-'}<br>
-                                      ${res.exchangeAmount ? `- 환전 요청: ${res.exchangeAmount}` : ''}`
-                        });
+                reservations.forEach(res => {
+                    // 1. 공항 픽업 추가
+                    if (res.pickupDate) {
+                        if (itemIndex === null || (res.items && res.items[itemIndex] && res.items[itemIndex].name.includes('픽업'))) {
+                            allScheduleItems.push({
+                                date: res.pickupDate,
+                                time: "00:00",
+                                name: `✈️ 공항 픽업 (${res.pickupFlight || '-'})`,
+                                isPickup: true,
+                                content: `<b>미팅 장소: 칼리보 공항 밖 피켓 대기</b><br><br>
+                                          - 보라카이션 피켓을 든 직원을 찾아주세요.<br>
+                                          - 픽업 리조트: ${res.pickupResort || '-'}<br>
+                                          ${res.exchangeAmount ? `- 환전 요청: ${res.exchangeAmount}` : ''}`
+                            });
+                        }
                     }
-                }
 
-                // 2. 예약 상품 리스트 추가 (픽업샌딩 제외)
-                let rawItems = res.items || [];
-                rawItems.forEach((item, idx) => {
-                    if (itemIndex !== null && parseInt(itemIndex) !== idx) return;
-                    if (!item.name.includes('픽업샌딩')) {
-                        allScheduleItems.push({
-                            date: item.date,
-                            time: item.time || "09:00",
-                            name: item.name,
-                            content: getGuidance(item, res)
-                        });
+                    // 2. 예약 상품 리스트 추가
+                    let rawItems = res.items || [];
+                    rawItems.forEach((item, idx) => {
+                        if (itemIndex !== null && parseInt(itemIndex) !== idx) return;
+                        if (!item.name.includes('픽업샌딩')) {
+                            allScheduleItems.push({
+                                date: item.date,
+                                time: item.time || "09:00",
+                                name: item.name,
+                                content: getGuidance(item, res)
+                            });
+                        }
+                    });
+
+                    // 3. 공항 샌딩 추가
+                    if (res.sendingDate) {
+                        if (itemIndex === null || (res.items && res.items[itemIndex] && res.items[itemIndex].name.includes('샌딩'))) {
+                            const sendingFlight = res.sendingFlight || '';
+                            const meetingTime = (sendingFlight.toUpperCase() === 'TW126') ? '08:30' : '09:00';
+                            allScheduleItems.push({
+                                date: res.sendingDate,
+                                time: "23:59",
+                                name: `✈️ 공항 샌딩 (${sendingFlight || '-'})`,
+                                isSending: true,
+                                content: `<b>미팅 시간 / 장소: ${meetingTime}(예정) / ${res.sendingResort || res.pickupResort || '리조트 로비'}</b><br><br>
+                                          - 샌딩 리조트: ${res.sendingResort || res.pickupResort || '-'}`
+                            });
+                        }
                     }
                 });
-
-                // 3. 공항 샌딩 추가
-                if (res.sendingDate) {
-                    if (itemIndex === null || (res.items && res.items[itemIndex] && res.items[itemIndex].name.includes('샌딩'))) {
-                        // TW126 항공편의 경우 샌딩 미팅 시간을 08:30으로 변경
-                        const sendingFlight = res.sendingFlight || '';
-                        const meetingTime = (sendingFlight.toUpperCase() === 'TW126') ? '08:30' : '09:00';
-
-                        allScheduleItems.push({
-                            date: res.sendingDate,
-                            time: "23:59", // 가장 나중에 오게 함
-                            name: `✈️ 공항 샌딩 (${sendingFlight || '-'})`,
-                            isSending: true,
-                            content: `<b>미팅 시간 / 장소: ${meetingTime}(예정) / ${res.sendingResort || res.pickupResort || '리조트 로비'}</b><br><br>
-                                      - 항공 일정에 따라 미팅 시간이 조절될 수 있습니다.<br>
-                                      - 샌딩 리조트: ${res.sendingResort || res.pickupResort || '-'}<br>
-                                      - 미팅 장소에서 미리 대기해 주세요.`
-                        });
-                    }
-                }
 
                 // 4. 날짜 및 시간순 정렬
                 allScheduleItems.sort((a, b) => {
@@ -216,23 +230,18 @@
                     return (a.time || "").localeCompare(b.time || "");
                 });
 
-                // 5. 상품 통합 로직 (단품, 단품(추가) 등 같은 상품명 그룹화)
+                // 5. 상품 통합 로직 (동일 날짜의 옵션 항목 병합)
                 const mergedScheduleItems = [];
                 allScheduleItems.forEach(item => {
-                    // 픽업/샌딩은 통합 제외
                     if (item.isPickup || item.isSending) {
                         mergedScheduleItems.push(item);
                         return;
                     }
-
-                    // 같은 날짜, 같은 이름(혹은 단품 키워드 포함) 아이템 찾기
                     const existing = mergedScheduleItems.find(m => 
                         m.date === item.date && 
                         (m.name === item.name || (m.name.includes('단품') && item.name.includes('단품')))
                     );
-
                     if (existing) {
-                        // 이미 존재하면 내용만 추가 (또는 인원 합산 로직이 필요하면 여기서 처리)
                         existing.content += `<br><br>--- 추가 항목 ---<br>${item.content}`;
                         if (!existing.name.includes('통합')) existing.name += ' (통합)';
                     } else {

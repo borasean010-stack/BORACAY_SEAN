@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let allReservations = [];
     let activeTab = 'new'; 
     let currentScheduleFilter = 'all';
+    let currentScheduleDay = 'today'; // 'today' or 'tomorrow'
 
     if (sessionStorage.getItem('isAdminLoggedIn') === 'true') { showAdminPanel(); }
     
@@ -78,64 +79,71 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderSchedule() {
-        const todayContainer = document.getElementById('today-timeline');
-        const tomorrowContainer = document.getElementById('tomorrow-timeline');
-        if (!todayContainer || !tomorrowContainer) return;
+        const container = document.getElementById('active-timeline');
+        if (!container) return;
 
         const now = new Date();
         const offset = now.getTimezoneOffset() * 60000;
-        const today = new Date(now.getTime() - offset).toISOString().split('T')[0];
-        const tomorrow = new Date(now.getTime() - offset + 86400000).toISOString().split('T')[0];
+        const todayStr = new Date(now.getTime() - offset).toISOString().split('T')[0];
+        const tomorrowStr = new Date(now.getTime() - offset + 86400000).toISOString().split('T')[0];
 
-        const tLabel = document.getElementById('today-date-label');
-        const tmLabel = document.getElementById('tomorrow-date-label');
-        if (tLabel) tLabel.innerText = `(${today})`;
-        if (tmLabel) tmLabel.innerText = `(${tomorrow})`;
+        // 날짜 레이블 업데이트
+        const tLabel = document.getElementById('today-tab-date');
+        const tmLabel = document.getElementById('tomorrow-tab-date');
+        if (tLabel) tLabel.innerText = `(${todayStr})`;
+        if (tmLabel) tmLabel.innerText = `(${tomorrowStr})`;
 
-        const getItemsForDate = (dateStr) => {
-            let items = [];
-            allReservations.forEach(res => {
-                if (res.status !== '예약확정' && res.status !== '리조트확정') return;
+        const targetDate = currentScheduleDay === 'today' ? todayStr : tomorrowStr;
 
-                if (res.items) {
-                    res.items.forEach(item => {
-                        const isMatch = currentScheduleFilter === 'all' || item.name.includes(currentScheduleFilter);
-                        if (item.date === dateStr && !item.name.includes('픽업샌딩') && isMatch) {
-                            items.push({ time: item.time || "09:00", name: item.name, customer: res.customerKorName, count: item.count, status: res.status, id: res.id });
-                        }
-                    });
-                }
-                
-                const isPickupMatch = currentScheduleFilter === 'all' || currentScheduleFilter === '픽업샌딩';
-                if (res.pickupDate === dateStr && isPickupMatch) {
-                    items.push({ time: "00:00", name: `✈️ 공항 픽업 (${res.pickupFlight || '-'})`, customer: res.customerKorName, count: '-', status: res.status, id: res.id });
-                }
-                if (res.sendingDate === dateStr && isPickupMatch) {
-                    items.push({ time: "23:59", name: `✈️ 공항 샌딩 (${res.sendingFlight || '-'})`, customer: res.customerKorName, count: '-', status: res.status, id: res.id });
-                }
-            });
-            return items.sort((a, b) => a.time.localeCompare(b.time));
-        };
+        let items = [];
+        allReservations.forEach(res => {
+            if (res.status !== '예약확정' && res.status !== '리조트확정') return;
 
-        const renderTimeline = (container, items) => {
-            if (items.length === 0) {
-                container.innerHTML = '<div class="sc-empty">해당하는 일정이 없습니다.</div>';
-                return;
+            if (res.items) {
+                res.items.forEach(item => {
+                    const isMatch = currentScheduleFilter === 'all' || item.name.includes(currentScheduleFilter);
+                    if (item.date === targetDate && !item.name.includes('픽업샌딩') && isMatch) {
+                        items.push({ time: item.time || "09:00", name: item.name, customer: res.customerKorName, count: item.count, status: res.status, id: res.id });
+                    }
+                });
             }
-            container.innerHTML = items.map(item => {
-                const isConfirmed = item.status === '예약확정' || item.status === '리조트확정';
-                return `<div class="schedule-card" onclick="showDetail('${item.id}')" style="cursor:pointer; border-top-color: ${isConfirmed ? '#ff6a00' : '#ff8c00'}">
-                    <div class="sc-status ${isConfirmed ? 'confirmed' : 'pending'}">${isConfirmed ? '확정' : '대기'}</div>
-                    <div class="sc-time"><span class="material-icons">access_time</span> ${item.time}</div>
-                    <div class="sc-item">${item.name}</div>
-                    <div class="sc-customer"><b>${item.customer}</b> ${item.count}명</div>
-                </div>`;
-            }).join('');
-        };
+            
+            const isPickupMatch = currentScheduleFilter === 'all' || currentScheduleFilter === '픽업샌딩';
+            if (res.pickupDate === targetDate && isPickupMatch) {
+                items.push({ time: "00:00", name: `✈️ 공항 픽업 (${res.pickupFlight || '-'})`, customer: res.customerKorName, count: '-', status: res.status, id: res.id });
+            }
+            if (res.sendingDate === targetDate && isPickupMatch) {
+                items.push({ time: "23:59", name: `✈️ 공항 샌딩 (${res.sendingFlight || '-'})`, customer: res.customerKorName, count: '-', status: res.status, id: res.id });
+            }
+        });
 
-        renderTimeline(todayContainer, getItemsForDate(today));
-        renderTimeline(tomorrowContainer, getItemsForDate(tomorrow));
+        items.sort((a, b) => a.time.localeCompare(b.time));
+
+        if (items.length === 0) {
+            container.innerHTML = `<div class="sc-empty">${currentScheduleDay === 'today' ? '오늘' : '내일'} 해당하는 일정이 없습니다.</div>`;
+            return;
+        }
+
+        container.innerHTML = items.map(item => {
+            const isConfirmed = item.status === '예약확정' || item.status === '리조트확정';
+            return `<div class="schedule-card" onclick="showDetail('${item.id}')" style="cursor:pointer; border-top-color: ${isConfirmed ? '#ff6a00' : '#ff8c00'}">
+                <div class="sc-status ${isConfirmed ? 'confirmed' : 'pending'}">${isConfirmed ? '확정' : '대기'}</div>
+                <div class="sc-time"><span class="material-icons">access_time</span> ${item.time}</div>
+                <div class="sc-item">${item.name}</div>
+                <div class="sc-customer"><b>${item.customer}</b> ${item.count}명</div>
+            </div>`;
+        }).join('');
     }
+
+    window.switchScheduleDay = (day) => {
+        currentScheduleDay = day;
+        document.querySelectorAll('.d-tab').forEach(btn => {
+            // Check based on the onclick attribute's text
+            if (btn.getAttribute('onclick').includes(day)) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+        renderSchedule();
+    };
 
     window.filterSchedule = (category) => {
         currentScheduleFilter = category;

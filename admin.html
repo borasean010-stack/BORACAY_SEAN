@@ -84,11 +84,19 @@
                 
                 <!-- 📅 Schedule Section -->
                 <div id="schedule-section" class="schedule-section">
-                    <h3 class="schedule-title"><span class="material-icons">calendar_today</span> Daily Schedule</h3>
+                    <!-- 🗓️ 날짜 선택 메인 탭 -->
+                    <div class="date-main-tabs">
+                        <button class="d-tab active" onclick="switchScheduleDay('today')">
+                            <span class="material-icons">today</span> 오늘 일정 <small id="today-tab-date"></small>
+                        </button>
+                        <button class="d-tab" onclick="switchScheduleDay('tomorrow')">
+                            <span class="material-icons">event_next</span> 내일 일정 <small id="tomorrow-tab-date"></small>
+                        </button>
+                    </div>
                     
-                    <!-- 🏷️ 투어 카테고리 탭 -->
+                    <!-- 🏷️ 투어 카테고리 서브 탭 -->
                     <div class="schedule-tabs" id="schedule-tabs">
-                        <button class="s-tab active" onclick="filterSchedule('all')">전체 일정</button>
+                        <button class="s-tab active" onclick="filterSchedule('all')">전체</button>
                         <button class="s-tab" onclick="filterSchedule('호핑')">호핑투어</button>
                         <button class="s-tab" onclick="filterSchedule('말룸파티')">말룸파티</button>
                         <button class="s-tab" onclick="filterSchedule('픽업샌딩')">픽업샌딩</button>
@@ -96,18 +104,9 @@
                         <button class="s-tab" onclick="filterSchedule('액티비티')">액티비티</button>
                     </div>
 
-                    <!-- 📅 Today Section -->
-                    <div class="day-group">
-                        <div class="day-header"><span class="material-icons">event</span> 오늘 일정 <small id="today-date-label"></small></div>
-                        <div id="today-timeline" class="schedule-timeline">
-                            <div class="sc-empty">데이터를 불러오는 중...</div>
-                        </div>
-                    </div>
-
-                    <!-- 📅 Tomorrow Section -->
-                    <div class="day-group">
-                        <div class="day-header tomorrow"><span class="material-icons">event_note</span> 내일 일정 <small id="tomorrow-date-label"></small></div>
-                        <div id="tomorrow-timeline" class="schedule-timeline">
+                    <!-- 📅 Timeline Display -->
+                    <div id="schedule-timeline-container">
+                        <div id="active-timeline" class="schedule-timeline">
                             <div class="sc-empty">데이터를 불러오는 중...</div>
                         </div>
                     </div>

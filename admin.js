@@ -148,8 +148,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.filterSchedule = (category) => {
         currentScheduleFilter = category;
         document.querySelectorAll('.s-tab').forEach(btn => {
-            const btnText = btn.innerText;
-            if ((category === 'all' && btnText.includes('전체')) || btnText.includes(category)) btn.classList.add('active');
+            const btnText = btn.innerText.replace('✨', '').replace('#', '').trim();
+            if ((category === 'all' && btnText.includes('전체')) || btnText === category) btn.classList.add('active');
             else btn.classList.remove('active');
         });
         renderSchedule();

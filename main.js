@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
         links.forEach(link => {
             let href = link.href;
             if (isMobile) {
-                // PC -> Mobile: ArticleList.nhn?search.menuid=21 -> /menus/21
                 if (href.includes('search.menuid=')) {
                     const menuId = href.split('search.menuid=')[1].split('&')[0];
                     link.href = `https://m.cafe.naver.com/ca-fe/web/cafes/17953658/menus/${menuId}`;
@@ -18,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     link.href = href.replace('cafe.naver.com', 'm.cafe.naver.com');
                 }
             } else {
-                // Mobile -> PC: /menus/21 -> ArticleList.nhn?search.menuid=21
                 if (href.includes('/menus/')) {
                     const menuId = href.split('/menus/')[1].split('?')[0];
                     link.href = `https://cafe.naver.com/jesupblue?iframe_url=/ArticleList.nhn%3Fsearch.clubid=17953658%26search.menuid=${menuId}`;
@@ -34,42 +32,39 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 중앙 상품 데이터 정의 (설명글 통합 관리) ---
     const productData = {
         essential: [
-            { title: "보라카이 왕복 픽업샌딩", img: "pickup.jpg", url: "pickup-sending", badge: "HOT", mdBadge: true, desc: "공항부터 숙소 앞까지 가장 안전하고 편안하게!", price: 54900 },
-            { title: "블랙펄 요트호핑투어", img: "hopping.jpg", url: "hopping-tour", badge: "HOT", mdBadge: true, desc: "럭셔리 요트위에서 즐기는 보라카이 선셋과 신나는 음악과 파티가 함께하는 1등 선상 파티 호핑", price: 85000 },
-            { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "malumpati", badge: "HOT", mdBadge: true, desc: "우리끼리 프라이빗하게 즐기고 신비로운 블루라군과 튜빙", price: 99000 },
+            { title: "보라카이 왕복 픽업샌딩", img: "pickup.jpg", url: "/pickup-sending", badge: "HOT", mdBadge: true, desc: "공항부터 숙소 앞까지 가장 안전하고 편안하게!", price: 54900 },
+            { title: "블랙펄 요트호핑투어", img: "hopping.jpg", url: "/hopping-tour", badge: "HOT", mdBadge: true, desc: "럭셔리 요트위에서 즐기는 보라카이 선셋과 신나는 음악과 파티가 함께하는 1등 선상 파티 호핑", price: 85000 },
+            { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "/malumpati", badge: "HOT", mdBadge: true, desc: "우리끼리 프라이빗하게 즐기고 신비로운 블루라군과 튜빙", price: 99000 },
             { title: "한눈에 요금표", img: "price.png", url: "/price-list", desc: "보라카이션의 모든 투어 요금을 한눈에 확인하세요.", price: null }
         ],
         activity: [
-            { title: "보라카이 왕복 픽업샌딩", img: "pickup.jpg", url: "pickup-sending", badge: "HOT", mdBadge: true, desc: "공항부터 숙소 앞까지 가장 안전하고 편안하게!", price: 54900 },
-            { title: "카티클란 왕복 픽업샌딩", img: "catipickipsending.jpg", url: "catipickipsending", desc: "카티클란 공항에서 보라카이까지 더 빠르고 편리하게!", price: 54900 },
-            { title: "블랙펄 요트호핑투어", img: "hopping.jpg", url: "hopping-tour", badge: "HOT", mdBadge: true, desc: "럭셔리 요트위에서 즐기는 보라카이 선셋과 신나는 음악과 파티가 함께하는 1등 선상 파티 호핑", price: 85000 },
-
-            { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "malumpati", badge: "HOT", mdBadge: true, desc: "우리끼리 프라이빗하게 즐기고 신비로운 블루라군과 튜빙", price: 99000 },
-            { title: "프리다이빙 체험", img: "free1.jpg", url: "freediving", desc: "바다 속 자유를 만끽하는 특별한 프리다이빙 체험.", price: 70000 },
-            { title: "보라카이 랜드투어", img: "beach1.jpg", url: "land-tour", desc: "전용 차량으로 즐기는 보라카이 섬 구석구석 명소 탐방.", price: 45000 },
-            { title: "JL 스냅사진 촬영", img: "jl1.jpg", url: "jl-snap", desc: "보라카이의 아름다운 풍경과 함께 인생샷을 남겨보세요.", price: 300000 },
-            { title: "보라아재 호핑투어", img: "bora1.jpg", url: "bora-ajae-hopping", desc: "카라바오 섬에서 즐기는 호핑투어", price: 180000 },
-            { title: "파라세일링", img: "para1.jpg", url: "parasailing", desc: "하늘 높이 날아올라 보라카이 전경을 한눈에 담아보세요.", price: 55000 },
-            { title: "체험 다이빙", img: "diving1.jpg", url: "scuba-diving", mdBadge: true, desc: "전문 강사와 함께하는 환상적인 수중 세계 탐험.", price: 55000 },
-            { title: "헬멧 다이빙", img: "he1.jpg", url: "helmet-diving", desc: "머리 젖지 않고 바다 속을 걷는 신비로운 경험.", price: 44000 },
-            { title: "제트스키", img: "ze1.jpg", url: "jetski", desc: "보라카이 바다 위를 시원하게 질주하는 짜릿한 속도감.", price: 55000 },
-            { title: "페어웨이 골프클럽", img: "Golf1.jpg", url: "golf", badge: "NEW", desc: "보라카이 유일의 18홀 골프 코스에서 즐기는 환상적인 라운딩.", price: 192000 }
-            ],
-            massage: [
-            { title: "아유르베다 스파", img: "aspa1.jpg", url: "aspa", desc: "분위기에 취하고 마사지에 반하는 마사지샵", price: 55000 },
-            { title: "에스파 (S-SPA)", img: "spa1.jpg", url: "spa", mdBadge: true, desc: "보라카이 최초 포핸드 마사지 런칭", price: 55000 },
-            { title: "포세이돈 스파", img: "poseidon1.jpg", url: "poseidon", desc: "연예인이 운영하는 스파 모든 룸 안 개별 수영장 + 자쿠지", price: 105000 },
-            { title: "마리스 스파", img: "maris1.jpg", url: "maris", desc: "로멘틱 마리스 스파,허니문이나 커플 연인들에게 인기만점", price: 91000 },
-            { title: "카바얀 스파", img: "kabayan1.jpg", url: "kabayan", desc: "디몰 버젯마트 근처 마사지샵", price: 49000 },
-            { title: "루나 스파", img: "luna1.jpg", url: "luna", desc: "보라카이 최초 노니씨드 마사지 런칭", price: 55000 },
-            { title: "보라스파", img: "boraspa1.jpg", url: "boraspa", desc: "보라카이 꿀 마사지 원조", price: 55000 },
-            { title: "헬리오스 스파", img: "helios1.jpg", url: "helios", desc: "유럽풍 고급 분위기 스파", price: 91000 }
+            { title: "보라카이 왕복 픽업샌딩", img: "pickup.jpg", url: "/pickup-sending", badge: "HOT", mdBadge: true, desc: "공항부터 숙소 앞까지 가장 안전하고 편안하게!", price: 54900 },
+            { title: "카티클란 왕복 픽업샌딩", img: "catipickipsending.jpg", url: "/catipickipsending", desc: "카티클란 공항에서 보라카이까지 더 빠르고 편리하게!", price: 54900 },
+            { title: "블랙펄 요트호핑투어", img: "hopping.jpg", url: "/hopping-tour", badge: "HOT", mdBadge: true, desc: "럭셔리 요트위에서 즐기는 보라카이 선셋과 신나는 음악과 파티가 함께하는 1등 선상 파티 호핑", price: 85000 },
+            { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "/malumpati", badge: "HOT", mdBadge: true, desc: "우리끼리 프라이빗하게 즐기고 신비로운 블루라군과 튜빙", price: 99000 },
+            { title: "프리다이빙 체험", img: "free1.jpg", url: "/freediving", desc: "바다 속 자유를 만끽하는 특별한 프리다이빙 체험.", price: 70000 },
+            { title: "보라카이 랜드투어", img: "beach1.jpg", url: "/land-tour", desc: "전용 차량으로 즐기는 보라카이 섬 구석구석 명소 탐방.", price: 45000 },
+            { title: "JL 스냅사진 촬영", img: "jl1.jpg", url: "/jl-snap", desc: "보라카이의 아름다운 풍경과 함께 인생샷을 남겨보세요.", price: 300000 },
+            { title: "보라아재 호핑투어", img: "bora1.jpg", url: "/bora-ajae-hopping", desc: "카라바오 섬에서 즐기는 호핑투어", price: 180000 },
+            { title: "파라세일링", img: "para1.jpg", url: "/parasailing", desc: "하늘 높이 날아올라 보라카이 전경을 한눈에 담아보세요.", price: 55000 },
+            { title: "체험 다이빙", img: "diving1.jpg", url: "/scuba-diving", mdBadge: true, desc: "전문 강사와 함께하는 환상적인 수중 세계 탐험.", price: 55000 },
+            { title: "헬멧 다이빙", img: "he1.jpg", url: "/helmet-diving", desc: "머리 젖지 않고 바다 속을 걷는 신비로운 경험.", price: 44000 },
+            { title: "제트스키", img: "ze1.jpg", url: "/jetski", desc: "보라카이 바다 위를 시원하게 질주하는 짜릿한 속도감.", price: 55000 },
+            { title: "페어웨이 골프클럽", img: "Golf1.jpg", url: "/golf", badge: "NEW", desc: "보라카이 유일의 18홀 골프 코스에서 즐기는 환상적인 라운딩.", price: 192000 }
+        ],
+        massage: [
+            { title: "아유르베다 스파", img: "aspa1.jpg", url: "/aspa", desc: "분위기에 취하고 마사지에 반하는 마사지샵", price: 55000 },
+            { title: "에스파 (S-SPA)", img: "spa1.jpg", url: "/spa", mdBadge: true, desc: "보라카이 최초 포핸드 마사지 런칭", price: 55000 },
+            { title: "포세이돈 스파", img: "poseidon1.jpg", url: "/poseidon", desc: "연예인이 운영하는 스파 모든 룸 안 개별 수영장 + 자쿠지", price: 105000 },
+            { title: "마리스 스파", img: "maris1.jpg", url: "/maris", desc: "로멘틱 마리스 스파,허니문이나 커플 연인들에게 인기만점", price: 91000 },
+            { title: "카바얀 스파", img: "kabayan1.jpg", url: "/kabayan", desc: "디몰 버젯마트 근처 마사지샵", price: 49000 },
+            { title: "루나 스파", img: "luna1.jpg", url: "/luna", desc: "보라카이 최초 노니씨드 마사지 런칭", price: 55000 },
+            { title: "보라스파", img: "boraspa1.jpg", url: "/boraspa", desc: "보라카이 꿀 마사지 원조", price: 55000 },
+            { title: "헬리오스 스파", img: "helios1.jpg", url: "/helios", desc: "유럽풍 고급 분위기 스파", price: 91000 }
         ]
     };
 
-    // MD 추천 상품 목록 (타이틀 기준 매칭하여 데이터 자동 동기화)
     const mdRecommendedTitles = ["블랙펄 요트호핑투어", "체험 다이빙", "시크릿가든 말룸파티", "에스파 (S-SPA)"];
-
     const productsContainer = document.querySelector('.products');
     const mdContainer = document.querySelector('.md-products');
     const bestTitle = document.querySelector('.best-title');
@@ -150,11 +145,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const isHomePage = window.location.pathname.endsWith('index') || window.location.pathname === '/' || window.location.pathname === '';
-    if (isHomePage) { renderProducts('essential'); renderMDProducts(); } 
-    else if (productsContainer) {
-        const activeTab = document.querySelector('.tab-link.active');
-        renderProducts(activeTab ? activeTab.getAttribute('data-category') : 'essential');
+    // --- Clean URL 대응 페이지 판별 ---
+    const path = window.location.pathname;
+    const isHomePage = path === '/' || path === '' || path.endsWith('index') || path.endsWith('index.html');
+    
+    if (isHomePage) { 
+        renderProducts('essential'); 
+        renderMDProducts(); 
+    } else if (productsContainer) {
+        // 현재 경로에 맞는 카테고리 자동 렌더링
+        if (path.includes('essential-tours')) renderProducts('essential');
+        else if (path.includes('activities')) renderProducts('activity');
+        else if (path.includes('massage')) renderProducts('massage');
+        else {
+            const activeTab = document.querySelector('.tab-link.active');
+            renderProducts(activeTab ? activeTab.getAttribute('data-category') : 'essential');
+        }
     }
 
     const updateHeaderUI = () => {
@@ -188,20 +194,17 @@ document.addEventListener('DOMContentLoaded', () => {
             let cart = JSON.parse(localStorage.getItem('cart') || '[]');
             cart.push(item);
             localStorage.setItem('cart', JSON.stringify(cart));
-            if (confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) window.location.assign('cart');
+            if (confirm('장바구니에 담겼습니다. 이동하시겠습니까?')) window.location.assign('/cart');
         },
         buyNow: item => {
             sessionStorage.setItem('directBuyItem', JSON.stringify(item));
-            window.location.assign('booking-form');
+            window.location.assign('/booking-form');
         }
     };
 
-    // --- Mobile Booking Drawer ---
     window.openBookingDrawer = function() {
         const box = document.querySelector('.reservation-box');
         if (!box) return;
-        
-        // Create overlay if not exists
         let overlay = document.getElementById('drawer-overlay');
         if (!overlay) {
             overlay = document.createElement('div');
@@ -210,8 +213,6 @@ document.addEventListener('DOMContentLoaded', () => {
             overlay.onclick = window.closeBookingDrawer;
             document.body.appendChild(overlay);
         }
-        
-        // Add close button if not exists
         if (!box.querySelector('.drawer-close')) {
             const closeBtn = document.createElement('div');
             closeBtn.className = 'drawer-close';
@@ -220,7 +221,6 @@ document.addEventListener('DOMContentLoaded', () => {
             closeBtn.onclick = window.closeBookingDrawer;
             box.prepend(closeBtn);
         }
-        
         box.classList.add('mobile-drawer');
         overlay.style.display = 'block';
         setTimeout(() => {
@@ -258,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.style.overflow = '';
     };
 
-    // --- Main Banner Slider Logic ---
+    // --- Main Banner Slider ---
     let currentSlide = 0;
     const bannerWrapper = document.getElementById('bannerWrapper');
     const slides = document.querySelectorAll('.banner-slide');
@@ -266,74 +266,39 @@ document.addEventListener('DOMContentLoaded', () => {
     let autoSlideInterval;
 
     if (bannerWrapper && slides.length > 0) {
-        // Create Dots
         slides.forEach((_, i) => {
             const dot = document.createElement('div');
             dot.className = 'dot' + (i === 0 ? ' active' : '');
-            dot.onclick = () => moveSlide(i - currentSlide);
+            dot.onclick = () => { currentSlide = i; updateSlider(); resetAutoSlide(); };
             dotsContainer.appendChild(dot);
         });
-
         window.moveSlide = (direction) => {
             currentSlide = (currentSlide + direction + slides.length) % slides.length;
             updateSlider();
             resetAutoSlide();
         };
-
         function updateSlider() {
             bannerWrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
             const dots = document.querySelectorAll('.dot');
             dots.forEach((dot, i) => dot.classList.toggle('active', i === currentSlide));
         }
-
-        function startAutoSlide() {
-            autoSlideInterval = setInterval(() => moveSlide(1), 4000);
-        }
-
-        function resetAutoSlide() {
-            clearInterval(autoSlideInterval);
-            startAutoSlide();
-        }
-
+        function startAutoSlide() { autoSlideInterval = setInterval(() => moveSlide(1), 4000); }
+        function resetAutoSlide() { clearInterval(autoSlideInterval); startAutoSlide(); }
         startAutoSlide();
     }
 
-    // --- Hero Video Mobile Compatibility & Smooth Loading ---
+    // --- Hero Video ---
     const heroVideo = document.getElementById('hero-video');
     if (heroVideo) {
-        // Start from 4 seconds
         heroVideo.currentTime = 4;
-
-        const playVideo = async () => {
-            try {
-                await heroVideo.play();
-                console.log("Hero video playing from 4s");
-            } catch (err) {
-                console.warn("Hero video autoplay failed:", err);
-            }
-        };
-        
-        // Ensure it stays at 4s if it hasn't loaded yet
-        heroVideo.addEventListener('loadedmetadata', () => {
-            heroVideo.currentTime = 4;
-        });
-
-        // When video loops, restart from 4s instead of 0s
-        heroVideo.addEventListener('ended', () => {
-            heroVideo.currentTime = 4;
-            heroVideo.play();
-        });
-
+        const playVideo = async () => { try { await heroVideo.play(); } catch (err) { } };
+        heroVideo.addEventListener('loadedmetadata', () => { heroVideo.currentTime = 4; });
+        heroVideo.addEventListener('ended', () => { heroVideo.currentTime = 4; heroVideo.play(); });
         playVideo();
-
-        // If video error occurs, hide video to show CSS background
-        heroVideo.addEventListener('error', function() {
-            console.error("Hero video error");
-            heroVideo.style.display = 'none';
-        });
+        heroVideo.addEventListener('error', () => { heroVideo.style.display = 'none'; });
     }
 
-    // --- Popup Modal Logic ---
+    // --- Popup Modal ---
     const mainPopup = document.getElementById('mainPopup');
     const popupSlider = document.getElementById('popupSlider');
     const popupDots = document.getElementById('popupDots');
@@ -341,34 +306,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const popupSlides = document.querySelectorAll('.popup-slide');
 
     if (mainPopup && popupSlides.length > 0) {
-        // Create Dots for Popup
         popupSlides.forEach((_, i) => {
             const dot = document.createElement('div');
             dot.className = 'popup-dot' + (i === 0 ? ' active' : '');
             dot.onclick = () => { currentPopupSlide = i; updatePopupSlider(); };
             popupDots.appendChild(dot);
         });
-
         window.movePopupSlide = (direction) => {
             currentPopupSlide = (currentPopupSlide + direction + popupSlides.length) % popupSlides.length;
             updatePopupSlider();
         };
-
         function updatePopupSlider() {
             popupSlider.style.transform = `translateX(-${currentPopupSlide * 100}%)`;
             const dots = document.querySelectorAll('.popup-dot');
             dots.forEach((dot, i) => dot.classList.toggle('active', i === currentPopupSlide));
         }
-
-        window.closePopup = () => {
-            mainPopup.style.display = 'none';
-        };
-
-        window.closePopupToday = () => {
-            closePopup();
-        };
-
-        // Always show popup
+        window.closePopup = () => { mainPopup.style.display = 'none'; };
+        window.closePopupToday = () => { closePopup(); };
         mainPopup.style.display = 'flex';
     }
 });

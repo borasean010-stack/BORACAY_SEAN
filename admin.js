@@ -78,6 +78,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (rcCount) rcCount.innerText = counts.resortConfirmed;
     }
 
+    function getCategory(name) {
+        if (!name) return '액티비티';
+        if (name.includes('픽업') || name.includes('샌딩') || name.includes('공항')) return '픽업샌딩';
+        if (name.includes('호핑')) return '호핑';
+        if (name.includes('말룸파티')) return '말룸파티';
+        if (name.includes('마사지') || name.includes('스파') || name.includes('SPA') || name.includes('에스파')) return '마사지';
+        return '액티비티';
+    }
+
     function renderSchedule() {
         const container = document.getElementById('active-timeline');
         if (!container) return;
@@ -101,19 +110,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (res.items) {
                 res.items.forEach(item => {
-                    const isMatch = currentScheduleFilter === 'all' || item.name.includes(currentScheduleFilter);
-                    if (item.date === targetDate && !item.name.includes('픽업샌딩') && isMatch) {
+                    const itemCat = getCategory(item.name);
+                    const isMatch = currentScheduleFilter === 'all' || itemCat === currentScheduleFilter;
+                    
+                    if (item.date === targetDate && isMatch) {
                         items.push({ time: item.time || "09:00", name: item.name, customer: res.customerKorName, count: item.count, status: res.status, id: res.id });
                     }
                 });
             }
             
+            // 픽업/샌딩 데이터는 별도 필드로 있는 경우 처리
             const isPickupMatch = currentScheduleFilter === 'all' || currentScheduleFilter === '픽업샌딩';
             if (res.pickupDate === targetDate && isPickupMatch) {
-                items.push({ time: "00:00", name: `✈️ 공항 픽업 (${res.pickupFlight || '-'})`, customer: res.customerKorName, count: '-', status: res.status, id: res.id });
+                // 중복 추가 방지 (items에 이미 픽업샌딩이 있다면 패스)
+                if (!items.find(i => i.id === res.id && i.name.includes('픽업'))) {
+                    items.push({ time: "00:00", name: `✈️ 공항 픽업 (${res.pickupFlight || '-'})`, customer: res.customerKorName, count: '-', status: res.status, id: res.id });
+                }
             }
             if (res.sendingDate === targetDate && isPickupMatch) {
-                items.push({ time: "23:59", name: `✈️ 공항 샌딩 (${res.sendingFlight || '-'})`, customer: res.customerKorName, count: '-', status: res.status, id: res.id });
+                if (!items.find(i => i.id === res.id && i.name.includes('샌딩'))) {
+                    items.push({ time: "23:59", name: `✈️ 공항 샌딩 (${res.sendingFlight || '-'})`, customer: res.customerKorName, count: '-', status: res.status, id: res.id });
+                }
             }
         });
 

@@ -125,13 +125,32 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!tableBody) return;
         tableBody.innerHTML = '';
         const searchTerm = document.getElementById('header-global-search').value.toLowerCase();
+        const now = new Date();
+        const todayStr = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+
         let filtered = allReservations.filter(r => {
             const name = (r.customerKorName || '').toLowerCase();
             const resNo = (r.reservationNumber || '').toLowerCase();
             const matchesSearch = name.includes(searchTerm) || resNo.includes(searchTerm);
             let matchesTab = false;
+            
             if (activeTab === 'new') matchesTab = (r.status === '입금대기' || r.status === '예약접수');
-            else if (activeTab === 'confirmed') matchesTab = (r.status === '예약확정');
+            else if (activeTab === 'confirmed') {
+                matchesTab = (r.status === '예약확정');
+                if (matchesTab) {
+                    let maxDate = '';
+                    if (r.items) {
+                        r.items.forEach(item => {
+                            let d = item.date;
+                            if (item.name.includes('리조트') && item.details && item.details.checkout) d = item.details.checkout;
+                            if (d && d > maxDate) maxDate = d;
+                        });
+                    }
+                    if (r.sendingDate && r.sendingDate > maxDate) maxDate = r.sendingDate;
+                    if (r.resortCheckout && r.resortCheckout > maxDate) maxDate = r.resortCheckout;
+                    if (maxDate && maxDate < todayStr) matchesTab = false;
+                }
+            }
             else if (activeTab === 'resorts') matchesTab = (r.status === '견적');
             else if (activeTab === 'system') matchesTab = true;
             return matchesSearch && matchesTab;
@@ -140,9 +159,17 @@ document.addEventListener('DOMContentLoaded', () => {
         filtered.forEach((res, index) => {
             const tr = document.createElement('tr');
             const status = res.status || '대기';
-            const firstItemName = res.items && res.items.length > 0 ? res.items[0].name : '-';
-            const itemsText = res.items && res.items.length > 1 ? `${firstItemName} 외 ${res.items.length - 1}건` : firstItemName;
-            tr.innerHTML = `<td><input type="checkbox"></td><td style="color:#bbb;">${filtered.length - index}</td><td style="font-weight:700;">${res.reservationNumber || '-'}</td><td><div style="font-size:12px; color:#888;">이름(한글) | <b style="color:#111; font-size:14px;">${res.customerKorName || '미입력'}</b><br>이름(영문) | <b style="color:#111; font-size:14px;">${res.engName || '-'}</b></div></td><td style="font-weight:600;">${itemsText}</td><td style="font-weight:800;">₩ ${(res.totalPrice || 0).toLocaleString()}</td><td style="color:#888;">${res.createdAt?.toDate ? res.createdAt.toDate().toLocaleDateString() : '-'}</td><td style="text-align:center;"><span class="n-badge ${status === '예약확정' ? 'badge-green' : (status === '견적' ? 'badge-blue' : 'badge-yellow')}">${status}</span></td><td><div style="display:flex; gap:5px;">${status !== '예약확정' && activeTab !== 'system' ? `<button class="btn-action-received" onclick="handleAutoConfirm('${res.id}')">입금확인</button>` : ''}${activeTab === 'system' ? `<button class="btn-action-danger" onclick="handleDeleteReservation('${res.id}')">취소/삭제</button>` : `<button class="btn-action-outline" onclick="showDetail('${res.id}')">상세</button>`}</div></td>`;
+            const firstItem = res.items && res.items.length > 0 ? res.items[0] : null;
+            let itemsText = '-';
+            if (firstItem) {
+                itemsText = firstItem.name;
+                if (firstItem.name.includes('리조트') && firstItem.details && firstItem.details.checkin) {
+                    itemsText = `🏨 ${firstItem.name} (${firstItem.details.checkin} ~ ${firstItem.details.checkout})`;
+                }
+                if (res.items.length > 1) itemsText += ` 외 ${res.items.length - 1}건`;
+            }
+
+            tr.innerHTML = `<td><input type="checkbox"></td><td style="color:#bbb;">${filtered.length - index}</td><td style="font-weight:700;">${res.reservationNumber || '-'}</td><td><div style="font-size:12px; color:#888;">이름(한글) | <b style="color:#111; font-size:14px;">${res.customerKorName || '미입력'}</b><br>이름(영문) | <b style="color:#111; font-size:14px;">${res.engName || '-'}</b></div></td><td style="font-weight:600;">${itemsText}</td><td style="font-weight:800;">₩ ${(res.totalPrice || 0).toLocaleString()}</td><td style="color:#888;">${res.createdAt?.toDate ? res.createdAt.toDate().toLocaleDateString() : '-'}</td><td style="text-align:center;"><span class="n-badge ${status === '예약확정' ? 'badge-green' : (status === '견적' ? 'badge-blue' : 'badge-yellow')}">${status}</span></td><td><div style="display:flex; gap:5px;">${status !== '예약확정' && activeTab !== 'system' ? `<button class="btn-action-received" onclick="handleAutoConfirm('${res.id}')">${status === '견적' ? '견적완료' : '입금확인'}</button>` : ''}${activeTab === 'system' ? `<button class="btn-action-danger" onclick="handleDeleteReservation('${res.id}')">취소/삭제</button>` : `<button class="btn-action-outline" onclick="showDetail('${res.id}')">상세</button>`}</div></td>`;
             tableBody.appendChild(tr);
         });
     }
@@ -158,7 +185,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const body = document.getElementById('modal-body');
         const isQuote = res.status === '견적';
         const totalVoucherBtn = isQuote ? '' : `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;"><button onclick="copyCombinedVoucherLink('${res.contact}')" style="padding:12px; background:#00c73c; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;"><span class="material-icons" style="font-size:18px;">people</span> 고객 통합 링크 복사</button><button onclick="copyVoucherLink('${res.id}', null)" style="padding:12px; background:#ff6a00; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;"><span class="material-icons" style="font-size:18px;">share</span> 주문 일정 링크 복사</button></div><p style="font-size:11px; color:#888; margin-top:-10px; margin-bottom:15px; text-align:center;">* 통합 링크는 해당 연락처의 <b>현재/미래의 모든 '확정' 예약</b>을 합쳐서 보여줍니다.</p>`;
-        const itemsHtml = res.items.map((item, idx) => `<div style="padding:12px; background:#f8f9fa; border:1px solid #eee; border-radius:8px; margin-bottom:8px;"><div style="display:flex; justify-content:space-between;"><div style="font-size:15px; font-weight:800;">${item.name}</div><div style="font-size:14px; font-weight:800; color:#ff6a00;">${item.count}명</div></div><div style="margin-top:6px; font-size:13px; color:#666;">📅 ${item.date || '-'} ${item.time || ''} ${item.details ? `<br>옵션: ${item.details}` : ''}</div>${!isQuote ? `<div style="margin-top:10px; display:flex; gap:5px;"><a href="reservation-schedule.html?id=${res.id}&itemIndex=${idx}" target="_blank" style="flex:1; text-align:center; padding:6px; background:#fff; border:1px solid #ddd; border-radius:4px; font-size:11px; text-decoration:none; color:#333;">개별 바우처</a><button onclick="copyVoucherLink('${res.id}', ${idx})" style="flex:1; padding:6px; background:#ff6a00; color:white; border:none; border-radius:4px; font-size:11px;">링크복사</button></div>` : ''}</div>`).join('');
+        const itemsHtml = res.items.map((item, idx) => {
+            let dateStr = item.date || '-';
+            if (item.name.includes('리조트') && item.details && typeof item.details === 'object' && item.details.checkin) {
+                dateStr = `${item.details.checkin} ~ ${item.details.checkout}`;
+            }
+            return `<div style="padding:12px; background:#f8f9fa; border:1px solid #eee; border-radius:8px; margin-bottom:8px;">
+                <div style="display:flex; justify-content:space-between;">
+                    <div style="font-size:15px; font-weight:800;">${item.name}</div>
+                    <div style="font-size:14px; font-weight:800; color:#ff6a00;">${item.count}명</div>
+                </div>
+                <div style="margin-top:6px; font-size:13px; color:#666;">📅 ${dateStr} ${item.time || ''} ${item.details && typeof item.details === 'string' ? `<br>옵션: ${item.details}` : ''}</div>
+                ${!isQuote ? `<div style="margin-top:10px; display:flex; gap:5px;"><a href="reservation-schedule.html?id=${res.id}&itemIndex=${idx}" target="_blank" style="flex:1; text-align:center; padding:6px; background:#fff; border:1px solid #ddd; border-radius:4px; font-size:11px; text-decoration:none; color:#333;">개별 바우처</a><button onclick="copyVoucherLink('${res.id}', ${idx})" style="flex:1; padding:6px; background:#ff6a00; color:white; border:none; border-radius:4px; font-size:11px;">링크복사</button></div>` : ''}
+            </div>`;
+        }).join('');
+        
         body.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:1px solid #eee;"><h3 style="margin:0;">${isQuote ? '견적 신청 상세' : '예약 상세 정보'}</h3>${!isQuote ? `<button onclick="copyGuidance('${res.id}')" style="background:#ff6a00; color:white; border:none; padding:8px 14px; border-radius:6px; font-weight:bold;">👉 안내문 복사</button>` : ''}</div>
             <div id="modal-scroll-area" style="max-height: 60vh; overflow-y: auto;">
                 <div style="margin-bottom:25px;">${totalVoucherBtn}${itemsHtml}</div>
@@ -167,12 +208,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p style="margin:0;">이름(영문) | <b>${res.engName || '-'}</b></p>
                     <p style="margin:5px 0 0 0;">연락처 | <b>${res.contact}</b></p>
                 </div>
+                ${isQuote ? '' : `
                 <div style="background:#fff5eb; padding:15px; border-radius:10px; border:1px solid #ffe8cc; margin-bottom:20px;">
                     <div style="font-weight:bold; margin-bottom:10px; color:#ff6a00;">✈️ 공항 픽업/샌딩 및 환전 정보</div>
                     <p>픽업: ${res.pickupDate || '-'} / ${res.pickupFlight || '-'} / ${res.pickupResort || '-'}</p>
                     <p>샌딩: ${res.sendingDate || '-'} / ${res.sendingFlight || '-'} / ${res.sendingResort || '-'}</p>
                     <p style="margin-top:10px; padding-top:10px; border-top:1px dashed #ffd8a8;"><b>💰 환전 요청 금액:</b> <span style="font-size:16px; color:#e67e22;">${res.exchangeAmount || '요청 없음'}</span></p>
                 </div>
+                `}
                 <div style="padding:10px; background:#f8f9fa; border-radius:6px; font-size:13px; white-space:pre-wrap;"><b>[요청사항]</b>\n${res.requests || '요청사항 없음'}</div>
             </div>
             <div style="display:flex; gap:10px; margin-top:20px; padding-top:15px; border-top:1px solid #eee;">

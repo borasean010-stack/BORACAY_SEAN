@@ -176,16 +176,16 @@ document.addEventListener('DOMContentLoaded', () => {
             let actionButtons = '';
             if (activeTab === 'resorts') {
                 actionButtons = `
-                    <button class="btn-action-received" onclick="handleResortQuoteComplete('${res.id}')">견적완료</button>
-                    <button class="btn-action-outline" onclick="showDetail('${res.id}')">상세</button>
-                    <button class="btn-action-received" style="background:#00c73c; border-color:#00c73c;" onclick="handleResortConfirm('${res.id}')">예약 확정</button>
+                    <button class="btn-action-received" onclick="handleResortQuoteComplete('${res.id}')"><span class="material-icons">task_alt</span>견적완료</button>
+                    <button class="btn-action-outline" onclick="showDetail('${res.id}')"><span class="material-icons">visibility</span>상세</button>
+                    <button class="btn-action-received" style="background:#00c73c; border-color:#00c73c; box-shadow: 0 4px 10px rgba(0, 199, 60, 0.2);" onclick="handleResortConfirm('${res.id}')"><span class="material-icons">check_circle</span>예약 확정</button>
                 `;
             } else if (activeTab === 'system') {
-                actionButtons = `<button class="btn-action-danger" onclick="handleDeleteReservation('${res.id}')">취소/삭제</button>`;
+                actionButtons = `<button class="btn-action-danger" onclick="handleDeleteReservation('${res.id}')"><span class="material-icons">delete_forever</span>취소/삭제</button>`;
             } else {
                 actionButtons = `
-                    ${status !== '예약확정' && status !== '리조트확정' ? `<button class="btn-action-received" onclick="handleAutoConfirm('${res.id}')">입금확인</button>` : ''}
-                    <button class="btn-action-outline" onclick="showDetail('${res.id}')">상세</button>
+                    ${status !== '예약확정' && status !== '리조트확정' ? `<button class="btn-action-received" onclick="handleAutoConfirm('${res.id}')"><span class="material-icons">payments</span>입금확인</button>` : ''}
+                    <button class="btn-action-outline" onclick="showDetail('${res.id}')"><span class="material-icons">visibility</span>상세</button>
                 `;
             }
 

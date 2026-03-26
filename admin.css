@@ -184,17 +184,87 @@ body.smartstore-admin { margin: 0; padding: 0; background: var(--ss-bg); font-fa
 .ss-table tbody tr:hover { background: #fcfdfe; }
 
 /* Status Badges */
-.n-badge { padding: 2px 6px; border-radius: 2px; font-size: 11px; font-weight: 700; display: inline-block; min-width: 50px; text-align: center; }
+.n-badge { 
+    padding: 4px 10px; 
+    border-radius: 6px; 
+    font-size: 11px; 
+    font-weight: 800; 
+    display: inline-block; 
+    min-width: 60px; 
+    text-align: center;
+    letter-spacing: -0.5px;
+}
 .badge-yellow { background: #fffbe6; color: #d48806; border: 1px solid #ffe58f; }
-.badge-green { background: #fff5eb; color: var(--ss-orange-theme); border: 1px solid #ffcc99; }
+.badge-green { background: #e6fffa; color: #00a854; border: 1px solid #b7eb8f; }
 .badge-red { background: #fff1f0; color: #f5222d; border: 1px solid #ffa39e; }
 .badge-blue { background: #e6f7ff; color: #1890ff; border: 1px solid #91d5ff; }
 
-/* Actions */
-.btn-action-received { background: var(--ss-orange); color: white; border: none; padding: 5px 12px; border-radius: 2px; font-size: 11px; font-weight: 700; cursor: pointer; }
-.btn-action-outline { background: #fff; border: 1px solid #ccc; padding: 4px 10px; border-radius: 2px; font-size: 11px; font-weight: 600; cursor: pointer; color: #555; }
-.btn-action-danger { background: #fff; border: 1px solid #f5222d; padding: 4px 10px; border-radius: 2px; font-size: 11px; font-weight: 600; cursor: pointer; color: #f5222d; }
-.btn-action-danger:hover { background: #fff1f0; }
+/* 🚀 Modern Action Buttons Redesign */
+.btn-action-received, .btn-action-outline, .btn-action-danger { 
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 14px; 
+    border-radius: 8px; 
+    font-size: 12px; 
+    font-weight: 700; 
+    cursor: pointer; 
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid transparent;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    white-space: nowrap;
+}
+
+/* Primary Action (Received/Confirm) */
+.btn-action-received { 
+    background: #ff6a00; 
+    color: white; 
+    box-shadow: 0 4px 10px rgba(255, 106, 0, 0.2);
+}
+.btn-action-received:hover { 
+    background: #e65c00; 
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(255, 106, 0, 0.3);
+}
+.btn-action-received:active { transform: translateY(0); }
+
+/* Outline Action (Detail/Secondary) */
+.btn-action-outline { 
+    background: #fff; 
+    border: 1px solid #e2e6e9; 
+    color: #4a5568; 
+}
+.btn-action-outline:hover { 
+    background: #f8fafc; 
+    border-color: #cbd5e0;
+    color: #2d3748;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+.btn-action-outline:active { transform: translateY(0); }
+
+/* Danger Action (Delete/Cancel) */
+.btn-action-danger { 
+    background: #fff; 
+    border: 1px solid #fed7d7; 
+    color: #e53e3e; 
+}
+.btn-action-danger:hover { 
+    background: #fff5f5; 
+    border-color: #feb2b2;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(229, 62, 62, 0.1);
+}
+.btn-action-danger:active { transform: translateY(0); }
+
+/* Icons inside buttons */
+.btn-action-received .material-icons, 
+.btn-action-outline .material-icons, 
+.btn-action-danger .material-icons {
+    font-size: 16px !important;
+}
 
 /* Admin Login Redesign (HanaTour Partner Style) */
 .admin-login-wrapper { 

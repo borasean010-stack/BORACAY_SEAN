@@ -66,11 +66,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const counts = {
             new: allReservations.filter(r => r.status === '입금대기' || r.status === '예약접수').length,
             confirmed: allReservations.filter(r => r.status === '예약확정').length,
-            resorts: allReservations.filter(r => r.status === '견적').length
+            resorts: allReservations.filter(r => r.status === '견적' || r.status === '견적완료').length,
+            resortConfirmed: allReservations.filter(r => r.status === '리조트확정').length
         };
         document.getElementById('count-new').innerText = counts.new;
         document.getElementById('count-confirmed').innerText = counts.confirmed;
         document.getElementById('count-resorts').innerText = counts.resorts;
+        const rcCount = document.getElementById('count-resort-confirmed');
+        if (rcCount) rcCount.innerText = counts.resortConfirmed;
     }
 
     function renderTodaySchedule() {
@@ -97,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         container.innerHTML = todayItems.map(item => {
-            const isConfirmed = item.status === '예약확정';
+            const isConfirmed = item.status === '예약확정' || item.status === '리조트확정';
             return `<div class="schedule-card" onclick="showDetail('${item.id}')" style="cursor:pointer; border-top-color: ${isConfirmed ? '#ff6a00' : '#ff8c00'}">
                 <div class="sc-status ${isConfirmed ? 'confirmed' : 'pending'}">${isConfirmed ? '확정' : '입금대기'}</div>
                 <div class="sc-time"><span class="material-icons">access_time</span> ${item.time}</div>
@@ -151,7 +154,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (maxDate && maxDate < todayStr) matchesTab = false;
                 }
             }
-            else if (activeTab === 'resorts') matchesTab = (r.status === '견적');
+            else if (activeTab === 'resorts') matchesTab = (r.status === '견적' || r.status === '견적완료');
+            else if (activeTab === 'resort-confirmed') matchesTab = (r.status === '리조트확정');
             else if (activeTab === 'system') matchesTab = true;
             return matchesSearch && matchesTab;
         });
@@ -163,19 +167,49 @@ document.addEventListener('DOMContentLoaded', () => {
             let itemsText = '-';
             if (firstItem) {
                 itemsText = firstItem.name;
-                if (firstItem.name.includes('리조트') && firstItem.details && firstItem.details.checkin) {
+                if (firstItem.name.includes('리조트') && firstItem.details && typeof firstItem.details === 'object' && firstItem.details.checkin) {
                     itemsText = `🏨 ${firstItem.name} (${firstItem.details.checkin} ~ ${firstItem.details.checkout})`;
                 }
                 if (res.items.length > 1) itemsText += ` 외 ${res.items.length - 1}건`;
             }
 
-            tr.innerHTML = `<td><input type="checkbox"></td><td style="color:#bbb;">${filtered.length - index}</td><td style="font-weight:700;">${res.reservationNumber || '-'}</td><td><div style="font-size:12px; color:#888;">이름(한글) | <b style="color:#111; font-size:14px;">${res.customerKorName || '미입력'}</b><br>이름(영문) | <b style="color:#111; font-size:14px;">${res.engName || '-'}</b></div></td><td style="font-weight:600;">${itemsText}</td><td style="font-weight:800;">₩ ${(res.totalPrice || 0).toLocaleString()}</td><td style="color:#888;">${res.createdAt?.toDate ? res.createdAt.toDate().toLocaleDateString() : '-'}</td><td style="text-align:center;"><span class="n-badge ${status === '예약확정' ? 'badge-green' : (status === '견적' ? 'badge-blue' : 'badge-yellow')}">${status}</span></td><td><div style="display:flex; gap:5px;">${status !== '예약확정' && activeTab !== 'system' ? `<button class="btn-action-received" onclick="handleAutoConfirm('${res.id}')">${status === '견적' ? '견적완료' : '입금확인'}</button>` : ''}${activeTab === 'system' ? `<button class="btn-action-danger" onclick="handleDeleteReservation('${res.id}')">취소/삭제</button>` : `<button class="btn-action-outline" onclick="showDetail('${res.id}')">상세</button>`}</div></td>`;
+            let actionButtons = '';
+            if (activeTab === 'resorts') {
+                actionButtons = `
+                    <button class="btn-action-received" onclick="handleResortQuoteComplete('${res.id}')">견적완료</button>
+                    <button class="btn-action-outline" onclick="showDetail('${res.id}')">상세</button>
+                    <button class="btn-action-received" style="background:#00c73c; border-color:#00c73c;" onclick="handleResortConfirm('${res.id}')">예약 확정</button>
+                `;
+            } else if (activeTab === 'system') {
+                actionButtons = `<button class="btn-action-danger" onclick="handleDeleteReservation('${res.id}')">취소/삭제</button>`;
+            } else {
+                actionButtons = `
+                    ${status !== '예약확정' && status !== '리조트확정' ? `<button class="btn-action-received" onclick="handleAutoConfirm('${res.id}')">입금확인</button>` : ''}
+                    <button class="btn-action-outline" onclick="showDetail('${res.id}')">상세</button>
+                `;
+            }
+
+            tr.innerHTML = `<td><input type="checkbox"></td><td style="color:#bbb;">${filtered.length - index}</td><td style="font-weight:700;">${res.reservationNumber || '-'}</td><td><div style="font-size:12px; color:#888;">이름(한글) | <b style="color:#111; font-size:14px;">${res.customerKorName || '미입력'}</b><br>이름(영문) | <b style="color:#111; font-size:14px;">${res.engName || '-'}</b></div></td><td style="font-weight:600;">${itemsText}</td><td style="font-weight:800;">₩ ${(res.totalPrice || 0).toLocaleString()}</td><td style="color:#888;">${res.createdAt?.toDate ? res.createdAt.toDate().toLocaleDateString() : '-'}</td><td style="text-align:center;"><span class="n-badge ${status === '예약확정' || status === '리조트확정' ? 'badge-green' : (status === '견적' || status === '견적완료' ? 'badge-blue' : 'badge-yellow')}">${status}</span></td><td><div style="display:flex; gap:5px;">${actionButtons}</div></td>`;
             tableBody.appendChild(tr);
         });
     }
     document.getElementById('header-global-search').oninput = renderTable;
 
     window.handleAutoConfirm = async (id) => { if (confirm("예약확정 처리를 진행합니까?")) await updateDoc(doc(db, "reservations", id), { status: "예약확정" }); };
+    window.handleResortQuoteComplete = async (id) => { if (confirm("견적완료 처리를 진행합니까?")) await updateDoc(doc(db, "reservations", id), { status: "견적완료" }); };
+    window.handleResortConfirm = async (id) => {
+        const amount = prompt("입금 금액을 입력해 주세요 (숫자만)");
+        if (amount !== null) {
+            const price = parseInt(amount.replace(/[^0-9]/g, '')) || 0;
+            if (confirm(`입금 금액 ₩ ${price.toLocaleString()}으로 예약 확정 처리하시겠습니까?`)) {
+                await updateDoc(doc(db, "reservations", id), { 
+                    status: "리조트확정",
+                    totalPrice: price
+                });
+                alert("리조트 예약이 확정되었습니다.");
+            }
+        }
+    };
     window.handleDeleteReservation = async (id) => { if (confirm("영구 삭제하시겠습니까?")) await deleteDoc(doc(db, "reservations", id)); };
 
     window.showDetail = (id) => {
@@ -183,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!res) return;
         const modal = document.getElementById('res-detail-modal');
         const body = document.getElementById('modal-body');
-        const isQuote = res.status === '견적';
+        const isQuote = res.status === '견적' || res.status === '견적완료';
         const totalVoucherBtn = isQuote ? '' : `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;"><button onclick="copyCombinedVoucherLink('${res.contact}')" style="padding:12px; background:#00c73c; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;"><span class="material-icons" style="font-size:18px;">people</span> 고객 통합 링크 복사</button><button onclick="copyVoucherLink('${res.id}', null)" style="padding:12px; background:#ff6a00; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;"><span class="material-icons" style="font-size:18px;">share</span> 주문 일정 링크 복사</button></div><p style="font-size:11px; color:#888; margin-top:-10px; margin-bottom:15px; text-align:center;">* 통합 링크는 해당 연락처의 <b>현재/미래의 모든 '확정' 예약</b>을 합쳐서 보여줍니다.</p>`;
         const itemsHtml = res.items.map((item, idx) => {
             let dateStr = item.date || '-';

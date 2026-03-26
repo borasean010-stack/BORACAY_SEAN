@@ -7,7 +7,17 @@
       "**/node_modules/**"
     ],
     "cleanUrls": true,
-    "trailingSlash": false
+    "trailingSlash": false,
+    "rewrites": [
+      { "source": "/activities", "destination": "/activities.html" },
+      { "source": "/massage", "destination": "/massage.html" },
+      { "source": "/essential-tours", "destination": "/essential-tours.html" },
+      { "source": "/price-list", "destination": "/price-list.html" },
+      { "source": "/resort-quote", "destination": "/resort-quote.html" },
+      { "source": "/cart", "destination": "/cart.html" },
+      { "source": "/mypage", "destination": "/mypage.html" },
+      { "source": "/about-us", "destination": "/about-us.html" }
+    ]
   },
   "functions": [
     {

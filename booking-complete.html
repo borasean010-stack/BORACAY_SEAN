@@ -112,13 +112,13 @@
         <div class="side-close" id="sideClose">✕</div>
     </div>
     <div class="side-menu-list">
-        <a href="essential-tours.html">보라카이 필수투어</a>
-        <a href="activities.html">액티비티</a>
-        <a href="massage.html">마사지</a>
-        <a href="price-list.html">한눈에 요금표</a>
-        <a href="resort-quote.html">리조트 견적</a>
-        <a href="cart.html">장바구니</a>
-        <a href="mypage.html" style="margin-top:20px; font-size:14px; opacity:0.6;">마이페이지 (예약확인)</a>
+        <a href="/essential-tours">보라카이 필수투어</a>
+        <a href="/activities">액티비티</a>
+        <a href="/massage">마사지</a>
+        <a href="/price-list">한눈에 요금표</a>
+        <a href="/resort-quote">리조트 견적</a>
+        <a href="/cart">장바구니</a>
+        <a href="/mypage" style="margin-top:20px; font-size:14px; opacity:0.6;">마이페이지 (예약확인)</a>
     </div>
 </div>
 
@@ -126,18 +126,18 @@
     <div class="header-left">
         <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
         <div class="logo">
-            <a href="index.html">
+            <a href="/">
                 <img src="logo.png" class="logo-img" alt="로고"><span class="logo-text">BORACAY SEAN</span></a>
         </div>
     </div>
 
     <div class="menu pc-only">
-        <a href="essential-tours.html" class="tab-link" data-category="essential">보라카이 필수투어</a>
-        <a href="activities.html" class="tab-link" data-category="activity">액티비티</a>
-        <a href="massage.html" class="tab-link" data-category="massage">마사지</a>
-        <a href="price-list.html" class="tab-link">한눈에 요금표</a>
-        <a href="resort-quote.html" class="tab-link">리조트 견적</a>
-        <a href="cart.html" class="tab-link">장바구니</a>
+        <a href="/essential-tours" class="tab-link" data-category="essential">보라카이 필수투어</a>
+        <a href="/activities" class="tab-link" data-category="activity">액티비티</a>
+        <a href="/massage" class="tab-link" data-category="massage">마사지</a>
+        <a href="/price-list" class="tab-link">한눈에 요금표</a>
+        <a href="/resort-quote" class="tab-link">리조트 견적</a>
+        <a href="/cart" class="tab-link">장바구니</a>
     </div>
 
     <div class="header-right">
@@ -188,7 +188,7 @@
             <a href="http://pf.kakao.com/_zBArM/chat" target="_blank" class="kakao-confirm-btn" id="kakao-btn">
                 입금 확인 요청하기
             </a>
-            <a href="index.html" class="home-btn">홈으로 돌아가기</a>
+            <a href="/" class="home-btn">홈으로 돌아가기</a>
         </div>
 
         <div class="notice-box" id="notice-box">
@@ -239,11 +239,13 @@
                 const isQuote = lastBooking.status === '견적';
                 if (isQuote) {
                     document.getElementById('complete-title').innerText = '견적 신청 완료!';
-                    document.getElementById('complete-msg').innerHTML = '성공적으로 리조트 견적 신청이 접수되었습니다.<br>상담원 확인 후 상세 견적을 안내해 드립니다.';
+                    document.getElementById('complete-msg').innerHTML = `성공적으로 리조트 견적 신청이 접수되었습니다 😊<br><br>
+                        <b>보라카이션 카카오채널</b>로 <b>대표자 한글 성함</b>을 보내주셔야<br>
+                        정확한 <b>견적 금액 안내</b>가 가능합니다.`;
                     document.getElementById('bank-info').style.display = 'none';
                     document.getElementById('total-price-row').style.display = 'none'; // 신청 총액 숨김
                     document.getElementById('kakao-btn').innerText = '카카오톡 견적 상담하기';
-                    document.getElementById('notice-box').innerHTML = '* 버튼 클릭 시 보라카이션 카카오톡 채널로 연결됩니다.<br>* 상담원에게 성함을 말씀해 주시면 빠른 견적 안내가 가능합니다.';
+                    document.getElementById('notice-box').innerHTML = '* 버튼 클릭 시 보라카이션 카카오톡 채널로 연결됩니다.<br><span class="strong-notice">※ 반드시 카카오채널로 연락을 주셔야지 견적 확인 및 안내가 가능합니다.</span>';
                 }
             }
         } catch(e) {

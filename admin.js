@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let allReservations = [];
     let activeTab = 'new'; 
+    let currentScheduleFilter = 'all';
 
     if (sessionStorage.getItem('isAdminLoggedIn') === 'true') { showAdminPanel(); }
     
@@ -57,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         onSnapshot(q, (snapshot) => {
             allReservations = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             updateSummaryCounts();
-            renderTodaySchedule();
+            renderSchedule();
             renderTable();
         });
     }
@@ -76,39 +77,75 @@ document.addEventListener('DOMContentLoaded', () => {
         if (rcCount) rcCount.innerText = counts.resortConfirmed;
     }
 
-    function renderTodaySchedule() {
-        const container = document.getElementById('schedule-timeline');
-        if (!container) return;
+    function renderSchedule() {
+        const todayContainer = document.getElementById('today-timeline');
+        const tomorrowContainer = document.getElementById('tomorrow-timeline');
+        if (!todayContainer || !tomorrowContainer) return;
+
         const now = new Date();
         const offset = now.getTimezoneOffset() * 60000;
         const today = new Date(now.getTime() - offset).toISOString().split('T')[0];
-        let todayItems = [];
-        allReservations.forEach(res => {
-            if (res.items) {
-                res.items.forEach(item => {
-                    if (item.date === today && !item.name.includes('픽업샌딩')) {
-                        todayItems.push({ time: item.time || "09:00", name: item.name, customer: res.customerKorName, count: item.count, status: res.status, id: res.id });
-                    }
-                });
+        const tomorrow = new Date(now.getTime() - offset + 86400000).toISOString().split('T')[0];
+
+        const tLabel = document.getElementById('today-date-label');
+        const tmLabel = document.getElementById('tomorrow-date-label');
+        if (tLabel) tLabel.innerText = `(${today})`;
+        if (tmLabel) tmLabel.innerText = `(${tomorrow})`;
+
+        const getItemsForDate = (dateStr) => {
+            let items = [];
+            allReservations.forEach(res => {
+                if (res.status !== '예약확정' && res.status !== '리조트확정') return;
+
+                if (res.items) {
+                    res.items.forEach(item => {
+                        const isMatch = currentScheduleFilter === 'all' || item.name.includes(currentScheduleFilter);
+                        if (item.date === dateStr && !item.name.includes('픽업샌딩') && isMatch) {
+                            items.push({ time: item.time || "09:00", name: item.name, customer: res.customerKorName, count: item.count, status: res.status, id: res.id });
+                        }
+                    });
+                }
+                
+                const isPickupMatch = currentScheduleFilter === 'all' || currentScheduleFilter === '픽업샌딩';
+                if (res.pickupDate === dateStr && isPickupMatch) {
+                    items.push({ time: "00:00", name: `✈️ 공항 픽업 (${res.pickupFlight || '-'})`, customer: res.customerKorName, count: '-', status: res.status, id: res.id });
+                }
+                if (res.sendingDate === dateStr && isPickupMatch) {
+                    items.push({ time: "23:59", name: `✈️ 공항 샌딩 (${res.sendingFlight || '-'})`, customer: res.customerKorName, count: '-', status: res.status, id: res.id });
+                }
+            });
+            return items.sort((a, b) => a.time.localeCompare(b.time));
+        };
+
+        const renderTimeline = (container, items) => {
+            if (items.length === 0) {
+                container.innerHTML = '<div class="sc-empty">해당하는 일정이 없습니다.</div>';
+                return;
             }
-            if (res.pickupDate === today) todayItems.push({ time: "00:00", name: `✈️ 공항 픽업 (${res.pickupFlight || '-'})`, customer: res.customerKorName, count: '-', status: res.status, id: res.id });
-            if (res.sendingDate === today) todayItems.push({ time: "23:59", name: `✈️ 공항 샌딩 (${res.sendingFlight || '-'})`, customer: res.customerKorName, count: '-', status: res.status, id: res.id });
-        });
-        todayItems.sort((a, b) => a.time.localeCompare(b.time));
-        if (todayItems.length === 0) {
-            container.innerHTML = '<div class="sc-empty">오늘 예정된 일정이 없습니다.</div>';
-            return;
-        }
-        container.innerHTML = todayItems.map(item => {
-            const isConfirmed = item.status === '예약확정' || item.status === '리조트확정';
-            return `<div class="schedule-card" onclick="showDetail('${item.id}')" style="cursor:pointer; border-top-color: ${isConfirmed ? '#ff6a00' : '#ff8c00'}">
-                <div class="sc-status ${isConfirmed ? 'confirmed' : 'pending'}">${isConfirmed ? '확정' : '입금대기'}</div>
-                <div class="sc-time"><span class="material-icons">access_time</span> ${item.time}</div>
-                <div class="sc-item">${item.name}</div>
-                <div class="sc-customer"><b>${item.customer}</b> ${item.count}명</div>
-            </div>`;
-        }).join('');
+            container.innerHTML = items.map(item => {
+                const isConfirmed = item.status === '예약확정' || item.status === '리조트확정';
+                return `<div class="schedule-card" onclick="showDetail('${item.id}')" style="cursor:pointer; border-top-color: ${isConfirmed ? '#ff6a00' : '#ff8c00'}">
+                    <div class="sc-status ${isConfirmed ? 'confirmed' : 'pending'}">${isConfirmed ? '확정' : '대기'}</div>
+                    <div class="sc-time"><span class="material-icons">access_time</span> ${item.time}</div>
+                    <div class="sc-item">${item.name}</div>
+                    <div class="sc-customer"><b>${item.customer}</b> ${item.count}명</div>
+                </div>`;
+            }).join('');
+        };
+
+        renderTimeline(todayContainer, getItemsForDate(today));
+        renderTimeline(tomorrowContainer, getItemsForDate(tomorrow));
     }
+
+    window.filterSchedule = (category) => {
+        currentScheduleFilter = category;
+        document.querySelectorAll('.s-tab').forEach(btn => {
+            const btnText = btn.innerText;
+            if ((category === 'all' && btnText.includes('전체')) || btnText.includes(category)) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+        renderSchedule();
+    };
 
     window.switchAdminTab = (tab) => {
         activeTab = tab;

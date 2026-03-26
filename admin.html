@@ -82,12 +82,34 @@
 
             <div class="ss-content">
                 
-                <!-- 📅 Today's Schedule Section -->
+                <!-- 📅 Schedule Section -->
                 <div id="schedule-section" class="schedule-section">
-                    <h3 class="schedule-title"><span class="material-icons">schedule</span> Today's Schedule (시간대별 예약)</h3>
-                    <div id="schedule-timeline" class="schedule-timeline">
-                        <!-- JS renders schedule cards here -->
-                        <div class="sc-empty">데이터를 불러오는 중...</div>
+                    <h3 class="schedule-title"><span class="material-icons">calendar_today</span> Daily Schedule</h3>
+                    
+                    <!-- 🏷️ 투어 카테고리 탭 -->
+                    <div class="schedule-tabs" id="schedule-tabs">
+                        <button class="s-tab active" onclick="filterSchedule('all')">전체 일정</button>
+                        <button class="s-tab" onclick="filterSchedule('호핑')">호핑투어</button>
+                        <button class="s-tab" onclick="filterSchedule('말룸파티')">말룸파티</button>
+                        <button class="s-tab" onclick="filterSchedule('픽업샌딩')">픽업샌딩</button>
+                        <button class="s-tab" onclick="filterSchedule('마사지')">마사지</button>
+                        <button class="s-tab" onclick="filterSchedule('액티비티')">액티비티</button>
+                    </div>
+
+                    <!-- 📅 Today Section -->
+                    <div class="day-group">
+                        <div class="day-header"><span class="material-icons">event</span> 오늘 일정 <small id="today-date-label"></small></div>
+                        <div id="today-timeline" class="schedule-timeline">
+                            <div class="sc-empty">데이터를 불러오는 중...</div>
+                        </div>
+                    </div>
+
+                    <!-- 📅 Tomorrow Section -->
+                    <div class="day-group">
+                        <div class="day-header tomorrow"><span class="material-icons">event_note</span> 내일 일정 <small id="tomorrow-date-label"></small></div>
+                        <div id="tomorrow-timeline" class="schedule-timeline">
+                            <div class="sc-empty">데이터를 불러오는 중...</div>
+                        </div>
                     </div>
                 </div>
 

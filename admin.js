@@ -234,6 +234,8 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>`;
         }).join('');
         
+        const hasPickupOrSending = res.pickupDate || res.sendingDate || res.exchangeAmount;
+        
         body.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:1px solid #eee;"><h3 style="margin:0;">${isQuote ? '견적 신청 상세' : '예약 상세 정보'}</h3>${!isQuote ? `<button onclick="copyGuidance('${res.id}')" style="background:#ff6a00; color:white; border:none; padding:8px 14px; border-radius:6px; font-weight:bold;">👉 안내문 복사</button>` : ''}</div>
             <div id="modal-scroll-area" style="max-height: 60vh; overflow-y: auto;">
                 <div style="margin-bottom:25px;">${totalVoucherBtn}${itemsHtml}</div>
@@ -242,14 +244,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p style="margin:0;">이름(영문) | <b>${res.engName || '-'}</b></p>
                     <p style="margin:5px 0 0 0;">연락처 | <b>${res.contact}</b></p>
                 </div>
-                ${isQuote ? '' : `
+                ${!isQuote && hasPickupOrSending ? `
                 <div style="background:#fff5eb; padding:15px; border-radius:10px; border:1px solid #ffe8cc; margin-bottom:20px;">
                     <div style="font-weight:bold; margin-bottom:10px; color:#ff6a00;">✈️ 공항 픽업/샌딩 및 환전 정보</div>
-                    <p>픽업: ${res.pickupDate || '-'} / ${res.pickupFlight || '-'} / ${res.pickupResort || '-'}</p>
-                    <p>샌딩: ${res.sendingDate || '-'} / ${res.sendingFlight || '-'} / ${res.sendingResort || '-'}</p>
-                    <p style="margin-top:10px; padding-top:10px; border-top:1px dashed #ffd8a8;"><b>💰 환전 요청 금액:</b> <span style="font-size:16px; color:#e67e22;">${res.exchangeAmount || '요청 없음'}</span></p>
+                    ${res.pickupDate ? `<p>픽업: ${res.pickupDate} / ${res.pickupFlight || '-'} / ${res.pickupResort || '-'}</p>` : ''}
+                    ${res.sendingDate ? `<p>샌딩: ${res.sendingDate} / ${res.sendingFlight || '-'} / ${res.sendingResort || '-'}</p>` : ''}
+                    ${res.exchangeAmount ? `<p style="margin-top:10px; padding-top:10px; border-top:1px dashed #ffd8a8;"><b>💰 환전 요청 금액:</b> <span style="font-size:16px; color:#e67e22;">${res.exchangeAmount}</span></p>` : ''}
                 </div>
-                `}
+                ` : ''}
                 <div style="padding:10px; background:#f8f9fa; border-radius:6px; font-size:13px; white-space:pre-wrap;"><b>[요청사항]</b>\n${res.requests || '요청사항 없음'}</div>
             </div>
             <div style="display:flex; gap:10px; margin-top:20px; padding-top:15px; border-top:1px solid #eee;">

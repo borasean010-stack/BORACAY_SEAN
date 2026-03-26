@@ -80,10 +80,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getCategory(name) {
         if (!name) return '액티비티';
-        if (name.includes('픽업') || name.includes('샌딩') || name.includes('공항')) return '픽업샌딩';
-        if (name.includes('호핑')) return '호핑';
-        if (name.includes('말룸파티')) return '말룸파티';
-        if (name.includes('마사지') || name.includes('스파') || name.includes('SPA') || name.includes('에스파')) return '마사지';
+        const n = name.toLowerCase().trim();
+        if (n.includes('픽업') || n.includes('샌딩') || n.includes('공항')) return '픽업샌딩';
+        if (n.includes('호핑')) return '호핑';
+        if (n.includes('말룸파티')) return '말룸파티';
+        if (n.includes('마사지') || n.includes('스파') || n.includes('spa') || n.includes('에스파')) return '마사지';
         return '액티비티';
     }
 
@@ -106,23 +107,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let items = [];
         allReservations.forEach(res => {
-            if (res.status !== '예약확정' && res.status !== '리조트확정') return;
-
+            // 상태 필터 제거: '예약확정' 뿐만 아니라 '입금대기' 등 모든 상태를 스케줄에 표시
             if (res.items) {
                 res.items.forEach(item => {
                     const itemCat = getCategory(item.name);
                     const isMatch = currentScheduleFilter === 'all' || itemCat === currentScheduleFilter;
                     
-                    if (item.date === targetDate && isMatch) {
+                    if (item.date === targetDate && !item.name.includes('픽업샌딩') && isMatch) {
                         items.push({ time: item.time || "09:00", name: item.name, customer: res.customerKorName, count: item.count, status: res.status, id: res.id });
                     }
                 });
             }
             
-            // 픽업/샌딩 데이터는 별도 필드로 있는 경우 처리
             const isPickupMatch = currentScheduleFilter === 'all' || currentScheduleFilter === '픽업샌딩';
             if (res.pickupDate === targetDate && isPickupMatch) {
-                // 중복 추가 방지 (items에 이미 픽업샌딩이 있다면 패스)
                 if (!items.find(i => i.id === res.id && i.name.includes('픽업'))) {
                     items.push({ time: "00:00", name: `✈️ 공항 픽업 (${res.pickupFlight || '-'})`, customer: res.customerKorName, count: '-', status: res.status, id: res.id });
                 }
@@ -144,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
         container.innerHTML = items.map(item => {
             const isConfirmed = item.status === '예약확정' || item.status === '리조트확정';
             return `<div class="schedule-card" onclick="showDetail('${item.id}')" style="cursor:pointer; border-top-color: ${isConfirmed ? '#ff6a00' : '#ff8c00'}">
-                <div class="sc-status ${isConfirmed ? 'confirmed' : 'pending'}">${isConfirmed ? '확정' : '대기'}</div>
+                <div class="sc-status ${isConfirmed ? 'confirmed' : 'pending'}">${item.status}</div>
                 <div class="sc-time"><span class="material-icons">access_time</span> ${item.time}</div>
                 <div class="sc-item">${item.name}</div>
                 <div class="sc-customer"><b>${item.customer}</b> ${item.count}명</div>
@@ -155,7 +153,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.switchScheduleDay = (day) => {
         currentScheduleDay = day;
         document.querySelectorAll('.d-tab').forEach(btn => {
-            // Check based on the onclick attribute's text
             if (btn.getAttribute('onclick').includes(day)) btn.classList.add('active');
             else btn.classList.remove('active');
         });
@@ -165,8 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.filterSchedule = (category) => {
         currentScheduleFilter = category;
         document.querySelectorAll('.s-tab').forEach(btn => {
-            const btnText = btn.innerText.replace('✨', '').replace('#', '').trim();
-            if ((category === 'all' && btnText.includes('전체')) || btnText === category) btn.classList.add('active');
+            const onClickAttr = btn.getAttribute('onclick');
+            if ((category === 'all' && onClickAttr.includes('all')) || onClickAttr.includes(`'${category}'`)) btn.classList.add('active');
             else btn.classList.remove('active');
         });
         renderSchedule();

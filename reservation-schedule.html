@@ -211,13 +211,17 @@
                             else if (name.includes('보라스파')) mapLink = "https://maps.app.goo.gl/Z6v6vDRvxtZUKpgHA";
                             else if (name.includes('루나')) mapLink = "https://maps.app.goo.gl/Y6v6vDRvxtZUKpgHA";
                             else if (name.includes('카바얀')) mapLink = "https://maps.app.goo.gl/X6v6vDRvxtZUKpgHA";
-                            else if (name.includes('힐롯')) mapLink = "https://goo.gl/maps/d6tdF8tME3p16NtCA"; // 졸리비 인근
 
+                            const isDirectMove = ['에스파', '루나', '보라스파', '카바얀'].some(s => name.includes(s));
                             const isShuttle = ['포세이돈', '아유르베다', '마리스', '헬리오스'].some(s => name.includes(s));
-                            const meetingPlace = isShuttle ? (res.activityPickupResort || '리조트 로비 (셔틀픽업)') : (name.includes('힐롯') ? '메인로드 졸리비 앞' : `${name} 매장`);
+                            
+                            let meetingPlace = res.activityPickupResort || '리조트 로비';
+                            if (isDirectMove) meetingPlace = "매장 개별이동";
+                            else if (name.includes('힐롯')) meetingPlace = "메인로드 졸리비 앞";
+                            else if (isShuttle) meetingPlace = (res.activityPickupResort || "리조트 로비") + " (셔틀 픽업)";
 
                             return `<b>마사지 미팅 시간 / 장소: ${item.time || ''} / ${meetingPlace}</b>
-                                    ${!isShuttle && mapLink ? `<br><a href="${mapLink}" target="_blank" style="color:#ff6a00; font-size:12px; font-weight:bold;">📍 매장 위치 구글맵 확인 (클릭)</a>` : ''}<br><br>
+                                    ${isDirectMove && mapLink ? `<br><a href="${mapLink}" target="_blank" style="color:#ff6a00; font-size:12px; font-weight:bold;">📍 매장 위치 구글맵 확인 (클릭)</a>` : ''}<br><br>
                                     <div style="background:#f8f9fa; padding:12px; border-radius:10px; border:1px solid #eee; font-size:13px;">
                                         <b>★ 준비물</b><br>
                                         - 편한 복장, 매너팁 1인 100페소, 기타 개인 물품

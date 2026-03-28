@@ -243,11 +243,16 @@
                             allScheduleItems.push({
                                 date: res.sendingDate,
                                 time: "23:59",
-                                name: `✈️ 공항 샌딩 (${sendingFlight})`,
+                                name: `✈️ 공항 샌딩 (${res.sendingFlight || '-'})`,
                                 isSending: true,
                                 content: `<b>미팅 시간 / 장소: ${meetingTime}(예정) / ${res.sendingResort || res.pickupResort || '리조트 로비'}</b><br><br>
+                                          <div style="color: #d93025; font-weight: 700; background: #fff5f5; padding: 10px; border-radius: 8px; border: 1px solid #ffcfcf;">
+                                            ★지정된 장소와 시간 전에 먼저 도착하셔서 대기해 주셔야 합니다.<br>
+                                            리조트 체크아웃을 완료하고 샌딩 출발하는 시간입니다.<br>
+                                            늦어서 별도로 이동을 해야 하는 경우 추가 요금이 발생합니다.
+                                          </div><br>
                                           - 샌딩 리조트: ${res.sendingResort || res.pickupResort || '-'}`
-                            });
+                                });
                             hasCurrentTripItem = true;
                         }
                     }

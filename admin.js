@@ -286,6 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 actionButtons = `
                     ${status !== '예약확정' && status !== '리조트확정' ? `<button class="btn-action-received" onclick="handleAutoConfirm('${res.id}')"><span class="material-icons">payments</span>입금확인</button>` : ''}
                     <button class="btn-action-outline" onclick="showDetail('${res.id}')"><span class="material-icons">visibility</span>상세</button>
+                    <button class="btn-action-outline" onclick="copyCombinedVoucherLink('${res.contact}')" title="통합 바우처 복사"><span class="material-icons">content_copy</span>통합</button>
                 `;
             }
 
@@ -293,6 +294,18 @@ document.addEventListener('DOMContentLoaded', () => {
             tableBody.appendChild(tr);
         });
     }
+    
+    // --- 🎫 바우처 링크 복사 기능 ---
+    window.copyCombinedVoucherLink = (contact) => { 
+        if (!contact) { alert('연락처 정보가 없습니다.'); return; }
+        const url = `${window.location.origin}/reservation-schedule.html?contact=${encodeURIComponent(contact)}`; 
+        navigator.clipboard.writeText(url).then(() => alert('고객 통합 바우처 링크가 복사되었습니다.')); 
+    };
+
+    window.copyVoucherLink = (id, idx) => { 
+        const url = `${window.location.origin}/reservation-schedule.html?id=${id}${idx !== null ? `&itemIndex=${idx}` : ''}`; 
+        navigator.clipboard.writeText(url).then(() => alert('바우처 링크가 복사되었습니다.')); 
+    };
     document.getElementById('header-global-search').oninput = renderTable;
 
     window.handleAutoConfirm = async (id) => { if (confirm("예약확정 처리를 진행합니까?")) await updateDoc(doc(db, "reservations", id), { status: "예약확정" }); };

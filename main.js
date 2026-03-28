@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: "페어웨이 골프클럽", img: "Golf1.jpg", url: "/golf", badge: "NEW", desc: "보라카이 유일의 18홀 골프 코스에서 즐기는 환상적인 라운딩.", price: 192000 }
         ],
         massage: [
-            { title: "아유르베다 스파", img: "aspa1.jpg", url: "/aspa", desc: "분위기에 취하고 마사지에 반하는 마사지샵", price: 55000 },
+            { title: "아유르베다 스파", img: "aspa1.jpg", url: "/aspa", desc: "분위기에 취하고 마사지에 반하는 마사지샵", price: 91000 },
             { title: "에스파 (S-SPA)", img: "spa1.jpg", url: "/spa", mdBadge: true, desc: "보라카이 최초 포핸드 마사지 런칭", price: 55000 },
             { title: "포세이돈 스파", img: "poseidon1.jpg", url: "/poseidon", desc: "연예인이 운영하는 스파 모든 룸 안 개별 수영장 + 자쿠지", price: 105000 },
             { title: "마리스 스파", img: "maris1.jpg", url: "/maris", desc: "로멘틱 마리스 스파,허니문이나 커플 연인들에게 인기만점", price: 91000 },

@@ -334,7 +334,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalVoucherBtn = isQuote ? '' : `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;"><button onclick="copyCombinedVoucherLink('${res.contact}')" style="padding:12px; background:#00c73c; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;"><span class="material-icons" style="font-size:18px;">people</span> 고객 통합 링크 복사</button><button onclick="copyVoucherLink('${res.id}', null)" style="padding:12px; background:#ff6a00; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;"><span class="material-icons" style="font-size:18px;">share</span> 주문 일정 링크 복사</button></div><p style="font-size:11px; color:#888; margin-top:-10px; margin-bottom:15px; text-align:center;">* 통합 링크는 해당 연락처의 <b>현재/미래의 모든 '확정' 예약</b>을 합쳐서 보여줍니다.</p>`;
         const itemsHtml = res.items.map((item, idx) => {
             let dateStr = item.date || '-';
-            if (item.name.includes('리조트') && item.details && typeof item.details === 'object' && item.details.checkin) {
+            // ✈️ 픽업샌딩 날짜 처리
+            if (item.name.includes('픽업샌딩')) {
+                const pDate = item.pickupDate || res.pickupDate || '-';
+                const sDate = item.sendingDate || res.sendingDate || '-';
+                dateStr = `${pDate} ~ ${sDate}`;
+            }
+            // 🏨 리조트 날짜 처리
+            else if (item.name.includes('리조트') && item.details && typeof item.details === 'object' && item.details.checkin) {
                 dateStr = `${item.details.checkin} ~ ${item.details.checkout}`;
             }
             return `<div style="padding:12px; background:#f8f9fa; border:1px solid #eee; border-radius:8px; margin-bottom:8px;">

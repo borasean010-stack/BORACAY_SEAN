@@ -79,13 +79,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getCategory(name) {
-        if (!name) return '액티비티';
+        if (!name) return '말룸파티';
         const n = name.toLowerCase().trim();
-        if (n.includes('픽업') || n.includes('샌딩') || n.includes('공항')) return '픽업샌딩';
+        if (n.includes('공항 픽업') || n === '픽업') return '픽업';
+        if (n.includes('공항 샌딩') || n === '샌딩') return '샌딩';
+        if (n.includes('픽업') && !n.includes('샌딩')) return '픽업';
+        if (n.includes('샌딩')) return '샌딩';
         if (n.includes('호핑')) return '호핑';
-        if (n.includes('말룸파티')) return '말룸파티';
-        if (n.includes('마사지') || n.includes('스파') || n.includes('spa') || n.includes('에스파')) return '마사지';
-        return '액티비티';
+        if (n.includes('말룸파티') || n.includes('마사지') || n.includes('스파') || n.includes('spa') || n.includes('에스파') || n.includes('액티비티')) return '말룸파티';
+        return '말룸파티';
     }
 
     function renderSchedule() {
@@ -107,27 +109,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let items = [];
         allReservations.forEach(res => {
-            // 상태 필터 제거: '예약확정' 뿐만 아니라 '입금대기' 등 모든 상태를 스케줄에 표시
             if (res.items) {
                 res.items.forEach(item => {
                     const itemCat = getCategory(item.name);
                     const isMatch = currentScheduleFilter === 'all' || itemCat === currentScheduleFilter;
                     
-                    if (item.date === targetDate && !item.name.includes('픽업샌딩') && isMatch) {
-                        items.push({ time: item.time || "09:00", name: item.name, customer: res.customerKorName, count: item.count, status: res.status, id: res.id });
+                    if (item.date === targetDate && !item.name.includes('픽업') && !item.name.includes('샌딩') && isMatch) {
+                        items.push({ 
+                            time: item.time || "09:00", 
+                            name: item.name, 
+                            customer: res.customerKorName, 
+                            count: item.count, 
+                            status: res.status, 
+                            id: res.id,
+                            resort: res.activityPickupResort || res.pickupResort || "-",
+                            flight: "-"
+                        });
                     }
                 });
             }
             
-            const isPickupMatch = currentScheduleFilter === 'all' || currentScheduleFilter === '픽업샌딩';
+            const isPickupMatch = currentScheduleFilter === 'all' || currentScheduleFilter === '픽업';
             if (res.pickupDate === targetDate && isPickupMatch) {
                 if (!items.find(i => i.id === res.id && i.name.includes('픽업'))) {
-                    items.push({ time: "00:00", name: `✈️ 공항 픽업 (${res.pickupFlight || '-'})`, customer: res.customerKorName, count: '-', status: res.status, id: res.id });
+                    items.push({ 
+                        time: res.pickupTime || "00:00", 
+                        name: `✈️ 공항 픽업`, 
+                        customer: res.customerKorName, 
+                        count: res.items && res.items[0] ? res.items[0].count : "-", 
+                        status: res.status, 
+                        id: res.id,
+                        flight: res.pickupFlight || "-",
+                        resort: res.pickupResort || "-"
+                    });
                 }
             }
-            if (res.sendingDate === targetDate && isPickupMatch) {
+            
+            const isSendingMatch = currentScheduleFilter === 'all' || currentScheduleFilter === '샌딩';
+            if (res.sendingDate === targetDate && isSendingMatch) {
                 if (!items.find(i => i.id === res.id && i.name.includes('샌딩'))) {
-                    items.push({ time: "23:59", name: `✈️ 공항 샌딩 (${res.sendingFlight || '-'})`, customer: res.customerKorName, count: '-', status: res.status, id: res.id });
+                    items.push({ 
+                        time: res.sendingTime || "23:59", 
+                        name: `✈️ 공항 샌딩`, 
+                        customer: res.customerKorName, 
+                        count: res.items && res.items[0] ? res.items[0].count : "-", 
+                        status: res.status, 
+                        id: res.id,
+                        flight: res.sendingFlight || "-",
+                        resort: res.sendingResort || "-"
+                    });
                 }
             }
         });
@@ -145,7 +175,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="sc-status ${isConfirmed ? 'confirmed' : 'pending'}">${item.status}</div>
                 <div class="sc-time"><span class="material-icons">access_time</span> ${item.time}</div>
                 <div class="sc-item">${item.name}</div>
-                <div class="sc-customer"><b>${item.customer}</b> ${item.count}명</div>
+                <div class="sc-info">
+                    <div class="sc-customer"><b>${item.customer}</b> ${item.count}명</div>
+                    ${item.flight !== '-' ? `<div class="sc-flight"><span class="material-icons">flight</span> ${item.flight}</div>` : ''}
+                    ${item.resort !== '-' ? `<div class="sc-resort"><span class="material-icons">hotel</span> ${item.resort}</div>` : ''}
+                </div>
             </div>`;
         }).join('');
     }
@@ -341,8 +375,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div style="margin-bottom:10px;"><label style="font-size:11px; color:#999;">연락처</label><input type="text" id="edit-contact" value="${res.contact}"></div>
                     <div style="margin-bottom:10px;"><label style="font-size:11px; color:#999; font-weight:bold; color:#ff6a00;">💰 환전 요청 금액</label><input type="text" id="edit-exchange" value="${res.exchangeAmount || ''}" placeholder="예: $200" style="background:#fff5eb; border-color:#ffd8a8;"></div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
-                        <div><label style="font-size:11px; color:#999;">픽업일/항공</label><input type="text" id="edit-p-date" value="${res.pickupDate || ''}"><input type="text" id="edit-p-flight" value="${res.pickupFlight || ''}"></div>
-                        <div><label style="font-size:11px; color:#999;">샌딩일/항공</label><input type="text" id="edit-s-date" value="${res.sendingDate || ''}"><input type="text" id="edit-s-flight" value="${res.sendingFlight || ''}"></div>
+                        <div><label style="font-size:11px; color:#999;">픽업일/시간/항공</label>
+                            <input type="text" id="edit-p-date" value="${res.pickupDate || ''}">
+                            <input type="text" id="edit-p-time" value="${res.pickupTime || ''}" placeholder="시간 (예: 08:30)">
+                            <input type="text" id="edit-p-flight" value="${res.pickupFlight || ''}">
+                        </div>
+                        <div><label style="font-size:11px; color:#999;">샌딩일/시간/항공</label>
+                            <input type="text" id="edit-s-date" value="${res.sendingDate || ''}">
+                            <input type="text" id="edit-s-time" value="${res.sendingTime || ''}" placeholder="시간 (예: 20:00)">
+                            <input type="text" id="edit-s-flight" value="${res.sendingFlight || ''}">
+                        </div>
                     </div>
                     <div style="margin-bottom:10px;"><label style="font-size:11px; color:#999;">리조트 (픽업/샌딩)</label><input type="text" id="edit-resort" value="${res.pickupResort || ''}"><input type="text" id="edit-sending-resort" value="${res.sendingResort || ''}"></div>
                     <div style="margin-bottom:10px;"><label style="font-size:11px; color:#999;">총 결제 금액 (원)</label><input type="number" id="edit-total" value="${res.totalPrice}"></div>
@@ -356,7 +398,23 @@ document.addEventListener('DOMContentLoaded', () => {
     async function handleSaveEdit(id) {
         const itemRows = document.querySelectorAll('.edit-item-row');
         const updatedItems = Array.from(itemRows).map(row => ({ name: row.querySelector('.edit-item-name').value, date: row.querySelector('.edit-item-date').value, time: row.querySelector('.edit-item-time').value, count: parseInt(row.querySelector('.edit-item-count').value) || 0, details: row.querySelector('.edit-item-details').value }));
-        const newData = { items: updatedItems, customerKorName: document.getElementById('edit-name').value, engName: document.getElementById('edit-eng-name').value, contact: document.getElementById('edit-contact').value, exchangeAmount: document.getElementById('edit-exchange').value, pickupDate: document.getElementById('edit-p-date').value, pickupFlight: document.getElementById('edit-p-flight').value, sendingDate: document.getElementById('edit-s-date').value, sendingFlight: document.getElementById('edit-s-flight').value, pickupResort: document.getElementById('edit-resort').value, sendingResort: document.getElementById('edit-sending-resort').value, totalPrice: parseInt(document.getElementById('edit-total').value) || 0, requests: document.getElementById('edit-requests').value };
+        const newData = { 
+            items: updatedItems, 
+            customerKorName: document.getElementById('edit-name').value, 
+            engName: document.getElementById('edit-eng-name').value, 
+            contact: document.getElementById('edit-contact').value, 
+            exchangeAmount: document.getElementById('edit-exchange').value, 
+            pickupDate: document.getElementById('edit-p-date').value, 
+            pickupTime: document.getElementById('edit-p-time').value,
+            pickupFlight: document.getElementById('edit-p-flight').value, 
+            sendingDate: document.getElementById('edit-s-date').value, 
+            sendingTime: document.getElementById('edit-s-time').value,
+            sendingFlight: document.getElementById('edit-s-flight').value, 
+            pickupResort: document.getElementById('edit-resort').value, 
+            sendingResort: document.getElementById('edit-sending-resort').value, 
+            totalPrice: parseInt(document.getElementById('edit-total').value) || 0, 
+            requests: document.getElementById('edit-requests').value 
+        };
         if (confirm("저장하시겠습니까?")) { await updateDoc(doc(db, "reservations", id), newData); alert("저장되었습니다."); closeModal(); }
     }
 

@@ -217,7 +217,6 @@
                             
                             let meetingPlace = res.activityPickupResort || '리조트 로비';
                             if (isDirectMove) meetingPlace = "매장 개별이동";
-                            else if (name.includes('힐롯')) meetingPlace = "메인로드 졸리비 앞";
                             else if (isShuttle) meetingPlace = (res.activityPickupResort || "리조트 로비") + " (셔틀 픽업)";
 
                             return `<b>마사지 미팅 시간 / 장소: ${item.time || ''} / ${meetingPlace}</b>

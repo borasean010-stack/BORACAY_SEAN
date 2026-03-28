@@ -136,7 +136,7 @@
                 const mainRes = reservations[0];
                 document.getElementById('guest-name').textContent = mainRes.customerKorName;
                 document.getElementById('guest-contact').textContent = mainRes.contact || '정보 없음';
-                document.getElementById('res-id').textContent = '고객 통합 일정표';
+                document.getElementById('res-id').textContent = mainRes.reservationNumber || resId;
                 
                 const listContainer = document.getElementById('item-list');
                 let allScheduleItems = [];
@@ -163,7 +163,7 @@
                         } 
                         else if (name.includes('말룸파티')) {
                             if (isSending) {
-                                const meetingTime = res.sendingTime || ((res.sendingFlight && res.sendingFlight.toUpperCase() === 'TW126') ? '08:30' : '09:00');
+                                const meetingTime = res.sendingTime || '08:30';
                                 return `<b>미팅 시간 / 장소: ${meetingTime} / ${res.activityPickupResort || res.pickupResort || '리조트 로비'}</b><br><br>
                                         - 미리 체크아웃과 룸체크를 완료해 주세요.<br>
                                         - 준비물: 수영복, 매너팁(1인 100페소), 튜빙비용(350페소), 공항세(900페소)`;
@@ -199,7 +199,7 @@
                         if (shouldShowPickup && (isCurrentTrip || isRecentActivity)) {
                             allScheduleItems.push({
                                 date: res.pickupDate,
-                                time: "00:00",
+                                time: res.pickupTime || "00:00",
                                 name: `✈️ 공항 픽업 (${res.pickupFlight || '-'})`,
                                 isPickup: true,
                                 content: `<b>미팅 장소: 칼리보 공항 밖 피켓 대기</b><br><br>
@@ -238,7 +238,7 @@
                         
                         if (shouldShowSending && (isCurrentTrip || isRecentActivity)) {
                             const sendingFlight = res.sendingFlight || '';
-                            const meetingTime = res.sendingTime || ((sendingFlight.toUpperCase() === 'TW126') ? '08:30' : '09:00');
+                            const meetingTime = res.sendingTime || '08:30';
                             allScheduleItems.push({
                                 date: res.sendingDate,
                                 time: "23:59",

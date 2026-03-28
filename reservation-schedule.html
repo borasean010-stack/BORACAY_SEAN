@@ -14,24 +14,24 @@
     <style>
         body { font-family: 'Pretendard', sans-serif; background: #f0f2f5; margin: 0; padding: 40px 20px; color: #333; line-height: 1.6; }
         .voucher-container { max-width: 800px; margin: 0 auto; background: #fff; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.1); }
-        .voucher-header { background: #111; color: #fff; padding: 40px; text-align: center; }
+        .voucher-header { background: #ff6a00; color: #fff; padding: 40px; text-align: center; }
         .voucher-header img { width: 80px; margin-bottom: 15px; }
         .voucher-header h1 { margin: 0; font-size: 28px; font-weight: 900; letter-spacing: 2px; }
         .voucher-header p { margin: 10px 0 0 0; opacity: 0.6; font-size: 14px; }
         
         .voucher-body { padding: 40px; }
-        .section-title { font-size: 18px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; color: #00c73c; }
-        .section-title::before { content: ''; width: 4px; height: 18px; background: #00c73c; border-radius: 2px; }
+        .section-title { font-size: 18px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; color: #ff6a00; }
+        .section-title::before { content: ''; width: 4px; height: 18px; background: #ff6a00; border-radius: 2px; }
         
         .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; background: #f9fafb; padding: 25px; border-radius: 20px; margin-bottom: 40px; }
         .info-item label { display: block; font-size: 12px; color: #888; margin-bottom: 5px; font-weight: 600; }
         .info-item span { display: block; font-size: 16px; font-weight: 700; color: #111; }
         
         .item-card { border: 1px solid #eee; border-radius: 20px; padding: 25px; margin-bottom: 20px; transition: 0.3s; }
-        .item-card:hover { border-color: #00c73c; box-shadow: 0 10px 30px rgba(0,199,60,0.05); }
+        .item-card:hover { border-color: #ff6a00; box-shadow: 0 10px 30px rgba(255,106,0,0.05); }
         .item-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
         .item-name { font-size: 18px; font-weight: 800; color: #111; }
-        .item-status { background: #e6f9ed; color: #00c73c; font-size: 12px; font-weight: 800; padding: 6px 12px; border-radius: 50px; }
+        .item-status { background: #fff5eb; color: #ff6a00; font-size: 12px; font-weight: 800; padding: 6px 12px; border-radius: 50px; }
         
         .item-details { display: flex; flex-wrap: wrap; gap: 20px; }
         .detail-point { font-size: 14px; color: #666; display: flex; align-items: center; gap: 8px; }
@@ -41,8 +41,8 @@
         .notice-box h4 { margin: 0 0 10px 0; font-size: 15px; font-weight: 800; color: #856404; }
         .notice-box ul { margin: 0; padding-left: 20px; font-size: 13px; color: #856404; }
         
-        .print-btn { position: fixed; bottom: 30px; right: 30px; background: #00c73c; color: #fff; border: none; padding: 15px 30px; border-radius: 50px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 30px rgba(0,199,60,0.3); transition: 0.3s; }
-        .print-btn:hover { transform: translateY(-5px); background: #00b035; }
+        .print-btn { position: fixed; bottom: 30px; right: 30px; background: #ff6a00; color: #fff; border: none; padding: 15px 30px; border-radius: 50px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 30px rgba(255,106,0,0.3); transition: 0.3s; }
+        .print-btn:hover { transform: translateY(-5px); background: #e65c00; }
 
         @media print { .print-btn { display: none; } body { padding: 0; background: #fff; } .voucher-container { box-shadow: none; border-radius: 0; } }
     </style>

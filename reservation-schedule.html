@@ -197,10 +197,11 @@
                         
                         // (이번 여행 중이거나) OR (최근 15일 이내의 기록인 경우) 표시
                         if (shouldShowPickup && (isCurrentTrip || isRecentActivity)) {
+                            const pickupFlight = (res.pickupFlight || "-").toUpperCase();
                             allScheduleItems.push({
                                 date: res.pickupDate,
                                 time: res.pickupTime || "00:00",
-                                name: `✈️ 공항 픽업 (${res.pickupFlight || '-'})`,
+                                name: `✈️ 공항 픽업 (${pickupFlight})`,
                                 isPickup: true,
                                 content: `<b>미팅 장소: 칼리보 공항 밖 피켓 대기</b><br><br>
                                           - 보라카이션 피켓을 든 직원을 찾아주세요.<br>
@@ -237,12 +238,12 @@
                         const shouldShowSending = !isIndividualView || selectedItemName.includes('샌딩');
                         
                         if (shouldShowSending && (isCurrentTrip || isRecentActivity)) {
-                            const sendingFlight = res.sendingFlight || '';
+                            const sendingFlight = (res.sendingFlight || '-').toUpperCase();
                             const meetingTime = res.sendingTime || '08:30';
                             allScheduleItems.push({
                                 date: res.sendingDate,
                                 time: "23:59",
-                                name: `✈️ 공항 샌딩 (${sendingFlight || '-'})`,
+                                name: `✈️ 공항 샌딩 (${sendingFlight})`,
                                 isSending: true,
                                 content: `<b>미팅 시간 / 장소: ${meetingTime}(예정) / ${res.sendingResort || res.pickupResort || '리조트 로비'}</b><br><br>
                                           - 샌딩 리조트: ${res.sendingResort || res.pickupResort || '-'}`

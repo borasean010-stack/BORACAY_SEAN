@@ -447,6 +447,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.copyCombinedVoucherLink = (contact) => { const url = `${window.location.origin}/reservation-schedule.html?contact=${encodeURIComponent(contact)}`; navigator.clipboard.writeText(url).then(() => alert('고객 통합 바우처 링크가 복사되었습니다. (현재/미래 일정만 포함)')); };
     window.copyVoucherLink = (id, idx) => { const url = `${window.location.origin}/reservation-schedule.html?id=${id}${idx !== null ? `&itemIndex=${idx}` : ''}`; navigator.clipboard.writeText(url).then(() => alert('바우처 링크가 복사되었습니다.')); };
-    window.copyGuidance = (id) => { const res = allReservations.find(r => r.id === id); if (!res) return; let messages = res.items.map(item => `[${item.name}]\n이용일: ${item.date} ${item.time || ''}\n인원: ${item.count}명\n안내: 미팅 10분 전까지 약속 장소에 도착해 주세요.`); navigator.clipboard.writeText(messages.join('\n\n---\n\n')).then(() => alert('안내문이 복사되었습니다.')); };
+    window.copyGuidance = (id) => {
+        const res = allReservations.find(r => r.id === id);
+        if (!res) return;
+        
+        let message = `[보라카이션 예약 안내]\n\n`;
+        message += `● 예약자명: ${res.customerKorName}님\n`;
+        message += `● 예약번호: ${res.reservationNumber || '-'}\n\n`;
+        
+        res.items.forEach((item, idx) => {
+            let dateStr = item.date || '-';
+            if (item.name.includes('리조트') && item.details && typeof item.details === 'object' && item.details.checkin) {
+                dateStr = `${item.details.checkin} ~ ${item.details.checkout}`;
+            } else if (item.name.includes('픽업샌딩')) {
+                dateStr = `${res.pickupDate || '-'} ~ ${res.sendingDate || '-'}`;
+            }
+            
+            message += `${idx + 1}. ${item.name}\n`;
+            message += `- 이용일: ${dateStr}\n`;
+            message += `- 인원: ${item.count}명\n`;
+            if (item.time) message += `- 미팅시간: ${item.time}\n`;
+            message += `\n`;
+        });
+        
+        if (res.pickupFlight || res.sendingFlight) {
+            message += `[항공 정보]\n`;
+            if (res.pickupFlight) message += `- 입국: ${res.pickupFlight.toUpperCase()}\n`;
+            if (res.sendingFlight) message += `- 출국: ${res.sendingFlight.toUpperCase()}\n\n`;
+        }
+        
+        message += `★ 미팅 10분 전까지 약속 장소에 도착해 주세요.\n`;
+        message += `★ 세부 내용은 보내드린 일정표 링크를 확인해 주세요.`;
+
+        navigator.clipboard.writeText(message).then(() => alert('안내문이 복사되었습니다.'));
+    };
     window.closeModal = () => document.getElementById('res-detail-modal').style.display = 'none';
 });

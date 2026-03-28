@@ -30,6 +30,17 @@
             border: 1px solid #eee !important;
             padding: 10px;
             font-family: 'Pretendard', sans-serif !important;
+            width: 320px !important; /* 너비를 명시적으로 확보 */
+            max-width: 95vw !important;
+        }
+        .flatpickr-innerContainer {
+            overflow: visible !important;
+        }
+        .flatpickr-rContainer {
+            width: 100% !important;
+        }
+        .flatpickr-days {
+            width: 300px !important; /* 요일 열들이 들어갈 공간 확보 */
         }
         .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange, 
         .flatpickr-day.selected.inRange, .flatpickr-day.startRange.inRange, .flatpickr-day.endRange.inRange, 

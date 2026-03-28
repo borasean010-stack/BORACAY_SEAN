@@ -44,7 +44,25 @@
         .print-btn { position: fixed; bottom: 30px; right: 30px; background: #ff6a00; color: #fff; border: none; padding: 15px 30px; border-radius: 50px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 30px rgba(255,106,0,0.3); transition: 0.3s; }
         .print-btn:hover { transform: translateY(-5px); background: #e65c00; }
 
-        @media print { .print-btn { display: none; } body { padding: 0; background: #fff; } .voucher-container { box-shadow: none; border-radius: 0; } }
+        @media print {
+            @page { margin: 10mm; }
+            body { padding: 0; background: #fff; }
+            .print-btn { display: none; }
+            .voucher-container { box-shadow: none; border-radius: 0; max-width: 100%; width: 100%; margin: 0; }
+            .voucher-header { padding: 20px; }
+            .voucher-header img { width: 50px; }
+            .voucher-header h1 { font-size: 20px; }
+            .voucher-body { padding: 20px; }
+            .info-grid { padding: 15px; margin-bottom: 20px; gap: 10px; }
+            .info-item span { font-size: 14px; }
+            .item-card { padding: 15px; margin-bottom: 10px; page-break-inside: avoid; }
+            .item-name { font-size: 16px; }
+            .section-title { margin-bottom: 10px; font-size: 16px; }
+            .notice-box { padding: 15px; margin-top: 20px; }
+            .notice-box ul { font-size: 11px; }
+            /* 텍스트가 너무 많을 경우를 대비해 폰트 크기 미세 조정 */
+            * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
     </style>
 </head>
 <body>

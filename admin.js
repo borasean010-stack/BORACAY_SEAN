@@ -285,8 +285,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 actionButtons = `
                     ${status !== '예약확정' && status !== '리조트확정' ? `<button class="btn-action-received" onclick="handleAutoConfirm('${res.id}')"><span class="material-icons">payments</span>입금확인</button>` : ''}
-                    <button class="btn-action-outline" onclick="showDetail('${res.id}')"><span class="material-icons">visibility</span>상세</button>
-                    <button class="btn-action-outline" onclick="copyCombinedVoucherLink('${res.contact}')" title="통합 바우처 복사"><span class="material-icons">content_copy</span>통합</button>
+                    <button class="btn-action-received" style="background:#ff6a00; border-color:#ff6a00;" onclick="showDetail('${res.id}')"><span class="material-icons">visibility</span>상세</button>
+                    <button class="btn-action-outline" onclick="copyCombinedVoucherLink('${res.contact}')" title="통합 일정표 링크 복사"><span class="material-icons">content_copy</span>일정표</button>
                 `;
             }
 

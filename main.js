@@ -92,10 +92,10 @@ document.addEventListener('DOMContentLoaded', () => {
             div.className = 'product tour-card';
             div.onclick = () => { window.location.href = p.url; };
             div.innerHTML = `
-                \${getBadgesHtml(p)}
-                <div class="img-container card-img-wrap"><img src="\${p.img}" alt="보라카이 \${p.title.replace('<br>', ' ')} - 보라카이션 자유여행" loading="lazy"></div>
+                ${getBadgesHtml(p)}
+                <div class="img-container card-img-wrap"><img src="${p.img}" alt="보라카이 ${p.title.replace('<br>', ' ')} - 보라카이션 자유여행" loading="lazy"></div>
                 <div class="card-body">
-                    <h3>\${p.title}</h3>
+                    <h3>${p.title}</h3>
                     <p style="font-size:14px; color:#777; margin-top:10px; line-height:1.5; word-break:keep-all;">${p.desc}</p>
                     <div class="price-btn"><span class="price-from">From</span><span class="price-val">₩ ${p.price.toLocaleString()}</span></div>
                 </div>
@@ -121,10 +121,10 @@ document.addEventListener('DOMContentLoaded', () => {
             div.className = 'product tour-card';
             div.onclick = () => { if (p.url && p.url !== '#') window.location.href = p.url; else alert('상세 페이지 준비 중'); };
             div.innerHTML = `
-                \${getBadgesHtml(p)}
-                <div class="img-container card-img-wrap"><img src="\${p.img}" alt="보라카이 \${p.title.replace('<br>', ' ')} - 보라카이션 자유여행" loading="lazy"></div>
+                ${getBadgesHtml(p)}
+                <div class="img-container card-img-wrap"><img src="${p.img}" alt="보라카이 ${p.title.replace('<br>', ' ')} - 보라카이션 자유여행" loading="lazy"></div>
                 <div class="card-body">
-                    <h3>\${p.title}</h3>
+                    <h3>${p.title}</h3>
                     <p style="font-size:14px; color:#777; margin-top:10px; line-height:1.5; word-break:keep-all;">${p.desc || ''}</p>
                     ${p.price ? `<div class="price-btn"><span class="price-from">From</span><span class="price-val">₩ ${p.price.toLocaleString()}</span></div>` : `<div class="price-btn" style="background:#555;"><span class="price-val" style="font-size:14px;">View Details</span></div>`}
                 </div>

@@ -117,6 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (item.date === targetDate && !item.name.includes('픽업') && !item.name.includes('샌딩') && isMatch) {
                         items.push({ 
                             time: item.time || "09:00", 
+                            displayTime: item.time || "09:00",
                             name: item.name, 
                             customer: res.customerKorName, 
                             count: item.count, 
@@ -134,6 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!items.find(i => i.id === res.id && i.name.includes('픽업'))) {
                     items.push({ 
                         time: res.pickupTime || "00:00", 
+                        displayTime: res.pickupFlight || "편명미정",
                         name: `✈️ 공항 픽업`, 
                         customer: res.customerKorName, 
                         count: res.items && res.items[0] ? res.items[0].count : "-", 
@@ -150,6 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!items.find(i => i.id === res.id && i.name.includes('샌딩'))) {
                     items.push({ 
                         time: res.sendingTime || "23:59", 
+                        displayTime: res.sendingTime || "23:59",
                         name: `✈️ 공항 샌딩`, 
                         customer: res.customerKorName, 
                         count: res.items && res.items[0] ? res.items[0].count : "-", 
@@ -171,13 +174,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         container.innerHTML = items.map(item => {
             const isConfirmed = item.status === '예약확정' || item.status === '리조트확정';
+            const timeVal = item.displayTime || item.time;
             return `<div class="schedule-card" onclick="showDetail('${item.id}')" style="cursor:pointer; border-top-color: ${isConfirmed ? '#ff6a00' : '#ff8c00'}">
                 <div class="sc-status ${isConfirmed ? 'confirmed' : 'pending'}">${item.status}</div>
-                <div class="sc-time"><span class="material-icons">access_time</span> ${item.time}</div>
+                <div class="sc-time"><span class="material-icons">${item.name.includes('픽업') ? 'flight_land' : 'access_time'}</span> ${timeVal}</div>
                 <div class="sc-item">${item.name}</div>
                 <div class="sc-info">
                     <div class="sc-customer"><b>${item.customer}</b> ${item.count}명</div>
-                    ${item.flight !== '-' ? `<div class="sc-flight"><span class="material-icons">flight</span> ${item.flight}</div>` : ''}
+                    ${item.flight !== '-' && !item.name.includes('픽업') ? `<div class="sc-flight"><span class="material-icons">flight</span> ${item.flight}</div>` : ''}
                     ${item.resort !== '-' ? `<div class="sc-resort"><span class="material-icons">hotel</span> ${item.resort}</div>` : ''}
                 </div>
             </div>`;

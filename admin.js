@@ -133,15 +133,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const isPickupMatch = currentScheduleFilter === 'all' || currentScheduleFilter === '픽업';
             if (res.pickupDate === targetDate && isPickupMatch) {
                 if (!items.find(i => i.id === res.id && i.name.includes('픽업'))) {
+                    const flightNo = (res.pickupFlight || "").toUpperCase();
                     items.push({ 
                         time: res.pickupTime || "00:00", 
-                        displayTime: res.pickupFlight || "편명미정",
+                        displayTime: flightNo || "편명미정",
                         name: `✈️ 공항 픽업`, 
                         customer: res.customerKorName, 
                         count: res.items && res.items[0] ? res.items[0].count : "-", 
                         status: res.status, 
                         id: res.id,
-                        flight: res.pickupFlight || "-",
+                        flight: flightNo || "-",
                         resort: res.pickupResort || "-"
                     });
                 }
@@ -150,6 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const isSendingMatch = currentScheduleFilter === 'all' || currentScheduleFilter === '샌딩';
             if (res.sendingDate === targetDate && isSendingMatch) {
                 if (!items.find(i => i.id === res.id && i.name.includes('샌딩'))) {
+                    const flightNo = (res.sendingFlight || "").toUpperCase();
                     items.push({ 
                         time: res.sendingTime || "23:59", 
                         displayTime: res.sendingTime || "23:59",
@@ -158,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         count: res.items && res.items[0] ? res.items[0].count : "-", 
                         status: res.status, 
                         id: res.id,
-                        flight: res.sendingFlight || "-",
+                        flight: flightNo || "-",
                         resort: res.sendingResort || "-"
                     });
                 }

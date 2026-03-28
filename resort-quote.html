@@ -59,6 +59,19 @@
             color: #999 !important;
             font-weight: 700 !important;
         }
+        /* 토요일 파란색, 일요일 빨간색 강조 */
+        .flatpickr-weekday:nth-child(7n+7) { color: #007bff !important; } /* 토요일 헤더 */
+        .flatpickr-weekday:nth-child(7n+1) { color: #ff4d4f !important; } /* 일요일 헤더 */
+
+        .flatpickr-day.sat { color: #007bff !important; }
+        .flatpickr-day.sun { color: #ff4d4f !important; }
+        
+        /* 선택된 날짜나 범위 내 날짜는 흰색 유지 */
+        .flatpickr-day.selected.sat, .flatpickr-day.selected.sun,
+        .flatpickr-day.startRange.sat, .flatpickr-day.startRange.sun,
+        .flatpickr-day.endRange.sat, .flatpickr-day.endRange.sun {
+            color: #fff !important;
+        }
         .flatpickr-day:hover {
             background: #fff0e3 !important;
             border-color: transparent !important;

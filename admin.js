@@ -79,15 +79,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getCategory(name) {
-        if (!name) return '말룸파티';
+        if (!name) return '액티비티';
         const n = name.toLowerCase().trim();
         if (n.includes('공항 픽업') || n === '픽업') return '픽업';
         if (n.includes('공항 샌딩') || n === '샌딩') return '샌딩';
         if (n.includes('픽업') && !n.includes('샌딩')) return '픽업';
         if (n.includes('샌딩')) return '샌딩';
         if (n.includes('호핑')) return '호핑';
-        if (n.includes('말룸파티') || n.includes('마사지') || n.includes('스파') || n.includes('spa') || n.includes('에스파') || n.includes('액티비티')) return '말룸파티';
-        return '말룸파티';
+        if (n.includes('말룸파티')) return '말룸파티';
+        if (n.includes('마사지') || n.includes('스파') || n.includes('spa') || n.includes('에스파') || n.includes('액티비티')) return '액티비티';
+        return '액티비티';
     }
 
     function renderSchedule() {

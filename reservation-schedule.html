@@ -235,7 +235,11 @@
                                 name: `✈️ 공항 픽업 (${pickupFlight})`,
                                 isPickup: true,
                                 content: `<b>미팅 장소: 칼리보 공항 밖 피켓 대기</b><br><br>
-                                          - 보라카이션 피켓을 든 직원을 찾아주세요.<br>
+                                          <div style="background: #f0f7ff; padding: 12px; border-radius: 8px; border: 1px solid #cce5ff; font-size: 13px;">
+                                            ★ 공항 밖에서 보라카이션 픽업 직원이 <b>보라카이션 피켓</b>을 들고 대기하고 있습니다.<br>
+                                            ★ 픽업 직원과 대표자 성함 확인 후 안내에 따라 주시기 바랍니다.<br>
+                                            ★ <b>항공기가 딜레이(지연) 되어도 끝까지 기다립니다.</b> 걱정 마시고 천천히 나오세요!
+                                          </div><br>
                                           - 픽업 리조트: ${res.pickupResort || '-'}<br>
                                           ${res.exchangeAmount ? `- 💰 환전 요청: ${res.exchangeAmount}` : ''}`
                             });
@@ -275,13 +279,13 @@
                             allScheduleItems.push({
                                 date: res.sendingDate,
                                 time: "23:59",
-                                name: `✈️ 공항 샌딩 (${res.sendingFlight || '-'})`,
+                                name: `✈️ 공항 샌딩 (${sendingFlight})`,
                                 isSending: true,
                                 content: `<b>미팅 시간 / 장소: ${meetingTime}(예정) / ${res.sendingResort || res.pickupResort || '리조트 로비'}</b><br><br>
-                                          <div style="color: #d93025; font-weight: 700; background: #fff5f5; padding: 10px; border-radius: 8px; border: 1px solid #ffcfcf;">
-                                            ★지정된 장소와 시간 전에 먼저 도착하셔서 대기해 주셔야 합니다.<br>
-                                            리조트 체크아웃을 완료하고 샌딩 출발하는 시간입니다.<br>
-                                            늦어서 별도로 이동을 해야 하는 경우 추가 요금이 발생합니다.
+                                          <div style="color: #d93025; font-weight: 700; background: #fff5f5; padding: 12px; border-radius: 8px; border: 1px solid #ffcfcf; font-size: 13px;">
+                                            ★ 지정된 장소와 시간 전에 먼저 도착하셔서 대기해 주셔야 합니다.<br>
+                                            ★ <b>리조트 체크아웃을 완료하고 샌딩 출발하는 시간</b>입니다.<br>
+                                            ★ 늦어서 별도로 이동을 해야 하는 경우 추가 요금이 발생합니다.
                                           </div><br>
                                           - 샌딩 리조트: ${res.sendingResort || res.pickupResort || '-'}`
                                 });

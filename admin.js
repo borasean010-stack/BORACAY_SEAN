@@ -671,7 +671,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     let itemName = trimmed.replace(dateMatch[0], '').replace(timeMatch ? timeMatch[0] : '', '').replace(/GET\$.*|잔금.*|\$.*/g, '').trim();
                     let itemDetails = trimmed;
                     
-                    // --- 🚀 [핵심 추가] 'AFH', 'ATM', 'pick up' 분석 ---
+                    // --- 🚀 [핵심 추가] 비고란 세부 인원 합산 로직 ---
+                    let calculatedPax = 0;
+                    const pattern1 = trimmed.match(/[가-힣]+(\d+)/g);
+                    if (pattern1) { pattern1.forEach(m => { const num = m.match(/\d+/); if (num) calculatedPax += parseInt(num[0]); }); }
+                    const pattern2 = trimmed.match(/(\d+)(명|인|pax)/gi);
+                    if (pattern2) { pattern2.forEach(m => { const num = m.match(/\d+/); if (num) calculatedPax += parseInt(num[0]); }); }
+                    const pattern3 = trimmed.match(/(\d+)\s*\+\s*(\d+)/);
+                    if (pattern3) { calculatedPax = parseInt(pattern3[1]) + parseInt(pattern3[2]); }
+                    const finalItemPax = calculatedPax > 0 ? calculatedPax : totalPax;
+
+                    // --- 🚀 'AFH', 'ATM', 'pick up' 분석 ---
                     const lowerLine = trimmed.toLowerCase();
 
                     if (lowerLine.includes('afh')) {
@@ -702,7 +712,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         itemName = '보라카이 랜드투어'; itemTime = "10:30"; itemDetails = "보라카이션 오피스 미팅";
                     } else if (lowerLine.includes('sspa') || itemName.includes('에스파')) { itemName = '에스파(S-SPA)'; }
                     else if (lowerLine.includes('lunaspa') || itemName.includes('루나')) { itemName = '루나스파'; }
-                    items.push({ name: itemName, date: dateStr, time: itemTime, count: totalPax, details: itemDetails });
+                    items.push({ name: itemName, date: dateStr, time: itemTime, count: finalItemPax, details: itemDetails });
                 }
             });
         }

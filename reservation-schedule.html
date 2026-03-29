@@ -147,23 +147,28 @@
             let meetingPlace = "마사지샵 개별이동";
             let mapLink = "";
             
-            if (name.includes('에스파')) {
-                mapLink = "https://maps.app.goo.gl/QbuPCqypyURVhth38";
-                meetingPlace = "에스파 개별이동";
-            } else if (name.includes('루나')) {
-                mapLink = "https://maps.app.goo.gl/JYmbGcM6MrH5gHTBA";
-                meetingPlace = "루나스파 개별이동";
-            } else if (name.includes('보라스파')) {
-                mapLink = "https://maps.app.goo.gl/tWBfSVDzmvGgJjRU8";
-                meetingPlace = "보라스파 개별이동";
-            } else if (name.includes('카바얀')) {
-                mapLink = "https://maps.app.goo.gl/DsXg4tSonc5KsF4K6";
-                meetingPlace = "카바얀 개별이동";
-            } else if (name.includes('힐롯')) {
-                meetingPlace = (item.time || '12:30') + " / 메인로드 졸리비";
+            // --- 🚀 [핵심 추가] 비고란에서 파싱된 픽업 정보가 있으면 우선 적용 ---
+            if (item.details && (item.details.includes('픽업') || item.details.includes('이동'))) {
+                meetingPlace = item.details;
+            } else {
+                if (name.includes('에스파')) {
+                    mapLink = "https://maps.app.goo.gl/QbuPCqypyURVhth38";
+                    meetingPlace = "에스파 개별이동";
+                } else if (name.includes('루나')) {
+                    mapLink = "https://maps.app.goo.gl/JYmbGcM6MrH5gHTBA";
+                    meetingPlace = "루나스파 개별이동";
+                } else if (name.includes('보라스파')) {
+                    mapLink = "https://maps.app.goo.gl/tWBfSVDzmvGgJjRU8";
+                    meetingPlace = "보라스파 개별이동";
+                } else if (name.includes('카바얀')) {
+                    mapLink = "https://maps.app.goo.gl/DsXg4tSonc5KsF4K6";
+                    meetingPlace = "카바얀 개별이동";
+                } else if (name.includes('힐롯')) {
+                    meetingPlace = (item.time || '12:30') + " / 메인로드 졸리비";
+                }
             }
 
-            const mapBtn = mapLink ? `\n<a href="${mapLink}" class="map-btn" target="_blank">📍 샵 위치 구글맵 확인</a>` : "";
+            const mapBtn = (mapLink && !meetingPlace.includes('픽업')) ? `\n<a href="${mapLink}" class="map-btn" target="_blank">📍 샵 위치 구글맵 확인</a>` : "";
             
             return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : ${meetingPlace}</b>${mapBtn}\n\n★ 준비물\n편한 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품</div>`;
         }

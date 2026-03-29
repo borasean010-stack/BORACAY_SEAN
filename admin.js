@@ -654,7 +654,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     let itemTime = timeMatch ? `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}` : ""; // 비어있으면 빈값
                     let itemName = trimmed.replace(dateMatch[0], '').replace(timeMatch ? timeMatch[0] : '', '').replace(/GET\$.*|잔금.*|\$.*/g, '').trim();
                     let itemDetails = trimmed;
+                    
+                    // --- 🚀 [핵심 추가] 'pick up' 장소 분석 ---
                     const lowerLine = trimmed.toLowerCase();
+                    if (lowerLine.includes('pick up') || lowerLine.includes('픽업')) {
+                        if (!lowerLine.includes('no need')) {
+                            // 'pick up' 앞의 단어를 장소로 추정
+                            const pickPart = trimmed.split(/pick up|픽업/i)[0].trim();
+                            const words = pickPart.split(' ');
+                            const lastWord = words[words.length - 1].replace(/[()]/g, ''); 
+                            const translated = translateResort(lastWord);
+                            itemDetails = translated + " 픽업";
+                        } else {
+                            itemDetails = "해당 장소로 개별 이동";
+                        }
+                    }
+
                     if (lowerLine.includes('hopping')) {
                         if (lowerLine.includes('(j)')) {
                             itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; itemTime = "12:30"; itemDetails = "점보크랩 식사 포함";

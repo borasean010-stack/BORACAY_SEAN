@@ -20,6 +20,17 @@ try {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const tableBody = document.getElementById('admin-table-body');
+    const loginContainer = document.getElementById('login-container');
+    const adminContainer = document.getElementById('admin-container');
+
+    let allReservations = [];
+    let activeTab = 'new'; 
+    let currentScheduleFilter = 'all';
+    let currentScheduleDay = 'today'; // 'today' or 'tomorrow'
+
+    if (sessionStorage.getItem('isAdminLoggedIn') === 'true') { showAdminPanel(); }
+
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
         loginForm.onsubmit = (e) => {

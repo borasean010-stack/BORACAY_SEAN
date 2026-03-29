@@ -572,21 +572,42 @@ document.addEventListener('DOMContentLoaded', () => {
     window.makeQuickVoucher = async () => {
         const input = document.getElementById('quick-voucher-input').value.trim();
         if (!input) { alert('데이터를 입력해주세요.'); return; }
-        const parts = input.split(' / ');
+        
+        // 탭(\t) 또는 ' / '로 구분 지원
+        const parts = input.includes('\t') ? input.split('\t') : input.split(' / ');
         const currentYear = new Date().getFullYear();
+
+        // 리조트명 변환 매핑
+        const translateResort = (name) => {
+            const n = name.toLowerCase().replace(/\s/g, '');
+            if (n.includes('h.garden') || n.includes('헤난가든')) return "헤난 가든";
+            if (n.includes('h.lagoon') || n.includes('헤난라군')) return "헤난 라군";
+            if (n.includes('h.park') || n.includes('헤난파크')) return "헤난 파크";
+            if (n.includes('h.prime') || n.includes('헤난프라임')) return "헤난 프라임";
+            if (n.includes('h.palm') || n.includes('헤난팜')) return "헤난 팜 비치";
+            if (n.includes('h.crystal') || n.includes('헤난크리스탈')) return "헤난 크리스탈 샌즈";
+            if (n.includes('h.regency') || n.includes('헤난리젠시')) return "헤난 리젠시";
+            if (n.includes('crimson') || n.includes('크림슨')) return "크림슨";
+            if (n.includes('shangrila') || n.includes('샹그릴라')) return "샹그릴라";
+            if (n.includes('moira') || n.includes('모이라')) return "모이라";
+            return name;
+        };
 
         const checkIn = parts[0] || '';      
         const checkOut = parts[1] || '';     
         const flightIn = (parts[2] || '').toUpperCase();     
         const flightOut = (parts[3] || '').toUpperCase();    
-        const exchangeMoney = (parts[4] || '').replace(/^"|"$/g, '').replace(/\n/g, ' / '); 
-        const resortRaw = parts[5] || '';
-        const customerName = parts[6] || ''; 
-        const pax = parseInt(parts[7]) || 0; 
-        const chd = parseInt(parts[8]) || 0; 
-        const inf = parseInt(parts[9]) || 0; 
-        const agency = parts[10] || '';      
-        const remarks = (parts[11] || '').replace(/^"|"$/g, '').trim(); 
+        const exchangeMoney = (parts[24] || parts[4] || '').replace(/^"|"$/g, '').replace(/\n/g, ' / '); 
+        
+        const resortRaw = parts[9] || '';
+        const pickupResort = translateResort(resortRaw);
+
+        const customerName = parts[22] || parts[6] || ''; 
+        const pax = parseInt(parts[11]) || 0; 
+        const chd = parseInt(parts[12]) || 0; 
+        const inf = parseInt(parts[13]) || 0; 
+        const agency = parts[14] || '';      
+        const remarks = (parts[16] || '').replace(/^"|"$/g, '').trim(); 
 
         const totalPax = pax + chd + inf;
         const paxDetail = `성인 ${pax}, 아동 ${chd}, 유아 ${inf} (총 ${totalPax}명)`;
@@ -594,35 +615,103 @@ document.addEventListener('DOMContentLoaded', () => {
         const items = [];
         const flightRegex = /[A-Z]{2}\d{2,}/;
 
-        // 1. 공항 픽업 아이템 추가
+        // 1. 공항 픽업 (비행기 편명과 체크인 날짜가 있을 때)
         if (flightIn.match(flightRegex) && checkIn.includes('/')) {
             const dp = checkIn.split('/');
             const pDate = `${currentYear}-${dp[0].padStart(2,'0')}-${dp[1].trim().padStart(2,'0')}`;
             items.push({ 
                 name: `✈️ 공항 픽업 (${flightIn})`, 
                 date: pDate, time: " ", count: totalPax, 
-                details: `픽업시 리조트 : ${resortRaw}\n★공항 밖에서 보라카이션 픽업 직원이 보라카이션 피켓을 들고 대기 하고 있습니다.\n픽업 직원과 대표자 성함 확인 후 안내에 따라 주시기 바랍니다. 항공이 딜레이가 되도 기다립니다.` 
+                details: `픽업시 리조트 : ${pickupResort}\n★공항 밖에서 보라카이션 픽업 직원이 보라카이션 피켓을 들고 대기 하고 있습니다.\n픽업 직원과 대표자 성함 확인 후 안내에 따라 주시기 바랍니다. 항공이 딜레이가 되도 기다립니다.` 
             });
         }
 
-        // 2. 공항 샌딩 아이템 추가
+        // 2. 비고란(Remarks) 분석하여 개별 투어 일정 생성
+        if (remarks) {
+            const lines = remarks.split('\n');
+            lines.forEach(line => {
+                const trimmed = line.trim();
+                if (!trimmed) return;
+
+                // 날짜 추출 (M/D 형식)
+                const dateMatch = trimmed.match(/(\d{1,2})\/(\d{1,2})/);
+                if (dateMatch) {
+                    const month = dateMatch[1].padStart(2, '0');
+                    const day = dateMatch[2].padStart(2, '0');
+                    const dateStr = `${currentYear}-${month}-${day}`;
+                    
+                    // 시간 추출 (HH:MM 형식)
+                    const timeMatch = trimmed.match(/(\d{1,2}):(\d{2})/);
+                    let itemTime = timeMatch ? `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}` : "협의";
+                    
+                    // 상품명 정제
+                    let itemName = trimmed.replace(dateMatch[0], '').replace(timeMatch ? timeMatch[0] : '', '').replace(/GET\$.*|잔금.*|\$.*/g, '').trim();
+                    let itemDetails = trimmed;
+
+                    // 스마트 상품명 변환
+                    const lowerLine = trimmed.toLowerCase();
+                    if (lowerLine.includes('hopping')) {
+                        if (lowerLine.includes('(j)')) {
+                            itemName = '블랙펄 호핑투어 (+점보크랩 점심)';
+                            itemTime = "12:30";
+                            itemDetails = "점보크랩 식사 포함";
+                        } else if (lowerLine.includes('(s)')) {
+                            itemName = '블랙펄 선셋 호핑투어';
+                            itemTime = "13:30";
+                            itemDetails = "호핑투어 단독";
+                        } else {
+                            itemName = '블랙펄 요트호핑';
+                        }
+                    } else if (lowerLine.includes('land')) {
+                        itemName = '보라카이 랜드투어';
+                        itemTime = "10:30";
+                        itemDetails = "보라카이션 오피스 미팅";
+                    } else if (lowerLine.includes('sspa') || itemName.includes('에스파')) {
+                        itemName = '에스파(S-SPA)';
+                    } else if (lowerLine.includes('lunaspa') || itemName.includes('루나')) {
+                        itemName = '루나스파';
+                    } else if (lowerLine.includes('bora spa') || itemName.includes('보라스파')) {
+                        itemName = '보라스파';
+                    }
+
+                    items.push({ 
+                        name: itemName, 
+                        date: dateStr, 
+                        time: itemTime, 
+                        count: totalPax, 
+                        details: itemDetails 
+                    });
+                }
+            });
+        }
+
+        // 3. 공항 샌딩 (체크아웃 날짜가 있을 때)
         if (flightOut.match(flightRegex) && checkOut.includes('/')) {
             const dp = checkOut.split('/');
             const sDate = `${currentYear}-${dp[0].padStart(2,'0')}-${dp[1].trim().padStart(2,'0')}`;
+            // 비행기 편명에 따라 기본 시간 설정 (예: TW126은 아침샌딩 등)
+            const sTime = (flightOut === 'TW126') ? "08:30" : "21:00";
             items.push({ 
                 name: `✈️ 공항 샌딩 (${flightOut})`, 
-                date: sDate, time: "21:00", count: totalPax, 
-                details: `샌딩시 리조트 : ${resortRaw}\n*교통상황에 따라 샌딩 미팅 시간과 장소가 변경될 수있습니다\n★지정된 장소와 시간전에 먼저 도착 하셔서 대기 해주셔야 합니다.\n리조트 체크아웃을 완료하고 샌딩 출발 하는 시간 입니다.\n늦어서 별도로 이동을 해야 하는 경우 추가 요금이 발생 합니다.` 
+                date: sDate, time: sTime, count: totalPax, 
+                details: `샌딩시 리조트 : ${pickupResort}\n*교통상황에 따라 샌딩 미팅 시간과 장소가 변경될 수있습니다\n★지정된 장소와 시간전에 먼저 도착 하셔서 대기 해주셔야 합니다.\n리조트 체크아웃을 완료하고 샌딩 출발 하는 시간 입니다.\n늦어서 별도로 이동을 해야 하는 경우 추가 요금이 발생 합니다.` 
             });
         }
+
+        // 날짜 순 정렬
+        items.sort((a, b) => a.date.localeCompare(b.date) || (a.time || "00:00").localeCompare(b.time || "00:00"));
 
         const reservationData = {
             reservationNumber: 'Q' + Date.now().toString().slice(-8),
             customerKorName: customerName,
-            engName: exchangeMoney, contact: agency, 
-            pickupResort: resortRaw,
-            sendingResort: resortRaw,
-            items: items, status: '예약확정', exchangeAmount: paxDetail, createdAt: new Date()
+            engName: parts[10] || '', // 영어 이름 저장
+            contact: agency, 
+            pickupResort: pickupResort,
+            sendingResort: pickupResort,
+            items: items, 
+            status: '예약확정', 
+            exchangeAmount: paxDetail, 
+            createdAt: new Date()
         };
 
         try {

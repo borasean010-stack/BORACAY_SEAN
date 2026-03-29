@@ -481,7 +481,7 @@ document.addEventListener('DOMContentLoaded', () => {
             m += `대표자 성함 : ${res.customerKorName}\n`;
             m += `인원 : ${res.items.find(i => i.name.includes('픽업샌딩'))?.count || '-'}명\n`;
             m += `투어 : 왕복픽업샌딩\n`;
-            m += `픽업시 환전 요청 금액 : ${res.exchangeAmount || '$'}\n\n`;
+            m += `픽업시 환전 요청 금액 : ${res.engName || '$'}\n\n`;
             m += `픽업항공 : ${res.pickupDate || '-'}  ${(res.pickupFlight || '').toUpperCase()}\n`;
             m += `픽업시 리조트 : ${res.pickupResort || '-'}\n`;
             m += `★공항 밖에서 보라카이션 픽업 직원이 보라카이션 피켓을 들고 대기 하고 있습니다.\n`;
@@ -497,56 +497,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 2. 기타 상품별 폼 생성
         res.items.forEach(item => {
-            if (item.name.includes('픽업샌딩')) return; // 위에서 처리함
+            if (item.name.includes('픽업샌딩') || item.name.includes('공항 픽업') || item.name.includes('공항 샌딩')) return;
 
             let m = `${item.name} 예약 확정 안내 문자\n\n`;
             const name = item.name;
+            const details = (item.details || "").toLowerCase();
             const tourMonth = item.date ? parseInt(item.date.split('-')[1]) : new Date().getMonth() + 1;
             const isDrySeason = tourMonth <= 5 || tourMonth >= 11;
 
             m += `대표자 성함 : ${res.customerKorName}\n`;
             m += `인원 : ${item.count}\n`;
             m += `투어 : ${item.name}${item.details && typeof item.details === 'string' ? ' + ' + item.details : ''}\n`;
-            m += `투어날짜 : ${item.date}\n`;
+            m += `투어날짜 : ${item.date}\n\n`;
 
-            if (name.includes('블랙펄')) {
-                const isLunch = item.details && item.details.includes('점심');
-                const meetingTime = isLunch ? '12:30' : '13:30';
-                const meetingPlace = isLunch ? '점보크랩' : (isDrySeason ? '8 Eight by the Beach' : '블라복 비치 목샤');
-                const mapLink = isLunch ? 'https://goo.gl/maps/d6tdF8tME3p16NtCA' : (isDrySeason ? 'https://maps.app.goo.gl/Wa491bdTXuKZ2BtB8' : 'https://www.google.co.kr/maps/place/Moksha+Cafe/@11.9676741,121.9274171,21z/data=!4m6!3m5!1s0x33a53d8366366ae1:0x48910864ce8dc2e6!8m2!3d11.967602!4d121.9274642!16s%2Fg%2F11sh1khm47');
-                
-                m += `투어 미팅 시간 / 장소 : ${meetingTime} / ${meetingPlace}\n${mapLink}\n\n`;
-                if (isLunch) m += `*점보크랩은 메인로드 졸리비 바로 건너편 입니다~\n\n`;
-                else m += `-트라이씨클로 미팅장소 이동 시-\n트라이씨클 기사에게 “${meetingPlace}" 라고 꼭 말해주세요! \n내리신 후 비치로 이동하셔서 좌측편으로 미팅장소 확인 가능합니다.\n\n`;
-                
-                m += `★★ 주의 사항 및 준비물 ★★\n\n`;
-                m += `*주의 사항 - 미팅시간에서 10분이상 늦으시면 노쇼처리되며, 별도 연락없이 출항합니다. 이 경우 환불 및 일정 변경 불가하오니 꼭 미팅시간을 지켜주세요\n\n`;
-                m += `편한 물놀이 복장, 비치타올1인 1장\n스노클 마스크(보유시)\n보트맨팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품\n\n`;
-                m += `🎉 블랙펄 기념일 이벤트 안내\n호핑투어 중 생일, 결혼기념일, 프로포즈, 기념일 축하가 있으시면 저희 블랙펄에서 작게 축하 이벤트를 진행해드립니다!\n👉 해당되는 경우 미팅 전까지 카카오톡으로 알려주세요! 사전 요청 필수 / 무료 서비스`;
+            if (name.includes('호핑')) {
+                const isLunch = name.includes('점보') || name.includes('점심') || details.includes('점보') || details.includes('식사 포함');
+                if (isLunch) {
+                    m += `투어 미팅 시간 / 장소 : 12:30 / 점보크랩\nhttps://goo.gl/maps/d6tdF8tME3p16NtCA\n\n*점보크랩은 메인로드 졸리비 바로 건너편 입니다~\n\n★ 준비물\n편한 물놀이 복장, 비치타올1인 1장\n스노클 마스크(보유시)\n보트맨팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품`;
+                } else {
+                    const meetingPlace = isDrySeason ? '8 Eight by the Beach' : '블라복 비치 목샤';
+                    const mapLink = isDrySeason ? 'https://maps.app.goo.gl/Wa491bdTXuKZ2BtB8' : 'https://www.google.co.kr/maps/place/Moksha+Cafe/@11.9676741,121.9274171,21z/data=!4m6!3m5!1s0x33a53d8366366ae1:0x48910864ce8dc2e6!8m2!3d11.967602!4d121.9274642!16s%2Fg%2F11sh1khm47';
+                    m += `투어 미팅 시간 / 장소 : 13:30 / ${meetingPlace}\n${mapLink}\n\n-트라이씨클로 미팅장소 이동 시-\n트라이씨클 기사에게 “${meetingPlace}" 라고 꼭 말해주세요!\n내리신 후 비치로 이동하셔서 좌측편으로 미팅장소 확인 가능합니다.\n\n★★ 주의 사항 및 준비물 ★★\n\n*주의 사항 - 미팅시간에서 10분이상 늦으시면 노쇼처리되며, 별도 연락없이 출항합니다. 이 경우 환불 및 일정 변경 불가하오니 꼭 미팅시간을 지켜주세요\n\n편한 물놀이 복장, 비치타올1인 1장\n스노클 마스크(보유시)\n보트맨팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품\n\n🎉 블랙펄 기념일 이벤트 안내\n호핑투어 중 생일, 결혼기념일, 프로포즈, 기념일 축하가 있으시면 저희 블랙펄에서 작게 축하 이벤트를 진행해드립니다!\n👉 해당되는 경우 미팅 전까지 카카오톡으로 알려주세요! 사전 요청 필수 / 무료 서비스`;
+                }
             } 
             else if (name.includes('말룸파티')) {
-                const isSending = name.includes('샌딩');
-                const meetingTime = isSending ? (res.sendingTime || '09:00') : '09:40';
-                const meetingPlace = isSending ? (res.activityPickupResort || res.pickupResort || '리조트 로비') : '보라카이션 사무실';
-                
-                m += `투어 미팅 시간 / 장소 : ${meetingTime} / ${meetingPlace}\n`;
-                if (!isSending) m += `https://goo.gl/maps/pQkmCErHLjmQGRYM9\n`;
-                m += `\n★★ 주의 사항 및 준비물 ★★\n\n`;
-                m += `*주의 사항 - 미팅시간에서 10분이상 늦으시면 노쇼처리되며, 별도 연락없이 출발합니다. 이 경우 환불 및 일정 변경 불가하오니 꼭 미팅시간을 지켜주세요${isSending ? ' (미리 체크아웃 완료 필수)' : ''}\n\n`;
-                m += `편한 물놀이 복장, 비치타올1인 1장\n매너팁 1인 100페소 (성인, 소인 동일)\n튜빙 진행시 1인 350페소 준비해 주세요\n여권 정보면과 호텔 바우쳐 사진으로 폰에 저장(선택)\n그외 개인적으로 필요한 물품\n`;
-                if (isSending) m += `\n칼리보 공항 공항세 1인 900페소(공항 현지불 / 필수사항)\nBK라운지 샤워실 이용비용 1인 100페소(라운지 현지불)`;
-            }
-            else if (['에스파', '포세이돈', '아유르베다', '마리스', '힐롯', '루나', '보라스파', '헬리오스', '카바얀'].some(s => name.includes(s))) {
-                m += `투어 미팅 시간 / 장소 : ${item.time || ''} / ${res.activityPickupResort || '개별이동'}\n`;
-                m += `★ 준비물\n편한 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품`;
-            }
-            else if (name.includes('골프')) {
-                m += `투어 미팅 시간 / 장소 : ${item.time || '07:40'} / ${res.activityPickupResort || res.pickupResort || '-'}\n`;
-                m += `★ 준비물\n→ 불포함사항\n- 골프채, 골프공, 골프슈즈, 골프글로브\n- 개인음료(그늘집 있음)\n- 캐디팁 - 1인 100페소(18홀기준, 캐디에게 직접 페이)\n- 복귀 트라이시클비용(편도 약 150페소)`;
+                const isSending = name.includes('샌딩') || details.includes('샌딩');
+                if (isSending) {
+                    m += `투어 미팅 시간 / 장소 :  09:00 /  ${res.pickupResort || '리조트 로비'}\n★★ 주의 사항 및 준비물 ★★\n\n*주의 사항 - 미팅시간에서 10분이상 늦으시면 노쇼처리되며, 별도 연락 없이 출발합니다. 이 경우 환불 및 일정 변경 불가하오니 꼭 미리 체크아웃과 룸체크를 진행하고 기다려주세요\n\n편한 물놀이 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n튜빙 진행시 1인 350페소 준비해 주세요\n여권 정보면과 호텔 바우쳐 사진으로 폰에 저장(선택)\n그외 개인적으로 필요한 물품\n\n칼리보 공항 공항세 1인 900페소(공항 현지불 / 필수사항)\nBK라운지 샤워실 이용비용 1인 100페소(라운지 현지불)`;
+                } else {
+                    m += `투어 미팅 시간 / 장소 : 09:40 / 보라카이션 사무실\nhttps://goo.gl/maps/pQkmCErHLjmQGRYM9\n\n★★ 주의 사항 및 준비물 ★★\n\n*주의 사항 - 미팅시간에서 10분이상 늦으시면 노쇼처리되며, 별도 연락없이 출발합니다. 이 경우 환불 및 일정 변경 불가하오니 꼭 미팅시간을 지켜주세요\n\n편한 물놀이 복장, 비치타올1인 1장\n매너팁 1인 100페소 (성인, 소인 동일)\n튜빙 진행시 1인 350페소 준비해 주세요\n여권 정보면과 호텔 바우쳐 사진으로 폰에 저장(선택)\n그외 개인적으로 필요한 물품`;
+                }
             }
             else if (name.includes('랜드투어') || name.includes('아이랜드')) {
-                m += `투어 미팅 시간 / 장소 : ${item.time || '10:30'} / 보라카이션 사무실\nhttps://goo.gl/maps/pQkmCErHLjmQGRYM9\n`;
-                m += `★ 준비물\n편한 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품`;
+                m += `투어 미팅 시간 / 장소 : 10:30 / 보라카이션 사무실\nhttps://goo.gl/maps/pQkmCErHLjmQGRYM9\n★ 준비물\n편한 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품`;
+            }
+            else if (['에스파', '힐롯'].some(s => name.includes(s))) {
+                const meetingPlace = name.includes('에스파') ? '에스파 개별이동' : (item.time || '12:30') + ' 메인로드 졸리비';
+                m += `투어 미팅 시간 / 장소 : ${meetingPlace}\n★ 준비물\n편한 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품`;
+            }
+            else if (name.includes('파라세일링')) {
+                m += `투어 미팅 시간 / 장소 : 10:00 / 만다린베이 로비\n★ 준비물\n편한 물놀이 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품`;
+            }
+            else if (name.includes('골프')) {
+                m += `투어 미팅 시간 / 장소 : 07:40 / 헤난 샌드\n점심 포함 : 점보크랩\n★ 준비물\n→ 불포함사항\n- 골프채, 골프공, 골프슈즈, 골프글로브\n- 개인음료(그늘집 있음)\n- 캐디팁 - 1인 100페소(18홀기준, 캐디에게 직접 페이)\n- 복귀 트라이시클비용(편도 약 150페소)`;
             }
             else {
                 m += `투어 미팅 시간 / 장소 : ${item.time || ''}\n★ 준비물\n편한 복장\n매너팁 1인 100페소\n그외 개인물품`;
@@ -554,14 +547,14 @@ document.addEventListener('DOMContentLoaded', () => {
             messages.push(m);
         });
 
-        // VIP 라운지 처리
-        const hasVIP = res.items.some(i => i.name.includes('VIP') || i.name.includes('라운지'));
-        if (hasVIP) {
+        // VIP 라운지
+        const loungeItem = res.items.find(i => i.name.includes('라운지') || i.name.includes('VIP'));
+        if (loungeItem) {
             let m = `VIP라운지 예약 확인 안내 문자\n\n`;
-            m += `이용 날짜 : ${res.sendingDate || '-'}\n`;
+            m += `이용 날짜 : ${res.sendingDate || loungeItem.date}\n`;
             m += `항공편명 : ${(res.sendingFlight || '').toUpperCase()}\n`;
             m += `예약자 성함 : ${res.customerKorName}\n`;
-            m += `인원 : ${res.items.find(i => i.name.includes('라운지'))?.count || '-'}PAX\n\n`;
+            m += `인원 : ${loungeItem.count}PAX\n\n`;
             m += `VIP 라운지는 공항 내부에 있는 라운지 입니다.\n라운지에 입장 하기 위해서는 공항 입장 후 모든 출국절차를 끝내시고 마지막 이민국까지 통과를 하시고 이용 하실 수 있습니다.\n출국절차 완료 후 2층 라운지 가셔서 성함말씀 혹은 이 예약문자 보여주시고 이용하시면 됩니다.\n*선착순 예약 특성상 예약과 동시에 자리가 배정이 됩니다. 출국수속이 지체되어 라운지 도착 후 이용시간이 예상했던 시간보다 부족하여도 또는 이용을 못하신다 하더라도 당일 취소 및 환불은 불가 합니다.`;
             messages.push(m);
         }

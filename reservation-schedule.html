@@ -190,8 +190,38 @@
                 document.getElementById('v-pax').innerText = res.exchangeAmount || '-';
                 document.getElementById('v-exchange').innerText = res.engName || '-';
 
+                let allItems = [];
+                const rawItems = res.items || [];
+
+                // --- 🚀 [핵심] 픽업/샌딩 분리 로직 ---
+                rawItems.forEach(item => {
+                    if (item.name.includes('픽업샌딩')) {
+                        // 픽업 아이템 생성
+                        allItems.push({
+                            name: `✈️ 공항 픽업 (${(res.pickupFlight || '').toUpperCase()})`,
+                            date: item.pickupDate || res.pickupDate || item.date,
+                            time: " ",
+                            count: item.count,
+                            details: item.details
+                        });
+                        // 샌딩 아이템 생성
+                        allItems.push({
+                            name: `✈️ 공항 샌딩 (${(res.sendingFlight || '').toUpperCase()})`,
+                            date: item.sendingDate || res.sendingDate || item.date,
+                            time: res.sendingTime || "08:30",
+                            count: item.count,
+                            details: item.details
+                        });
+                    } else {
+                        allItems.push(item);
+                    }
+                });
+
+                // 퀵바우처 등 이미 분리된 경우를 위해 중복 체크 및 날짜 정렬
+                allItems.sort((a, b) => (a.date || "").localeCompare(b.date || "") || (a.time || "00:00").localeCompare(b.time || "00:00"));
+
                 const list = document.getElementById('item-list');
-                list.innerHTML = (res.items || []).map(item => `
+                list.innerHTML = allItems.map(item => `
                     <div class="item-card">
                         <div class="item-header">
                             <div class="item-name">${item.name}</div>
@@ -199,7 +229,7 @@
                         </div>
                         <div class="item-details">
                             <div class="detail-point"><span class="material-icons">calendar_today</span><b>날짜</b>${item.date || '-'}</div>
-                            ${item.time ? `<div class="detail-point"><span class="material-icons">access_time</span><b>시간</b>${item.time}</div>` : ''}
+                            ${(item.time && item.time.trim()) ? `<div class="detail-point"><span class="material-icons">access_time</span><b>시간</b>${item.time}</div>` : ''}
                             <div class="detail-point"><span class="material-icons">people</span><b>인원</b>${item.count || '-'}명</div>
                         </div>
                         ${getTourGuidance(item.name, item, res)}

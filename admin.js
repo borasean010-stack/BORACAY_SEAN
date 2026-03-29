@@ -580,7 +580,7 @@ document.addEventListener('DOMContentLoaded', () => {
             items.push({ 
                 name: `✈️ 공항 픽업 (${flightIn})`, 
                 date: pDate, time: " ", count: totalPax, 
-                details: `픽업 시 리조트 : ${resortRaw}\n★공항 밖에서 보라카이션 픽업 직원이 보라카이션 피켓을 들고 대기 하고 있습니다.\n픽업 직원과 대표자 성함 확인 후 안내에 따라 주시기 바랍니다. 항공이 딜레이가 되도 기다립니다.` 
+                details: `픽업시 리조트 : ${resortRaw}\n★공항 밖에서 보라카이션 픽업 직원이 보라카이션 피켓을 들고 대기 하고 있습니다.\n픽업 직원과 대표자 성함 확인 후 안내에 따라 주시기 바랍니다. 항공이 딜레이가 되도 기다립니다.` 
             });
         }
 
@@ -591,7 +591,7 @@ document.addEventListener('DOMContentLoaded', () => {
             items.push({ 
                 name: `✈️ 공항 샌딩 (${flightOut})`, 
                 date: sDate, time: "21:00", count: totalPax, 
-                details: `샌딩 시 리조트 : ${resortRaw}\n*교통상황에 따라 샌딩 미팅 시간과 장소가 변경될 수있습니다\n★지정된 장소와 시간전에 먼저 도착 하셔서 대기 해주셔야 합니다.\n리조트 체크아웃을 완료하고 샌딩 출발 하는 시간 입니다.\n늦어서 별도로 이동을 해야 하는 경우 추가 요금이 발생 합니다.` 
+                details: `샌딩시 리조트 : ${resortRaw}\n*교통상황에 따라 샌딩 미팅 시간과 장소가 변경될 수있습니다\n★지정된 장소와 시간전에 먼저 도착 하셔서 대기 해주셔야 합니다.\n리조트 체크아웃을 완료하고 샌딩 출발 하는 시간 입니다.\n늦어서 별도로 이동을 해야 하는 경우 추가 요금이 발생 합니다.` 
             });
         }
 

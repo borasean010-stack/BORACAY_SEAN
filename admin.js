@@ -531,9 +531,27 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (name.includes('랜드투어') || name.includes('아이랜드')) {
                 m += `투어 미팅 시간 / 장소 : 10:30 / 보라카이션 사무실\nhttps://goo.gl/maps/pQkmCErHLjmQGRYM9\n★ 준비물\n편한 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품`;
             }
-            else if (['에스파', '힐롯'].some(s => name.includes(s))) {
-                const meetingPlace = name.includes('에스파') ? '에스파 개별이동' : (item.time || '12:30') + ' 메인로드 졸리비';
-                m += `투어 미팅 시간 / 장소 : ${meetingPlace}\n★ 준비물\n편한 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품`;
+            else if (['에스파', '루나', '보라스파', '카바얀', '힐롯'].some(s => name.includes(s))) {
+                let meetingPlace = "마사지샵 개별이동";
+                let mapLink = "";
+                
+                if (name.includes('에스파')) {
+                    mapLink = "https://maps.app.goo.gl/QbuPCqypyURVhth38";
+                    meetingPlace = "에스파 개별이동";
+                } else if (name.includes('루나')) {
+                    mapLink = "https://maps.app.goo.gl/JYmbGcM6MrH5gHTBA";
+                    meetingPlace = "루나스파 개별이동";
+                } else if (name.includes('보라스파')) {
+                    mapLink = "https://maps.app.goo.gl/tWBfSVDzmvGgJjRU8";
+                    meetingPlace = "보라스파 개별이동";
+                } else if (name.includes('카바얀')) {
+                    mapLink = "https://maps.app.goo.gl/DsXg4tSonc5KsF4K6";
+                    meetingPlace = "카바얀 개별이동";
+                } else if (name.includes('힐롯')) {
+                    meetingPlace = (item.time || '12:30') + " / 메인로드 졸리비";
+                }
+
+                m += `투어 미팅 시간 / 장소 : ${meetingPlace}\n${mapLink}\n★ 준비물\n편한 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품`;
             }
             else if (name.includes('파라세일링')) {
                 m += `투어 미팅 시간 / 장소 : 10:00 / 만다린베이 로비\n★ 준비물\n편한 물놀이 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품`;

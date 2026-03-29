@@ -162,6 +162,21 @@
 
                 <!-- 💎 Luxury System Setup View (Hidden by default) -->
                 <div id="system-setup-section" style="display: none;">
+                    <!-- 🎫 퀵바우처 생성 섹션 -->
+                    <div class="system-view" style="margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 40px;">
+                        <span class="material-icons sv-icon" style="color: #ff6a00;">confirmation_number</span>
+                        <h2 class="sv-title">퀵바우처 생성</h2>
+                        <p class="sv-desc">
+                            데이터를 붙여넣어 즉시 바우처 링크를 생성합니다.<br>
+                            형식: 03/29 / 04/02 / TW125 / TW126 / 환전 / 리조트 / 성함 / 성인 / 아동 / 유아 / 구매처 / 비고
+                        </p>
+                        <textarea id="quick-voucher-input" placeholder="데이터를 여기에 붙여넣으세요..." style="width: 100%; height: 100px; padding: 15px; border: 1px solid #ddd; border-radius: 12px; margin-bottom: 15px; font-family: monospace; font-size: 13px;"></textarea>
+                        <button class="btn-action-received" style="background:#ff6a00; border:none; padding:12px 25px; height:auto; width:auto;" onclick="makeQuickVoucher()">
+                            <span class="material-icons" style="vertical-align: middle; margin-right: 5px;">add_link</span>
+                            퀵바우처 생성하기
+                        </button>
+                    </div>
+
                     <div class="system-view">
                         <span class="material-icons sv-icon">security</span>
                         <h2 class="sv-title">시스템 데이터 초기화</h2>

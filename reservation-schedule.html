@@ -60,7 +60,6 @@
             .section-title { margin-bottom: 10px; font-size: 16px; }
             .notice-box { padding: 15px; margin-top: 20px; }
             .notice-box ul { font-size: 11px; }
-            /* 텍스트가 너무 많을 경우를 대비해 폰트 크기 미세 조정 */
             * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
     </style>
@@ -69,7 +68,7 @@
 
 <div class="voucher-container">
     <div class="voucher-header">
-        <img src="logo.png" alt="보라카이션 로고 - 보라카이 자유여행 No.1">
+        <img src="logo.png" alt="보라카이션 로고">
         <h1>BORACAY_SEAN</h1>
         <p>GUEST RESERVATION VOUCHER</p>
     </div>
@@ -80,7 +79,7 @@
             <div class="info-item"><label>대표자명</label><span id="guest-name">-</span></div>
             <div class="info-item"><label>연락처</label><span id="guest-contact">-</span></div>
             <div class="info-item"><label>예약구분</label><span id="res-id">-</span></div>
-            <div class="info-item"><label>총 결제 금액</label><span id="total-price">-</span></div>
+            <div class="info-item"><label id="label-total">총 결제 금액</label><span id="total-price">-</span></div>
         </div>
 
         <div class="section-title">투어 및 액티비티 일정</div>
@@ -101,52 +100,52 @@
 
 <button class="print-btn" onclick="window.print()">인쇄하기</button>
 
-<script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDkDjmGKQDF-0Vu2S_qtI6W5Hf2-j4tKcM",
+        authDomain: "boracaysean-69b4a.firebaseapp.com",
+        projectId: "boracaysean-69b4a",
+        storageBucket: "boracaysean-69b4a.firebasestorage.app",
+        messagingSenderId: "806585874771",
+        appId: "1:806585874771:web:64a094d241730ca38109a6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
     document.addEventListener('DOMContentLoaded', async () => {
         const urlParams = new URLSearchParams(window.location.search);
         const resId = urlParams.get('id');
         const contact = urlParams.get('contact');
         const itemIndex = urlParams.get('itemIndex'); 
+        const type = urlParams.get('type');
         
         if (!resId && !contact) {
             alert('예약 정보를 찾을 수 없습니다.');
             return;
         }
 
-        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
-        const { getFirestore, doc, getDoc, collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDkDjmGKQDF-0Vu2S_qtI6W5Hf2-j4tKcM",
-            authDomain: "boracaysean-69b4a.firebaseapp.com",
-            projectId: "boracaysean-69b4a",
-            storageBucket: "boracaysean-69b4a.firebasestorage.app",
-            messagingSenderId: "806585874771",
-            appId: "1:806585874771:web:64a094d241730ca38109a6"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // --- 📅 날짜 조건 설정 ---
         const now = new Date();
         const offset = now.getTimezoneOffset() * 60000;
         const today = new Date(now.getTime() - offset);
         const todayStr = today.toISOString().split('T')[0];
-        
-        // 개별 액티비티용 15일 버퍼
         const fifteenDaysAgo = new Date(today);
         fifteenDaysAgo.setDate(today.getDate() - 15);
         const activityLimitStr = fifteenDaysAgo.toISOString().split('T')[0];
 
         try {
             let reservations = [];
+            const collectionName = (type === 'quick') ? "quick_vouchers" : "reservations";
+            
             if (contact) {
-                const q = query(collection(db, "reservations"), where("contact", "==", contact), where("status", "==", "예약확정"));
+                const q = query(collection(db, collectionName), where("contact", "==", contact), where("status", "==", "예약확정"));
                 const querySnapshot = await getDocs(q);
                 reservations = querySnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
             } else {
-                const docSnap = await getDoc(doc(db, "reservations", resId));
+                const docSnap = await getDoc(doc(db, collectionName, resId));
                 if (docSnap.exists()) reservations.push({ id: docSnap.id, ...docSnap.data() });
             }
 
@@ -156,6 +155,11 @@
                 document.getElementById('guest-contact').textContent = mainRes.contact || '정보 없음';
                 document.getElementById('res-id').textContent = mainRes.reservationNumber || resId;
                 
+                if (type === 'quick') {
+                    document.getElementById('label-total').textContent = "인원 정보";
+                    document.getElementById('total-price').textContent = mainRes.exchangeAmount || '-';
+                }
+
                 const listContainer = document.getElementById('item-list');
                 let allScheduleItems = [];
                 let filteredTotalPrice = 0;
@@ -163,13 +167,13 @@
                 reservations.forEach(res => {
                     let hasCurrentTripItem = false;
                     const isIndividualView = (itemIndex !== null);
-                    const selectedItemName = isIndividualView && res.items ? res.items[itemIndex]?.name : "";
 
-                    // --- 📅 가이드 텍스트 생성 로직 (상세 안내문 폼과 동기화) ---
                     function getGuidanceInternal(item, res) {
+                        if (item.details && typeof item.details === 'string' && item.details.includes('★')) {
+                            return item.details.replace(/\n/g, '<br>');
+                        }
                         const name = item.name;
                         const details = item.details || "";
-                        const isSending = name.includes('샌딩') || (item.details && item.details.includes('샌딩'));
                         const tourMonth = item.date ? parseInt(item.date.split('-')[1]) : new Date().getMonth() + 1;
                         const isDrySeason = tourMonth <= 5 || tourMonth >= 11;
 
@@ -178,117 +182,24 @@
                             const meetingTime = isLunch ? '12:30' : '13:30';
                             const meetingPlace = isLunch ? '점보크랩' : (isDrySeason ? '8 Eight by the Beach' : '블라복 비치 목샤');
                             const mapLink = isLunch ? 'https://goo.gl/maps/d6tdF8tME3p16NtCA' : (isDrySeason ? 'https://maps.app.goo.gl/Wa491bdTXuKZ2BtB8' : 'https://www.google.co.kr/maps/place/Moksha+Cafe/@11.9676741,121.9274171,21z/data=!4m6!3m5!1s0x33a53d8366366ae1:0x48910864ce8dc2e6!8m2!3d11.967602!4d121.9274642!16s%2Fg%2F11sh1khm47');
-                            
-                            return `<b>투어 미팅 시간 / 장소: ${meetingTime} / ${meetingPlace}</b><br>
-                                    <a href="${mapLink}" target="_blank" style="color:#ff6a00; font-size:12px; font-weight:bold;">📍 미팅장소 구글맵 확인 (클릭)</a><br><br>
-                                    ${isLunch ? '* 점보크랩은 메인로드 졸리비 바로 건너편 입니다.' : `- 트라이씨클 기사에게 “${meetingPlace}" 라고 꼭 말해주세요!`} <br><br>
-                                    <div style="background:#fff9f0; padding:12px; border-radius:10px; border:1px solid #ffe8cc; font-size:13px;">
-                                        <b>★★ 주의 사항 및 준비물 ★★</b><br>
-                                        - <b>주의:</b> 미팅시간 10분 이상 늦으시면 노쇼 처리되며 별도 연락 없이 출항합니다.<br>
-                                        - <b>준비물:</b> 편한 물놀이 복장, 비치타올(1인 1장), 스노클 마스크(보유 시), 보트맨팁(1인 100페소), 기타 개인 물품
-                                    </div><br>
-                                    🎉 <b>기념일 이벤트 안내</b><br>
-                                    생일, 기념일 등이 있으시면 미리 카톡으로 알려주세요! 작은 이벤트를 준비해 드립니다.`;
-                        } 
-                        else if (name.includes('말룸파티')) {
+                            return `<b>투어 미팅 시간 / 장소: ${meetingTime} / ${meetingPlace}</b><br><a href="${mapLink}" target="_blank" style="color:#ff6a00; font-size:12px; font-weight:bold;">📍 구글맵 확인</a><br><br>${isLunch ? '* 점보크랩은 졸리비 건너편입니다.' : `- 기사에게 "${meetingPlace}"라고 말해주세요.`}<br><br><div style="background:#fff9f0; padding:12px; border-radius:10px; border:1px solid #ffe8cc; font-size:13px;"><b>★★ 준비물 ★★</b><br>편한 물놀이 복장, 비치타올, 스노클 마스크, 보트맨팁(100페소)</div>`;
+                        }
+                        if (name.includes('말룸파티')) {
                             const isSending = name.includes('샌딩');
                             const meetingTime = isSending ? (res.sendingTime || '09:00') : '09:40';
                             const meetingPlace = isSending ? (res.activityPickupResort || res.pickupResort || '리조트 로비') : '보라카이션 사무실';
-                            const mapLink = !isSending ? 'https://goo.gl/maps/pQkmCErHLjmQGRYM9' : '';
-                            
-                            return `<b>투어 미팅 시간 / 장소: ${meetingTime} / ${meetingPlace}</b>
-                                    ${mapLink ? `<br><a href="${mapLink}" target="_blank" style="color:#ff6a00; font-size:12px; font-weight:bold;">📍 보라카이션 사무실 구글맵 (클릭)</a>` : ''}<br><br>
-                                    <div style="background:#fff9f0; padding:12px; border-radius:10px; border:1px solid #ffe8cc; font-size:13px;">
-                                        <b>★★ 주의 사항 및 준비물 ★★</b><br>
-                                        - <b>주의:</b> 미팅시간 10분 지각 시 노쇼 처리됩니다.${isSending ? ' (미리 체크아웃/룸체크 완료 필수)' : ''}<br>
-                                        - <b>준비물:</b> 편한 물놀이 복장, 비치타올, 매너팁(1인 100페소), 튜빙비(1인 350페소), 개인 물품<br>
-                                        ${isSending ? '- <b>추가비용:</b> 칼리보 공항세(900페소), BK라운지 샤워 이용 시(100페소)' : ''}
-                                    </div>`;
+                            return `<b>투어 미팅 시간 / 장소: ${meetingTime} / ${meetingPlace}</b><br><br><div style="background:#fff9f0; padding:12px; border-radius:10px; border:1px solid #ffe8cc; font-size:13px;"><b>★★ 준비물 ★★</b><br>물놀이 복장, 비치타올, 매너팁(100페소), 튜빙비(350페소)${isSending ? '<br>체크아웃 완료 필수, 공항세(900페소)' : ''}</div>`;
                         }
-                        else if (['에스파', '포세이돈', '아유르베다', '마리스', '힐롯', '루나', '보라스파', '헬리오스', '카바얀'].some(s => name.includes(s))) {
-                            let mapLink = "";
-                            if (name.includes('에스파')) mapLink = "https://maps.app.goo.gl/Asv6vDRvxtZUKpgHA";
-                            else if (name.includes('보라스파')) mapLink = "https://maps.app.goo.gl/Z6v6vDRvxtZUKpgHA";
-                            else if (name.includes('루나')) mapLink = "https://maps.app.goo.gl/Y6v6vDRvxtZUKpgHA";
-                            else if (name.includes('카바얀')) mapLink = "https://maps.app.goo.gl/X6v6vDRvxtZUKpgHA";
-
-                            const isDirectMove = ['에스파', '루나', '보라스파', '카바얀'].some(s => name.includes(s));
-                            const isShuttle = ['포세이돈', '아유르베다', '마리스', '헬리오스'].some(s => name.includes(s));
-                            
-                            let meetingPlace = res.activityPickupResort || '리조트 로비';
-                            if (isDirectMove) meetingPlace = "매장 개별이동";
-                            else if (isShuttle) meetingPlace = (res.activityPickupResort || "리조트 로비") + " (셔틀 픽업)";
-
-                            return `<b>마사지 미팅 시간 / 장소: ${item.time || ''} / ${meetingPlace}</b>
-                                    ${isDirectMove && mapLink ? `<br><a href="${mapLink}" target="_blank" style="color:#ff6a00; font-size:12px; font-weight:bold;">📍 매장 위치 구글맵 확인 (클릭)</a>` : ''}<br><br>
-                                    <div style="background:#f8f9fa; padding:12px; border-radius:10px; border:1px solid #eee; font-size:13px;">
-                                        <b>★ 준비물</b><br>
-                                        - 편한 복장, 매너팁 1인 100페소, 기타 개인 물품
-                                    </div>`;
-                        }
-                        else if (name.includes('골프')) {
-                            return `<b>티업 시간 / 미팅 장소: ${item.time || '07:40'} / ${res.activityPickupResort || res.pickupResort || '리조트 로비'}</b><br><br>
-                                    <div style="background:#fff9f0; padding:12px; border-radius:10px; border:1px solid #ffe8cc; font-size:13px;">
-                                        <b>★ 준비물 및 불포함 사항</b><br>
-                                        - <b>불포함:</b> 클럽 렌탈, 골프공/글로브, 개인 음료, 캐디팁(18홀 기준 100페소), 복귀 트라이씨클 비용
-                                    </div>`;
-                        }
-                        else if (name.includes('랜드투어') || name.includes('아이랜드')) {
-                            return `<b>투어 미팅 시간 / 장소: ${item.time || '10:30'} / 보라카이션 사무실</b><br>
-                                    <a href="https://goo.gl/maps/pQkmCErHLjmQGRYM9" target="_blank" style="color:#ff6a00; font-size:12px; font-weight:bold;">📍 보라카이션 사무실 구글맵 (클릭)</a><br><br>
-                                    <div style="background:#f8f9fa; padding:12px; border-radius:10px; border:1px solid #eee; font-size:13px;">
-                                        <b>★ 준비물</b><br>
-                                        - 편한 복장, 매너팁(1인 100페소), 기타 개인 물품
-                                    </div>`;
-                        }
-                        else if (name.includes('파라세일링') || name.includes('다이빙') || name.includes('제트스키')) {
-                            return `<b>액티비티 미팅 시간 / 장소: ${item.time || ''} / ${res.activityPickupResort || '리조트 로비'}</b><br><br>
-                                    <div style="background:#f8f9fa; padding:12px; border-radius:10px; border:1px solid #eee; font-size:13px;">
-                                        <b>★ 준비물</b><br>
-                                        - 편한 물놀이 복장, 매너팁(1인 100페소), 기타 개인 물품
-                                    </div>`;
-                        }
-                        return `<b>미팅 시간 / 장소: ${item.time || ''} / ${res.activityPickupResort || res.pickupResort || '리조트 로비'}</b><br><br>
-                                - 예약 시간에 맞춰 미팅 장소에서 대기해 주세요.`;
-                    }
-                    const isCurrentTrip = res.sendingDate && res.sendingDate >= todayStr; // 샌딩 안 지났으면 이번 여행
-                    
-                    // 1. 공항 픽업
-                    if (res.pickupDate) {
-                        const isRecentActivity = res.pickupDate >= activityLimitStr;
-                        // 개별 상품 뷰일 때도 픽업 정보는 항상 노출
-                        const shouldShowPickup = true;
-                        
-                        // (이번 여행 중이거나) OR (최근 15일 이내의 기록인 경우) 표시
-                        if (shouldShowPickup && (isCurrentTrip || isRecentActivity)) {
-                            const pickupFlight = (res.pickupFlight || "-").toUpperCase();
-                            allScheduleItems.push({
-                                date: res.pickupDate,
-                                time: res.pickupTime || "00:00",
-                                name: `✈️ 공항 픽업 (${pickupFlight})`,
-                                isPickup: true,
-                                content: `<b>미팅 장소: 칼리보 공항 밖 피켓 대기</b><br><br>
-                                          <div style="background: #f0f7ff; padding: 12px; border-radius: 8px; border: 1px solid #cce5ff; font-size: 13px;">
-                                            ★ 공항 밖에서 보라카이션 픽업 직원이 <b>보라카이션 피켓</b>을 들고 대기하고 있습니다.<br>
-                                            ★ 픽업 직원과 대표자 성함 확인 후 안내에 따라 주시기 바랍니다.<br>
-                                            ★ <b>항공기가 딜레이(지연) 되어도 끝까지 기다립니다.</b> 걱정 마시고 천천히 나오세요!
-                                          </div><br>
-                                          - 픽업 리조트: ${res.pickupResort || '-'}<br>
-                                          ${res.exchangeAmount ? `- 💰 환전 요청: ${res.exchangeAmount}` : ''}`
-                            });
-                            hasCurrentTripItem = true;
-                        }
+                        return `<b>미팅 시간 / 장소: ${item.time || ''} / ${res.activityPickupResort || res.pickupResort || '리조트 로비'}</b><br><br>- 예약 시간에 맞춰 미팅 장소에서 대기해 주세요.`;
                     }
 
-                    // 2. 예약 상품 리스트
-                    let rawItems = res.items || [];
-                    rawItems.forEach((item, idx) => {
-                        if (isIndividualView && parseInt(itemIndex) !== idx) return;
-                        
-                        // (이번 여행 중이거나) OR (해당 투어일로부터 15일이 안 지났으면) 표시
-                        const isWithin15Days = item.date >= activityLimitStr;
-                        if (isWithin15Days || isCurrentTrip) {
-                            if (!item.name.includes('픽업샌딩')) {
+                    const isCurrentTrip = res.sendingDate && res.sendingDate >= todayStr;
+
+                    if (res.items && res.items.length > 0) {
+                        res.items.forEach((item, idx) => {
+                            if (isIndividualView && parseInt(itemIndex) !== idx) return;
+                            const isWithin15Days = item.date >= activityLimitStr;
+                            if (isWithin15Days || isCurrentTrip) {
                                 allScheduleItems.push({
                                     date: item.date,
                                     time: item.time || "09:00",
@@ -297,58 +208,53 @@
                                 });
                                 hasCurrentTripItem = true;
                             }
-                        }
-                    });
+                        });
+                    }
 
-                    // 3. 공항 샌딩
-                    if (res.sendingDate) {
-                        const isRecentActivity = res.sendingDate >= activityLimitStr;
-                        // 개별 상품 뷰일 때도 샌딩 정보는 항상 노출
-                        const shouldShowSending = true;
-                        
-                        if (shouldShowSending && (isCurrentTrip || isRecentActivity)) {
-                            const sendingFlight = (res.sendingFlight || '-').toUpperCase();
-                            const meetingTime = res.sendingTime || '08:30';
+                    if (res.pickupDate && !res.items?.some(i => i.name.includes('픽업'))) {
+                        const isRecent = res.pickupDate >= activityLimitStr;
+                        if (isCurrentTrip || isRecent) {
+                            allScheduleItems.push({
+                                date: res.pickupDate,
+                                time: res.pickupTime || "00:00",
+                                name: `✈️ 공항 픽업 (${(res.pickupFlight || '-').toUpperCase()})`,
+                                content: `<b>미팅 장소: 칼리보 공항 밖 피켓 대기</b><br><br>
+                                          <div style="background: #f0f7ff; padding: 12px; border-radius: 8px; border: 1px solid #cce5ff; font-size: 13px;">
+                                            ★ 공항 밖에서 보라카이션 픽업 직원이 <b>보라카이션 피켓</b>을 들고 대기하고 있습니다.<br>
+                                            ★ 픽업 직원과 대표자 성함 확인 후 안내에 따라 주시기 바랍니다.<br>
+                                            ★ <b>항공기가 딜레이(지연) 되어도 끝까지 기다립니다.</b>
+                                          </div><br>
+                                          - 픽업 시 리조트: ${res.pickupResort || '-'}`
+                            });
+                        }
+                    }
+                    if (res.sendingDate && !res.items?.some(i => i.name.includes('샌딩'))) {
+                        const isRecent = res.sendingDate >= activityLimitStr;
+                        if (isCurrentTrip || isRecent) {
                             allScheduleItems.push({
                                 date: res.sendingDate,
                                 time: "23:59",
-                                name: `✈️ 공항 샌딩 (${sendingFlight})`,
-                                isSending: true,
-                                content: `<b>미팅 시간 / 장소: ${meetingTime}(예정) / ${res.sendingResort || res.pickupResort || '리조트 로비'}</b><br><br>
+                                name: `✈️ 공항 샌딩 (${(res.sendingFlight || '-').toUpperCase()})`,
+                                content: `<b>미팅 시간 / 장소: ${res.sendingTime || '08:30'} / ${res.sendingResort || res.pickupResort || '리조트 로비'}</b><br><br>
                                           <div style="color: #d93025; font-weight: 700; background: #fff5f5; padding: 12px; border-radius: 8px; border: 1px solid #ffcfcf; font-size: 13px;">
+                                            * 교통상황에 따라 샌딩 미팅 시간과 장소가 변경될 수 있습니다<br>
                                             ★ 지정된 장소와 시간 전에 먼저 도착하셔서 대기해 주셔야 합니다.<br>
                                             ★ <b>리조트 체크아웃을 완료하고 샌딩 출발하는 시간</b>입니다.<br>
                                             ★ 늦어서 별도로 이동을 해야 하는 경우 추가 요금이 발생합니다.
                                           </div><br>
-                                          - 샌딩 리조트: ${res.sendingResort || res.pickupResort || '-'}`
-                                });
-                            hasCurrentTripItem = true;
+                                          - 샌딩 시 리조트: ${res.sendingResort || res.pickupResort || '-'}`
+                            });
                         }
                     }
 
-                    if (hasCurrentTripItem) filteredTotalPrice += (res.totalPrice || 0);
+                    if (hasCurrentTripItem && type !== 'quick') filteredTotalPrice += (res.totalPrice || 0);
                 });
 
-                document.getElementById('total-price').textContent = `₩ ${filteredTotalPrice.toLocaleString()}`;
+                if (type !== 'quick') document.getElementById('total-price').textContent = `₩ ${filteredTotalPrice.toLocaleString()}`;
 
-                allScheduleItems.sort((a, b) => {
-                    if (a.date !== b.date) return a.date.localeCompare(b.date);
-                    return (a.time || "").localeCompare(b.time || "");
-                });
+                allScheduleItems.sort((a, b) => a.date.localeCompare(b.date) || (a.time || "").localeCompare(b.time || ""));
 
-                const mergedScheduleItems = [];
                 allScheduleItems.forEach(item => {
-                    if (item.isPickup || item.isSending) { mergedScheduleItems.push(item); return; }
-                    const existing = mergedScheduleItems.find(m => m.date === item.date && (m.name === item.name || (m.name.includes('단품') && item.name.includes('단품'))));
-                    if (existing) {
-                        existing.content += `<br><br>--- 추가 항목 ---<br>${item.content}`;
-                        if (!existing.name.includes('통합')) existing.name += ' (통합)';
-                    } else { mergedScheduleItems.push(item); }
-                });
-
-                if (mergedScheduleItems.length === 0) listContainer.innerHTML = '<p style="text-align:center; padding:40px; color:#999;">진행 중이거나 최근 15일 이내의 일정이 없습니다.</p>';
-
-                mergedScheduleItems.forEach(item => {
                     const card = document.createElement('div');
                     card.className = 'item-card';
                     card.innerHTML = `<div class="item-header"><div class="item-name">${item.name}</div><div class="item-status">확정됨</div></div>
@@ -365,6 +271,5 @@
         }
     });
 </script>
-
 </body>
 </html>

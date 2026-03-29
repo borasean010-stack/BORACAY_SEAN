@@ -548,5 +548,70 @@ document.addEventListener('DOMContentLoaded', () => {
         const finalMessage = messages.join('\n\n----------------------------------\n\n');
         navigator.clipboard.writeText(finalMessage).then(() => alert('안내문이 복사되었습니다.'));
     };
+    window.makeQuickVoucher = async () => {
+        const input = document.getElementById('quick-voucher-input').value.trim();
+        if (!input) { alert('데이터를 입력해주세요.'); return; }
+        const parts = input.split(' / ');
+        const currentYear = new Date().getFullYear();
+
+        const checkIn = parts[0] || '';      
+        const checkOut = parts[1] || '';     
+        const flightIn = (parts[2] || '').toUpperCase();     
+        const flightOut = (parts[3] || '').toUpperCase();    
+        const exchangeMoney = (parts[4] || '').replace(/^"|"$/g, '').replace(/\n/g, ' / '); 
+        const resortRaw = parts[5] || '';
+        const customerName = parts[6] || ''; 
+        const pax = parseInt(parts[7]) || 0; 
+        const chd = parseInt(parts[8]) || 0; 
+        const inf = parseInt(parts[9]) || 0; 
+        const agency = parts[10] || '';      
+        const remarks = (parts[11] || '').replace(/^"|"$/g, '').trim(); 
+
+        const totalPax = pax + chd + inf;
+        const paxDetail = `성인 ${pax}, 아동 ${chd}, 유아 ${inf} (총 ${totalPax}명)`;
+
+        const items = [];
+        const flightRegex = /[A-Z]{2}\d{2,}/;
+
+        // 1. 공항 픽업 아이템 추가
+        if (flightIn.match(flightRegex) && checkIn.includes('/')) {
+            const dp = checkIn.split('/');
+            const pDate = `${currentYear}-${dp[0].padStart(2,'0')}-${dp[1].trim().padStart(2,'0')}`;
+            items.push({ 
+                name: `✈️ 공항 픽업 (${flightIn})`, 
+                date: pDate, time: " ", count: totalPax, 
+                details: `픽업 시 리조트 : ${resortRaw}\n★공항 밖에서 보라카이션 픽업 직원이 보라카이션 피켓을 들고 대기 하고 있습니다.\n픽업 직원과 대표자 성함 확인 후 안내에 따라 주시기 바랍니다. 항공이 딜레이가 되도 기다립니다.` 
+            });
+        }
+
+        // 2. 공항 샌딩 아이템 추가
+        if (flightOut.match(flightRegex) && checkOut.includes('/')) {
+            const dp = checkOut.split('/');
+            const sDate = `${currentYear}-${dp[0].padStart(2,'0')}-${dp[1].trim().padStart(2,'0')}`;
+            items.push({ 
+                name: `✈️ 공항 샌딩 (${flightOut})`, 
+                date: sDate, time: "21:00", count: totalPax, 
+                details: `샌딩 시 리조트 : ${resortRaw}\n*교통상황에 따라 샌딩 미팅 시간과 장소가 변경될 수있습니다\n★지정된 장소와 시간전에 먼저 도착 하셔서 대기 해주셔야 합니다.\n리조트 체크아웃을 완료하고 샌딩 출발 하는 시간 입니다.\n늦어서 별도로 이동을 해야 하는 경우 추가 요금이 발생 합니다.` 
+            });
+        }
+
+        const reservationData = {
+            reservationNumber: 'Q' + Date.now().toString().slice(-8),
+            customerKorName: customerName,
+            engName: exchangeMoney, contact: agency, 
+            pickupResort: resortRaw,
+            sendingResort: resortRaw,
+            items: items, status: '예약확정', exchangeAmount: paxDetail, createdAt: new Date()
+        };
+
+        try {
+            const docRef = await addDoc(collection(db, "quick_vouchers"), reservationData);
+            const url = `${window.location.origin}/reservation-schedule.html?id=${docRef.id}&type=quick`;
+            if (confirm(`퀵바우처 생성 완료!\n링크를 복사하시겠습니까?`)) { 
+                navigator.clipboard.writeText(url).then(() => alert('복사되었습니다.')); 
+            }
+        } catch (e) { console.error(e); alert('저장 실패'); }
+    };
+
     window.closeModal = () => document.getElementById('res-detail-modal').style.display = 'none';
 });

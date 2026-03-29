@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (tab === 'system') { 
             scheduleSection.style.display = 'none'; 
             statusLayer.style.display = 'none'; 
-            dataViewSection.style.display = 'none'; 
+            dataViewSection.style.display = 'block'; 
             systemSection.style.display = 'block'; 
             if(quickVoucherSection) quickVoucherSection.style.display = 'none';
             document.getElementById('breadcrumb-active').innerText = '시스템 설정';

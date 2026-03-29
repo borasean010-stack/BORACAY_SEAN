@@ -33,10 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const admins = { 
             'admin': 'sean1234!', 
             'luca': 'luca1', 
-            'daemit': 'nimo@dori0902', 
+            'zohan': 'zohan1', 
             'windy': 'windy1', 
-            'sean': 'sean1',
-            '토리누나': '토리누나1'
+            'sean': 'sean1'
         };
         if (admins[id] && admins[id] === pw) {
             sessionStorage.setItem('isAdminLoggedIn', 'true');

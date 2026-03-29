@@ -1,6 +1,6 @@
 // admin.js - Naver SmartStore Style + Luxury Schedule & System Logic
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, where, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDkDjmGKQDF-0Vu2S_qtI6W5Hf2-j4tKcM",
@@ -12,40 +12,36 @@ const firebaseConfig = {
 };
 
 let db = null;
-try { const app = initializeApp(firebaseConfig); db = getFirestore(app); } catch (e) { console.error("Firebase Init Error", e); }
+try {
+    const app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+} catch (e) {
+    console.error("Firebase Init Error", e);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-    const tableBody = document.getElementById('admin-table-body');
-    const loginContainer = document.getElementById('login-container');
-    const adminContainer = document.getElementById('admin-container');
-
-    let allReservations = [];
-    let activeTab = 'new'; 
-    let currentScheduleFilter = 'all';
-    let currentScheduleDay = 'today'; // 'today' or 'tomorrow'
-
-    if (sessionStorage.getItem('isAdminLoggedIn') === 'true') { showAdminPanel(); }
-    
-    document.getElementById('login-form').onsubmit = (e) => {
-        e.preventDefault();
-        const id = document.getElementById('username').value;
-        const pw = document.getElementById('password').value;
-        const admins = { 
-            'admin': 'sean1234!', 
-            'luca': 'luca1', 
-            'zohan': 'zohan1', 
-            'windy': 'windy1', 
-            'sean': 'sean1'
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        loginForm.onsubmit = (e) => {
+            e.preventDefault();
+            const id = document.getElementById('username').value.trim();
+            const pw = document.getElementById('password').value.trim();
+            const admins = { 
+                'admin': 'sean1234!', 
+                'luca': 'luca1', 
+                'zohan': 'zohan1', 
+                'windy': 'windy1', 
+                'sean': 'sean1'
+            };
+            if (admins[id] && admins[id] === pw) {
+                sessionStorage.setItem('isAdminLoggedIn', 'true');
+                sessionStorage.setItem('adminId', id);
+                showAdminPanel();
+            } else { 
+                alert('아이디 또는 비밀번호가 올바르지 않습니다.'); 
+            }
         };
-        if (admins[id] && admins[id] === pw) {
-            sessionStorage.setItem('isAdminLoggedIn', 'true');
-            sessionStorage.setItem('adminId', id);
-            showAdminPanel();
-        } else { 
-            console.error("Login Failed for ID:", id);
-            alert('아이디 또는 비밀번호가 틀립니다.'); 
-        }
-    };
+    }
 
     document.getElementById('logout-btn').onclick = () => {
         sessionStorage.removeItem('isAdminLoggedIn');
@@ -666,7 +662,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     // --- 🚀 [핵심 추가] 'AFH', 'ATM', 'pick up' 분석 ---
                     const lowerLine = trimmed.toLowerCase();
-                    let itemTime = timeMatch ? `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}` : "";
 
                     if (lowerLine.includes('afh')) {
                         itemDetails = "호핑투어 후 바로 이동";
@@ -729,7 +724,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-            const { collection, addDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
             const docRef = await addDoc(collection(db, "quick_vouchers"), reservationData);
             const url = `${window.location.origin}/reservation-schedule.html?id=${docRef.id}&type=quick`;
             if (confirm(`퀵바우처 생성 완료!\n링크를 복사하시겠습니까?`)) { 

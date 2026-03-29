@@ -597,12 +597,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const checkOut = parts[1] || '';     
         const flightIn = (parts[2] || '').toUpperCase();     
         const flightOut = (parts[3] || '').toUpperCase();    
-        const exchangeMoney = (parts[24] || parts[4] || '').replace(/^"|"$/g, '').replace(/\n/g, ' / '); 
+        // 환전 요청 금액 ($190 등)
+        const exchangeMoney = (parts[24] || parts[4] || '').replace(/^"|"$/g, '').trim(); 
         
         const resortRaw = parts[9] || '';
         const pickupResort = translateResort(resortRaw);
 
-        const customerName = parts[22] || parts[6] || ''; 
+        const engName = parts[10] || '';
+        const customerName = (parts[22] || parts[6] || '').trim();
         const pax = parseInt(parts[11]) || 0; 
         const chd = parseInt(parts[12]) || 0; 
         const inf = parseInt(parts[13]) || 0; 
@@ -615,7 +617,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const items = [];
         const flightRegex = /[A-Z]{2}\d{2,}/;
 
-        // 1. 공항 픽업 (비행기 편명과 체크인 날짜가 있을 때)
+        // 1. 공항 픽업
         if (flightIn.match(flightRegex) && checkIn.includes('/')) {
             const dp = checkIn.split('/');
             const pDate = `${currentYear}-${dp[0].padStart(2,'0')}-${dp[1].trim().padStart(2,'0')}`;
@@ -626,70 +628,41 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // 2. 비고란(Remarks) 분석하여 개별 투어 일정 생성
+        // 2. 비고란(Remarks) 분석
         if (remarks) {
             const lines = remarks.split('\n');
             lines.forEach(line => {
                 const trimmed = line.trim();
                 if (!trimmed) return;
-
-                // 날짜 추출 (M/D 형식)
                 const dateMatch = trimmed.match(/(\d{1,2})\/(\d{1,2})/);
                 if (dateMatch) {
                     const month = dateMatch[1].padStart(2, '0');
                     const day = dateMatch[2].padStart(2, '0');
                     const dateStr = `${currentYear}-${month}-${day}`;
-                    
-                    // 시간 추출 (HH:MM 형식)
                     const timeMatch = trimmed.match(/(\d{1,2}):(\d{2})/);
-                    let itemTime = timeMatch ? `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}` : "협의";
-                    
-                    // 상품명 정제
+                    let itemTime = timeMatch ? `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}` : ""; // 비어있으면 빈값
                     let itemName = trimmed.replace(dateMatch[0], '').replace(timeMatch ? timeMatch[0] : '', '').replace(/GET\$.*|잔금.*|\$.*/g, '').trim();
                     let itemDetails = trimmed;
-
-                    // 스마트 상품명 변환
                     const lowerLine = trimmed.toLowerCase();
                     if (lowerLine.includes('hopping')) {
                         if (lowerLine.includes('(j)')) {
-                            itemName = '블랙펄 호핑투어 (+점보크랩 점심)';
-                            itemTime = "12:30";
-                            itemDetails = "점보크랩 식사 포함";
+                            itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; itemTime = "12:30"; itemDetails = "점보크랩 식사 포함";
                         } else if (lowerLine.includes('(s)')) {
-                            itemName = '블랙펄 선셋 호핑투어';
-                            itemTime = "13:30";
-                            itemDetails = "호핑투어 단독";
-                        } else {
-                            itemName = '블랙펄 요트호핑';
-                        }
+                            itemName = '블랙펄 선셋 호핑투어'; itemTime = "13:30"; itemDetails = "호핑투어 단독";
+                        } else { itemName = '블랙펄 요트호핑'; }
                     } else if (lowerLine.includes('land')) {
-                        itemName = '보라카이 랜드투어';
-                        itemTime = "10:30";
-                        itemDetails = "보라카이션 오피스 미팅";
-                    } else if (lowerLine.includes('sspa') || itemName.includes('에스파')) {
-                        itemName = '에스파(S-SPA)';
-                    } else if (lowerLine.includes('lunaspa') || itemName.includes('루나')) {
-                        itemName = '루나스파';
-                    } else if (lowerLine.includes('bora spa') || itemName.includes('보라스파')) {
-                        itemName = '보라스파';
-                    }
-
-                    items.push({ 
-                        name: itemName, 
-                        date: dateStr, 
-                        time: itemTime, 
-                        count: totalPax, 
-                        details: itemDetails 
-                    });
+                        itemName = '보라카이 랜드투어'; itemTime = "10:30"; itemDetails = "보라카이션 오피스 미팅";
+                    } else if (lowerLine.includes('sspa') || itemName.includes('에스파')) { itemName = '에스파(S-SPA)'; }
+                    else if (lowerLine.includes('lunaspa') || itemName.includes('루나')) { itemName = '루나스파'; }
+                    items.push({ name: itemName, date: dateStr, time: itemTime, count: totalPax, details: itemDetails });
                 }
             });
         }
 
-        // 3. 공항 샌딩 (체크아웃 날짜가 있을 때)
+        // 3. 공항 샌딩
         if (flightOut.match(flightRegex) && checkOut.includes('/')) {
             const dp = checkOut.split('/');
             const sDate = `${currentYear}-${dp[0].padStart(2,'0')}-${dp[1].trim().padStart(2,'0')}`;
-            // 비행기 편명에 따라 기본 시간 설정 (예: TW126은 아침샌딩 등)
             const sTime = (flightOut === 'TW126') ? "08:30" : "21:00";
             items.push({ 
                 name: `✈️ 공항 샌딩 (${flightOut})`, 
@@ -698,29 +671,29 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // 날짜 순 정렬
         items.sort((a, b) => a.date.localeCompare(b.date) || (a.time || "00:00").localeCompare(b.time || "00:00"));
 
         const reservationData = {
             reservationNumber: 'Q' + Date.now().toString().slice(-8),
-            customerKorName: customerName,
-            engName: parts[10] || '', // 영어 이름 저장
+            customerKorName: `${customerName} (${engName})`, // 한글(영문) 합침
+            engName: exchangeMoney ? `$ ${exchangeMoney}` : '-', // 바우처의 환전요청 칸에 표시
             contact: agency, 
             pickupResort: pickupResort,
             sendingResort: pickupResort,
             items: items, 
             status: '예약확정', 
-            exchangeAmount: paxDetail, 
+            exchangeAmount: paxDetail, // 바우처의 인원정보 칸에 표시
             createdAt: new Date()
         };
 
         try {
+            const { collection, addDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
             const docRef = await addDoc(collection(db, "quick_vouchers"), reservationData);
             const url = `${window.location.origin}/reservation-schedule.html?id=${docRef.id}&type=quick`;
             if (confirm(`퀵바우처 생성 완료!\n링크를 복사하시겠습니까?`)) { 
                 navigator.clipboard.writeText(url).then(() => alert('복사되었습니다.')); 
             }
-        } catch (e) { console.error(e); alert('저장 실패'); }
+        } catch (e) { console.error("Firestore Error:", e); alert('저장 실패: ' + e.message); }
     };
 
     window.closeModal = () => document.getElementById('res-detail-modal').style.display = 'none';

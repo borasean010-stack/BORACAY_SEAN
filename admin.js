@@ -215,12 +215,30 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.ss-nav-item').forEach(el => el.classList.remove('active'));
         const sideMenu = document.getElementById(`menu-${tab}`);
         if(sideMenu) sideMenu.classList.add('active');
+        
         const scheduleSection = document.getElementById('schedule-section');
         const statusLayer = document.getElementById('status-layer');
         const dataViewSection = document.getElementById('data-view-section');
         const systemSection = document.getElementById('system-setup-section');
-        if (tab === 'system') { scheduleSection.style.display = 'none'; statusLayer.style.display = 'none'; dataViewSection.style.display = 'block'; systemSection.style.display = 'block'; }
-        else { scheduleSection.style.display = 'block'; statusLayer.style.display = 'flex'; dataViewSection.style.display = 'block'; systemSection.style.display = 'none'; document.querySelectorAll('.ss-status-card').forEach(el => el.classList.remove('active')); const statusCard = document.getElementById(`tab-${tab}`); if(statusCard) statusCard.classList.add('active'); }
+        
+        if (tab === 'system') { 
+            scheduleSection.style.display = 'none'; 
+            statusLayer.style.display = 'none'; 
+            dataViewSection.style.display = 'none'; 
+            systemSection.style.display = 'block'; 
+            document.getElementById('breadcrumb-active').innerText = '시스템 설정';
+        }
+        else { 
+            scheduleSection.style.display = 'block'; 
+            statusLayer.style.display = 'flex'; 
+            dataViewSection.style.display = 'block'; 
+            systemSection.style.display = 'none'; 
+            document.querySelectorAll('.ss-status-card').forEach(el => el.classList.remove('active')); 
+            const statusCard = document.getElementById(`tab-${tab}`); 
+            if(statusCard) statusCard.classList.add('active');
+            document.getElementById('breadcrumb-active').innerText = 
+                tab === 'new' ? '신규예약' : tab === 'confirmed' ? '예약확정' : tab === 'resorts' ? '리조트 견적' : '리조트 확정';
+        }
         renderTable();
     };
 

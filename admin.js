@@ -220,12 +220,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const statusLayer = document.getElementById('status-layer');
         const dataViewSection = document.getElementById('data-view-section');
         const systemSection = document.getElementById('system-setup-section');
+        const quickVoucherSection = document.getElementById('quick-voucher-section');
         
         if (tab === 'system') { 
             scheduleSection.style.display = 'none'; 
             statusLayer.style.display = 'none'; 
             dataViewSection.style.display = 'none'; 
             systemSection.style.display = 'block'; 
+            if(quickVoucherSection) quickVoucherSection.style.display = 'none';
             document.getElementById('breadcrumb-active').innerText = '시스템 설정';
         }
         else { 
@@ -233,6 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
             statusLayer.style.display = 'flex'; 
             dataViewSection.style.display = 'block'; 
             systemSection.style.display = 'none'; 
+            if(quickVoucherSection) quickVoucherSection.style.display = 'block';
             document.querySelectorAll('.ss-status-card').forEach(el => el.classList.remove('active')); 
             const statusCard = document.getElementById(`tab-${tab}`); 
             if(statusCard) statusCard.classList.add('active');

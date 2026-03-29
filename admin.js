@@ -655,11 +655,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     let itemName = trimmed.replace(dateMatch[0], '').replace(timeMatch ? timeMatch[0] : '', '').replace(/GET\$.*|잔금.*|\$.*/g, '').trim();
                     let itemDetails = trimmed;
                     
-                    // --- 🚀 [핵심 추가] 'pick up' 장소 분석 ---
+                    // --- 🚀 [핵심 추가] 'AFH', 'ATM', 'pick up' 분석 ---
                     const lowerLine = trimmed.toLowerCase();
-                    if (lowerLine.includes('pick up') || lowerLine.includes('픽업')) {
+                    let itemTime = timeMatch ? `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}` : "";
+
+                    if (lowerLine.includes('afh')) {
+                        itemDetails = "호핑투어 후 바로 이동";
+                        if (!itemTime) itemTime = "18:00"; // 호핑(13:30) 이후로 정렬
+                    } else if (lowerLine.includes('atm')) {
+                        itemDetails = "말룸파티 후 바로 이동";
+                        if (!itemTime) itemTime = "17:00"; // 말룸파티 이후로 정렬
+                    } else if (lowerLine.includes('pick up') || lowerLine.includes('픽업')) {
                         if (!lowerLine.includes('no need')) {
-                            // 'pick up' 앞의 단어를 장소로 추정
                             const pickPart = trimmed.split(/pick up|픽업/i)[0].trim();
                             const words = pickPart.split(' ');
                             const lastWord = words[words.length - 1].replace(/[()]/g, ''); 

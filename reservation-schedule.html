@@ -208,10 +208,29 @@
             }
 
             if (res) {
-                document.getElementById('v-name').innerText = res.customerKorName || '-';
+                // 🚀 지시사항: 웹사이트 예약과 퀵바우처 데이터 매핑 정규화
+                const isQuick = (type === 'quick');
+                
+                // 대표자명 (영문명 포함)
+                const korName = res.customerKorName || '-';
+                const engName = res.engName || '-';
+                
+                document.getElementById('v-name').innerText = isQuick ? korName : `${korName} (${engName})`;
                 document.getElementById('v-agency').innerText = res.contact || '-';
-                document.getElementById('v-pax').innerText = res.exchangeAmount || '-';
-                document.getElementById('v-exchange').innerText = res.engName || '-';
+
+                // 환전요청 및 인원정보 (필드 꼬임 해결)
+                if (isQuick) {
+                    // 퀵바우처는 이전에 engName에 환전금액을, exchangeAmount에 인원정보를 넣었음
+                    document.getElementById('v-exchange').innerText = res.engName || '-';
+                    document.getElementById('v-pax').innerText = res.exchangeAmount || '-';
+                } else {
+                    // 홈페이지 예약은 exchangeAmount가 환전금액임
+                    document.getElementById('v-exchange').innerText = res.exchangeAmount || '-';
+                    
+                    // 홈페이지 예약의 인원정보는 아이템에서 추출하거나 별도 로직 필요 (없으면 '-' 혹은 합계)
+                    const totalPax = res.items && res.items[0] ? `${res.items[0].count}명` : '-';
+                    document.getElementById('v-pax').innerText = totalPax;
+                }
 
                 let allItems = [];
                 const rawItems = res.items || [];

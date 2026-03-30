@@ -1,4 +1,4 @@
-// admin.js - Final Full Luxury Admin (Total Integration)
+// admin.js - Final Full Luxury Admin (Dashboard Tool + Buttons + Detail + Edit + Logic)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, where, getDocs, addDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -28,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentScheduleFilter = 'all';
     let currentScheduleDay = 'today'; 
 
-    // 🚀 1. Login
     function showAdminPanel() {
         if (!loginContainer || !adminContainer) return;
         loginContainer.style.display = 'none';
@@ -61,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('logout-btn').onclick = () => { sessionStorage.removeItem('isAdminLoggedIn'); location.reload(); };
 
-    // 🚀 2. Data Fetching
     function fetchData() {
         if (!db) return;
         onSnapshot(query(collection(db, "reservations"), orderBy("createdAt", "desc")), (snap) => {
@@ -104,7 +102,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (tmBox) tmBox.innerText = tomorrowStr;
     }
 
-    // 🚀 3. Timeline & Filtering
     window.switchScheduleDay = (day) => { currentScheduleDay = day; hideInputArea(); renderSchedule(); };
     window.filterSchedule = (category) => {
         currentScheduleFilter = category;
@@ -154,7 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
         container.innerHTML = items.map(item => `<div class="schedule-card" onclick="showDetail('${item.id}', '${item.source}')" style="border-top-color: ${item.status.includes('확정') ? '#ff6a00' : '#00c73c'}; min-width:250px;"><div class="sc-status" style="background: ${item.status.includes('확정') ? '#ff6a00' : '#00c73c'}; color:white;">${item.status}</div><div class="sc-time"><span class="material-icons">access_time</span> ${item.time}</div><div class="sc-item">${item.name}</div><div class="sc-info"><div class="sc-customer"><b>${item.customer}</b> ${item.count}명</div></div></div>`).join('');
     }
 
-    // 🚀 4. Sidebar & Tab Navigation
     window.switchMainView = () => {
         document.querySelectorAll('.ss-nav-item').forEach(el => el.classList.remove('active'));
         const firstNav = document.querySelector('.ss-nav-item:first-child');
@@ -163,7 +159,6 @@ document.addEventListener('DOMContentLoaded', () => {
         activeTab = 'new'; 
         document.getElementById('system-setup-section').style.display = 'none';
         document.getElementById('data-view-section').style.display = 'block';
-        hideInputArea();
         renderTable();
     };
 
@@ -184,10 +179,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (bActive) { const labels = { 'new': '신규예약', 'confirmed': '예약확정', 'resorts': '리조트 견적', 'resort-confirmed': '리조트 확정' }; bActive.innerText = labels[tab] || '메인 페이지'; }
             renderTable();
         }
-        hideInputArea();
     };
 
-    // 🚀 5. Table Rendering
     function renderTable() {
         if (!tableBody) return;
         tableBody.innerHTML = '';
@@ -218,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 🚀 6. 럭셔리 상세창 완벽 복구 (지시사항: 픽업샌딩 날짜 포함)
+    // 🚀 6. 럭셔리 상세창 완벽 복구 및 데이터 매핑 정규화
     window.showDetail = (id, source) => {
         const res = source === 'schedule' ? allSchedules.find(s => s.id === id) : allReservations.find(r => r.id === id);
         if (!res) return;
@@ -236,7 +229,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const itemsHtml = (res.items || []).map((item, idx) => `<div style="padding:12px; background:#f8f9fa; border:1px solid #eee; border-radius:8px; margin-bottom:8px;"><div style="display:flex; justify-content:space-between;"><div style="font-size:15px; font-weight:800;">${item.name}</div><div style="font-size:14px; font-weight:800; color:#ff6a00;">${item.count}명</div></div><div style="margin-top:6px; font-size:13px; color:#666;">📅 ${item.date} ${item.time || ''}</div>${!isQuote ? `<div style="margin-top:10px; display:flex; gap:5px;"><a href="reservation-schedule.html?id=${res.id}&itemIndex=${idx}" target="_blank" style="flex:1; text-align:center; padding:6px; background:#fff; border:1px solid #ddd; border-radius:4px; font-size:11px; text-decoration:none; color:#333;">바우처</a><button onclick="copyVoucherLink('${res.id}', ${idx})" style="flex:1; padding:6px; background:#ff6a00; color:white; border:none; border-radius:4px; font-size:11px; cursor:pointer;">복사</button></div>` : ''}</div>`).join('');
         
-        const hasFlight = res.pickupDate || res.sendingDate || res.exchangeAmount;
+        // 🚀 퀵바우처와 홈페이지 예약의 필드 꼬임 방어 로직
+        const isQuick = id.startsWith('Q') || (res.reservationNumber && res.reservationNumber.startsWith('Q'));
+        const displayEngName = isQuick ? (res.customerKorName.split('(')[1]?.replace(')','') || '-') : (res.engName || '-');
+        const displayExchange = isQuick ? (res.engName || '-') : (res.exchangeAmount || '-');
+        const displayPax = isQuick ? (res.exchangeAmount || '-') : (res.items?.[0]?.count ? `${res.items[0].count}명` : '-');
 
         body.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:1px solid #eee;">
@@ -246,15 +243,16 @@ document.addEventListener('DOMContentLoaded', () => {
             <div id="modal-scroll-area" style="max-height: 60vh; overflow-y: auto;">
                 <div style="margin-bottom:20px;">${totalVoucherBtn}${itemsHtml}</div>
                 <div style="background:#fcfcfc; padding:15px; border-radius:10px; border:1px solid #f0f0f0; margin-bottom:20px;">
-                    <p style="margin:0;">이름 | <b>${res.customerKorName}</b> (${res.engName || '-'})</p>
+                    <p style="margin:0;">이름 | <b>${res.customerKorName.split('(')[0].trim()}</b> (${displayEngName})</p>
                     <p style="margin:5px 0 0 0;">연락처 | <b>${res.contact}</b></p>
+                    <p style="margin:5px 0 0 0;">인원 | <b>${displayPax}</b></p>
                 </div>
-                ${!isQuote && hasFlight ? `
+                ${!isQuote ? `
                 <div style="background:#fff5eb; padding:15px; border-radius:10px; border:1px solid #ffe8cc; margin-bottom:20px;">
                     <div style="font-weight:bold; margin-bottom:10px; color:#ff6a00;">✈️ 항공 및 환전 정보</div>
                     ${res.pickupDate ? `<p style="margin:5px 0; font-size:13px;"><b>픽업:</b> ${res.pickupDate} / ${res.pickupFlight || '-'} / ${res.pickupResort || '-'}</p>` : ''}
                     ${res.sendingDate ? `<p style="margin:5px 0; font-size:13px;"><b>샌딩:</b> ${res.sendingDate} / ${res.sendingFlight || '-'} / ${res.sendingResort || '-'}</p>` : ''}
-                    ${res.exchangeAmount ? `<p style="margin-top:10px; padding-top:10px; border-top:1px dashed #ffd8a8;"><b>💰 환전:</b> <span style="font-size:15px; color:#e67e22; font-weight:800;">${res.exchangeAmount}</span></p>` : ''}
+                    <p style="margin-top:10px; padding-top:10px; border-top:1px dashed #ffd8a8;"><b>💰 환전:</b> <span style="font-size:15px; color:#e67e22; font-weight:800;">${displayExchange}</span></p>
                 </div>` : ''}
                 <div style="padding:10px; background:#f8f9fa; border-radius:6px; font-size:13px; white-space:pre-wrap;"><b>[요청사항]</b>\n${res.requests || '없음'}</div>
             </div>
@@ -280,7 +278,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.hideInputArea = () => { const qa = document.getElementById('input-area-quick'), ra = document.getElementById('input-area-reg'); if(qa) qa.style.display = 'none'; if(ra) ra.style.display = 'none'; };
     window.closeModal = () => { document.getElementById('res-detail-modal').style.display = 'none'; };
 
-    // 🚀 8. 수정 모드 복구
     window.toggleEditMode = (id) => {
         const res = allReservations.find(r => r.id === id); if (!res) return;
         const scrollArea = document.getElementById('modal-scroll-area');
@@ -294,7 +291,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // 🚀 9. Business Logic
     window.registerBulkSchedule = async () => {
         const inputVal = document.getElementById('schedule-reg-input').value.trim(); if (!inputVal) return;
         const lines = inputVal.split('\n'); const currentYear = new Date().getFullYear(); const batch = writeBatch(db); let count = 0;
@@ -307,8 +303,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (dm) {
                     const dateStr = `${currentYear}-${dm[1].padStart(2,'0')}-${dm[2].padStart(2,'0')}`;
                     let itemName = rLine.replace(dm[0], '').replace(/GET\$.*|잔금.*|\$.*/g, '').trim();
-                    const isDup = allSchedules.some(s => s.customerName === customerName && s.date === dateStr && s.name === itemName);
-                    if (!isDup) { batch.set(doc(collection(db, "schedules")), { customerName, name: itemName, date: dateStr, time: "09:00", count: (parseInt(parts[11]) || 0), createdAt: new Date() }); count++; }
+                    if (!allSchedules.some(s => s.customerName === customerName && s.date === dateStr && s.name === itemName)) {
+                        batch.set(doc(collection(db, "schedules")), { customerName, name: itemName, date: dateStr, time: "09:00", count: (parseInt(parts[11]) || 0), createdAt: new Date() }); count++;
+                    }
                 }
             });
         }
@@ -327,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 items.push({ name: line.replace(dm[0], '').trim(), date: dateStr, time: "09:00", count: (parseInt(parts[11]) || 0), details: line });
             }
         });
-        const resData = { customerKorName: `${customerName} (${engName})`, contact: (parts[14] || '').trim(), items, status: '예약확정', createdAt: new Date() };
+        const resData = { customerKorName: customerName, engName: engName, contact: (parts[14] || '').trim(), items, status: '예약확정', exchangeAmount: (parts[24] || parts[4] || '-').trim(), createdAt: new Date() };
         const docRef = await addDoc(collection(db, "quick_vouchers"), resData);
         navigator.clipboard.writeText(`${window.location.origin}/reservation-schedule.html?id=${docRef.id}&type=quick`).then(() => alert('바우처 생성 및 링크 복사 완료!'));
         hideInputArea();

@@ -564,24 +564,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 const lowerLine = trimmed.toLowerCase();
                 let itemName = trimmed.replace(dm[0], '').replace(/GET\$.*|잔금.*|\$.*/g, '').trim();
                 let itemTime = "";
+                let itemDetails = trimmed;
 
-                if (lowerLine.includes('land')) { itemName = '보라카이 랜드투어'; itemTime = "10:30"; }
+                const tm = trimmed.match(/(\d{1,2}):(\d{2})/);
+                if (tm) itemTime = `${tm[1].padStart(2,'0')}:${tm[2]}`;
+
+                if (lowerLine.includes('land')) { itemName = '보라카이 랜드투어'; if (!itemTime) itemTime = "10:30"; }
                 else if (lowerLine.includes('hopping')) {
-                    if (lowerLine.includes('(j)')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; itemTime = "12:30"; }
-                    else if (lowerLine.includes('(s)')) { itemName = '블랙펄 선셋 호핑투어'; itemTime = "13:30"; }
+                    if (lowerLine.includes('(j)')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if (!itemTime) itemTime = "12:30"; }
+                    else if (lowerLine.includes('(s)')) { itemName = '블랙펄 선셋 호핑투어'; if (!itemTime) itemTime = "13:30"; }
                     else { itemName = '블랙펄 요트호핑'; }
-                } else if (lowerLine.includes('sspa')) { itemName = '에스파(S-SPA)'; }
-                else if (lowerLine.includes('luna')) { itemName = '루나스파'; }
+                } else if (lowerLine.includes('sspa') || itemName.includes('에스파')) { 
+                    itemName = '에스파(S-SPA)'; 
+                    if (lowerLine.includes('afh')) { itemTime = "18:00"; itemDetails = "호핑투어 후 바로 이동"; }
+                    else if (lowerLine.includes('afm')) { itemTime = "17:00"; itemDetails = "말룸파티 후 바로 이동"; }
+                } else if (lowerLine.includes('luna') || itemName.includes('루나')) { 
+                    itemName = '루나스파'; 
+                    if (lowerLine.includes('afh')) { itemTime = "18:00"; itemDetails = "호핑투어 후 바로 이동"; }
+                    else if (lowerLine.includes('afm')) { itemTime = "17:00"; itemDetails = "말룸파티 후 바로 이동"; }
+                }
 
-                items.push({ name: itemName, date: dateStr, time: itemTime, count: totalPaxCount, details: trimmed });
+                items.push({ name: itemName, date: dateStr, time: itemTime, count: totalPaxCount, details: itemDetails });
             }
         });
 
-        if ((parts[2] || '').match(/[A-Z]{2}\d{2,}/)) items.unshift({ name: `✈️ 공항 픽업 (${parts[2]})`, date: `${currentYear}-${parts[0].split('/')[0].padStart(2,'0')}-${parts[0].split('/')[1].trim().padStart(2,'0')}`, time: " ", count: totalPaxCount, details: `리조트 : ${resort}` });
-        if ((parts[3] || '').match(/[A-Z]{2}\d{2,}/)) {
-            let sTime = (parts[3].toUpperCase() === 'TW126') ? "08:30" : "21:00";
-            items.push({ name: `✈️ 공항 샌딩 (${parts[3]})`, date: `${currentYear}-${parts[1].split('/')[0].padStart(2,'0')}-${parts[1].split('/')[1].trim().padStart(2,'0')}`, time: sTime, count: totalPaxCount, details: `리조트 : ${resort}` });
+        if ((parts[2] || '').match(/[A-Z]{2}\d{2,}/) && (parts[0] || '').includes('/')) {
+            const dp = parts[0].split('/');
+            items.push({ name: `✈️ 공항 픽업 (${parts[2]})`, date: `${currentYear}-${dp[0].padStart(2,'0')}-${dp[1].trim().padStart(2,'0')}`, time: "00:01", count: totalPaxCount, details: `리조트 : ${resort}` });
         }
+        if ((parts[3] || '').match(/[A-Z]{2}\d{2,}/) && (parts[1] || '').includes('/')) {
+            const dp = parts[1].split('/');
+            let sTime = (parts[3].toUpperCase() === 'TW126') ? "08:30" : "21:00";
+            items.push({ name: `✈️ 공항 샌딩 (${parts[3]})`, date: `${currentYear}-${dp[0].padStart(2,'0')}-${dp[1].trim().padStart(2,'0')}`, time: sTime, count: totalPaxCount, details: `리조트 : ${resort}` });
+        }
+
+        items.sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
 
         const reservationData = {
             reservationNumber: 'Q' + Date.now().toString().slice(-8),

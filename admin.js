@@ -318,8 +318,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const bActive = document.getElementById('breadcrumb-active');
         if (tab === 'system') {
             document.getElementById('system-setup-section').style.display = 'block';
-            document.getElementById('data-view-section').style.display = 'none';
+            document.getElementById('data-view-section').style.display = 'block';
             if (bActive) bActive.innerText = '시스템 초기화';
+            renderCleanupTable();
         } else {
             document.getElementById('system-setup-section').style.display = 'none';
             document.getElementById('data-view-section').style.display = 'block';
@@ -335,10 +336,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
         const filtered = allReservations.filter(r => {
             const name = (r.customerKorName || '').toLowerCase();
-            let matchesTab = true;
+            let matchesTab = false;
             if (activeTab === 'new') matchesTab = (r.status === '입금대기' || r.status === '예약접수');
             else if (activeTab === 'confirmed') matchesTab = (r.status === '예약확정');
-            else if (activeTab === 'resorts') matchesTab = (r.status === '견적');
+            else if (activeTab === 'resorts') matchesTab = (r.status === '견적' || r.status === '견적완료');
             else if (activeTab === 'resort-confirmed') matchesTab = (r.status === '리조트확정');
             return name.includes(searchTerm) && matchesTab;
         });
@@ -354,6 +355,28 @@ document.addEventListener('DOMContentLoaded', () => {
             tableBody.appendChild(tr);
         });
     }
+
+    window.deleteSingleReservation = async (id) => {
+        if (confirm("이 예약을 정말로 삭제하시겠습니까?")) {
+            try {
+                await deleteDoc(doc(db, "reservations", id));
+                alert("삭제되었습니다.");
+                fetchData();
+            } catch (e) { alert("삭제 실패"); }
+        }
+    };
+
+    function renderCleanupTable() {
+        if (!tableBody) return;
+        tableBody.innerHTML = '';
+        allReservations.forEach((res, index) => {
+            const tr = document.createElement('tr');
+            const firstItem = (res.items?.[0]?.name || '-') + (res.items?.length > 1 ? ` 외 ${res.items.length-1}건` : '');
+            tr.innerHTML = `<td><input type="checkbox"></td><td style="color:#bbb;">${allReservations.length - index}</td><td>${res.reservationNumber || '-'}</td><td><b>${res.customerKorName}</b></td><td>${firstItem}</td><td>₩ ${(res.totalPrice || 0).toLocaleString()}</td><td>-</td><td>${res.status}</td><td><button class="btn-action-received" style="background:#ff4b4b; border-color:#ff4b4b;" onclick="deleteSingleReservation('${res.id}')"><span class="material-icons">delete</span>단품삭제</button></td>`;
+            tableBody.appendChild(tr);
+        });
+    }
+
 
     window.showDetail = (id, source) => {
         const res = source === 'schedule' ? allSchedules.find(s => s.id === id) : allReservations.find(r => r.id === id);

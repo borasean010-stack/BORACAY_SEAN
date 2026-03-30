@@ -65,7 +65,7 @@
         <div class="section-title">예약자 정보</div>
         <div class="info-grid">
             <div class="info-item"><label>대표자명</label><span id="v-name">-</span></div>
-            <div class="info-item"><label>연락처</label><span id="v-agency">-</span></div>
+            <div class="info-item"><label id="label-agency">연락처</label><span id="v-agency">-</span></div>
             <div class="info-item"><label id="label-exchange">환전요청</label><span id="v-exchange">-</span></div>
             <div class="info-item"><label id="label-pax">인원정보</label><span id="v-pax">-</span></div>
         </div>
@@ -223,11 +223,13 @@
                 
                 document.getElementById('v-name').innerText = isQuick ? korName : `${korName} (${engName})`;
                 document.getElementById('v-agency').innerText = res.contact || '-';
-
+                
                 if (isQuick) {
+                    document.getElementById('label-agency').innerText = '구매처';
                     document.getElementById('v-exchange').innerText = res.exchangeAmount || '-';
                     document.getElementById('v-pax').innerText = res.paxInfo || '-';
                 } else {
+                    document.getElementById('label-agency').innerText = '연락처';
                     document.getElementById('v-exchange').innerText = res.exchangeAmount || '-';
                     const totalPax = res.items && res.items[0] ? `${res.items[0].count}명` : '-';
                     document.getElementById('v-pax').innerText = totalPax;

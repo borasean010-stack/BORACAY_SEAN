@@ -647,8 +647,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const checkOut = parts[1] || '';     
         const flightIn = (parts[2] || '').toUpperCase();     
         const flightOut = (parts[3] || '').toUpperCase();    
-        // 환전 요청 금액 ($190 등)
-        const exchangeMoney = (parts[24] || parts[4] || '').replace(/^"|"$/g, '').trim(); 
+        
+        // --- 🚀 [핵심 수정] 환전 요청 금액 검증 강화 (날짜 형식 차단 및 기호 정제) ---
+        let rawExchange = (parts[24] || parts[4] || '').replace(/^"|"$/g, '').trim(); 
+        let exchangeMoney = '-'; 
+        
+        if (rawExchange && !rawExchange.includes('/')) {
+            // $, 불 기호가 있거나 순수 숫자(또는 숫자로 시작)인 경우만 인정
+            const hasNum = /\d/.test(rawExchange);
+            const hasSign = rawExchange.includes('$') || rawExchange.includes('불');
+            const isNumeric = /^\d/.test(rawExchange.replace(/[^0-9]/g, ''));
+
+            if (hasNum && (hasSign || isNumeric)) {
+                // 이미 $가 붙어있으면 그대로, 없으면 붙여줌 (단, '불'로 끝나는 경우는 예외처리 고민 가능하나 일단 $로 통일 혹은 그대로)
+                exchangeMoney = rawExchange.startsWith('$') ? rawExchange : `$ ${rawExchange}`;
+            }
+        }
+
+            else if (rawExchange.includes('$') || rawExchange.includes('불') || /^\d+(,\d+)*$/.test(rawExchange.replace(/[^0-9]/g, ''))) {
+                // 의미 있는 숫자가 하나라도 있어야 함
+                if (/\d/.test(rawExchange)) {
+                    exchangeMoney = rawExchange;
+                }
+            }
+        }
         
         const resortRaw = parts[9] || '';
         const pickupResort = translateResort(resortRaw);

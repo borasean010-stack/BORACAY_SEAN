@@ -131,7 +131,7 @@
             }
         }
         // 4. 말룸파티
-        if (name.includes('말룸파티')) {
+        if (name.includes('말룸파티') || name.toLowerCase().includes('malum')) {
             const isSending = name.includes('샌딩') || details.includes('샌딩');
             if (isSending) {
                 return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : 09:00 / ${res.pickupResort || '리조트 로비'}</b>\n\n★★ 주의 사항 및 준비물 ★★\n\n*주의 사항 - 미팅시간에서 10분이상 늦으시면 노쇼처리되며, 별도 연락 없이 출발합니다. 이 경우 환불 및 일정 변경 불가하오니 꼭 미리 체크아웃과 룸체크를 진행하고 기다려주세요\n\n편한 물놀이 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n튜빙 진행시 1인 350페소 준비해 주세요\n여권 정보면과 호텔 바우쳐 사진으로 폰에 저장(선택)\n그외 개인적으로 필요한 물품\n\n칼리보 공항 공항세 1인 900페소(공항 현지불 / 필수사항)\nBK라운지 샤워실 이용비용 1인 100페소(라운지 현지불)</div>`;

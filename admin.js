@@ -42,7 +42,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 'luca': 'luca1', 
                 'zohan': 'zohan1', 
                 'windy': 'windy1', 
-                'sean': 'sean1'
+                'sean': 'sean1',
+                'kelly': 'kelly1',
+                'leo': 'leo1',
+                'anna': 'anna1',
+                'pablo': 'pablo1',
+                'josh': 'josh1',
+                'kay': 'kay1',
+                'tina': 'tina1'
             };
             if (admins[id] && admins[id] === pw) {
                 sessionStorage.setItem('isAdminLoggedIn', 'true');

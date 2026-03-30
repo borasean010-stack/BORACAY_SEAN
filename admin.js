@@ -185,27 +185,26 @@ document.addEventListener('DOMContentLoaded', () => {
             return n.trim();
         };
 
-        const rawCustomerName = (parts[22] || parts[6] || '').trim();
-        const nameCandidate = (parts[15] || '').trim(); // 김세림 위치
-        const remarksPart = (parts[16] || '').replace(/^"|"$/g, '').trim();
-        const extraPart1 = (parts[17] || '').replace(/^"|"$/g, '').trim();
-        const fullRemarks = `${remarksPart}\n${extraPart1}`.trim();
-
-        // 🚀 성함 추출: 기본 칸이 없으면 김세림 후보 칸 확인
-        let customerName = rawCustomerName || nameCandidate || "미입력";
-
-        // 🚀 환전 금액: 날짜(/) 포함 시 무조건 제외
-        let rawExchange = (parts[24] || parts[4] || '').replace(/^"|"$/g, '').trim(); 
-        let exchangeMoney = (rawExchange && !rawExchange.includes('/') && (rawExchange.includes('$') || rawExchange.includes('불') || /^\d+$/.test(rawExchange.replace(/[^0-9]/g, '')))) ? rawExchange : '-';
-
+        // 🚀 지시사항 매핑 (김세림 데이터 기준)
+        const agencySource = (parts[14] || '').trim(); // 스마트스토어
+        const customerName = (parts[15] || '').trim(); // 김세림
+        const engName = (parts[10] || '').trim();      // parkcheonhyo
         const pax = parseInt(parts[11]) || 0; 
         const chd = parseInt(parts[12]) || 0; 
         const inf = parseInt(parts[13]) || 0; 
         const totalPaxCount = pax + chd + inf;
         const resort = translateResort(parts[9] || '');
-        const items = [];
 
-        // 🚀 투어 리스트: 상품명 변환 및 시간 고정
+        // 🚀 환전 요청 필터링 강화
+        let rawExchange = (parts[24] || parts[4] || '').replace(/^"|"$/g, '').trim(); 
+        let exchangeMoney = (rawExchange && !rawExchange.includes('/') && (rawExchange.includes('$') || rawExchange.includes('불') || /^\d+$/.test(rawExchange.replace(/[^0-9]/g, '')))) ? rawExchange : '-';
+
+        const remarksPart = (parts[16] || '').replace(/^"|"$/g, '').trim();
+        const extraPart1 = (parts[17] || '').replace(/^"|"$/g, '').trim();
+        const fullRemarks = `${remarksPart}\n${extraPart1}`.trim();
+
+        const items = [];
+        // 🚀 투어 상품명 변환 및 시간 고정
         fullRemarks.split('\n').forEach(line => {
             const trimmed = line.trim();
             const dm = trimmed.match(/^(\d{1,2})\/(\d{1,2})/);
@@ -215,39 +214,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 let itemName = trimmed.replace(dm[0], '').replace(/GET\$.*|잔금.*|\$.*/g, '').trim();
                 let itemTime = "";
 
-                if (lowerLine.includes('land')) { 
-                    itemName = '보라카이 랜드투어'; itemTime = "10:30"; 
-                } else if (lowerLine.includes('hopping')) {
+                if (lowerLine.includes('land')) { itemName = '보라카이 랜드투어'; itemTime = "10:30"; }
+                else if (lowerLine.includes('hopping')) {
                     if (lowerLine.includes('(j)')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; itemTime = "12:30"; }
                     else if (lowerLine.includes('(s)')) { itemName = '블랙펄 선셋 호핑투어'; itemTime = "13:30"; }
                     else { itemName = '블랙펄 요트호핑'; }
-                } else if (lowerLine.includes('sspa') || itemName.includes('에스파')) { 
-                    itemName = '에스파(S-SPA)'; 
-                } else if (lowerLine.includes('luna') || itemName.includes('루나')) { 
-                    itemName = '루나스파'; 
-                }
+                } else if (lowerLine.includes('sspa')) { itemName = '에스파(S-SPA)'; }
+                else if (lowerLine.includes('luna')) { itemName = '루나스파'; }
 
-                // 줄별 개별 인원 체크 (4+3 등)
-                let itemPax = totalPaxCount;
-                const plusMatch = trimmed.match(/(\d+)\s*\+\s*(\d+)/);
-                if (plusMatch) { itemPax = parseInt(plusMatch[1]) + parseInt(plusMatch[2]); }
-                else {
-                    const unitMatch = trimmed.match(/(\d+)\s*(명|인|pax)/i);
-                    if (unitMatch) { itemPax = parseInt(unitMatch[1]); }
-                }
-                items.push({ name: itemName, date: dateStr, time: itemTime, count: itemPax, details: trimmed });
+                items.push({ name: itemName, date: dateStr, time: itemTime, count: totalPaxCount, details: trimmed });
             }
         });
 
-        // 픽업/샌딩 자동 추가
+        // 🚀 공항 이동 (TW126 샌딩 시간 08:30 고정)
         if ((parts[2] || '').match(/[A-Z]{2}\d{2,}/)) items.unshift({ name: `✈️ 공항 픽업 (${parts[2]})`, date: `${currentYear}-${parts[0].split('/')[0].padStart(2,'0')}-${parts[0].split('/')[1].trim().padStart(2,'0')}`, time: " ", count: totalPaxCount, details: `리조트 : ${resort}` });
-        if ((parts[3] || '').match(/[A-Z]{2}\d{2,}/)) items.push({ name: `✈️ 공항 샌딩 (${parts[3]})`, date: `${currentYear}-${parts[1].split('/')[0].padStart(2,'0')}-${parts[1].split('/')[1].trim().padStart(2,'0')}`, time: "21:00", count: totalPaxCount, details: `리조트 : ${resort}` });
+        if ((parts[3] || '').match(/[A-Z]{2}\d{2,}/)) {
+            let sTime = (parts[3].toUpperCase() === 'TW126') ? "08:30" : "21:00";
+            items.push({ name: `✈️ 공항 샌딩 (${parts[3]})`, date: `${currentYear}-${parts[1].split('/')[0].padStart(2,'0')}-${parts[1].split('/')[1].trim().padStart(2,'0')}`, time: sTime, count: totalPaxCount, details: `리조트 : ${resort}` });
+        }
 
         const reservationData = {
             reservationNumber: 'Q' + Date.now().toString().slice(-8),
-            customerKorName: `${customerName} (${parts[10] || '-'})`,
+            customerKorName: `${customerName} (${engName})`,
             engName: exchangeMoney,
-            contact: parts[14] || '', 
+            contact: agencySource, // 구매처
             pickupResort: resort,
             items: items, 
             status: '예약확정', 

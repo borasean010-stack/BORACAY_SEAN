@@ -349,7 +349,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = '보라스파';
                     else if (lowerLine.includes('para')) itemName = '파라세일링';
                     else if (lowerLine.includes('diving')) itemName = '체험다이빙';
-                    else if (lowerLine.includes('zetski')) itemName = '제트스키';                    
+                    else if (lowerLine.includes('zetski')) itemName = '제트스키';
+                    else if (lowerLine.includes('helmet')) itemName = '헬멧다이빙';
                     if (rLine.includes('afh') || rLine.includes('AFH')) itemTime = "18:00";
                     else if (rLine.includes('afm') || rLine.includes('AFM')) itemTime = "17:00";
                     

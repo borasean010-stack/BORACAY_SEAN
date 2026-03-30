@@ -23,6 +23,7 @@ BORACAY SEAN is a comprehensive travel service website for Boracay, Philippines.
 ## Recently Implemented Changes (March 30, 2026)
 
 ### Admin System & Quick Voucher Updates
+- **환전 정보(exchangeAmount) 추출 로직 개선:** 엑셀 데이터의 인덱스 유연성을 확보하고 필터링 조건을 완화하여 퀵 바우처 생성 시 환전 금액이 누락되지 않도록 수정했습니다. (parts[23~25] 확인 및 필터링 최적화)
 - **Enhanced Pax Extraction Logic:** Improved the "Quick Voucher" generation feature in `admin.js` to accurately parse the number of people (pax) from the remarks section.
     - Added support for various patterns like `4+3`, `2명`, `2인`, `2pax`, `인원 2`, and `[Product Name] 2`.
     - Implemented a more robust cleaning process that excludes dates, times, and currency amounts from the pax search string to prevent incorrect summing of values.

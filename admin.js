@@ -392,10 +392,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${currentYear}-${m}-${d}`; };
         
         const remarkRaw = (parts[16] || '').replace(/^"|"$/g, '');
+        // 💰 환전 금액 추출 개선 (기존 parts[24] 외에 23, 25도 확인하여 유연성 확보)
         let exVal = (parts[24] || '').trim();
+        if (!exVal || exVal === '0' || exVal === '-') exVal = (parts[23] || '').trim();
+        if (!exVal || exVal === '0' || exVal === '-') exVal = (parts[25] || '').trim();
+        
         const getMatch = remarkRaw.match(/GET\$(\d+)/i);
         if (getMatch && getMatch[1] === exVal) exVal = '-';
-        if (!exVal || exVal === '0' || exVal.includes('/') || exVal.includes('▲') || exVal.length > 10) exVal = '-';
+        // 과도한 필터링 완화 (날짜나 특수기호가 포함된 경우만 제외)
+        if (exVal.includes('/') || exVal.includes('▲') || exVal.length > 15) exVal = '-';
+        if (exVal === '0') exVal = '-';
 
         const items = [];
         if (parts[2] && parts[2].match(/[A-Z]{2}\d+/)) items.push({ name: `✈️ 공항 픽업 (${parts[2].toUpperCase()})`, date: formatDate(parts[0]), time: "14:00", count: totalPax });

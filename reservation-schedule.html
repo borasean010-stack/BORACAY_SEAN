@@ -177,13 +177,17 @@
             
             return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : ${meetingPlace}</b>${mapBtn}\n\n★ 준비물\n편한 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품</div>`;
         }
-        // 7. 액티비티 (파라세일링 등)
-        if (name.includes('파라세일링')) {
-            return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : 10:00 / 만다린베이 로비</b>\n\n★ 준비물\n편한 물놀이 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품</div>`;
+        // 7. 액티비티 (파라세일링, 다이빙, 프리다이빙, 헬멧다이빙 등)
+        if (name.includes('파라세일링') || name.includes('다이빙') || name.includes('헬멧') || name.includes('어드벤처') || name.includes('제트스키')) {
+            const meetingTime = item.time || "10:00";
+            const meetingPlace = res.pickupResort || "리조트 로비";
+            return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : ${meetingTime} / ${meetingPlace}</b>\n\n★ 준비물\n편한 물놀이 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품</div>`;
         }
         // 8. 골프
         if (name.includes('골프')) {
-            return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : 07:40 / 헤난 샌드</b>\n점심 포함 : 점보크랩\n\n★ 준비물\n→ 불포함사항\n- 골프채, 골프공, 골프슈즈, 골프글로브\n- 개인음료(그늘집 있음)\n- 캐디팁 - 1인 100페소(18홀기준, 캐디에게 직접 페이)\n- 복귀 트라이시클비용(편도 약 150페소)</div>`;
+            const meetingTime = item.time || "07:40";
+            const meetingPlace = res.pickupResort || "헤난 샌드";
+            return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : ${meetingTime} / ${meetingPlace}</b>\n점심 포함 : 점보크랩\n\n★ 준비물\n편한 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품\n\n→ 불포함사항\n- 골프채, 골프공, 골프슈즈, 골프글로브\n- 개인음료(그늘집 있음)\n- 캐디팁 - 1인 100페소(18홀기준, 캐디에게 직접 페이)\n- 복귀 트라이시클비용(편도 약 150페소)</div>`;
         }
         // 9. VIP 라운지
         if (name.includes('라운지') || name.includes('VIP')) {

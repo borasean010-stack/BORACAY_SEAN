@@ -238,9 +238,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalVoucherBtn = isQuote ? '' : `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;"><button onclick="copyCombinedVoucherLink('${res.contact}')" style="padding:12px; background:#00c73c; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;"><span class="material-icons" style="font-size:18px;">people</span> 통합 링크</button><button onclick="copyVoucherLink('${res.id}', null)" style="padding:12px; background:#ff6a00; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;"><span class="material-icons" style="font-size:18px;">share</span> 주문 일정</button></div>`;
         const itemsHtml = (res.items || []).map((item, idx) => `<div style="padding:12px; background:#f8f9fa; border:1px solid #eee; border-radius:8px; margin-bottom:8px;"><div style="display:flex; justify-content:space-between;"><div style="font-size:15px; font-weight:800;">${item.name}</div><div style="font-size:14px; font-weight:800; color:#ff6a00;">${item.count}명</div></div><div style="margin-top:6px; font-size:13px; color:#666;">📅 ${item.date} ${item.time || ''}</div>${!isQuote ? `<div style="margin-top:10px; display:flex; gap:5px;"><a href="reservation-schedule.html?id=${res.id}&itemIndex=${idx}" target="_blank" style="flex:1; text-align:center; padding:6px; background:#fff; border:1px solid #ddd; border-radius:4px; font-size:11px; text-decoration:none; color:#333;">바우처</a><button onclick="copyVoucherLink('${res.id}', ${idx})" style="flex:1; padding:6px; background:#ff6a00; color:white; border:none; border-radius:4px; font-size:11px; cursor:pointer;">복사</button></div>` : ''}</div>`).join('');
         const isQuick = id.startsWith('Q') || (res.reservationNumber && res.reservationNumber.startsWith('Q'));
-        const displayEngName = isQuick ? (res.engName || '-') : (res.engName || '-');
-        const displayExchange = isQuick ? (res.exchangeAmount || '-') : (res.exchangeAmount || '-');
-        const displayPax = isQuick ? (res.paxInfo || '-') : (res.items?.[0]?.count ? `${res.items[0].count}명` : '-');
+        const displayEngName = res.engName || '-';
+        const displayExchange = res.exchangeAmount || '-';
+        const displayPax = res.paxInfo || (res.items?.[0]?.count ? `${res.items[0].count}명` : '-');
 
         body.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:1px solid #eee;"><h3 style="margin:0;">예약 상세 정보</h3><button onclick="copyGuidance('${res.id}')" style="background:#ff6a00; color:white; border:none; padding:8px 14px; border-radius:6px; font-weight:bold; cursor:pointer;">👉 안내문 복사</button></div><div id="modal-scroll-area" style="max-height: 60vh; overflow-y: auto;"><div style="margin-bottom:20px;">${totalVoucherBtn}${itemsHtml}</div><div style="background:#fcfcfc; padding:15px; border-radius:10px; border:1px solid #f0f0f0; margin-bottom:20px;"><p style="margin:0;">이름 | <b>${res.customerKorName}</b> (${displayEngName})</p><p style="margin:5px 0 0 0;">연락처 | <b>${res.contact}</b></p><p style="margin:5px 0 0 0;">인원 | <b>${displayPax}</b></p></div>${!isQuote ? `<div style="background:#fff5eb; padding:15px; border-radius:10px; border:1px solid #ffe8cc; margin-bottom:20px;"><div style="font-weight:bold; margin-bottom:10px; color:#ff6a00;">✈️ 항공 및 환전 정보</div><p style="margin:5px 0; font-size:13px;"><b>픽업:</b> ${res.pickupDate || '-'} / ${res.pickupFlight || '-'} / ${res.pickupResort || '-'}</p><p style="margin:5px 0; font-size:13px;"><b>샌딩:</b> ${res.sendingDate || '-'} / ${res.sendingFlight || '-'} / ${res.sendingResort || '-'}</p><p style="margin-top:10px; padding-top:10px; border-top:1px dashed #ffd8a8;"><b>💰 환전:</b> <span style="font-size:15px; color:#e67e22; font-weight:800;">${displayExchange}</span></p></div>` : ''}<div style="padding:10px; background:#f8f9fa; border-radius:6px; font-size:13px; white-space:pre-wrap;"><b>[요청사항]</b>\n${res.requests || '없음'}</div></div><div style="display:flex; gap:10px; margin-top:20px; padding-top:15px; border-top:1px solid #eee;"><button id="edit-btn" onclick="toggleEditMode('${res.id}')" style="flex:1; padding:12px; background:#ff6a00; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">수정하기</button><button onclick="closeModal()" style="flex:1; padding:12px; background:#333; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">창 닫기</button></div>`;
         modal.style.display = 'flex';
@@ -272,12 +272,19 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let line of inputVal.split('\n')) {
             const parts = line.split('\t'); if (parts.length < 16) continue;
             
-            // 🚀 지능형 성함 매핑: parts[10]이 한글이면 우선 적용
             const p10 = (parts[10] || '').trim();
             const p15 = (parts[15] || '').trim();
             const isP10Korean = /[가-힣]/.test(p10);
-            const korName = isP10Korean ? p10 : p15;
-            const engName = isP10Korean ? p15 : p10;
+            const isP15Nickname = p15.includes('맘') || p15.includes('아빠') || p15.includes('네') || p15.length > 5;
+            
+            let korName = p15;
+            let engName = p10;
+            
+            if (isP10Korean && !p10.includes(' ')) { 
+                korName = p10; engName = p15; 
+            } else if (isP15Nickname) {
+                if (isP10Korean) { korName = p10; engName = p15; }
+            }
 
             const totalPax = (parseInt(parts[11]) || 0) + (parseInt(parts[12]) || 0) + (parseInt(parts[13]) || 0);
             const resortRaw = (parts[9] || '').trim();
@@ -287,7 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${currentYear}-${m}-${d}`; };
             const checkAndAdd = (name, date, time, specPax = totalPax) => { 
                 if (!date) return; const uniqueKey = `${korName}_${date}_${name}`;
-                if (!allSchedules.some(s => s.customerName === korName && s.date === date && s.name === name) && !tempAddedSet.has(uniqueKey)) { 
+                if (!allSchedules.some(s => s.customerName.includes(korName) && s.date === date && s.name === name) && !tempAddedSet.has(uniqueKey)) { 
                     batch.set(doc(collection(db, "schedules")), { customerName: `${korName} (${engName})`, name, date, time, count: specPax, createdAt: new Date(), details: `리조트: ${name.includes('샌딩') ? sResort : pResort}` }); 
                     tempAddedSet.add(uniqueKey); count++; 
                 } 
@@ -339,12 +346,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const parts = inputVal.split('\t'); if (parts.length < 16) return;
         const currentYear = new Date().getFullYear();
         
-        // 🚀 지능형 성함 매핑 적용
         const p10 = (parts[10] || '').trim();
         const p15 = (parts[15] || '').trim();
         const isP10Korean = /[가-힣]/.test(p10);
-        const korName = isP10Korean ? p10 : p15;
-        const engName = isP10Korean ? p15 : p10;
+        const isP15Nickname = p15.includes('맘') || p15.includes('아빠') || p15.includes('네') || p15.length > 5;
+        
+        let korName = p15;
+        let engName = p10;
+        
+        if (isP10Korean && !p10.includes(' ')) { 
+            korName = p10; engName = p15; 
+        } else if (isP15Nickname) {
+            if (isP10Korean) { korName = p10; engName = p15; }
+        }
 
         const totalPax = (parseInt(parts[11]) || 0) + (parseInt(parts[12]) || 0) + (parseInt(parts[13]) || 0);
         const resortRaw = (parts[9] || '').trim();
@@ -352,8 +366,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const sResort = resortRaw.split('/')[1]?.trim() || pResort;
 
         const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${currentYear}-${m}-${d}`; };
-        let exVal = (parts[24] || parts[4] || '').trim();
-        if (exVal.includes('/') || exVal.includes('▲') || exVal.length > 10) exVal = '-';
+        
+        // 🚀 환전 필터링 강화
+        let exVal = (parts[24] || '').trim();
+        if (!exVal || exVal === '0' || exVal.includes('/') || exVal.includes('▲') || exVal.length > 10) exVal = '-';
 
         const items = [];
         if (parts[2] && parts[2].match(/[A-Z]{2}\d+/)) items.push({ name: `✈️ 공항 픽업 (${parts[2].toUpperCase()})`, date: formatDate(parts[0]), time: "14:00", count: totalPax });

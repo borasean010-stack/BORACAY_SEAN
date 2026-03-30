@@ -638,12 +638,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const pickupResort = translateResort(resortRaw);
 
         const engName = parts[10] || '';
-        const customerName = (parts[22] || parts[6] || '').trim();
+        const rawCustomerName = (parts[22] || parts[6] || '').trim();
         const pax = parseInt(parts[11]) || 0; 
         const chd = parseInt(parts[12]) || 0; 
         const inf = parseInt(parts[13]) || 0; 
         const agency = parts[14] || '';      
-        const remarks = (parts[16] || '').replace(/^"|"$/g, '').trim(); 
+        
+        // --- 🚀 [핵심 수정] 비고란 및 투어 정보 분석 범위 확장 (16~19번 컬럼 합산) ---
+        const remarksPart = (parts[16] || '').replace(/^"|"$/g, '').trim();
+        const extraPart1 = (parts[17] || '').replace(/^"|"$/g, '').trim();
+        const extraPart2 = (parts[18] || '').replace(/^"|"$/g, '').trim();
+        const fullRemarks = `${remarksPart}\n${extraPart1}\n${extraPart2}`.trim();
+
+        // 이름이 비어있고 비고란 첫 줄에 날짜가 없다면 비고란 내용을 이름으로 활용
+        let customerName = rawCustomerName;
+        if (!customerName && remarksPart && !remarksPart.match(/(\d{1,2})\/(\d{1,2})/)) {
+            customerName = remarksPart.split('\n')[0].trim();
+            if (remarksPart.split('\n').length > 1) {
+                // 여러 명일 경우 '홍채은 외 n명' 또는 전체 명단 유지
+                customerName = remarksPart.replace(/\n/g, ', ');
+            }
+        }
 
         const totalPax = pax + chd + inf;
         const paxDetail = `성인 ${pax}, 아동 ${chd}, 유아 ${inf} (총 ${totalPax}명)`;
@@ -662,9 +677,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // 2. 비고란(Remarks) 분석
-        if (remarks) {
-            const lines = remarks.split('\n');
+        // 2. 비고란 및 확장 컬럼 분석
+        if (fullRemarks) {
+            const lines = fullRemarks.split('\n');
             lines.forEach(line => {
                 const trimmed = line.trim();
                 if (!trimmed) return;

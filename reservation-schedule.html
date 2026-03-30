@@ -370,6 +370,7 @@
                             ${(!isPickupSending && item.time && item.time.trim()) ? `<div class="detail-point"><span class="material-icons">access_time</span><b>시간</b>${item.time}</div>` : ''}
                             <div class="detail-point"><span class="material-icons">people</span><b>인원</b>${item.count || '-'}명</div>
                         </div>
+                        ${item.details ? `<div style="font-size:12px; color:#999; margin-top:10px; padding:10px; background:#fcfcfc; border-radius:8px; border:1px solid #f0f0f0;">📝 <b>참고사항:</b> ${item.details}</div>` : ''}
                         ${getTourGuidance(item.name, item, res)}
                     </div>
                 `;}).join('');

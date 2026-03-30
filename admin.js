@@ -358,7 +358,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
-        if (count > 0) { await batch.commit(); alert(`${count}건 업데이트 완료!`); hideInputArea(); }
+        if (count > 0) { 
+            await batch.commit(); 
+            alert(`${count}건 업데이트 완료!`); 
+            document.getElementById('schedule-reg-input').value = ''; 
+            hideInputArea(); 
+        }
     };
 
     window.handleClearSchedules = async () => {
@@ -428,6 +433,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = '보라스파';
                 else if (lowerLine.includes('land')) { itemName = '보라카이 랜드투어'; if(!timeMatch) itemTime = "10:30"; }
                 else if (lowerLine.includes('hopping')) { if (lowerLine.includes('(j)')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!timeMatch) itemTime = "12:30"; } else { itemName = '블랙펄 선셋 호핑투어'; if(!timeMatch) itemTime = "13:30"; } }
+                else if (lowerLine.includes('para')) itemName = '파라세일링';
+                else if (lowerLine.includes('diving')) itemName = '체험다이빙';
+                else if (lowerLine.includes('zetski')) itemName = '제트스키';
+                else if (lowerLine.includes('helmet')) itemName = '헬멧다이빙';
                 
                 if (line.includes('afh') || line.includes('AFH')) itemTime = "18:00";
                 else if (line.includes('afm') || line.includes('AFM')) itemTime = "17:00";
@@ -437,8 +446,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const resData = { customerKorName: `${korName} (${engName})`, contact: (parts[14] || '').trim(), items, status: '예약확정', exchangeAmount: exVal, paxInfo: `성인 ${parts[11]}, 아동 ${parts[12]}, 유아 ${parts[13]}`, pickupResort: pResort, sendingResort: sResort, createdAt: new Date() };
         const docRef = await addDoc(collection(db, "quick_vouchers"), resData);
-        navigator.clipboard.writeText(`${window.location.origin}/reservation-schedule.html?id=${docRef.id}&type=quick`).then(() => alert('바우처 생성 완료!'));
-        document.getElementById('quick-voucher-input').value = ''; // 🔄 입력칸 리셋
-        hideInputArea();
+        navigator.clipboard.writeText(`${window.location.origin}/reservation-schedule.html?id=${docRef.id}&type=quick`).then(() => {
+            alert('바우처 생성 완료!');
+            document.getElementById('quick-voucher-input').value = ''; // 🔄 입력칸 리셋
+            hideInputArea();
+        });
     };
 });

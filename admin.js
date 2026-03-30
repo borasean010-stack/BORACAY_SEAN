@@ -1,4 +1,4 @@
-// admin.js - Layout Re-integrated Logic
+// admin.js - Layout + Original Luxury Action Buttons Integrated
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, where, getDocs, addDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -93,10 +93,14 @@ document.addEventListener('DOMContentLoaded', () => {
             resorts: allReservations.filter(r => r.status === '견적').length,
             resortConfirmed: allReservations.filter(r => r.status === '리조트확정').length
         };
-        document.getElementById('count-new').innerText = counts.new;
-        document.getElementById('count-confirmed').innerText = counts.confirmed;
-        document.getElementById('count-resorts').innerText = counts.resorts;
-        document.getElementById('count-resort-confirmed').innerText = counts.resortConfirmed;
+        const cNew = document.getElementById('count-new');
+        const cConfirmed = document.getElementById('count-confirmed');
+        const cResorts = document.getElementById('count-resorts');
+        const cResortConfirmed = document.getElementById('count-resort-confirmed');
+        if (cNew) cNew.innerText = counts.new;
+        if (cConfirmed) cConfirmed.innerText = counts.confirmed;
+        if (cResorts) cResorts.innerText = counts.resorts;
+        if (cResortConfirmed) cResortConfirmed.innerText = counts.resortConfirmed;
     }
 
     function renderDateBoxes() {
@@ -104,15 +108,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const offset = now.getTimezoneOffset() * 60000;
         const todayStr = new Date(now.getTime() - offset).toISOString().split('T')[0];
         const tomorrowStr = new Date(now.getTime() - offset + 86400000).toISOString().split('T')[0];
-        document.getElementById('box-date-today').innerText = todayStr;
-        document.getElementById('box-date-tomorrow').innerText = tomorrowStr;
+        const tBox = document.getElementById('box-date-today');
+        const tmBox = document.getElementById('box-date-tomorrow');
+        if (tBox) tBox.innerText = todayStr;
+        if (tmBox) tmBox.innerText = tomorrowStr;
     }
 
-    // 🚀 3. Timeline / Schedule Logic
+    // 🚀 3. Timeline Logic
     window.switchScheduleDay = (day) => {
         currentScheduleDay = day;
-        document.querySelectorAll('.tool-box').forEach(el => el.style.boxShadow = '0 4px 15px rgba(0,0,0,0.05)');
-        // No specific active style needed for boxes as per wireframe, but let's keep it simple
         renderSchedule();
     };
 
@@ -132,7 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (n.includes('샌딩')) return '샌딩';
         if (n.includes('호핑')) return '호핑';
         if (n.includes('말룸파티')) return '말룸파티';
-        if (n.includes('마사지') || n.includes('스파') || n.includes('spa') || n.includes('에스파')) return '액티비티';
         return '액티비티';
     }
 
@@ -178,10 +181,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }).join('');
     }
 
-    // 🚀 4. Tab / Sidebar Logic
+    // 🚀 4. Navigation
     window.switchMainView = () => {
         document.querySelectorAll('.ss-nav-item').forEach(el => el.classList.remove('active'));
-        document.querySelector('.ss-nav-item:first-child').classList.add('active');
+        const firstNav = document.querySelector('.ss-nav-item:first-child');
+        if (firstNav) firstNav.classList.add('active');
         document.getElementById('breadcrumb-active').innerText = '메인 페이지';
         activeTab = 'all'; 
         document.getElementById('system-setup-section').style.display = 'none';
@@ -193,7 +197,6 @@ document.addEventListener('DOMContentLoaded', () => {
         activeTab = tab;
         document.querySelectorAll('.ss-nav-item').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.stat-card').forEach(el => el.classList.remove('active'));
-        
         const statCard = document.getElementById(`stat-${tab}`);
         if (statCard) statCard.classList.add('active');
 
@@ -216,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // 🚀 5. Render Table
+    // 🚀 5. Render Table (복구: 명품 액션 버튼)
     function renderTable() {
         if (!tableBody) return;
         tableBody.innerHTML = '';
@@ -240,9 +243,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const firstItem = res.items?.[0]?.name || '-';
             const itemsText = firstItem + (res.items?.length > 1 ? ` 외 ${res.items.length-1}건` : '');
 
-            let actionButtons = `<button class="btn-action-outline" onclick="showDetail('${res.id}', 'reservation')">상세</button>`;
-            if (status === '예약접수' || status === '입금대기') actionButtons = `<button class="btn-action-received" onclick="handleAutoConfirm('${res.id}')">입금확인</button>` + actionButtons;
-            if (status === '견적') actionButtons = `<button class="btn-action-received" onclick="handleResortQuoteComplete('${res.id}')">견적완료</button>` + actionButtons;
+            // 🚀 지시사항: 명품 액션 버튼 디자인 복구
+            let actionButtons = '';
+            if (activeTab === 'resorts') {
+                actionButtons = `
+                    <button class="btn-action-received" onclick="handleResortQuoteComplete('${res.id}')"><span class="material-icons">task_alt</span>견적완료</button>
+                    <button class="btn-action-received" style="background:#ff6a00; border-color:#ff6a00;" onclick="showDetail('${res.id}', 'reservation')"><span class="material-icons">visibility</span>상세</button>
+                    <button class="btn-action-received" style="background:#00c73c; border-color:#00c73c; box-shadow: 0 4px 10px rgba(0, 199, 60, 0.2);" onclick="handleResortConfirm('${res.id}')"><span class="material-icons">check_circle</span>예약 확정</button>
+                `;
+            } else {
+                actionButtons = `
+                    ${(status === '예약접수' || status === '입금대기') ? `<button class="btn-action-received" onclick="handleAutoConfirm('${res.id}')"><span class="material-icons">payments</span>입금확인</button>` : ''}
+                    <button class="btn-action-received" style="background:#ff6a00; border-color:#ff6a00;" onclick="showDetail('${res.id}', 'reservation')"><span class="material-icons">visibility</span>상세</button>
+                    <button class="btn-action-outline" onclick="copyCombinedVoucherLink('${res.contact}')"><span class="material-icons">content_copy</span>일정표</button>
+                `;
+            }
 
             tr.innerHTML = `<td><input type="checkbox"></td><td style="color:#bbb;">${filtered.length - index}</td><td>${res.reservationNumber || '-'}</td><td><div style="font-size:14px; font-weight:800;">${res.customerKorName}</div></td><td>${itemsText}</td><td>₩ ${(res.totalPrice || 0).toLocaleString()}</td><td>${res.createdAt?.toDate ? res.createdAt.toDate().toLocaleDateString() : '-'}</td><td><span class="n-badge ${status.includes('확정') ? 'badge-green' : 'badge-yellow'}">${status}</span></td><td><div style="display:flex; gap:5px;">${actionButtons}</div></td>`;
             tableBody.appendChild(tr);
@@ -256,10 +271,18 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
     window.hideInputArea = () => {
-        document.querySelectorAll('.input-area-card').forEach(el => el.style.display = 'none');
+        const qa = document.getElementById('input-area-quick');
+        const ra = document.getElementById('input-area-reg');
+        if (qa) qa.style.display = 'none';
+        if (ra) ra.style.display = 'none';
     };
 
-    // 🚀 7. Business Logic (Voucher, Bulk Reg)
+    // 🚀 7. Utils
+    window.copyCombinedVoucherLink = (contact) => { 
+        const url = `${window.location.origin}/reservation-schedule.html?contact=${encodeURIComponent(contact)}`; 
+        navigator.clipboard.writeText(url).then(() => alert('통합 일정표 링크가 복사되었습니다.')); 
+    };
+
     window.registerBulkSchedule = async () => {
         const inputVal = document.getElementById('schedule-reg-input').value.trim();
         if (!inputVal) { alert('데이터를 입력해주세요.'); return; }
@@ -291,10 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         else if (lowerLine.includes('(s)')) { itemName = '블랙펄 선셋 호핑투어'; itemTime = "13:30"; }
                     }
                     const isDup = allSchedules.some(s => s.customerName === customerName && s.date === dateStr && s.name === itemName);
-                    if (!isDup) {
-                        batch.set(doc(collection(db, "schedules")), { customerName, engName, name: itemName, date: dateStr, time: itemTime, count: totalPax, createdAt: new Date() });
-                        count++;
-                    }
+                    if (!isDup) { batch.set(doc(collection(db, "schedules")), { customerName, engName, name: itemName, date: dateStr, time: itemTime, count: totalPax, createdAt: new Date() }); count++; }
                 }
             });
         }
@@ -340,6 +360,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.handleAutoConfirm = async (id) => { if (confirm("예약확정 처리를 진행합니까?")) await updateDoc(doc(db, "reservations", id), { status: "예약확정" }); };
     window.handleResortQuoteComplete = async (id) => { if (confirm("견적완료 처리를 진행합니까?")) await updateDoc(doc(db, "reservations", id), { status: "견적완료" }); };
+    window.handleResortConfirm = async (id) => {
+        const amount = prompt("입금 금액을 입력해 주세요 (숫자만)");
+        if (amount !== null) {
+            const price = parseInt(amount.replace(/[^0-9]/g, '')) || 0;
+            if (confirm(`입금 금액 ₩ ${price.toLocaleString()}으로 예약 확정 처리하시겠습니까?`)) {
+                await updateDoc(doc(db, "reservations", id), { status: "리조트확정", totalPrice: price });
+                alert("리조트 예약이 확정되었습니다.");
+            }
+        }
+    };
+
     window.showDetail = (id, source) => {
         const res = source === 'reservation' ? allReservations.find(r => r.id === id) : allSchedules.find(s => s.id === id);
         if (!res) return;

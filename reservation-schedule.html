@@ -163,6 +163,17 @@
         return engName; // 매핑 안되면 원래 이름 반환
     }
 
+    // 📍 스테이션 1~0 지역 리조트인지 확인 (샌딩 시간 08:10 적용 대상)
+    function isStation10(resortName) {
+        if (!resortName) return false;
+        const low = resortName.toLowerCase();
+        const station10Keywords = [
+            'crimson', 'movenpick', 'shangri-la', 'shangrila', 'discovery', 'the lind', 'lind',
+            'prime', 'aqua', 'two seasons', 'canyon', 'savoy', 'belmont', 'fairways', 'savoy'
+        ];
+        return station10Keywords.some(kw => low.includes(kw));
+    }
+
     // --- 📅 투어별 상세 안내문 생성기 ---
     function getTourGuidance(name, item, res) {
         const details = (item.details || "").toLowerCase();
@@ -176,7 +187,13 @@
         // 2. 공항 샌딩
         if (name.includes('공항 샌딩')) {
             const rawResort = res.sendingResort || res.pickupResort || '';
-            const sendingPlace = getKorResort(rawResort);
+            let sendingPlace = getKorResort(rawResort);
+            
+            // 📍 페어웨이 정문 게이트 규칙 적용
+            if (sendingPlace.includes('페어웨이')) {
+                sendingPlace = '페어웨이 정문게이트';
+            }
+
             return `<div class="guidance-box"><b>미팅 시간/장소 : ${item.time} ${sendingPlace}</b>\n\n*교통상황에 따라 샌딩 미팅 시간과 장소가 변경될 수있습니다\n\n★지정된 장소와 시간전에 먼저 도착 하셔서 대기 해주셔야 합니다.\n리조트 체크아웃을 완료하고 샌딩 출발 하는 시간 입니다.\n늦어서 별도로 이동을 해야 하는 경우 추가 요금이 발생 합니다.</div>`;
         }
         // 3. 블랙펄 호핑
@@ -194,7 +211,8 @@
         if (name.includes('말룸파티') || name.toLowerCase().includes('malum')) {
             const isSending = name.includes('샌딩') || details.includes('샌딩');
             if (isSending) {
-                const meetingPlace = getKorResort(res.pickupResort) || '리조트 로비';
+                let meetingPlace = getKorResort(res.pickupResort) || '리조트 로비';
+                if (meetingPlace.includes('페어웨이')) meetingPlace = '페어웨이 정문게이트';
                 return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : 09:00 / ${meetingPlace}</b>\n\n★★ 주의 사항 및 준비물 ★★\n\n*주의 사항 - 미팅시간에서 10분이상 늦으시면 노쇼처리되며, 별도 연락 없이 출발합니다. 이 경우 환불 및 일정 변경 불가하오니 꼭 미리 체크아웃과 룸체크를 진행하고 기다려주세요\n\n편한 물놀이 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n튜빙 진행시 1인 350페소 준비해 주세요\n여권 정보면과 호텔 바우쳐 사진으로 폰에 저장(선택)\n그외 개인적으로 필요한 물품\n\n칼리보 공항 공항세 1인 900페소(공항 현지불 / 필수사항)\nBK라운지 샤워실 이용비용 1인 100페소(라운지 현지불)</div>`;
             } else {
                 return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : 09:40 / 보라카이션 사무실</b>\n<a href="https://goo.gl/maps/pQkmCErHLjmQGRYM9" class="map-btn" target="_blank">📍 사무실 구글맵 확인</a>\n\n★★ 주의 사항 및 준비물 ★★\n\n*주의 사항 - 미팅시간에서 10분이상 늦으시면 노쇼처리되며, 별도 연락없이 출발합니다. 이 경우 환불 및 일정 변경 불가하오니 꼭 미팅시간을 지켜주세요\n\n편한 물놀이 복장, 비치타올1인 1장\n매너팁 1인 100페소 (성인, 소인 동일)\n튜빙 진행시 1인 350페소 준비해 주세요\n여권 정보면과 호텔 바우쳐 사진으로 폰에 저장(선택)\n그외 개인적으로 필요한 물품</div>`;
@@ -241,13 +259,15 @@
         // 7. 액티비티 (파라세일링, 다이빙, 프리다이빙, 헬멧다이빙 등)
         if (name.includes('파라세일링') || name.includes('다이빙') || name.includes('헬멧') || name.includes('어드벤처') || name.includes('제트스키')) {
             const meetingTime = item.time || "10:00";
-            const meetingPlace = getKorResort(res.pickupResort) || "리조트 로비";
+            let meetingPlace = getKorResort(res.pickupResort) || "리조트 로비";
+            if (meetingPlace.includes('페어웨이')) meetingPlace = '페어웨이 정문게이트';
             return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : ${meetingTime} / ${meetingPlace}</b>\n\n★ 준비물\n편한 물놀이 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품</div>`;
         }
         // 8. 골프
         if (name.includes('골프')) {
             const meetingTime = item.time || "07:40";
-            const meetingPlace = getKorResort(res.pickupResort) || "헤난 샌드";
+            let meetingPlace = getKorResort(res.pickupResort) || "헤난 샌드";
+            if (meetingPlace.includes('페어웨이')) meetingPlace = '페어웨이 정문게이트';
             return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : ${meetingTime} / ${meetingPlace}</b>\n점심 포함 : 점보크랩\n\n★ 준비물\n편한 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품\n\n→ 불포함사항\n- 골프채, 골프공, 골프슈즈, 골프글로브\n- 개인음료(그늘집 있음)\n- 캐디팁 - 1인 100페소(18홀기준, 캐디에게 직접 페이)\n- 복귀 트라이시클비용(편도 약 150페소)</div>`;
         }
         // 9. VIP 라운지
@@ -308,10 +328,17 @@
                             count: item.count,
                             details: item.details
                         });
+                        
+                        // 📍 공항 샌딩 시간 규칙 적용
+                        let sandingTime = res.sendingTime || (res.sendingFlight?.toUpperCase() === 'TW126' ? "08:30" : "21:00");
+                        if (res.sendingFlight?.toUpperCase() === 'TW126' && isStation10(res.sendingResort || res.pickupResort)) {
+                            sandingTime = "08:10";
+                        }
+
                         allItems.push({
                             name: `✈️ 공항 샌딩 (${(res.sendingFlight || '').toUpperCase()})`,
                             date: item.sendingDate || res.sendingDate || item.date,
-                            time: res.sendingTime || (res.sendingFlight?.toUpperCase() === 'TW126' ? "08:30" : "21:00"),
+                            time: sandingTime,
                             count: item.count,
                             details: item.details
                         });

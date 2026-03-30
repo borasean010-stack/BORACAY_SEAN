@@ -91,16 +91,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function fetchData() {
         if (!db) return;
+        
         // 🚀 홈페이지 예약건만 관리 (퀵바우처 제외)
         onSnapshot(query(collection(db, "reservations"), orderBy("createdAt", "desc")), (snap) => {
             allReservations = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             renderAll();
         });
-        // 🚀 스케줄 등록(운영용) 데이터만 관리
+        
+        // 🚀 스케줄 등록(운영용) 데이터 관리 및 자동 지난 일정 삭제
         onSnapshot(query(collection(db, "schedules"), orderBy("date", "asc")), (snap) => {
             allSchedules = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             renderAll();
         });
+
+        autoCleanupOldSchedules();
+    }
+
+    async function autoCleanupOldSchedules() {
+        if (!db) return;
+        try {
+            const now = new Date();
+            const offset = now.getTimezoneOffset() * 60000;
+            const todayStr = new Date(now.getTime() - offset).toISOString().split('T')[0];
+            
+            // 오늘 날짜 이전(<)의 모든 스케줄을 쿼리
+            const q = query(collection(db, "schedules"), where("date", "<", todayStr));
+            const snap = await getDocs(q);
+            
+            if (!snap.empty) {
+                const batch = writeBatch(db);
+                snap.docs.forEach(d => batch.delete(d.ref));
+                await batch.commit();
+                console.log("지난 일정 자동 정리 완료");
+            }
+        } catch (e) { console.error("Auto cleanup error:", e); }
     }
 
     function renderAll() {

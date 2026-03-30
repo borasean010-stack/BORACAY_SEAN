@@ -1,4 +1,4 @@
-// admin.js - Final Full Luxury Admin (Total Integration)
+// admin.js - Final Full Luxury Admin (Total Integration with Advanced Deduplication)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, where, getDocs, addDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -268,13 +268,32 @@ document.addEventListener('DOMContentLoaded', () => {
     window.registerBulkSchedule = async () => {
         const inputVal = document.getElementById('schedule-reg-input').value.trim(); if (!inputVal) return;
         const currentYear = new Date().getFullYear(); const batch = writeBatch(db); let count = 0;
+        const tempAddedSet = new Set(); // 🚀 현재 배치 안에서의 중복 방지용
+
         for (let line of inputVal.split('\n')) {
             const parts = line.split('\t'); if (parts.length < 16) continue;
             const korName = (parts[15] || '').trim(); const totalPax = (parseInt(parts[11]) || 0) + (parseInt(parts[12]) || 0); const resort = (parts[9] || '').trim();
             const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${currentYear}-${m}-${d}`; };
-            const checkAndAdd = (name, date, time) => { if (!date) return; if (!allSchedules.some(s => s.customerName === korName && s.date === date && s.name === name)) { batch.set(doc(collection(db, "schedules")), { customerName: korName, name, date, time, count: totalPax, createdAt: new Date(), details: `리조트: ${resort}` }); count++; } };
+            
+            const checkAndAdd = (name, date, time) => { 
+                if (!date) return; 
+                const uniqueKey = `${korName}_${date}_${name}`; // 🚀 중복 판단 키
+                
+                // 1. 이미 저장된 데이터에 있는지 체크
+                const existsInDb = allSchedules.some(s => s.customerName === korName && s.date === date && s.name === name);
+                // 2. 현재 붙여넣은 뭉치 안에 중복이 있는지 체크
+                const existsInBatch = tempAddedSet.has(uniqueKey);
+
+                if (!existsInDb && !existsInBatch) { 
+                    batch.set(doc(collection(db, "schedules")), { customerName: korName, name, date, time, count: totalPax, createdAt: new Date(), details: `리조트: ${resort}` }); 
+                    tempAddedSet.add(uniqueKey);
+                    count++; 
+                } 
+            };
+
             if (parts[2] && parts[2].match(/[A-Z]{2}\d+/)) checkAndAdd(`✈️ 공항 픽업 (${parts[2].toUpperCase()})`, formatDate(parts[0]), "14:00");
             if (parts[3] && parts[3].match(/[A-Z]{2}\d+/)) checkAndAdd(`✈️ 공항 샌딩 (${parts[3].toUpperCase()})`, formatDate(parts[1]), (parts[3].toUpperCase() === 'TW126' ? "08:30" : "21:00"));
+            
             (parts[16] || '').replace(/^"|"$/g, '').split('\n').forEach(rLine => {
                 const dm = rLine.trim().match(/^(\d{1,2})\/(\d{1,2})/);
                 if (dm) {
@@ -288,6 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         if (count > 0) { await batch.commit(); alert(`${count}건 업데이트 완료!`); hideInputArea(); }
+        else alert('새로 등록할 수 있는 데이터가 없습니다 (모두 중복).');
     };
 
     window.makeQuickVoucher = async () => {
@@ -315,8 +335,4 @@ document.addEventListener('DOMContentLoaded', () => {
         navigator.clipboard.writeText(`${window.location.origin}/reservation-schedule.html?id=${docRef.id}&type=quick`).then(() => alert('바우처 생성 완료!'));
         hideInputArea();
     };
-
-    window.handleAutoConfirm = async (id) => { if (confirm("예약확정 처리를 진행합니까?")) await updateDoc(doc(db, "reservations", id), { status: "예약확정" }); };
-    window.handleResortQuoteComplete = async (id) => { if (confirm("견적완료 처리를 진행합니까?")) await updateDoc(doc(db, "reservations", id), { status: "견적완료" }); };
-    window.handleResortConfirm = async (id) => { const amount = prompt("입금 금액"); if (amount) { await updateDoc(doc(db, "reservations", id), { status: "리조트확정", totalPrice: parseInt(amount.replace(/[^0-9]/g, '')) }); alert("확정!"); } };
 });

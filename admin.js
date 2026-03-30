@@ -1,4 +1,4 @@
-// admin.js - Final Full Luxury Admin (Total Integration with Advanced Bulk Registration)
+// admin.js - Final Full Luxury Admin (Total Integration with Strict Timing & Naming)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, where, getDocs, addDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -211,6 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // 🚀 6. 럭셔리 상세창 완벽 복구
     window.showDetail = (id, source) => {
         const res = source === 'schedule' ? allSchedules.find(s => s.id === id) : allReservations.find(r => r.id === id);
         if (!res) return;
@@ -261,6 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.style.display = 'flex';
     };
 
+    // 🚀 7. Utils
     window.copyVoucherLink = (id, idx) => { 
         const url = `${window.location.origin}/reservation-schedule.html?id=${id}${idx !== null ? `&itemIndex=${idx}` : ''}`; 
         navigator.clipboard.writeText(url).then(() => alert('바우처 링크가 복사되었습니다.')); 
@@ -320,11 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const totalPax = (parseInt(parts[11]) || 0) + (parseInt(parts[12]) || 0);
             const resort = (parts[9] || '').trim();
 
-            const formatDate = (raw) => {
-                if (!raw || !raw.includes('/')) return null;
-                const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0'));
-                return `${currentYear}-${m}-${d}`;
-            };
+            const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${currentYear}-${m}-${d}`; };
 
             const checkAndAdd = (name, date, time) => {
                 if (!date) return;
@@ -335,16 +333,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             };
 
-            // 1. 공항 픽업 (TW125 등)
-            if (parts[2] && parts[2].match(/[A-Z]{2}\d+/)) {
-                checkAndAdd(`✈️ 공항 픽업 (${parts[2].toUpperCase()})`, formatDate(parts[0]), "00:01");
-            }
-            // 2. 공항 샌딩 (TW126 등)
+            if (parts[2] && parts[2].match(/[A-Z]{2}\d+/)) checkAndAdd(`✈️ 공항 픽업 (${parts[2].toUpperCase()})`, formatDate(parts[0]), "14:00");
             if (parts[3] && parts[3].match(/[A-Z]{2}\d+/)) {
                 let sTime = (parts[3].toUpperCase() === 'TW126') ? "08:30" : "21:00";
                 checkAndAdd(`✈️ 공항 샌딩 (${parts[3].toUpperCase()})`, formatDate(parts[1]), sTime);
             }
-            // 3. 리마크 투어 일정
             const remarks = (parts[16] || '').replace(/^"|"$/g, '').trim();
             remarks.split('\n').forEach(rLine => {
                 const dm = rLine.trim().match(/^(\d{1,2})\/(\d{1,2})/);
@@ -361,7 +354,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         if (count > 0) { await batch.commit(); alert(`${count}건의 일정이 업데이트되었습니다.`); hideInputArea(); }
-        else alert('등록할 새로운 일정이 없습니다.');
     };
 
     window.makeQuickVoucher = async () => {
@@ -371,15 +363,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalPaxCount = (parseInt(parts[11]) || 0) + (parseInt(parts[12]) || 0) + (parseInt(parts[13]) || 0);
         const resort = (parts[9] || '').trim();
         const items = [];
-
         const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${currentYear}-${m}-${d}`; };
 
-        if (parts[2] && parts[2].match(/[A-Z]{2}\d+/)) items.push({ name: `✈️ 공항 픽업 (${parts[2].toUpperCase()})`, date: formatDate(parts[0]), time: "00:01", count: totalPaxCount, details: `리조트: ${resort}` });
+        if (parts[2] && parts[2].match(/[A-Z]{2}\d+/)) items.push({ name: `✈️ 공항 픽업 (${parts[2].toUpperCase()})`, date: formatDate(parts[0]), time: "14:00", count: totalPaxCount, details: `리조트: ${resort}` });
         if (parts[3] && parts[3].match(/[A-Z]{2}\d+/)) {
             let sTime = (parts[3].toUpperCase() === 'TW126') ? "08:30" : "21:00";
             items.push({ name: `✈️ 공항 샌딩 (${parts[3].toUpperCase()})`, date: formatDate(parts[1]), time: sTime, count: totalPaxCount, details: `리조트: ${resort}` });
         }
-
         (parts[16] || '').split('\n').forEach(line => {
             const dm = line.trim().match(/^(\d{1,2})\/(\d{1,2})/);
             if (dm) {

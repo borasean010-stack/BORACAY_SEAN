@@ -32,9 +32,10 @@
         .stat-card .label { font-size: 13px; font-weight: 700; color: #888; }
         .stat-card .count { font-size: 24px; font-weight: 800; color: #333; margin-top: 5px; }
 
-        /* 입력창 영역 (상단 4분할 클릭 시 노출) */
+        /* 입력창 영역 (직사각형 스타일로 수정) */
         .input-area-card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 25px; border: 2px solid #ff6a00; display: none; }
         .input-area-card.system-border { border-color: #00c73c; }
+        .tool-textarea { width: 100%; height: 45px; border: 1px solid #ddd; border-radius: 8px; padding: 12px; font-size: 12px; resize: none; margin-bottom: 10px; box-sizing: border-box; }
     </style>
 </head>
 <body class="smartstore-admin">
@@ -55,7 +56,6 @@
     </div>
 
     <div id="admin-container" class="admin-full-layout" style="display: none;">
-        <!-- 🚀 지시사항: 사이드바 구성 -->
         <aside class="ss-sidebar">
             <div class="ss-sidebar-brand"><img src="logo.png" alt="Logo" class="ss-logo"><span class="ss-brand-name">관리자 센터</span></div>
             <nav class="ss-nav">
@@ -83,8 +83,7 @@
             </header>
 
             <div class="ss-content">
-                
-                <!-- 🚀 명령하신 상단 4분할 박스 -->
+                <!-- 상단 4분할 박스 -->
                 <div class="main-tool-grid">
                     <div class="tool-box" onclick="switchScheduleDay('today')">
                         <h4>오늘 일정</h4>
@@ -104,25 +103,25 @@
                     </div>
                 </div>
 
-                <!-- 🚀 퀵바우처 / 스케줄 등록 입력창 (숨김/펼침) -->
+                <!-- 🚀 퀵바우처 / 스케줄 등록 입력창 (직사각형 스타일) -->
                 <div id="input-area-quick" class="input-area-card">
-                    <h3 style="margin:0 0 15px 0; color:#ff6a00;">🎫 퀵바우처 생성</h3>
-                    <textarea id="quick-voucher-input" class="tool-textarea" placeholder="데이터를 붙여넣으세요..." style="height:100px;"></textarea>
+                    <h3 style="margin:0 0 15px 0; color:#ff6a00; font-size:15px;">🎫 퀵바우처 생성</h3>
+                    <textarea id="quick-voucher-input" class="tool-textarea" placeholder="데이터를 붙여넣으세요..."></textarea>
                     <div style="display:flex; gap:10px;">
-                        <button class="btn-action-received" style="flex:1;" onclick="makeQuickVoucher()">생성 및 링크 복사</button>
-                        <button class="btn-action-outline" onclick="hideInputArea()">닫기</button>
+                        <button class="btn-action-received" style="flex:1; height:40px;" onclick="makeQuickVoucher()">생성 및 링크 복사</button>
+                        <button class="btn-action-outline" style="height:40px;" onclick="hideInputArea()">닫기</button>
                     </div>
                 </div>
                 <div id="input-area-reg" class="input-area-card system-border">
-                    <h3 style="margin:0 0 15px 0; color:#00c73c;">📤 스케줄 일괄 등록 (Q열)</h3>
-                    <textarea id="schedule-reg-input" class="tool-textarea" placeholder="전체 데이터를 붙여넣으세요..." style="height:100px;"></textarea>
+                    <h3 style="margin:0 0 15px 0; color:#00c73c; font-size:15px;">📤 스케줄 일괄 등록 (Q열)</h3>
+                    <textarea id="schedule-reg-input" class="tool-textarea" placeholder="전체 데이터를 붙여넣으세요..."></textarea>
                     <div style="display:flex; gap:10px;">
-                        <button class="btn-action-received" style="flex:1; background:#00c73c;" onclick="registerBulkSchedule()">스케줄 업데이트</button>
-                        <button class="btn-action-outline" onclick="hideInputArea()">닫기</button>
+                        <button class="btn-action-received" style="flex:1; background:#00c73c; height:40px;" onclick="registerBulkSchedule()">스케줄 업데이트</button>
+                        <button class="btn-action-outline" style="height:40px;" onclick="hideInputArea()">닫기</button>
                     </div>
                 </div>
 
-                <!-- 🚀 일정표 섹션 (전체, 픽업, 샌딩, 호핑, 말룸파티, 액티비티) -->
+                <!-- 일정표 섹션 -->
                 <div class="timeline-section">
                     <div class="filter-bar">
                         <button class="filter-btn active" onclick="filterSchedule('all')">전체</button>
@@ -137,7 +136,7 @@
                     </div>
                 </div>
 
-                <!-- 🚀 하단 상태 카드 [신규 예약] [예약 확정] [리조트 견적] [리조트 확정] -->
+                <!-- 하단 상태 카드 -->
                 <div class="status-cards-row">
                     <div class="stat-card active" id="stat-new" onclick="switchAdminTab('new')">
                         <div class="label">신규 예약</div><div class="count" id="count-new">0</div>
@@ -153,7 +152,7 @@
                     </div>
                 </div>
 
-                <!-- 🚀 예약 리스트 테이블 -->
+                <!-- 예약 리스트 테이블 -->
                 <div id="data-view-section">
                     <div class="ss-view-header">
                         <h2 id="current-view-title">예약 리스트</h2>
@@ -181,7 +180,7 @@
                     </div>
                 </div>
 
-                <!-- 시스템 초기화 뷰 -->
+                <!-- 시스템 초기화 -->
                 <div id="system-setup-section" style="display: none; margin-top:30px;">
                     <div class="system-view">
                         <span class="material-icons sv-icon">security</span>
@@ -189,7 +188,6 @@
                         <button class="btn-danger-luxury" onclick="handleClearAllData()">모든 데이터 삭제</button>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>

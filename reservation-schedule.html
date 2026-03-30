@@ -264,10 +264,17 @@
                 const list = document.getElementById('item-list');
                 list.innerHTML = allItems.map(item => {
                     const isPickupSending = item.name.includes('픽업') || item.name.includes('샌딩');
+                    
+                    // 🏷️ 상품명 한글 변환 로직 추가
+                    let displayName = item.name;
+                    if (displayName.toLowerCase().includes('malum')) {
+                        displayName = "시크릿가든 말룸파티";
+                    }
+
                     return `
                     <div class="item-card">
                         <div class="item-header">
-                            <div class="item-name">${item.name}</div>
+                            <div class="item-name">${displayName}</div>
                             <div class="item-status">확정</div>
                         </div>
                         <div class="item-details">

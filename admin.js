@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (n.includes('prime')) return '헤난 프라임';
         if (n.includes('palm')) return '헤난 팜';
         if (n.includes('park')) return '헤난 파크';
-        if (n.includes('crystal')) return '헤난 크리스탈';
+        if (n.includes('crystal') || n.includes('sands')) return '헤난 크리스탈';
         if (n.includes('regency')) return '헤난 리젠시';
         if (n.includes('crimson')) return '크림슨';
         if (n.includes('savoy')) return '사보이';

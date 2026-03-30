@@ -1,4 +1,4 @@
-// admin.js - Final Full Luxury Admin (Total Integration)
+// admin.js - Final Full Luxury Admin (Total Integration with Advanced Bulk Registration)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, where, getDocs, addDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -211,7 +211,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 🚀 6. 럭셔리 상세창 완벽 복구
     window.showDetail = (id, source) => {
         const res = source === 'schedule' ? allSchedules.find(s => s.id === id) : allReservations.find(r => r.id === id);
         if (!res) return;
@@ -262,7 +261,6 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.style.display = 'flex';
     };
 
-    // 🚀 7. Utils
     window.copyVoucherLink = (id, idx) => { 
         const url = `${window.location.origin}/reservation-schedule.html?id=${id}${idx !== null ? `&itemIndex=${idx}` : ''}`; 
         navigator.clipboard.writeText(url).then(() => alert('바우처 링크가 복사되었습니다.')); 
@@ -277,7 +275,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.hideInputArea = () => { const qa = document.getElementById('input-area-quick'), ra = document.getElementById('input-area-reg'); if(qa) qa.style.display = 'none'; if(ra) ra.style.display = 'none'; };
     window.closeModal = () => { document.getElementById('res-detail-modal').style.display = 'none'; };
 
-    // 🚀 8. 수정 기능 (픽업/샌딩 리조트 필드 추가)
     window.toggleEditMode = (id) => {
         const res = allReservations.find(r => r.id === id); if (!res) return;
         const scrollArea = document.getElementById('modal-scroll-area');
@@ -318,35 +315,85 @@ document.addEventListener('DOMContentLoaded', () => {
         const lines = inputVal.split('\n'); const currentYear = new Date().getFullYear(); const batch = writeBatch(db); let count = 0;
         for (let line of lines) {
             const parts = line.split('\t'); if (parts.length < 16) continue;
-            const customerName = (parts[15] || '').trim(); if (!customerName) continue;
+            const korName = (parts[15] || '').trim();
+            const engName = (parts[10] || '').trim();
+            const totalPax = (parseInt(parts[11]) || 0) + (parseInt(parts[12]) || 0);
+            const resort = (parts[9] || '').trim();
+
+            const formatDate = (raw) => {
+                if (!raw || !raw.includes('/')) return null;
+                const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0'));
+                return `${currentYear}-${m}-${d}`;
+            };
+
+            const checkAndAdd = (name, date, time) => {
+                if (!date) return;
+                const isDup = allSchedules.some(s => s.customerName === korName && s.date === date && s.name === name);
+                if (!isDup) {
+                    batch.set(doc(collection(db, "schedules")), { customerName: korName, name, date, time, count: totalPax, createdAt: new Date(), details: `항공편: ${name.split('(')[1]?.replace(')','') || '-'} / 리조트: ${resort}` });
+                    count++;
+                }
+            };
+
+            // 1. 공항 픽업 (TW125 등)
+            if (parts[2] && parts[2].match(/[A-Z]{2}\d+/)) {
+                checkAndAdd(`✈️ 공항 픽업 (${parts[2].toUpperCase()})`, formatDate(parts[0]), "00:01");
+            }
+            // 2. 공항 샌딩 (TW126 등)
+            if (parts[3] && parts[3].match(/[A-Z]{2}\d+/)) {
+                let sTime = (parts[3].toUpperCase() === 'TW126') ? "08:30" : "21:00";
+                checkAndAdd(`✈️ 공항 샌딩 (${parts[3].toUpperCase()})`, formatDate(parts[1]), sTime);
+            }
+            // 3. 리마크 투어 일정
             const remarks = (parts[16] || '').replace(/^"|"$/g, '').trim();
             remarks.split('\n').forEach(rLine => {
                 const dm = rLine.trim().match(/^(\d{1,2})\/(\d{1,2})/);
                 if (dm) {
-                    const dateStr = `${currentYear}-${dm[1].padStart(2,'0')}-${dm[2].padStart(2,'0')}`;
-                    let itemName = rLine.replace(dm[0], '').replace(/GET\$.*|잔금.*|\$.*/g, '').trim();
-                    if (!allSchedules.some(s => s.customerName === customerName && s.date === dateStr && s.name === itemName)) {
-                        batch.set(doc(collection(db, "schedules")), { customerName, name: itemName, date: dateStr, time: "09:00", count: (parseInt(parts[11]) || 0), createdAt: new Date() }); count++;
-                    }
+                    const tDate = formatDate(dm[0]);
+                    const tm = rLine.match(/(\d{1,2}):(\d{2})/);
+                    let itemTime = tm ? `${tm[1].padStart(2,'0')}:${tm[2]}` : "09:00";
+                    let itemName = rLine.replace(dm[0], '').replace(tm ? tm[0] : '', '').replace(/GET\$.*|잔금.*|\$.*/g, '').trim();
+                    const lowerLine = rLine.toLowerCase();
+                    if (lowerLine.includes('land')) { itemName = '보라카이 랜드투어'; itemTime = "10:30"; }
+                    else if (lowerLine.includes('hopping')) { if (lowerLine.includes('(j)')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; itemTime = "12:30"; } else if (lowerLine.includes('(s)')) { itemName = '블랙펄 선셋 호핑투어'; itemTime = "13:30"; } }
+                    checkAndAdd(itemName, tDate, itemTime);
                 }
             });
         }
-        if (count > 0) { await batch.commit(); alert(`${count}건의 일정이 등록되었습니다.`); hideInputArea(); }
+        if (count > 0) { await batch.commit(); alert(`${count}건의 일정이 업데이트되었습니다.`); hideInputArea(); }
+        else alert('등록할 새로운 일정이 없습니다.');
     };
 
     window.makeQuickVoucher = async () => {
         const inputVal = document.getElementById('quick-voucher-input').value.trim(); if (!inputVal) return;
         const parts = inputVal.split('\t'); if (parts.length < 16) return;
         const currentYear = new Date().getFullYear(); const customerName = (parts[15] || '').trim(); const engName = (parts[10] || '').trim();
+        const totalPaxCount = (parseInt(parts[11]) || 0) + (parseInt(parts[12]) || 0) + (parseInt(parts[13]) || 0);
+        const resort = (parts[9] || '').trim();
         const items = [];
+
+        const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${currentYear}-${m}-${d}`; };
+
+        if (parts[2] && parts[2].match(/[A-Z]{2}\d+/)) items.push({ name: `✈️ 공항 픽업 (${parts[2].toUpperCase()})`, date: formatDate(parts[0]), time: "00:01", count: totalPaxCount, details: `리조트: ${resort}` });
+        if (parts[3] && parts[3].match(/[A-Z]{2}\d+/)) {
+            let sTime = (parts[3].toUpperCase() === 'TW126') ? "08:30" : "21:00";
+            items.push({ name: `✈️ 공항 샌딩 (${parts[3].toUpperCase()})`, date: formatDate(parts[1]), time: sTime, count: totalPaxCount, details: `리조트: ${resort}` });
+        }
+
         (parts[16] || '').split('\n').forEach(line => {
             const dm = line.trim().match(/^(\d{1,2})\/(\d{1,2})/);
             if (dm) {
-                const dateStr = `${currentYear}-${dm[1].padStart(2,'0')}-${dm[2].padStart(2,'0')}`;
-                items.push({ name: line.replace(dm[0], '').trim(), date: dateStr, time: "09:00", count: (parseInt(parts[11]) || 0), details: line });
+                const tDate = formatDate(dm[0]);
+                let itemName = line.replace(dm[0], '').trim();
+                let itemTime = "09:00", itemDetails = line;
+                if (line.toLowerCase().includes('land')) { itemName = '보라카이 랜드투어'; itemTime = "10:30"; }
+                else if (line.toLowerCase().includes('hopping')) { if (line.includes('(j)')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; itemTime = "12:30"; } else if (line.includes('(s)')) { itemName = '블랙펄 선셋 호핑투어'; itemTime = "13:30"; } }
+                else if (line.includes('afh') || line.includes('afm')) { itemDetails = "투어 후 바로 이동"; itemTime = line.includes('afh') ? "18:00" : "17:00"; }
+                items.push({ name: itemName, date: tDate, time: itemTime, count: totalPaxCount, details: itemDetails });
             }
         });
-        const resData = { customerKorName: customerName, engName: engName, contact: (parts[14] || '').trim(), items, status: '예약확정', exchangeAmount: (parts[24] || parts[4] || '-').trim(), pickupResort: (parts[9] || '').trim(), createdAt: new Date() };
+        items.sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+        const resData = { customerKorName: customerName, engName: engName, contact: (parts[14] || '').trim(), items, status: '예약확정', exchangeAmount: (parts[24] || parts[4] || '-').trim(), pickupResort: resort, createdAt: new Date() };
         const docRef = await addDoc(collection(db, "quick_vouchers"), resData);
         navigator.clipboard.writeText(`${window.location.origin}/reservation-schedule.html?id=${docRef.id}&type=quick`).then(() => alert('바우처 생성 및 링크 복사 완료!'));
         hideInputArea();

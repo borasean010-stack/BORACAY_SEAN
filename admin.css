@@ -95,7 +95,7 @@ body.smartstore-admin { margin: 0; padding: 0; background: var(--ss-bg); font-fa
     display: flex;
     gap: 15px;
     overflow-x: auto;
-    padding: 5px 5px 20px;
+    padding: 10px 5px 25px;
     scrollbar-width: thin;
     scrollbar-color: #ddd transparent;
 }
@@ -103,37 +103,45 @@ body.smartstore-admin { margin: 0; padding: 0; background: var(--ss-bg); font-fa
 .schedule-timeline::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
 
 .schedule-card {
-    min-width: 220px;
+    min-width: 280px;
     background: #fff;
-    border-top: 4px solid #ff6a00;
     border-radius: 12px;
-    padding: 15px;
+    padding: 0;
     position: relative;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     transition: 0.3s;
     flex-shrink: 0;
+    overflow: hidden;
+    border: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
 }
-.schedule-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+.schedule-card:hover { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(0,0,0,0.12); border-color: #ff6a00; }
 
-.sc-status { 
-    position: absolute; top: 15px; right: 15px; padding: 2px 8px; border-radius: 4px; 
-    font-size: 10px; font-weight: 900; color: #fff; 
-}
-.sc-status.confirmed { background: #00a854; }
-.sc-status.pending { background: #ffcc00; color: #333; }
+.sc-header { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f5f5f5; background: #fafafa; }
+.sc-category-tag { font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 50px; text-transform: uppercase; }
+.sc-time-label { font-size: 15px; font-weight: 900; color: #333; display: flex; align-items: center; gap: 5px; }
+.sc-time-label .material-icons { font-size: 18px; color: #ff6a00; }
 
-.sc-time { font-size: 16px; font-weight: 800; color: #ff6a00; display: flex; align-items: center; gap: 4px; margin-bottom: 8px; }
-.sc-time .material-icons { font-size: 16px; }
+.sc-body { padding: 15px; flex: 1; }
+.sc-item-name { font-size: 16px; font-weight: 800; color: #111; margin-bottom: 10px; line-height: 1.4; display: flex; align-items: flex-start; gap: 8px; }
+.sc-item-name .material-icons { font-size: 20px; color: #ff6a00; flex-shrink: 0; margin-top: 2px; }
 
-.sc-item { font-size: 15px; font-weight: 800; color: #111; margin-bottom: 12px; min-height: 40px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; }
+.sc-customer-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 5px; }
+.sc-cust-name { font-size: 15px; font-weight: 700; color: #333; }
+.sc-pax-badge { background: #333; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 12px; font-weight: 800; }
 
-.sc-info { border-top: 1px dashed #eee; padding-top: 12px; display: flex; flex-direction: column; gap: 6px; }
-.sc-customer { font-size: 14px; color: #333; }
-.sc-customer b { font-weight: 800; font-size: 15px; }
+.sc-footer { padding: 10px 15px; background: #fffcf5; border-top: 1px dashed #eee; display: flex; flex-direction: column; gap: 4px; }
+.sc-sub-info { font-size: 12px; color: #777; display: flex; align-items: center; gap: 6px; }
+.sc-sub-info .material-icons { font-size: 14px; color: #bbb; }
 
-.sc-flight, .sc-resort { font-size: 12px; color: #777; display: flex; align-items: center; gap: 5px; }
-.sc-flight .material-icons, .sc-resort .material-icons { font-size: 14px; color: #bbb; }
-.sc-status.pending { background: #ffcc00; color: #333; }
+/* Category Colors */
+.cat-pickup { background: #e6f7ff; color: #1890ff; }
+.cat-sending { background: #fff1f0; color: #f5222d; }
+.cat-hopping { background: #f6ffed; color: #52c41a; }
+.cat-malum { background: #e6fffb; color: #13c2c2; }
+.cat-activity { background: #fff7e6; color: #fa8c16; }
+
 
 /* Existing Badge & Button Overrides if any... */
 

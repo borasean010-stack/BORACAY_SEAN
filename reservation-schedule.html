@@ -147,9 +147,14 @@
         if (name.includes('에스파') || name.includes('루나') || name.includes('보라스파') || name.includes('카바얀') || name.includes('힐롯')) {
             let meetingPlace = "마사지샵 개별이동";
             let mapLink = "";
+            const lowerDetails = (item.details || "").toLowerCase();
             
-            // --- 🚀 [핵심 추가] 비고란에서 파싱된 픽업 정보가 있으면 우선 적용 ---
-            if (item.details && (item.details.includes('픽업') || item.details.includes('이동'))) {
+            // --- 🚀 [핵심 추가] afh/afm 또는 투어 후 이동 정보 우선 적용 ---
+            if (lowerDetails.includes('afh') || lowerDetails.includes('호핑 후') || lowerDetails.includes('호핑투어 후')) {
+                meetingPlace = "호핑투어 종료 후 마사지샵으로 바로 이동";
+            } else if (lowerDetails.includes('afm') || lowerDetails.includes('말룸 후') || lowerDetails.includes('말룸파티 후')) {
+                meetingPlace = "말룸파티 종료 후 마사지샵으로 바로 이동";
+            } else if (item.details && (item.details.includes('픽업') || item.details.includes('이동'))) {
                 meetingPlace = item.details;
             } else {
                 if (name.includes('에스파')) {
@@ -169,7 +174,7 @@
                 }
             }
 
-            const mapBtn = (mapLink && !meetingPlace.includes('픽업')) ? `\n<a href="${mapLink}" class="map-btn" target="_blank">📍 샵 위치 구글맵 확인</a>` : "";
+            const mapBtn = (mapLink && !meetingPlace.includes('이동')) ? `\n<a href="${mapLink}" class="map-btn" target="_blank">📍 샵 위치 구글맵 확인</a>` : "";
             
             return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : ${meetingPlace}</b>${mapBtn}\n\n★ 준비물\n편한 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품</div>`;
         }

@@ -271,10 +271,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const tempAddedSet = new Set();
         for (let line of inputVal.split('\n')) {
             const parts = line.split('\t'); if (parts.length < 16) continue;
-            const korName = (parts[15] || '').trim();
-            const totalPax = (parseInt(parts[11]) || 0) + (parseInt(parts[12]) || 0) + (parseInt(parts[13]) || 0); // pax+chd+inf
             
-            // 🚀 리조트 슬래시(/) 분리 로직 적용
+            // 🚀 지능형 성함 매핑: parts[10]이 한글이면 우선 적용
+            const p10 = (parts[10] || '').trim();
+            const p15 = (parts[15] || '').trim();
+            const isP10Korean = /[가-힣]/.test(p10);
+            const korName = isP10Korean ? p10 : p15;
+            const engName = isP10Korean ? p15 : p10;
+
+            const totalPax = (parseInt(parts[11]) || 0) + (parseInt(parts[12]) || 0) + (parseInt(parts[13]) || 0);
             const resortRaw = (parts[9] || '').trim();
             const pResort = resortRaw.split('/')[0].trim();
             const sResort = resortRaw.split('/')[1]?.trim() || pResort;
@@ -283,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const checkAndAdd = (name, date, time, specPax = totalPax) => { 
                 if (!date) return; const uniqueKey = `${korName}_${date}_${name}`;
                 if (!allSchedules.some(s => s.customerName === korName && s.date === date && s.name === name) && !tempAddedSet.has(uniqueKey)) { 
-                    batch.set(doc(collection(db, "schedules")), { customerName: korName, name, date, time, count: specPax, createdAt: new Date(), details: `리조트: ${name.includes('샌딩') ? sResort : pResort}` }); 
+                    batch.set(doc(collection(db, "schedules")), { customerName: `${korName} (${engName})`, name, date, time, count: specPax, createdAt: new Date(), details: `리조트: ${name.includes('샌딩') ? sResort : pResort}` }); 
                     tempAddedSet.add(uniqueKey); count++; 
                 } 
             };
@@ -297,11 +302,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     const tDate = formatDate(dm[0]); let itemName = rLine.replace(dm[0], '').replace(/GET\$.*|잔금.*|\$.*/g, '').trim();
                     let itemTime = "09:00"; let itemPax = totalPax;
                     
-                    // 🚀 마사지 인원 정밀 파싱 (태반4 / 성장 3명 등)
-                    const mCount = rLine.match(/\d+/g);
-                    if ((rLine.includes('sspa') || rLine.includes('에스파') || rLine.includes('luna') || rLine.includes('루나') || rLine.includes('bora') || rLine.includes('보라')) && mCount) {
-                        const sum = mCount.reduce((a, b) => parseInt(a) + parseInt(b), 0);
-                        if (sum > 0 && sum < 20) itemPax = sum; // 합계가 너무 크지 않을 때만 적용
+                    const mCount = rLine.match(/\d+(?=명|인|태반|성장|스톤|오일|포쉘|진주)/g) || rLine.match(/\d+/g);
+                    if ((rLine.includes('spa') || rLine.includes('스파')) && mCount) {
+                        const sum = mCount.filter(n => parseInt(n) < 20).reduce((a, b) => parseInt(a) + parseInt(b), 0);
+                        if (sum > 0) itemPax = sum;
                     }
 
                     const timeMatch = rLine.match(/(\d{1,2}):(\d{2})/); if (timeMatch) itemTime = `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}`;
@@ -311,7 +315,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     else if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = '에스파(S-SPA)';
                     else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = '루나스파';
                     else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = '보라스파';
-                    
                     if (lowerLine.includes('sspa') || lowerLine.includes('루나') || lowerLine.includes('에스파') || lowerLine.includes('bora')) {
                         if (lowerLine.includes('afh')) itemTime = "18:00"; else if (lowerLine.includes('afm')) itemTime = "17:00";
                     }
@@ -334,15 +337,24 @@ document.addEventListener('DOMContentLoaded', () => {
     window.makeQuickVoucher = async () => {
         const inputVal = document.getElementById('quick-voucher-input').value.trim(); if (!inputVal) return;
         const parts = inputVal.split('\t'); if (parts.length < 16) return;
-        const currentYear = new Date().getFullYear(); const korName = (parts[15] || '').trim(); const engName = (parts[10] || '').trim();
-        const totalPax = (parseInt(parts[11]) || 0) + (parseInt(parts[12]) || 0) + (parseInt(parts[13]) || 0);
+        const currentYear = new Date().getFullYear();
         
+        // 🚀 지능형 성함 매핑 적용
+        const p10 = (parts[10] || '').trim();
+        const p15 = (parts[15] || '').trim();
+        const isP10Korean = /[가-힣]/.test(p10);
+        const korName = isP10Korean ? p10 : p15;
+        const engName = isP10Korean ? p15 : p10;
+
+        const totalPax = (parseInt(parts[11]) || 0) + (parseInt(parts[12]) || 0) + (parseInt(parts[13]) || 0);
         const resortRaw = (parts[9] || '').trim();
         const pResort = resortRaw.split('/')[0].trim();
         const sResort = resortRaw.split('/')[1]?.trim() || pResort;
 
         const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${currentYear}-${m}-${d}`; };
-        let exVal = (parts[24] || parts[4] || '').trim(); if (exVal.includes('/') || exVal.includes('▲')) exVal = '-';
+        let exVal = (parts[24] || parts[4] || '').trim();
+        if (exVal.includes('/') || exVal.includes('▲') || exVal.length > 10) exVal = '-';
+
         const items = [];
         if (parts[2] && parts[2].match(/[A-Z]{2}\d+/)) items.push({ name: `✈️ 공항 픽업 (${parts[2].toUpperCase()})`, date: formatDate(parts[0]), time: "14:00", count: totalPax });
         if (parts[3] && parts[3].match(/[A-Z]{2}\d+/)) items.push({ name: `✈️ 공항 샌딩 (${parts[3].toUpperCase()})`, date: formatDate(parts[1]), time: (parts[3].toUpperCase() === 'TW126' ? "08:30" : "21:00"), count: totalPax });
@@ -350,10 +362,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const dm = line.trim().match(/^(\d{1,2})\/(\d{1,2})/);
             if (dm) {
                 let itemName = line.replace(dm[0], '').trim(); let itemTime = "09:00"; let itemPax = totalPax;
-                const mCount = line.match(/\d+/g);
+                const mCount = line.match(/\d+(?=명|인|태반|성장|스톤|오일|포쉘|진주)/g) || line.match(/\d+/g);
                 if ((line.includes('spa') || line.includes('스파')) && mCount) {
-                    const sum = mCount.reduce((a, b) => parseInt(a) + parseInt(b), 0);
-                    if (sum > 0 && sum < 20) itemPax = sum;
+                    const sum = mCount.filter(n => parseInt(n) < 20).reduce((a, b) => parseInt(a) + parseInt(b), 0);
+                    if (sum > 0) itemPax = sum;
                 }
                 const timeMatch = line.match(/(\d{1,2}):(\d{2})/); if (timeMatch) itemTime = `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}`;
                 const lowerLine = itemName.toLowerCase();
@@ -366,13 +378,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 items.push({ name: itemName, date: formatDate(dm[0]), time: itemTime, count: itemPax, details: line });
             }
         });
-        const resData = { customerKorName: korName, engName: engName, contact: (parts[14] || '').trim(), items, status: '예약확정', exchangeAmount: exVal, paxInfo: `성인 ${parts[11]}, 아동 ${parts[12]}, 유아 ${parts[13]}`, pickupResort: pResort, sendingResort: sResort, createdAt: new Date() };
+        const resData = { customerKorName: `${korName} (${engName})`, contact: (parts[14] || '').trim(), items, status: '예약확정', exchangeAmount: exVal, paxInfo: `성인 ${parts[11]}, 아동 ${parts[12]}, 유아 ${parts[13]}`, pickupResort: pResort, sendingResort: sResort, createdAt: new Date() };
         const docRef = await addDoc(collection(db, "quick_vouchers"), resData);
         navigator.clipboard.writeText(`${window.location.origin}/reservation-schedule.html?id=${docRef.id}&type=quick`).then(() => alert('바우처 생성 완료!'));
         hideInputArea();
     };
-
-    window.handleAutoConfirm = async (id) => { if (confirm("예약확정 처리를 진행합니까?")) await updateDoc(doc(db, "reservations", id), { status: "예약확정" }); };
-    window.handleResortQuoteComplete = async (id) => { if (confirm("견적완료 처리를 진행합니까?")) await updateDoc(doc(db, "reservations", id), { status: "견적완료" }); };
-    window.handleResortConfirm = async (id) => { const amount = prompt("입금 금액"); if (amount) { await updateDoc(doc(db, "reservations", id), { status: "리조트확정", totalPrice: parseInt(amount.replace(/[^0-9]/g, '')) }); alert("확정!"); } };
 });

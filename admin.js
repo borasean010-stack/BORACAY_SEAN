@@ -1,4 +1,4 @@
-// admin.js - Final Full Luxury Admin (STRICT ORDER & EXCHANGE FILTERING)
+// admin.js - Final Full Luxury Admin (STRICT ORDER & KOREAN RESORTS)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, where, getDocs, addDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -27,6 +27,35 @@ document.addEventListener('DOMContentLoaded', () => {
     let activeTab = 'new'; 
     let currentScheduleFilter = 'all';
     let currentScheduleDay = 'today'; 
+
+    // 🚀 리조트 한글 번역기
+    function translateResort(name) {
+        if (!name || name === '-') return '-';
+        const n = name.toLowerCase().replace(/\s/g, '').replace(/\./g, '');
+        if (n.includes('hgarden') || n.includes('henanngarden')) return '헤난 가든';
+        if (n.includes('lagoon')) return '헤난 라군';
+        if (n.includes('prime')) return '헤난 프라임';
+        if (n.includes('palm')) return '헤난 팜';
+        if (n.includes('park')) return '헤난 파크';
+        if (n.includes('crystal')) return '헤난 크리스탈';
+        if (n.includes('regency')) return '헤난 리젠시';
+        if (n.includes('crimson')) return '크림슨';
+        if (n.includes('savoy')) return '사보이';
+        if (n.includes('belmont')) return '벨몬트';
+        if (n.includes('hue')) return '휴 리조트';
+        if (n.includes('fairway')) return '페어웨이';
+        if (n.includes('discovery')) return '디스커버리';
+        if (n.includes('movenpick')) return '모벤픽';
+        if (n.includes('shangri')) return '샹그릴라';
+        if (n.includes('astoria')) return '아스토리아';
+        if (n.includes('mandarin')) return '만다린';
+        if (n.includes('lind')) return '더 린드';
+        if (n.includes('feliz')) return '펠리즈';
+        if (n.includes('coast')) return '코스트';
+        if (n.includes('gray')) return '그레이';
+        if (n.includes('henann')) return '헤난';
+        return name; 
+    }
 
     function showAdminPanel() {
         if (!loginContainer || !adminContainer) return;
@@ -283,8 +312,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const totalPax = (parseInt(parts[11]) || 0) + (parseInt(parts[12]) || 0) + (parseInt(parts[13]) || 0);
             const resortRaw = (parts[9] || '').trim();
-            const pResort = resortRaw.split('/')[0].trim();
-            const sResort = resortRaw.split('/')[1]?.trim() || pResort;
+            const pResort = translateResort(resortRaw.split('/')[0].trim());
+            const sResort = translateResort(resortRaw.split('/')[1]?.trim() || pResort);
 
             const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${currentYear}-${m}-${d}`; };
             const checkAndAdd = (name, date, time, specPax = totalPax) => { 
@@ -319,7 +348,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = '루나스파';
                     else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = '보라스파';
                     
-                    // 🚀 AFH/AFM 시간 강제 고정 (투어보다 뒤로 가도록)
                     if (rLine.includes('afh') || rLine.includes('AFH')) itemTime = "18:00";
                     else if (rLine.includes('afm') || rLine.includes('AFM')) itemTime = "17:00";
                     
@@ -355,12 +383,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const totalPax = (parseInt(parts[11]) || 0) + (parseInt(parts[12]) || 0) + (parseInt(parts[13]) || 0);
         const resortRaw = (parts[9] || '').trim();
-        const pResort = resortRaw.split('/')[0].trim();
-        const sResort = resortRaw.split('/')[1]?.trim() || pResort;
+        const pResort = translateResort(resortRaw.split('/')[0].trim());
+        const sResort = translateResort(resortRaw.split('/')[1]?.trim() || pResort);
 
         const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${currentYear}-${m}-${d}`; };
         
-        // 🚀 환전 필터링 강화 (GET$ 금액과 겹치면 제외)
         const remarkRaw = (parts[16] || '').replace(/^"|"$/g, '');
         let exVal = (parts[24] || '').trim();
         const getMatch = remarkRaw.match(/GET\$(\d+)/i);
@@ -387,7 +414,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 else if (lowerLine.includes('land')) { itemName = '보라카이 랜드투어'; if(!timeMatch) itemTime = "10:30"; }
                 else if (lowerLine.includes('hopping')) { if (lowerLine.includes('(j)')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!timeMatch) itemTime = "12:30"; } else { itemName = '블랙펄 선셋 호핑투어'; if(!timeMatch) itemTime = "13:30"; } }
                 
-                // 🚀 AFH/AFM 시간 강제 고정 (투어보다 뒤로 가도록)
                 if (line.includes('afh') || line.includes('AFH')) itemTime = "18:00";
                 else if (line.includes('afm') || line.includes('AFM')) itemTime = "17:00";
                 

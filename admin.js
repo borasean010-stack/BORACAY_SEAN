@@ -163,10 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentScheduleFilter = category;
         document.querySelectorAll('.filter-btn').forEach(btn => {
             const txt = btn.innerText;
-            const isMatch = (category === 'all' && txt === '전체') || 
-                            (category === '마사지' && txt.includes('마사지')) ||
-                            (category === '액티비티' && txt.includes('액티비티')) || 
-                            txt === category;
+            const isMatch = (category === 'all' && txt === '전체') || txt === category;
             if (isMatch) btn.classList.add('active');
             else btn.classList.remove('active');
         });
@@ -175,17 +172,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getCategory(name, details = '') {
         const combined = ((name || '') + ' ' + (details || '')).toLowerCase();
-        
+
         if (combined.includes('픽업')) return '픽업';
         if (combined.includes('샌딩')) return '샌딩';
         if (combined.includes('hopping') || combined.includes('호핑')) return '호핑투어';
         if (combined.includes('land') || combined.includes('랜드')) return '랜드투어';
-        if (combined.includes('massage') || combined.includes('마사지') || combined.includes('spa') || combined.includes('스파')) return '마사지';
         if (combined.includes('malum') || combined.includes('말룸')) return '말룸파티';
-        
+
         return '액티비티';
     }
-
     function renderSchedule() {
         const container = document.getElementById('active-timeline');
         if (!container) return;
@@ -229,8 +224,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     const flightMatch = item.name.match(/\(([A-Z0-9]+)\)/i);
                     if (flightMatch) groupTitle = flightMatch[1].toUpperCase();
                 }
-            } else if (cat === '마사지') {
-                groupTitle = item.name.replace('마사지', '').replace('스파', '').trim() || '마사지';
+            } else if (item.name.toLowerCase().includes('마사지') || item.name.toLowerCase().includes('스파')) {
+                // 마사지/스파의 경우 샵 이름을 그룹명으로 추출 시도
+                groupTitle = item.name.replace('마사지', '').replace('스파', '').replace('(', '').replace(')', '').trim() || '마사지';
             }
             
             const key = `${groupTitle}_${item.time}`;
@@ -259,7 +255,11 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (group.category === '호핑투어') { icon = "sailing"; catClass = "cat-hopping"; catLabel = "호핑투어"; }
             else if (group.category === '말룸파티') { icon = "nature_people"; catClass = "cat-malum"; catLabel = "말룸파티"; }
             else if (group.category === '랜드투어') { icon = "directions_car"; catClass = "cat-activity"; catLabel = "랜드투어"; }
-            else if (group.category === '마사지') { icon = "spa"; catClass = "cat-activity"; catLabel = "마사지"; }
+            
+            // 마사지 아이콘 처리 (아이템 중 하나라도 마사지 관련이면 spa 아이콘 사용)
+            if (group.items.some(it => it.name.toLowerCase().includes('마사지') || it.name.toLowerCase().includes('스파'))) {
+                icon = "spa";
+            }
 
             let displayTitle = group.title;
             const lowerTitle = group.title.toLowerCase();

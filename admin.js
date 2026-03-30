@@ -1,4 +1,4 @@
-// admin.js - Final Full Luxury Admin (STRICT RULES APPLIED)
+// admin.js - Final Full Luxury Admin (STRICT RULES & MASSAGE TRANSLATION)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, where, getDocs, addDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -288,9 +288,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     const tDate = formatDate(dm[0]); let itemName = rLine.replace(dm[0], '').replace(/GET\$.*|잔금.*|\$.*/g, '').trim();
                     let itemTime = "09:00"; const lowerLine = itemName.toLowerCase();
                     const timeMatch = rLine.match(/(\d{1,2}):(\d{2})/); if (timeMatch) itemTime = `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}`;
-                    if (lowerLine.includes('land')) { itemName = '보라카이 랜드투어'; if(!timeMatch) itemTime = "10:30"; }
+                    
+                    // 🚀 마사지샵 한글 번역 추가
+                    if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = '에스파(S-SPA)';
+                    else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = '루나스파';
+                    else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = '보라스파';
+                    else if (lowerLine.includes('land')) { itemName = '보라카이 랜드투어'; if(!timeMatch) itemTime = "10:30"; }
                     else if (lowerLine.includes('hopping')) { if (lowerLine.includes('(j)')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!timeMatch) itemTime = "12:30"; } else { itemName = '블랙펄 선셋 호핑투어'; if(!timeMatch) itemTime = "13:30"; } }
-                    else if (lowerLine.includes('sspa') || lowerLine.includes('루나') || lowerLine.includes('에스파')) { if (lowerLine.includes('afh')) itemTime = "18:00"; else if (lowerLine.includes('afm')) itemTime = "17:00"; }
+                    
+                    if (lowerLine.includes('sspa') || lowerLine.includes('루나') || lowerLine.includes('에스파') || lowerLine.includes('bora')) {
+                        if (lowerLine.includes('afh')) itemTime = "18:00"; else if (lowerLine.includes('afm')) itemTime = "17:00";
+                    }
                     checkAndAdd(itemName, tDate, itemTime);
                 }
             });
@@ -314,9 +322,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (dm) {
                 let itemName = line.replace(dm[0], '').trim(); let itemTime = "09:00"; const lowerLine = itemName.toLowerCase();
                 const timeMatch = line.match(/(\d{1,2}):(\d{2})/); if (timeMatch) itemTime = `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}`;
-                if (lowerLine.includes('land')) { itemName = '보라카이 랜드투어'; if(!timeMatch) itemTime = "10:30"; }
+                
+                // 🚀 마사지샵 한글 번역 추가
+                if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = '에스파(S-SPA)';
+                else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = '루나스파';
+                else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = '보라스파';
+                else if (lowerLine.includes('land')) { itemName = '보라카이 랜드투어'; if(!timeMatch) itemTime = "10:30"; }
                 else if (lowerLine.includes('hopping')) { if (lowerLine.includes('(j)')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!timeMatch) itemTime = "12:30"; } else { itemName = '블랙펄 선셋 호핑투어'; if(!timeMatch) itemTime = "13:30"; } }
-                else if (line.includes('afh') || line.includes('afm')) itemTime = line.includes('afh') ? "18:00" : "17:00";
+                
+                if (line.includes('afh') || line.includes('afm')) itemTime = line.includes('afh') ? "18:00" : "17:00";
                 items.push({ name: itemName, date: formatDate(dm[0]), time: itemTime, count: totalPax, details: line });
             }
         });

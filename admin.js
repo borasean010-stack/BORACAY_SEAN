@@ -435,6 +435,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const resData = { customerKorName: `${korName} (${engName})`, contact: (parts[14] || '').trim(), items, status: '예약확정', exchangeAmount: exVal, paxInfo: `성인 ${parts[11]}, 아동 ${parts[12]}, 유아 ${parts[13]}`, pickupResort: pResort, sendingResort: sResort, createdAt: new Date() };
         const docRef = await addDoc(collection(db, "quick_vouchers"), resData);
         navigator.clipboard.writeText(`${window.location.origin}/reservation-schedule.html?id=${docRef.id}&type=quick`).then(() => alert('바우처 생성 완료!'));
+        document.getElementById('quick-voucher-input').value = ''; // 🔄 입력칸 리셋
         hideInputArea();
     };
 });

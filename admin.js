@@ -429,14 +429,22 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let line of rows) {
             const parts = line.split('\t'); if (parts.length < 16) continue;
             
-            const p10 = (parts[10] || '').trim();
-            const p15 = (parts[15] || '').trim();
-            const isP10Korean = /[가-힣]/.test(p10);
-            const isP15Nickname = p15.includes('맘') || p15.includes('아빠') || p15.includes('네') || p15.length > 5;
+            const p10 = (parts[10] || '').trim(); // 영어 이름 (kwon min kyung)
+            const p15 = (parts[15] || '').trim(); // 닉네임 (투윤맘)
+            const p19 = (parts[19] || '').trim(); // 실명 한글 (권민경)
             
-            let korName = p15; let engName = p10;
-            if (isP10Korean && !p10.includes(' ')) { korName = p10; engName = p15; }
-            else if (isP15Nickname) { if (isP10Korean) { korName = p10; engName = p15; } }
+            const isP10Korean = /[가-힣]/.test(p10);
+            const isP19Korean = /[가-힣]/.test(p19);
+            
+            let korName = p15; // 기본값은 닉네임
+            let engName = p10;
+
+            if (isP19Korean) {
+                korName = p19; // 19번 컬럼에 실명 한글이 있으면 우선 사용
+            } else if (isP10Korean) {
+                korName = p10; // 10번 컬럼이 한글이면 사용
+                engName = p15;
+            }
 
             const totalPax = parsePax(parts[11]) + parsePax(parts[12]) + parsePax(parts[13]);
             const resortRaw = (parts[9] || '').trim();

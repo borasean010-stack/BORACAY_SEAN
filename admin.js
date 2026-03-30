@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const counts = {
             new: allReservations.filter(r => r.status === '입금대기' || r.status === '예약접수').length,
             confirmed: allReservations.filter(r => r.status === '예약확정').length,
-            resorts: allReservations.filter(r => r.status === '견적').length,
+            resorts: allReservations.filter(r => r.status === '견적').length, // '견적완료'는 카운트에서 제외
             resortConfirmed: allReservations.filter(r => r.status === '리조트확정').length
         };
         const cNew = document.getElementById('count-new');
@@ -316,7 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (maxDate && maxDate < todayStr) matchesTab = false;
                 }
             }
-            else if (activeTab === 'resorts') matchesTab = (r.status === '견적' || r.status === '견적완료');
+            else if (activeTab === 'resorts') matchesTab = (r.status === '견적'); // '견적완료'는 목록에서 제외
             else if (activeTab === 'resort-confirmed') matchesTab = (r.status === '리조트확정');
             else if (activeTab === 'system') matchesTab = true;
             return matchesSearch && matchesTab;

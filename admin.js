@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const counts = {
             new: allReservations.filter(r => r.status === '입금대기' || r.status === '예약접수').length,
             confirmed: allReservations.filter(r => r.status === '예약확정').length,
-            resorts: allReservations.filter(r => r.status === '견적' || r.status === '견적완료').length,
+            resorts: allReservations.filter(r => r.status === '견적').length,
             resortConfirmed: allReservations.filter(r => r.status === '리조트확정').length
         };
         const cNew = document.getElementById('count-new');

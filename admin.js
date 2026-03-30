@@ -1,4 +1,4 @@
-// admin.js - Final Full Luxury Admin (Total Integration with Advanced Deduplication)
+// admin.js - Final Full Luxury Admin (STRICT RULES APPLIED)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, where, getDocs, addDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -268,46 +268,34 @@ document.addEventListener('DOMContentLoaded', () => {
     window.registerBulkSchedule = async () => {
         const inputVal = document.getElementById('schedule-reg-input').value.trim(); if (!inputVal) return;
         const currentYear = new Date().getFullYear(); const batch = writeBatch(db); let count = 0;
-        const tempAddedSet = new Set(); // 🚀 현재 배치 안에서의 중복 방지용
-
+        const tempAddedSet = new Set();
         for (let line of inputVal.split('\n')) {
             const parts = line.split('\t'); if (parts.length < 16) continue;
             const korName = (parts[15] || '').trim(); const totalPax = (parseInt(parts[11]) || 0) + (parseInt(parts[12]) || 0); const resort = (parts[9] || '').trim();
             const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${currentYear}-${m}-${d}`; };
-            
             const checkAndAdd = (name, date, time) => { 
-                if (!date) return; 
-                const uniqueKey = `${korName}_${date}_${name}`; // 🚀 중복 판단 키
-                
-                // 1. 이미 저장된 데이터에 있는지 체크
-                const existsInDb = allSchedules.some(s => s.customerName === korName && s.date === date && s.name === name);
-                // 2. 현재 붙여넣은 뭉치 안에 중복이 있는지 체크
-                const existsInBatch = tempAddedSet.has(uniqueKey);
-
-                if (!existsInDb && !existsInBatch) { 
+                if (!date) return; const uniqueKey = `${korName}_${date}_${name}`;
+                if (!allSchedules.some(s => s.customerName === korName && s.date === date && s.name === name) && !tempAddedSet.has(uniqueKey)) { 
                     batch.set(doc(collection(db, "schedules")), { customerName: korName, name, date, time, count: totalPax, createdAt: new Date(), details: `리조트: ${resort}` }); 
-                    tempAddedSet.add(uniqueKey);
-                    count++; 
+                    tempAddedSet.add(uniqueKey); count++; 
                 } 
             };
-
             if (parts[2] && parts[2].match(/[A-Z]{2}\d+/)) checkAndAdd(`✈️ 공항 픽업 (${parts[2].toUpperCase()})`, formatDate(parts[0]), "14:00");
             if (parts[3] && parts[3].match(/[A-Z]{2}\d+/)) checkAndAdd(`✈️ 공항 샌딩 (${parts[3].toUpperCase()})`, formatDate(parts[1]), (parts[3].toUpperCase() === 'TW126' ? "08:30" : "21:00"));
-            
             (parts[16] || '').replace(/^"|"$/g, '').split('\n').forEach(rLine => {
                 const dm = rLine.trim().match(/^(\d{1,2})\/(\d{1,2})/);
                 if (dm) {
                     const tDate = formatDate(dm[0]); let itemName = rLine.replace(dm[0], '').replace(/GET\$.*|잔금.*|\$.*/g, '').trim();
                     let itemTime = "09:00"; const lowerLine = itemName.toLowerCase();
-                    if (lowerLine.includes('land')) { itemName = '보라카이 랜드투어'; itemTime = "10:30"; }
-                    else if (lowerLine.includes('hopping')) { if (lowerLine.includes('(j)')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; itemTime = "12:30"; } else { itemName = '블랙펄 선셋 호핑투어'; itemTime = "13:30"; } }
+                    const timeMatch = rLine.match(/(\d{1,2}):(\d{2})/); if (timeMatch) itemTime = `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}`;
+                    if (lowerLine.includes('land')) { itemName = '보라카이 랜드투어'; if(!timeMatch) itemTime = "10:30"; }
+                    else if (lowerLine.includes('hopping')) { if (lowerLine.includes('(j)')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!timeMatch) itemTime = "12:30"; } else { itemName = '블랙펄 선셋 호핑투어'; if(!timeMatch) itemTime = "13:30"; } }
                     else if (lowerLine.includes('sspa') || lowerLine.includes('루나') || lowerLine.includes('에스파')) { if (lowerLine.includes('afh')) itemTime = "18:00"; else if (lowerLine.includes('afm')) itemTime = "17:00"; }
                     checkAndAdd(itemName, tDate, itemTime);
                 }
             });
         }
         if (count > 0) { await batch.commit(); alert(`${count}건 업데이트 완료!`); hideInputArea(); }
-        else alert('새로 등록할 수 있는 데이터가 없습니다 (모두 중복).');
     };
 
     window.makeQuickVoucher = async () => {
@@ -315,6 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const parts = inputVal.split('\t'); if (parts.length < 16) return;
         const currentYear = new Date().getFullYear(); const korName = (parts[15] || '').trim(); const engName = (parts[10] || '').trim();
         const pax = parseInt(parts[11]) || 0; const chd = parseInt(parts[12]) || 0; const totalPax = pax + chd;
+        const resort = (parts[9] || '').trim();
         const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${currentYear}-${m}-${d}`; };
         let exVal = (parts[24] || parts[4] || '').trim(); if (exVal.includes('/') || exVal.includes('▲')) exVal = '-';
         const items = [];
@@ -324,13 +313,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const dm = line.trim().match(/^(\d{1,2})\/(\d{1,2})/);
             if (dm) {
                 let itemName = line.replace(dm[0], '').trim(); let itemTime = "09:00"; const lowerLine = itemName.toLowerCase();
-                if (lowerLine.includes('land')) { itemName = '보라카이 랜드투어'; itemTime = "10:30"; }
-                else if (lowerLine.includes('hopping')) { if (lowerLine.includes('(j)')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; itemTime = "12:30"; } else { itemName = '블랙펄 선셋 호핑투어'; itemTime = "13:30"; } }
+                const timeMatch = line.match(/(\d{1,2}):(\d{2})/); if (timeMatch) itemTime = `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}`;
+                if (lowerLine.includes('land')) { itemName = '보라카이 랜드투어'; if(!timeMatch) itemTime = "10:30"; }
+                else if (lowerLine.includes('hopping')) { if (lowerLine.includes('(j)')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!timeMatch) itemTime = "12:30"; } else { itemName = '블랙펄 선셋 호핑투어'; if(!timeMatch) itemTime = "13:30"; } }
                 else if (line.includes('afh') || line.includes('afm')) itemTime = line.includes('afh') ? "18:00" : "17:00";
                 items.push({ name: itemName, date: formatDate(dm[0]), time: itemTime, count: totalPax, details: line });
             }
         });
-        const resData = { customerKorName: korName, engName: engName, contact: (parts[14] || '').trim(), items, status: '예약확정', exchangeAmount: exVal, paxInfo: `성인 ${pax}, 아동 ${chd} (총 ${totalPax}명)`, pickupResort: (parts[9] || '').trim(), createdAt: new Date() };
+        const resData = { customerKorName: korName, engName: engName, contact: (parts[14] || '').trim(), items, status: '예약확정', exchangeAmount: exVal, paxInfo: `성인 ${pax}, 아동 ${chd} (총 ${totalPax}명)`, pickupResort: resort, createdAt: new Date() };
         const docRef = await addDoc(collection(db, "quick_vouchers"), resData);
         navigator.clipboard.writeText(`${window.location.origin}/reservation-schedule.html?id=${docRef.id}&type=quick`).then(() => alert('바우처 생성 완료!'));
         hideInputArea();

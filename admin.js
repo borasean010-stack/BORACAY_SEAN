@@ -1,4 +1,4 @@
-// admin.js - Final Full Luxury Admin (PERFECT MAPPING & DEDUPLICATION)
+// admin.js - Final Full Luxury Admin (STRICT ORDER & EXCHANGE FILTERING)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, where, getDocs, addDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -277,14 +277,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const isP10Korean = /[가-힣]/.test(p10);
             const isP15Nickname = p15.includes('맘') || p15.includes('아빠') || p15.includes('네') || p15.length > 5;
             
-            let korName = p15;
-            let engName = p10;
-            
-            if (isP10Korean && !p10.includes(' ')) { 
-                korName = p10; engName = p15; 
-            } else if (isP15Nickname) {
-                if (isP10Korean) { korName = p10; engName = p15; }
-            }
+            let korName = p15; let engName = p10;
+            if (isP10Korean && !p10.includes(' ')) { korName = p10; engName = p15; }
+            else if (isP15Nickname) { if (isP10Korean) { korName = p10; engName = p15; } }
 
             const totalPax = (parseInt(parts[11]) || 0) + (parseInt(parts[12]) || 0) + (parseInt(parts[13]) || 0);
             const resortRaw = (parts[9] || '').trim();
@@ -303,7 +298,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (parts[2] && parts[2].match(/[A-Z]{2}\d+/)) checkAndAdd(`✈️ 공항 픽업 (${parts[2].toUpperCase()})`, formatDate(parts[0]), "14:00");
             if (parts[3] && parts[3].match(/[A-Z]{2}\d+/)) checkAndAdd(`✈️ 공항 샌딩 (${parts[3].toUpperCase()})`, formatDate(parts[1]), (parts[3].toUpperCase() === 'TW126' ? "08:30" : "21:00"));
             
-            (parts[16] || '').replace(/^"|"$/g, '').split('\n').forEach(rLine => {
+            const remarkRaw = (parts[16] || '').replace(/^"|"$/g, '');
+            remarkRaw.split('\n').forEach(rLine => {
                 const dm = rLine.trim().match(/^(\d{1,2})\/(\d{1,2})/);
                 if (dm) {
                     const tDate = formatDate(dm[0]); let itemName = rLine.replace(dm[0], '').replace(/GET\$.*|잔금.*|\$.*/g, '').trim();
@@ -322,9 +318,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     else if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = '에스파(S-SPA)';
                     else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = '루나스파';
                     else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = '보라스파';
-                    if (lowerLine.includes('sspa') || lowerLine.includes('루나') || lowerLine.includes('에스파') || lowerLine.includes('bora')) {
-                        if (lowerLine.includes('afh')) itemTime = "18:00"; else if (lowerLine.includes('afm')) itemTime = "17:00";
-                    }
+                    
+                    // 🚀 AFH/AFM 시간 강제 고정 (투어보다 뒤로 가도록)
+                    if (rLine.includes('afh') || rLine.includes('AFH')) itemTime = "18:00";
+                    else if (rLine.includes('afm') || rLine.includes('AFM')) itemTime = "17:00";
+                    
                     checkAndAdd(itemName, tDate, itemTime, itemPax);
                 }
             });
@@ -351,14 +349,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const isP10Korean = /[가-힣]/.test(p10);
         const isP15Nickname = p15.includes('맘') || p15.includes('아빠') || p15.includes('네') || p15.length > 5;
         
-        let korName = p15;
-        let engName = p10;
-        
-        if (isP10Korean && !p10.includes(' ')) { 
-            korName = p10; engName = p15; 
-        } else if (isP15Nickname) {
-            if (isP10Korean) { korName = p10; engName = p15; }
-        }
+        let korName = p15; let engName = p10;
+        if (isP10Korean && !p10.includes(' ')) { korName = p10; engName = p15; }
+        else if (isP15Nickname) { if (isP10Korean) { korName = p10; engName = p15; } }
 
         const totalPax = (parseInt(parts[11]) || 0) + (parseInt(parts[12]) || 0) + (parseInt(parts[13]) || 0);
         const resortRaw = (parts[9] || '').trim();
@@ -367,14 +360,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${currentYear}-${m}-${d}`; };
         
-        // 🚀 환전 필터링 강화
+        // 🚀 환전 필터링 강화 (GET$ 금액과 겹치면 제외)
+        const remarkRaw = (parts[16] || '').replace(/^"|"$/g, '');
         let exVal = (parts[24] || '').trim();
+        const getMatch = remarkRaw.match(/GET\$(\d+)/i);
+        if (getMatch && getMatch[1] === exVal) exVal = '-';
         if (!exVal || exVal === '0' || exVal.includes('/') || exVal.includes('▲') || exVal.length > 10) exVal = '-';
 
         const items = [];
         if (parts[2] && parts[2].match(/[A-Z]{2}\d+/)) items.push({ name: `✈️ 공항 픽업 (${parts[2].toUpperCase()})`, date: formatDate(parts[0]), time: "14:00", count: totalPax });
         if (parts[3] && parts[3].match(/[A-Z]{2}\d+/)) items.push({ name: `✈️ 공항 샌딩 (${parts[3].toUpperCase()})`, date: formatDate(parts[1]), time: (parts[3].toUpperCase() === 'TW126' ? "08:30" : "21:00"), count: totalPax });
-        (parts[16] || '').replace(/^"|"$/g, '').split('\n').forEach(line => {
+        remarkRaw.split('\n').forEach(line => {
             const dm = line.trim().match(/^(\d{1,2})\/(\d{1,2})/);
             if (dm) {
                 let itemName = line.replace(dm[0], '').trim(); let itemTime = "09:00"; let itemPax = totalPax;
@@ -390,7 +386,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = '보라스파';
                 else if (lowerLine.includes('land')) { itemName = '보라카이 랜드투어'; if(!timeMatch) itemTime = "10:30"; }
                 else if (lowerLine.includes('hopping')) { if (lowerLine.includes('(j)')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!timeMatch) itemTime = "12:30"; } else { itemName = '블랙펄 선셋 호핑투어'; if(!timeMatch) itemTime = "13:30"; } }
-                if (line.includes('afh') || line.includes('afm')) itemTime = line.includes('afh') ? "18:00" : "17:00";
+                
+                // 🚀 AFH/AFM 시간 강제 고정 (투어보다 뒤로 가도록)
+                if (line.includes('afh') || line.includes('AFH')) itemTime = "18:00";
+                else if (line.includes('afm') || line.includes('AFM')) itemTime = "17:00";
+                
                 items.push({ name: itemName, date: formatDate(dm[0]), time: itemTime, count: itemPax, details: line });
             }
         });

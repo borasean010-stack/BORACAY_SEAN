@@ -91,24 +91,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function fetchData() {
         if (!db) return;
-        let _res = [], _quick = [];
-        const updateAll = () => {
-            allReservations = [..._res, ..._quick].sort((a, b) => {
-                const da = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(0);
-                const db = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(0);
-                return db - da;
-            });
-            renderAll();
-        };
-
+        // 🚀 홈페이지 예약건만 관리 (퀵바우처 제외)
         onSnapshot(query(collection(db, "reservations"), orderBy("createdAt", "desc")), (snap) => {
-            _res = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            updateAll();
+            allReservations = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderAll();
         });
-        onSnapshot(query(collection(db, "quick_vouchers"), orderBy("createdAt", "desc")), (snap) => {
-            _quick = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            updateAll();
-        });
+        // 🚀 스케줄 등록(운영용) 데이터만 관리
         onSnapshot(query(collection(db, "schedules"), orderBy("date", "asc")), (snap) => {
             allSchedules = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             renderAll();
@@ -123,6 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateSummaryCounts() {
+        // 🚀 홈페이지 예약건(allReservations)에 대해서만 카운트 계산
         const counts = {
             new: allReservations.filter(r => r.status === '입금대기' || r.status === '예약접수').length,
             confirmed: allReservations.filter(r => r.status === '예약확정').length,
@@ -183,41 +172,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetDate = (currentScheduleDay === 'tomorrow') ? tomorrowStr : todayStr;
 
         let rawItems = [];
-        // 🚀 reservations만 가져오고 quick_vouchers(id가 Q로 시작)는 제외
-        allReservations.forEach(res => {
-            const isQuick = res.id.startsWith('Q') || (res.reservationNumber && res.reservationNumber.startsWith('Q'));
-            if (!isQuick && (res.status || '').includes('확정') && res.items) {
-                res.items.forEach(item => {
-                    if (item.date === targetDate) {
-                        const lines = (item.details || '').split('\n').filter(l => l.trim() !== '');
-                        const displayLines = lines.length > 0 ? lines : [''];
-                        displayLines.forEach(line => {
-                            const itemName = item.name.toLowerCase();
-                            let flight = "-";
-                            let resort = "-";
-                            
-                            if (itemName.includes('픽업')) {
-                                flight = res.pickupFlight || "-";
-                                resort = translateResort(res.pickupResort);
-                            } else if (itemName.includes('샌딩')) {
-                                flight = res.sendingFlight || "-";
-                                resort = translateResort(res.sendingResort);
-                            } else {
-                                resort = translateResort(res.pickupResort || res.sendingResort);
-                            }
-
-                            rawItems.push({ 
-                                time: item.time || "09:00", name: item.name, customer: res.customerKorName, count: item.count, status: res.status, id: res.id, source: 'reservation',
-                                resort: resort, flight: flight,
-                                details: line
-                            });
-                        });
-                    }
-                });
-            }
-        });
         
-        // 🚀 schedules (엑셀 등록 데이터) 추가
+        // 🚀 홈페이지 예약(allReservations) 로직 완전 삭제
+        // 오직 schedules (엑셀 등록 데이터)만 표시
         allSchedules.forEach(s => { 
             if (s.date === targetDate) {
                 const lines = (s.details || '').split('\n').filter(l => l.trim() !== '');

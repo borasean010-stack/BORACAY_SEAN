@@ -316,12 +316,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const statCard = document.getElementById(`stat-${tab}`);
         if (statCard) statCard.classList.add('active');
         const bActive = document.getElementById('breadcrumb-active');
+        
+        // 🚀 시스템 초기화 탭일 때 레이아웃 숨기기 처리
+        const toolGrid = document.querySelector('.main-tool-grid');
+        const timelineSec = document.querySelector('.timeline-section');
+        
         if (tab === 'system') {
+            if (toolGrid) toolGrid.style.display = 'none';
+            if (timelineSec) timelineSec.style.display = 'none';
             document.getElementById('system-setup-section').style.display = 'block';
             document.getElementById('data-view-section').style.display = 'block';
             if (bActive) bActive.innerText = '시스템 초기화';
             renderCleanupTable();
         } else {
+            if (toolGrid) toolGrid.style.display = 'grid';
+            if (timelineSec) timelineSec.style.display = 'block';
             document.getElementById('system-setup-section').style.display = 'none';
             document.getElementById('data-view-section').style.display = 'block';
             if (bActive) { const labels = { 'new': '신규예약', 'confirmed': '예약확정', 'resorts': '리조트 견적', 'resort-confirmed': '리조트 확정' }; bActive.innerText = labels[tab] || '메인 페이지'; }

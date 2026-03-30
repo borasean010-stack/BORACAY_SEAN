@@ -36,7 +36,7 @@
     </div>
 
     <div id="admin-container" class="admin-full-layout" style="display: none;">
-        <!-- 1. Sidebar -->
+        <!-- 1. Sidebar (럭셔리 스타일 유지) -->
         <aside class="ss-sidebar">
             <div class="ss-sidebar-brand">
                 <img src="logo.png" alt="Logo" class="ss-logo">
@@ -44,16 +44,13 @@
             </div>
             <nav class="ss-nav">
                 <div class="ss-nav-group">
-                    <p class="ss-nav-label">일정 관리</p>
+                    <p class="ss-nav-label">일정 & 도구</p>
                     <button class="ss-nav-item active" id="menu-today" onclick="switchAdminTab('today')">
                         <span class="material-icons">today</span> 오늘 일정
                     </button>
                     <button class="ss-nav-item" id="menu-tomorrow" onclick="switchAdminTab('tomorrow')">
                         <span class="material-icons">event_next</span> 내일 일정
                     </button>
-                </div>
-                <div class="ss-nav-group">
-                    <p class="ss-nav-label">바우처 & 스케줄</p>
                     <button class="ss-nav-item" id="menu-quick" onclick="switchAdminTab('quick')">
                         <span class="material-icons">confirmation_number</span> 퀵바우처 생성기
                     </button>
@@ -88,69 +85,89 @@
 
             <div class="ss-content">
                 
-                <!-- 📅 1. Schedule View (Today/Tomorrow) -->
-                <div id="view-schedule" class="admin-view">
+                <!-- 🛠️ 상단 섹션: 메뉴에 따라 변경됨 -->
+                <div id="top-tool-area" style="margin-bottom: 25px;">
+                    
+                    <!-- 📅 오늘/내일 일정 섹션 -->
+                    <div id="tool-schedule" class="tool-view">
+                        <div class="ss-view-header">
+                            <h2 id="schedule-title">타임라인 일정</h2>
+                            <div class="schedule-tabs">
+                                <button class="s-tab active" onclick="filterSchedule('all')">전체</button>
+                                <button class="s-tab" onclick="filterSchedule('픽업')">픽업</button>
+                                <button class="s-tab" onclick="filterSchedule('샌딩')">샌딩</button>
+                                <button class="s-tab" onclick="filterSchedule('호핑')">호핑</button>
+                                <button class="s-tab" onclick="filterSchedule('말룸파티')">말룸파티</button>
+                                <button class="s-tab" onclick="filterSchedule('액티비티')">액티비티</button>
+                            </div>
+                        </div>
+                        <div id="active-timeline" class="schedule-timeline" style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px;">
+                            <div class="sc-empty">데이터를 불러오는 중...</div>
+                        </div>
+                    </div>
+
+                    <!-- 🎫 퀵바우처 생성기 섹션 -->
+                    <div id="tool-quick" class="tool-view" style="display: none;">
+                        <div class="ss-card" style="padding: 20px; border-left: 5px solid #ff6a00;">
+                            <h3 style="margin: 0 0 10px 0; font-size: 16px; font-weight: 800; color: #ff6a00;">퀵바우처 생성기</h3>
+                            <div style="display: flex; gap: 10px;">
+                                <textarea id="quick-voucher-input" placeholder="데이터를 붙여넣으세요..." style="flex: 1; height: 45px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 12px; resize: none;"></textarea>
+                                <button class="btn-action-received" style="height: 45px; width: auto;" onclick="makeQuickVoucher()">생성 및 복사</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 📤 스케줄 등록 섹션 -->
+                    <div id="tool-reg" class="tool-view" style="display: none;">
+                        <div class="ss-card" style="padding: 20px; border-left: 5px solid #00c73c;">
+                            <h3 style="margin: 0 0 10px 0; font-size: 16px; font-weight: 800; color: #00c73c;">스케줄 일괄 등록 (수입시트 Q열)</h3>
+                            <div style="display: flex; gap: 10px;">
+                                <textarea id="schedule-reg-input" placeholder="매일 아침 전체 데이터를 붙여넣으세요..." style="flex: 1; height: 45px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 12px; resize: none;"></textarea>
+                                <button class="btn-action-received" style="height: 45px; width: auto; background: #00c73c;" onclick="registerBulkSchedule()">스케줄 업데이트</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 📊 하단 섹션: 스타일 그대로 유지 (카드 + 테이블) -->
+                <div id="status-layer" class="ss-status-layer">
+                    <div class="ss-status-card active" id="tab-new" onclick="switchAdminTab('new')">
+                        <div class="st-label">신규예약 접수</div>
+                        <div class="st-count" id="count-new">0</div>
+                    </div>
+                    <div class="ss-status-card" id="tab-confirmed" onclick="switchAdminTab('confirmed')">
+                        <div class="st-label">예약확정 내역</div>
+                        <div class="st-count" id="count-confirmed">0</div>
+                    </div>
+                    <div class="ss-status-card" id="tab-resorts" onclick="switchAdminTab('resorts')">
+                        <div class="st-label">리조트 견적</div>
+                        <div class="st-count" id="count-resorts">0</div>
+                    </div>
+                    <div class="ss-status-card" id="tab-resort-confirmed" onclick="switchAdminTab('resort-confirmed')">
+                        <div class="st-label">리조트 확정</div>
+                        <div class="st-count" id="count-resort-confirmed">0</div>
+                    </div>
+                </div>
+
+                <div id="data-view-section">
                     <div class="ss-view-header">
-                        <h2 id="schedule-title">일정 확인</h2>
-                        <div class="schedule-tabs" id="schedule-tabs">
-                            <button class="s-tab active" onclick="filterSchedule('all')">전체</button>
-                            <button class="s-tab" onclick="filterSchedule('픽업')">픽업</button>
-                            <button class="s-tab" onclick="filterSchedule('샌딩')">샌딩</button>
-                            <button class="s-tab" onclick="filterSchedule('호핑')">호핑</button>
-                            <button class="s-tab" onclick="filterSchedule('말룸파티')">말룸파티</button>
-                            <button class="s-tab" onclick="filterSchedule('액티비티')">액티비티</button>
-                        </div>
-                    </div>
-                    <div id="active-timeline" class="schedule-timeline" style="display: flex; flex-wrap: wrap; gap: 15px;">
-                        <div class="sc-empty">데이터를 불러오는 중...</div>
-                    </div>
-                </div>
-
-                <!-- 🎫 2. Quick Voucher View -->
-                <div id="view-quick" class="admin-view" style="display: none;">
-                    <div class="ss-card" style="padding: 30px; border-left: 5px solid #ff6a00;">
-                        <div style="margin-bottom: 20px;">
-                            <h3 style="margin: 0; font-size: 20px; font-weight: 800; color: #ff6a00;">퀵바우처 즉시 생성기</h3>
-                            <p style="color: #666; margin-top: 5px;">수입시트 데이터를 붙여넣으세요.</p>
-                        </div>
-                        <textarea id="quick-voucher-input" placeholder="여기에 데이터를 붙여넣으세요..." style="width: 100%; height: 150px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; font-family: monospace; font-size: 13px; margin-bottom: 15px;"></textarea>
-                        <button class="btn-action-received" style="width: 100%; height: 50px; font-size: 16px;" onclick="makeQuickVoucher()">
-                            <span class="material-icons">add_link</span> 바우처 생성 및 링크 복사
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 📤 3. Schedule Registration View -->
-                <div id="view-reg" class="admin-view" style="display: none;">
-                    <div class="ss-card" style="padding: 30px; border-left: 5px solid #00c73c;">
-                        <div style="margin-bottom: 20px;">
-                            <h3 style="margin: 0; font-size: 20px; font-weight: 800; color: #00c73c;">스케줄 일괄 등록</h3>
-                            <p style="color: #666; margin-top: 5px;">전체 수입시트 데이터를 붙여넣으세요 (Q열까지만 자동 분석됩니다).</p>
-                        </div>
-                        <textarea id="schedule-reg-input" placeholder="매일 아침 데이터를 업데이트하세요..." style="width: 100%; height: 150px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; font-family: monospace; font-size: 13px; margin-bottom: 15px;"></textarea>
-                        <button class="btn-action-received" style="width: 100%; height: 50px; font-size: 16px; background: #00c73c; box-shadow: 0 4px 10px rgba(0, 199, 60, 0.2);" onclick="registerBulkSchedule()">
-                            <span class="material-icons">cloud_upload</span> 스케줄 업데이트 하기
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 📥 4. New Reservation View (System) -->
-                <div id="view-new" class="admin-view" style="display: none;">
-                    <div class="ss-view-header">
-                        <h2>홈페이지 예약 접수 건</h2>
-                        <input type="text" id="header-global-search" placeholder="고객명 검색" class="ss-search">
+                        <h2 id="current-view-title">예약 리스트</h2>
+                        <input type="text" id="header-global-search" placeholder="검색어 입력" class="ss-search">
                     </div>
                     <div class="ss-card">
                         <div class="ss-table-wrapper">
                             <table class="ss-table">
                                 <thead>
                                     <tr>
+                                        <th width="40"><input type="checkbox"></th>
                                         <th width="50">번호</th>
-                                        <th width="120">고객명</th>
+                                        <th width="100">예약번호</th>
+                                        <th width="140">고객명</th>
                                         <th>상품 정보</th>
                                         <th width="120">금액</th>
-                                        <th width="100">상태</th>
-                                        <th width="100">액션</th>
+                                        <th width="100">신청일</th>
+                                        <th width="90">상태</th>
+                                        <th width="160">액션</th>
                                     </tr>
                                 </thead>
                                 <tbody id="admin-table-body"></tbody>
@@ -159,12 +176,12 @@
                     </div>
                 </div>
 
-                <!-- 💎 System Reset View -->
-                <div id="view-system" class="admin-view" style="display: none;">
+                <!-- 💎 System Reset -->
+                <div id="system-setup-section" style="display: none;">
                     <div class="system-view">
                         <span class="material-icons sv-icon">security</span>
                         <h2 class="sv-title">데이터 초기화</h2>
-                        <button class="btn-danger-luxury" onclick="handleClearAllData()">데이터 영구 삭제</button>
+                        <button class="btn-danger-luxury" onclick="handleClearAllData()">모든 데이터 삭제</button>
                     </div>
                 </div>
 

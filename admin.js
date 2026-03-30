@@ -414,7 +414,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isP10Korean && !p10.includes(' ')) { korName = p10; engName = p15; }
             else if (isP15Nickname) { if (isP10Korean) { korName = p10; engName = p15; } }
 
-            const totalPax = (parseInt(parts[11]) || 0) + (parseInt(parts[12]) || 0) + (parseInt(parts[13]) || 0);
+            // 🚀 인원수 파싱 보강 (4 3 1 형태 및 공백 제거)
+            const parsePax = (val) => {
+                if (!val) return 0;
+                // 숫자만 추출 (₩, 명 등의 문자 제거)
+                const num = val.toString().replace(/[^0-9]/g, '');
+                return parseInt(num) || 0;
+            };
+            const totalPax = parsePax(parts[11]) + parsePax(parts[12]) + parsePax(parts[13]);
+
             const resortRaw = (parts[9] || '').trim();
             const pResort = translateResort(resortRaw.split('/')[0].trim());
             const sResort = translateResort(resortRaw.split('/')[1]?.trim() || pResort);
@@ -439,8 +447,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 } 
             };
 
-            if (parts[2] && parts[2].match(/[A-Z0-9]+/)) checkAndAdd(`✈️ 공항 픽업 (${parts[2].toUpperCase()})`, formatDate(parts[0]), "14:00", totalPax, parts[2].toUpperCase());
-            if (parts[3] && parts[3].match(/[A-Z0-9]+/)) checkAndAdd(`✈️ 공항 샌딩 (${parts[3].toUpperCase()})`, formatDate(parts[1]), (parts[3].toUpperCase() === 'TW126' ? "08:30" : "21:00"), totalPax, parts[3].toUpperCase());
+            // 🚀 항공편 매칭 로직 보강 (TW126 등 모든 항공편 형태 지원)
+            const pickupFlight = (parts[2] || '').trim().toUpperCase();
+            const sendingFlight = (parts[3] || '').trim().toUpperCase();
+
+            if (pickupFlight && pickupFlight !== '-') checkAndAdd(`✈️ 공항 픽업 (${pickupFlight})`, formatDate(parts[0]), "14:00", totalPax, pickupFlight);
+            if (sendingFlight && sendingFlight !== '-') {
+                // 샌딩일은 B열(parts[1]) 기준
+                const sDate = formatDate(parts[1]);
+                const sTime = (sendingFlight === 'TW126') ? "08:30" : "21:00";
+                checkAndAdd(`✈️ 공항 샌딩 (${sendingFlight})`, sDate, sTime, totalPax, sendingFlight);
+            }
             
             const remarkRaw = (parts[16] || '').replace(/^"|"$/g, '');
             remarkRaw.split('\n').forEach(rLine => {

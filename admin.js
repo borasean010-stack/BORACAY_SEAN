@@ -401,10 +401,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const dm = line.trim().match(/^(\d{1,2})\/(\d{1,2})/);
             if (dm) {
                 let itemName = line.replace(dm[0], '').trim(); let itemTime = "09:00"; let itemPax = totalPax;
-                const mCount = line.match(/\d+(?=명|인|태반|성장|스톤|오일|포쉘|진주)/g) || line.match(/\d+/g);
+                // 🏷️ 인원수 추출 로직 개선 (날짜/시간 오인 방지)
+                const mCount = line.match(/\d+(?=명|인|태반|성장|스톤|오일|포쉘|진주)/g);
                 if ((line.includes('spa') || line.includes('스파')) && mCount) {
-                    const sum = mCount.filter(n => parseInt(n) < 20).reduce((a, b) => parseInt(a) + parseInt(b), 0);
+                    const sum = mCount.filter(n => parseInt(n) < 15).reduce((a, b) => parseInt(a) + parseInt(b), 0);
                     if (sum > 0) itemPax = sum;
+                } else if (line.includes('spa') || line.includes('스파')) {
+                    // 명시적 키워드가 없는 경우, 줄에서 숫자만 찾되 날짜(dm)와 시간(20:00 등) 제외
+                    const lineWithoutTime = line.replace(/\d{1,2}:\d{2}/g, '').replace(dm[0], '');
+                    const simpleNumbers = lineWithoutTime.match(/\d+/g);
+                    if (simpleNumbers) {
+                        const sum = simpleNumbers.filter(n => parseInt(n) < 15).reduce((a, b) => parseInt(a) + parseInt(b), 0);
+                        if (sum > 0) itemPax = sum;
+                    }
                 }
                 const timeMatch = line.match(/(\d{1,2}):(\d{2})/); if (timeMatch) itemTime = `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}`;
                 const lowerLine = itemName.toLowerCase();

@@ -402,6 +402,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const inputVal = document.getElementById('schedule-reg-input').value.trim(); if (!inputVal) return;
         const currentYear = new Date().getFullYear(); const batch = writeBatch(db); let count = 0;
         const tempAddedSet = new Set();
+
+        // 🚀 인원수 파싱 보강 (4 3 1 형태 및 공백 제거)
+        const parsePax = (val) => {
+            if (!val) return 0;
+            const num = val.toString().replace(/[^0-9]/g, '');
+            return parseInt(num) || 0;
+        };
+
         for (let line of inputVal.split('\n')) {
             const parts = line.split('\t'); if (parts.length < 16) continue;
             
@@ -414,56 +422,38 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isP10Korean && !p10.includes(' ')) { korName = p10; engName = p15; }
             else if (isP15Nickname) { if (isP10Korean) { korName = p10; engName = p15; } }
 
-            // 🚀 인원수 파싱 보강 (4 3 1 형태 및 공백 제거)
-            const parsePax = (val) => {
-                if (!val) return 0;
-                // 숫자만 추출 (₩, 명 등의 문자 제거)
-                const num = val.toString().replace(/[^0-9]/g, '');
-                return parseInt(num) || 0;
-            };
             const totalPax = parsePax(parts[11]) + parsePax(parts[12]) + parsePax(parts[13]);
-
             const resortRaw = (parts[9] || '').trim();
             const pResort = translateResort(resortRaw.split('/')[0].trim());
             const sResort = translateResort(resortRaw.split('/')[1]?.trim() || pResort);
 
             const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${currentYear}-${m}-${d}`; };
+            
             const checkAndAdd = (name, date, time, specPax = totalPax, flight = "-") => { 
                 if (!date) return; const uniqueKey = `${korName}_${date}_${name}`;
                 if (!allSchedules.some(s => s.customerName.includes(korName) && s.date === date && s.name === name) && !tempAddedSet.has(uniqueKey)) { 
-                    const resort = name.includes('샌딩') ? sResort : pResort;
+                    const resort = (name.includes('샌딩') || name.includes('TW126')) ? sResort : pResort;
                     batch.set(doc(collection(db, "schedules")), { 
                         customerName: `${korName} (${engName})`, 
-                        name, 
-                        date, 
-                        time, 
-                        count: specPax, 
-                        flight,
-                        resort,
-                        createdAt: new Date(), 
+                        name, date, time, count: specPax, flight, resort, createdAt: new Date(), 
                         details: `리조트: ${resort}` 
                     }); 
                     tempAddedSet.add(uniqueKey); count++; 
                 } 
             };
 
-            // 🚀 항공편 매칭 로직 보강 (TW126 등 모든 항공편 형태 지원)
-            const pickupFlight = (parts[2] || '').trim().toUpperCase();
-            const sendingFlight = (parts[3] || '').trim().toUpperCase();
-
-            if (pickupFlight && pickupFlight !== '-') checkAndAdd(`✈️ 공항 픽업 (${pickupFlight})`, formatDate(parts[0]), "14:00", totalPax, pickupFlight);
-            if (sendingFlight && sendingFlight !== '-') {
-                // 샌딩일은 B열(parts[1]) 기준
-                const sDate = formatDate(parts[1]);
-                const sTime = (sendingFlight === 'TW126') ? "08:30" : "21:00";
-                checkAndAdd(`✈️ 공항 샌딩 (${sendingFlight})`, sDate, sTime, totalPax, sendingFlight);
-            }
+            // 🚀 항공편 처리 (샌딩 TW126 등)
+            const pickFlight = (parts[2] || '').trim().toUpperCase();
+            const sendFlight = (parts[3] || '').trim().toUpperCase();
+            if (pickFlight && pickFlight !== '-') checkAndAdd(`✈️ 공항 픽업 (${pickFlight})`, formatDate(parts[0]), "14:00", totalPax, pickFlight);
+            if (sendFlight && sendFlight !== '-') checkAndAdd(`✈️ 공항 샌딩 (${sendFlight})`, formatDate(parts[1]), (sendFlight === 'TW126' ? "08:30" : "21:00"), totalPax, sendFlight);
             
             const remarkRaw = (parts[16] || '').replace(/^"|"$/g, '');
             remarkRaw.split('\n').forEach(rLine => {
                 const dm = rLine.trim().match(/^(\d{1,2})\/(\d{1,2})/);
                 if (dm) {
-                    const tDate = formatDate(dm[0]); let itemName = rLine.replace(dm[0], '').replace(/GET\$.*|잔금.*|\$.*/g, '').trim();
+                    const tDate = formatDate(dm[0]); 
+                    let rawItemName = rLine.replace(dm[0], '').replace(/GET\$.*|잔금.*|\$.*/g, '').trim();
                     let itemTime = "09:00"; let itemPax = totalPax;
                     
                     const mCount = rLine.match(/\d+(?=명|인|태반|성장|스톤|오일|포쉘|진주)/g) || rLine.match(/\d+/g);
@@ -472,21 +462,34 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (sum > 0) itemPax = sum;
                     }
 
-                    const timeMatch = rLine.match(/(\d{1,2}):(\d{2})/); if (timeMatch) itemTime = `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}`;
-                    const lowerLine = itemName.toLowerCase();
-                    if (lowerLine.includes('land')) { itemName = '보라카이 랜드투어'; if(!timeMatch) itemTime = "10:30"; }
-                    else if (lowerLine.includes('hopping')) { if (lowerLine.includes('(j)')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!timeMatch) itemTime = "12:30"; } else { itemName = '블랙펄 선셋 호핑투어'; if(!timeMatch) itemTime = "13:30"; } }
-                    else if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = '에스파(S-SPA)';
-                    else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = '루나스파';
-                    else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = '보라스파';
-                    else if (lowerLine.includes('para')) itemName = '파라세일링';
-                    else if (lowerLine.includes('diving')) itemName = '체험다이빙';
-                    else if (lowerLine.includes('zetski')) itemName = '제트스키';
-                    else if (lowerLine.includes('helmet')) itemName = '헬멧다이빙';
+                    const timeMatch = rLine.match(/(\d{1,2}):(\d{2})/); 
+                    if (timeMatch) itemTime = `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}`;
+                    
+                    let finalItemName = rawItemName;
+                    const lowerLine = rLine.toLowerCase();
+                    
+                    if (lowerLine.includes('land') || lowerLine.includes('랜드')) { 
+                        finalItemName = '보라카이 랜드투어'; if(!timeMatch) itemTime = "10:30"; 
+                    } else if (lowerLine.includes('hopping') || lowerLine.includes('호핑')) { 
+                        if (lowerLine.includes('(j)') || lowerLine.includes('점보')) { 
+                            finalItemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!timeMatch) itemTime = "12:30"; 
+                        } else { 
+                            finalItemName = '블랙펄 선셋 호핑투어'; if(!timeMatch) itemTime = "13:30"; 
+                        } 
+                    } else if (lowerLine.includes('malum') || lowerLine.includes('말룸')) {
+                        finalItemName = '말룸파티'; if(!timeMatch) itemTime = "09:00";
+                    } else if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) finalItemName = '에스파(S-SPA)';
+                    else if (lowerLine.includes('luna') || lowerLine.includes('루나')) finalItemName = '루나스파';
+                    else if (lowerLine.includes('bora') || lowerLine.includes('보라')) finalItemName = '보라스파';
+                    else if (lowerLine.includes('para')) finalItemName = '파라세일링';
+                    else if (lowerLine.includes('diving')) finalItemName = '체험다이빙';
+                    else if (lowerLine.includes('zetski')) finalItemName = '제트스키';
+                    else if (lowerLine.includes('helmet')) finalItemName = '헬멧다이빙';
+                    
                     if (rLine.includes('afh') || rLine.includes('AFH')) itemTime = "18:00";
                     else if (rLine.includes('afm') || rLine.includes('AFM')) itemTime = "17:00";
                     
-                    checkAndAdd(itemName, tDate, itemTime, itemPax);
+                    checkAndAdd(finalItemName, tDate, itemTime, itemPax);
                 }
             });
         }

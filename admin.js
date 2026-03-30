@@ -289,7 +289,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     let itemTime = "09:00"; const lowerLine = itemName.toLowerCase();
                     const timeMatch = rLine.match(/(\d{1,2}):(\d{2})/); if (timeMatch) itemTime = `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}`;
                     
-                    // 🚀 마사지샵 한글 번역 추가
                     if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = '에스파(S-SPA)';
                     else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = '루나스파';
                     else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = '보라스파';
@@ -304,6 +303,16 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         if (count > 0) { await batch.commit(); alert(`${count}건 업데이트 완료!`); hideInputArea(); }
+    };
+
+    window.handleClearSchedules = async () => {
+        if (confirm("🚨 모든 스케줄 데이터를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.")) {
+            const snap = await getDocs(collection(db, "schedules"));
+            const batch = writeBatch(db);
+            snap.docs.forEach(d => batch.delete(d.ref));
+            await batch.commit();
+            alert("스케줄 데이터가 초기화되었습니다.");
+        }
     };
 
     window.makeQuickVoucher = async () => {
@@ -322,14 +331,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (dm) {
                 let itemName = line.replace(dm[0], '').trim(); let itemTime = "09:00"; const lowerLine = itemName.toLowerCase();
                 const timeMatch = line.match(/(\d{1,2}):(\d{2})/); if (timeMatch) itemTime = `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}`;
-                
-                // 🚀 마사지샵 한글 번역 추가
                 if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = '에스파(S-SPA)';
                 else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = '루나스파';
                 else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = '보라스파';
                 else if (lowerLine.includes('land')) { itemName = '보라카이 랜드투어'; if(!timeMatch) itemTime = "10:30"; }
                 else if (lowerLine.includes('hopping')) { if (lowerLine.includes('(j)')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!timeMatch) itemTime = "12:30"; } else { itemName = '블랙펄 선셋 호핑투어'; if(!timeMatch) itemTime = "13:30"; } }
-                
                 if (line.includes('afh') || line.includes('afm')) itemTime = line.includes('afh') ? "18:00" : "17:00";
                 items.push({ name: itemName, date: formatDate(dm[0]), time: itemTime, count: totalPax, details: line });
             }
@@ -339,4 +345,8 @@ document.addEventListener('DOMContentLoaded', () => {
         navigator.clipboard.writeText(`${window.location.origin}/reservation-schedule.html?id=${docRef.id}&type=quick`).then(() => alert('바우처 생성 완료!'));
         hideInputArea();
     };
+
+    window.handleAutoConfirm = async (id) => { if (confirm("예약확정 처리를 진행합니까?")) await updateDoc(doc(db, "reservations", id), { status: "예약확정" }); };
+    window.handleResortQuoteComplete = async (id) => { if (confirm("견적완료 처리를 진행합니까?")) await updateDoc(doc(db, "reservations", id), { status: "견적완료" }); };
+    window.handleResortConfirm = async (id) => { const amount = prompt("입금 금액"); if (amount) { await updateDoc(doc(db, "reservations", id), { status: "리조트확정", totalPrice: parseInt(amount.replace(/[^0-9]/g, '')) }); alert("확정!"); } };
 });

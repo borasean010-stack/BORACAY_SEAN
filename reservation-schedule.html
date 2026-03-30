@@ -145,38 +145,37 @@
         }
         // 6. 마사지 (에스파, 루나, 보라스파, 카바얀 등)
         if (name.includes('에스파') || name.includes('루나') || name.includes('보라스파') || name.includes('카바얀') || name.includes('힐롯')) {
-            let meetingPlace = "마사지샵 개별이동";
+            let meetingPlace = "";
             let mapLink = "";
             const lowerDetails = (item.details || "").toLowerCase();
             
-            // --- 🚀 [핵심 추가] afh/afm 또는 투어 후 이동 정보 우선 적용 ---
-            if (lowerDetails.includes('afh') || lowerDetails.includes('호핑 후') || lowerDetails.includes('호핑투어 후')) {
+            if (lowerDetails.includes('afh') || lowerDetails.includes('호핑 후')) {
                 meetingPlace = "호핑투어 종료 후 마사지샵으로 바로 이동";
-            } else if (lowerDetails.includes('afm') || lowerDetails.includes('말룸 후') || lowerDetails.includes('말룸파티 후')) {
+            } else if (lowerDetails.includes('afm') || lowerDetails.includes('말룸 후')) {
                 meetingPlace = "말룸파티 종료 후 마사지샵으로 바로 이동";
             } else if (item.details && (item.details.includes('픽업') || item.details.includes('이동'))) {
                 meetingPlace = item.details;
             } else {
                 if (name.includes('에스파')) {
                     mapLink = "https://maps.app.goo.gl/QbuPCqypyURVhth38";
-                    meetingPlace = "에스파 개별이동";
+                    meetingPlace = "에스파 마사지샵 개별이동";
                 } else if (name.includes('루나')) {
                     mapLink = "https://maps.app.goo.gl/JYmbGcM6MrH5gHTBA";
-                    meetingPlace = "루나스파 개별이동";
+                    meetingPlace = "루나스파 마사지샵 개별이동";
                 } else if (name.includes('보라스파')) {
                     mapLink = "https://maps.app.goo.gl/tWBfSVDzmvGgJjRU8";
-                    meetingPlace = "보라스파 개별이동";
+                    meetingPlace = "보라스파 마사지샵 개별이동";
                 } else if (name.includes('카바얀')) {
                     mapLink = "https://maps.app.goo.gl/DsXg4tSonc5KsF4K6";
-                    meetingPlace = "카바얀 개별이동";
+                    meetingPlace = "카바얀 마사지샵 개별이동";
                 } else if (name.includes('힐롯')) {
                     meetingPlace = (item.time || '12:30') + " / 메인로드 졸리비";
                 }
             }
 
-            const mapBtn = (mapLink && !meetingPlace.includes('이동')) ? `\n<a href="${mapLink}" class="map-btn" target="_blank">📍 샵 위치 구글맵 확인</a>` : "";
+            const mapBtn = mapLink ? `\n<a href="${mapLink}" class="map-btn" target="_blank">📍 마사지샵 위치 구글맵 확인</a>` : "";
             
-            return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : ${meetingPlace}</b>${mapBtn}\n\n★ 준비물\n편한 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품</div>`;
+            return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : ${meetingPlace}</b>${mapBtn}\n\n★★ 주의 사항 및 준비물 ★★\n\n편한 복장\n매너팁 1인 $1~2 또는 50~100페소\n임산부 또는 지병이 있으신 경우 미리 말씀해 주세요\n그외 개인적으로 필요한 물품</div>`;
         }
         // 7. 액티비티 (파라세일링 등)
         if (name.includes('파라세일링')) {
@@ -214,26 +213,18 @@
             }
 
             if (res) {
-                // 🚀 지시사항: 웹사이트 예약과 퀵바우처 데이터 매핑 정규화
                 const isQuick = (type === 'quick');
-                
-                // 대표자명 (영문명 포함)
                 const korName = res.customerKorName || '-';
                 const engName = res.engName || '-';
                 
                 document.getElementById('v-name').innerText = isQuick ? korName : `${korName} (${engName})`;
                 document.getElementById('v-agency').innerText = res.contact || '-';
 
-                // 환전요청 및 인원정보 (필드 꼬임 해결)
                 if (isQuick) {
-                    // 퀵바우처는 이전에 engName에 환전금액을, exchangeAmount에 인원정보를 넣었음
-                    document.getElementById('v-exchange').innerText = res.engName || '-';
-                    document.getElementById('v-pax').innerText = res.exchangeAmount || '-';
-                } else {
-                    // 홈페이지 예약은 exchangeAmount가 환전금액임
                     document.getElementById('v-exchange').innerText = res.exchangeAmount || '-';
-                    
-                    // 홈페이지 예약의 인원정보는 아이템에서 추출하거나 별도 로직 필요 (없으면 '-' 혹은 합계)
+                    document.getElementById('v-pax').innerText = res.paxInfo || '-';
+                } else {
+                    document.getElementById('v-exchange').innerText = res.exchangeAmount || '-';
                     const totalPax = res.items && res.items[0] ? `${res.items[0].count}명` : '-';
                     document.getElementById('v-pax').innerText = totalPax;
                 }
@@ -241,22 +232,19 @@
                 let allItems = [];
                 const rawItems = res.items || [];
 
-                // --- 🚀 [핵심] 픽업/샌딩 분리 로직 ---
                 rawItems.forEach(item => {
                     if (item.name.includes('픽업샌딩')) {
-                        // 픽업 아이템 생성
                         allItems.push({
                             name: `✈️ 공항 픽업 (${(res.pickupFlight || '').toUpperCase()})`,
                             date: item.pickupDate || res.pickupDate || item.date,
-                            time: " ",
+                            time: "14:00",
                             count: item.count,
                             details: item.details
                         });
-                        // 샌딩 아이템 생성
                         allItems.push({
                             name: `✈️ 공항 샌딩 (${(res.sendingFlight || '').toUpperCase()})`,
                             date: item.sendingDate || res.sendingDate || item.date,
-                            time: res.sendingTime || "08:30",
+                            time: res.sendingTime || (res.sendingFlight?.toUpperCase() === 'TW126' ? "08:30" : "21:00"),
                             count: item.count,
                             details: item.details
                         });
@@ -265,7 +253,6 @@
                     }
                 });
 
-                // 퀵바우처 등 이미 분리된 경우를 위해 중복 체크 및 날짜 정렬
                 allItems.sort((a, b) => (a.date || "").localeCompare(b.date || "") || (a.time || "00:00").localeCompare(b.time || "00:00"));
 
                 const list = document.getElementById('item-list');

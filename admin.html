@@ -117,6 +117,9 @@
                     <textarea id="schedule-reg-input" class="tool-textarea" placeholder="전체 데이터를 붙여넣으세요..."></textarea>
                     <div style="display:flex; gap:10px;">
                         <button class="btn-action-received" style="flex:1; background:#00c73c; height:40px;" onclick="registerBulkSchedule()">스케줄 업데이트</button>
+                        <button class="btn-action-danger" style="height:40px; padding: 0 10px;" onclick="handleClearSchedules()" title="모든 스케줄 삭제">
+                            <span class="material-icons">delete_sweep</span> 클리어
+                        </button>
                         <button class="btn-action-outline" style="height:40px;" onclick="hideInputArea()">닫기</button>
                     </div>
                 </div>

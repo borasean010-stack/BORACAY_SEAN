@@ -403,14 +403,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentYear = new Date().getFullYear(); const batch = writeBatch(db); let count = 0;
         const tempAddedSet = new Set();
 
-        // 🚀 인원수 파싱 보강 (4 3 1 형태 및 공백 제거)
+        // 🚀 인원수 파싱 보강 (4 3 1 형태 합산 처리)
         const parsePax = (val) => {
             if (!val) return 0;
-            const num = val.toString().replace(/[^0-9]/g, '');
-            return parseInt(num) || 0;
+            const nums = val.toString().match(/\d+/g);
+            return nums ? nums.reduce((acc, n) => acc + parseInt(n), 0) : 0;
         };
 
-        for (let line of inputVal.split('\n')) {
+        // 🚀 멀티라인(따옴표 포함) 로우 분리 로직
+        const rows = [];
+        let currentRow = "";
+        let inQuotes = false;
+        for (let i = 0; i < inputVal.length; i++) {
+            const char = inputVal[i];
+            if (char === '"') inQuotes = !inQuotes;
+            if (char === '\n' && !inQuotes) {
+                rows.push(currentRow);
+                currentRow = "";
+            } else {
+                currentRow += char;
+            }
+        }
+        if (currentRow) rows.push(currentRow);
+
+        for (let line of rows) {
             const parts = line.split('\t'); if (parts.length < 16) continue;
             
             const p10 = (parts[10] || '').trim();

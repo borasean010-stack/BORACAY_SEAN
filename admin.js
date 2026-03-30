@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentScheduleFilter = 'all';
     let currentScheduleDay = 'today'; 
 
-    // 🚀 리조트 한글 번역기
+    // 🚀 리조트 번역기 (한글 우선)
     function translateResort(name) {
         if (!name || name === '-') return '-';
         const n = name.toLowerCase().replace(/\s/g, '').replace(/\./g, '');
@@ -48,11 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (n.includes('movenpick')) return '모벤픽';
         if (n.includes('shangri')) return '샹그릴라';
         if (n.includes('astoria')) return '아스토리아';
-        if (n.includes('mandarin')) return '만다린';
+        if (n.includes('mandarin')) return '만다린베이';
         if (n.includes('lind')) return '더 린드';
         if (n.includes('feliz')) return '펠리즈';
         if (n.includes('coast')) return '코스트';
-        if (n.includes('gray')) return '그레이';
+        if (n.includes('gray')) return '세븐스톤';
         if (n.includes('henann')) return '헤난';
         return name; 
     }
@@ -91,9 +91,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function fetchData() {
         if (!db) return;
-        onSnapshot(query(collection(db, "reservations"), orderBy("createdAt", "desc")), (snap) => {
-            allReservations = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        let _res = [], _quick = [];
+        const updateAll = () => {
+            allReservations = [..._res, ..._quick].sort((a, b) => {
+                const da = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(0);
+                const db = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(0);
+                return db - da;
+            });
             renderAll();
+        };
+
+        onSnapshot(query(collection(db, "reservations"), orderBy("createdAt", "desc")), (snap) => {
+            _res = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            updateAll();
+        });
+        onSnapshot(query(collection(db, "quick_vouchers"), orderBy("createdAt", "desc")), (snap) => {
+            _quick = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            updateAll();
         });
         onSnapshot(query(collection(db, "schedules"), orderBy("date", "asc")), (snap) => {
             allSchedules = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -135,20 +149,27 @@ document.addEventListener('DOMContentLoaded', () => {
     window.filterSchedule = (category) => {
         currentScheduleFilter = category;
         document.querySelectorAll('.filter-btn').forEach(btn => {
-            const isMatch = (category === 'all' && btn.innerText === '전체') || (category === '액티비티' && btn.innerText.includes('액티비티')) || btn.innerText === category;
+            const txt = btn.innerText;
+            const isMatch = (category === 'all' && txt === '전체') || 
+                            (category === '마사지' && txt.includes('마사지')) ||
+                            (category === '액티비티' && txt.includes('액티비티')) || 
+                            txt === category;
             if (isMatch) btn.classList.add('active');
             else btn.classList.remove('active');
         });
         renderSchedule();
     };
 
-    function getCategory(name) {
-        if (!name) return '액티비티';
-        const n = name.toLowerCase().trim();
-        if (n.includes('픽업') && !n.includes('샌딩')) return '픽업';
-        if (n.includes('샌딩')) return '샌딩';
-        if (n.includes('호핑')) return '호핑';
-        if (n.includes('말룸파티')) return '말룸파티';
+    function getCategory(name, details = '') {
+        const combined = ((name || '') + ' ' + (details || '')).toLowerCase();
+        
+        if (combined.includes('픽업')) return '픽업';
+        if (combined.includes('샌딩')) return '샌딩';
+        if (combined.includes('hopping') || combined.includes('호핑')) return '호핑투어';
+        if (combined.includes('land') || combined.includes('랜드')) return '랜드투어';
+        if (combined.includes('massage') || combined.includes('마사지') || combined.includes('spa') || combined.includes('스파')) return '마사지';
+        if (combined.includes('malum') || combined.includes('말룸')) return '말룸파티';
+        
         return '액티비티';
     }
 
@@ -161,38 +182,140 @@ document.addEventListener('DOMContentLoaded', () => {
         const tomorrowStr = new Date(now.getTime() - offset + 86400000).toISOString().split('T')[0];
         const targetDate = (currentScheduleDay === 'tomorrow') ? tomorrowStr : todayStr;
 
-        let items = [];
+        let rawItems = [];
+        // 🚀 reservations만 가져오고 quick_vouchers(id가 Q로 시작)는 제외
         allReservations.forEach(res => {
-            if (res.status.includes('확정') && res.items) {
+            const isQuick = res.id.startsWith('Q') || (res.reservationNumber && res.reservationNumber.startsWith('Q'));
+            if (!isQuick && (res.status || '').includes('확정') && res.items) {
                 res.items.forEach(item => {
                     if (item.date === targetDate) {
-                        items.push({ 
-                            time: item.time || "09:00", name: item.name, customer: res.customerKorName, count: item.count, status: res.status, id: res.id, source: 'reservation',
-                            resort: res.pickupResort || res.sendingResort || "-", flight: res.pickupFlight || res.sendingFlight || "-"
+                        const lines = (item.details || '').split('\n').filter(l => l.trim() !== '');
+                        const displayLines = lines.length > 0 ? lines : [''];
+                        displayLines.forEach(line => {
+                            const itemName = item.name.toLowerCase();
+                            let flight = "-";
+                            let resort = "-";
+                            
+                            if (itemName.includes('픽업')) {
+                                flight = res.pickupFlight || "-";
+                                resort = translateResort(res.pickupResort);
+                            } else if (itemName.includes('샌딩')) {
+                                flight = res.sendingFlight || "-";
+                                resort = translateResort(res.sendingResort);
+                            } else {
+                                resort = translateResort(res.pickupResort || res.sendingResort);
+                            }
+
+                            rawItems.push({ 
+                                time: item.time || "09:00", name: item.name, customer: res.customerKorName, count: item.count, status: res.status, id: res.id, source: 'reservation',
+                                resort: resort, flight: flight,
+                                details: line
+                            });
                         });
                     }
                 });
             }
         });
-        allSchedules.forEach(s => { if (s.date === targetDate) items.push({ time: s.time || "09:00", name: s.name, customer: s.customerName, count: s.count, status: '스케줄', id: s.id, source: 'schedule', resort: s.details?.split('리조트: ')[1] || "-", flight: s.details?.split('항공편: ')[1]?.split(' / ')[0] || "-" }); });
+        
+        // 🚀 schedules (엑셀 등록 데이터) 추가
+        allSchedules.forEach(s => { 
+            if (s.date === targetDate) {
+                const lines = (s.details || '').split('\n').filter(l => l.trim() !== '');
+                const displayLines = lines.length > 0 ? lines : [''];
+                displayLines.forEach(line => {
+                    rawItems.push({ 
+                        time: s.time || "09:00", name: s.name, customer: s.customerName, count: s.count, status: '스케줄', id: s.id, source: 'schedule', 
+                        resort: translateResort(s.resort || s.details?.split('리조트: ')[1] || "-"), 
+                        flight: s.flight || s.details?.split('항공편: ')[1]?.split(' / ')[0] || "-",
+                        details: line
+                    }); 
+                });
+            }
+        });
 
-        if (currentScheduleFilter !== 'all') items = items.filter(i => getCategory(i.name) === currentScheduleFilter);
-        items.sort((a, b) => a.time.localeCompare(b.time));
+        if (currentScheduleFilter !== 'all') rawItems = rawItems.filter(i => getCategory(i.name, i.details) === currentScheduleFilter);
+        
+        // 🚀 그룹핑 로직 (항공편 또는 상품명 + 시간)
+        const groups = {};
+        rawItems.forEach(item => {
+            const cat = getCategory(item.name, item.details);
+            let groupTitle = item.name;
+            
+            if (cat === '픽업' || cat === '샌딩') {
+                if (item.flight !== '-' && item.flight) {
+                    groupTitle = item.flight;
+                } else {
+                    const flightMatch = item.name.match(/\(([A-Z0-9]+)\)/i);
+                    if (flightMatch) groupTitle = flightMatch[1].toUpperCase();
+                }
+            } else if (cat === '마사지') {
+                groupTitle = item.name.replace('마사지', '').replace('스파', '').trim() || '마사지';
+            }
+            
+            const key = `${groupTitle}_${item.time}`;
+            if (!groups[key]) {
+                groups[key] = {
+                    title: groupTitle,
+                    time: item.time,
+                    items: [],
+                    totalCount: 0,
+                    category: cat
+                };
+            }
+            groups[key].items.push(item);
+            groups[key].totalCount += item.count;
+        });
 
-        if (items.length === 0) { container.innerHTML = `<div class="sc-empty" style="width:100%; text-align:center; padding:30px; color:#999; font-size:12px;">일정이 없습니다.</div>`; return; }
+        const sortedGroupKeys = Object.keys(groups).sort((a, b) => groups[a].time.localeCompare(groups[b].time));
 
-        container.innerHTML = items.map(item => {
-            const cat = getCategory(item.name);
-            let icon = "event_available", catClass = "cat-activity", catLabel = "액티비티";
-            if (cat === '픽업') { icon = "flight_land"; catClass = "cat-pickup"; catLabel = "공항 픽업"; }
-            else if (cat === '샌딩') { icon = "flight_takeoff"; catClass = "cat-sending"; catLabel = "공항 샌딩"; }
-            else if (cat === '호핑') { icon = "sailing"; catClass = "cat-hopping"; catLabel = "호핑투어"; }
-            else if (cat === '말룸파티') { icon = "nature_people"; catClass = "cat-malum"; catLabel = "말룸파티"; }
-            else if (item.name.toLowerCase().includes('마사지') || item.name.includes('스파')) { icon = "spa"; catClass = "cat-activity"; catLabel = "마사지"; }
+        if (sortedGroupKeys.length === 0) { container.innerHTML = `<div class="sc-empty" style="width:100%; text-align:center; padding:30px; color:#999; font-size:12px;">일정이 없습니다.</div>`; return; }
 
-            return `<div class="schedule-card" onclick="showDetail('${item.id}', '${item.source}')"><div class="sc-header"><div class="sc-time-label"><span class="material-icons">access_time</span> ${item.time}</div><span class="sc-category-tag ${catClass}">${catLabel}</span></div><div class="sc-body"><div class="sc-item-name"><span class="material-icons">${icon}</span> ${item.name}</div><div class="sc-customer-row"><div class="sc-cust-name">${item.customer}</div><div class="sc-pax-badge">${item.count}명</div></div></div><div class="sc-footer">${item.flight !== '-' ? `<div class="sc-sub-info"><span class="material-icons">flight</span> <b>항공</b> ${item.flight}</div>` : ''}${item.resort !== '-' ? `<div class="sc-sub-info"><span class="material-icons">hotel</span> <b>리조트</b> ${item.resort}</div>` : ''}</div></div>`;
+        container.innerHTML = sortedGroupKeys.map(key => {
+            const group = groups[key];
+            let icon = "event_available", catClass = "cat-activity", catLabel = group.category;
+            if (group.category === '픽업') { icon = "flight_land"; catClass = "cat-pickup"; catLabel = "공항 픽업"; }
+            else if (group.category === '샌딩') { icon = "flight_takeoff"; catClass = "cat-sending"; catLabel = "공항 샌딩"; }
+            else if (group.category === '호핑투어') { icon = "sailing"; catClass = "cat-hopping"; catLabel = "호핑투어"; }
+            else if (group.category === '말룸파티') { icon = "nature_people"; catClass = "cat-malum"; catLabel = "말룸파티"; }
+            else if (group.category === '랜드투어') { icon = "directions_car"; catClass = "cat-activity"; catLabel = "랜드투어"; }
+            else if (group.category === '마사지') { icon = "spa"; catClass = "cat-activity"; catLabel = "마사지"; }
+
+            let displayTitle = group.title;
+            const lowerTitle = group.title.toLowerCase();
+            if (lowerTitle.includes('hopping') || lowerTitle.includes('호핑')) {
+                if (lowerTitle.includes('(j)') || lowerTitle.includes('점보')) {
+                    displayTitle = '호핑투어 <span style="color:#ff6a00; font-size:11px;">(+점보크랩)</span>';
+                } else {
+                    displayTitle = '호핑투어';
+                }
+            }
+
+            const itemLines = group.items.map(it => {
+                const resortDisplay = it.resort !== '-' ? it.resort : '';
+                return `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')">
+                    <span class="sc-detail-name">${it.customer}</span>
+                    <span class="sc-detail-pax">${it.count}인</span>
+                    <span class="sc-detail-resort">${resortDisplay}</span>
+                </div>`;
+            }).join('');
+
+            return `
+            <div class="schedule-group-card">
+                <div class="sg-header">
+                    <div class="sg-time">${group.time}</div>
+                    <div class="sg-title-row">
+                        <span class="material-icons">${icon}</span>
+                        <span class="sg-title">${displayTitle} <small>총 ${group.totalCount}인</small></span>
+                    </div>
+                    <span class="sc-category-tag ${catClass}">${catLabel}</span>
+                </div>
+                <div class="sg-body">
+                    ${itemLines}
+                </div>
+            </div>`;
         }).join('');
     }
+
 
     window.switchMainView = () => {
         document.querySelectorAll('.ss-nav-item').forEach(el => el.classList.remove('active'));
@@ -316,16 +439,27 @@ document.addEventListener('DOMContentLoaded', () => {
             const sResort = translateResort(resortRaw.split('/')[1]?.trim() || pResort);
 
             const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${currentYear}-${m}-${d}`; };
-            const checkAndAdd = (name, date, time, specPax = totalPax) => { 
+            const checkAndAdd = (name, date, time, specPax = totalPax, flight = "-") => { 
                 if (!date) return; const uniqueKey = `${korName}_${date}_${name}`;
                 if (!allSchedules.some(s => s.customerName.includes(korName) && s.date === date && s.name === name) && !tempAddedSet.has(uniqueKey)) { 
-                    batch.set(doc(collection(db, "schedules")), { customerName: `${korName} (${engName})`, name, date, time, count: specPax, createdAt: new Date(), details: `리조트: ${name.includes('샌딩') ? sResort : pResort}` }); 
+                    const resort = name.includes('샌딩') ? sResort : pResort;
+                    batch.set(doc(collection(db, "schedules")), { 
+                        customerName: `${korName} (${engName})`, 
+                        name, 
+                        date, 
+                        time, 
+                        count: specPax, 
+                        flight,
+                        resort,
+                        createdAt: new Date(), 
+                        details: `리조트: ${resort}` 
+                    }); 
                     tempAddedSet.add(uniqueKey); count++; 
                 } 
             };
 
-            if (parts[2] && parts[2].match(/[A-Z]{2}\d+/)) checkAndAdd(`✈️ 공항 픽업 (${parts[2].toUpperCase()})`, formatDate(parts[0]), "14:00");
-            if (parts[3] && parts[3].match(/[A-Z]{2}\d+/)) checkAndAdd(`✈️ 공항 샌딩 (${parts[3].toUpperCase()})`, formatDate(parts[1]), (parts[3].toUpperCase() === 'TW126' ? "08:30" : "21:00"));
+            if (parts[2] && parts[2].match(/[A-Z0-9]+/)) checkAndAdd(`✈️ 공항 픽업 (${parts[2].toUpperCase()})`, formatDate(parts[0]), "14:00", totalPax, parts[2].toUpperCase());
+            if (parts[3] && parts[3].match(/[A-Z0-9]+/)) checkAndAdd(`✈️ 공항 샌딩 (${parts[3].toUpperCase()})`, formatDate(parts[1]), (parts[3].toUpperCase() === 'TW126' ? "08:30" : "21:00"), totalPax, parts[3].toUpperCase());
             
             const remarkRaw = (parts[16] || '').replace(/^"|"$/g, '');
             remarkRaw.split('\n').forEach(rLine => {
@@ -368,10 +502,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.handleClearSchedules = async () => {
         if (confirm("🚨 모든 스케줄 데이터를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.")) {
-            const snap = await getDocs(collection(db, "schedules"));
-            const batch = writeBatch(db);
-            snap.docs.forEach(d => batch.delete(d.ref));
-            await batch.commit(); alert("스케줄 데이터가 초기화되었습니다.");
+            try {
+                const snap = await getDocs(collection(db, "schedules"));
+                if (snap.empty) { alert("삭제할 스케줄이 없습니다."); return; }
+                const docs = snap.docs;
+                for (let i = 0; i < docs.length; i += 500) {
+                    const batch = writeBatch(db);
+                    const chunk = docs.slice(i, i + 500);
+                    chunk.forEach(d => batch.delete(d.ref));
+                    await batch.commit();
+                }
+                alert("스케줄 데이터가 초기화되었습니다.");
+            } catch (e) { alert("삭제 중 오류가 발생했습니다."); }
+        }
+    };
+
+    window.handleClearAllData = async () => {
+        const pw = prompt("🚨 모든 데이터를 삭제하시겠습니까?\n이 작업은 절대 되돌릴 수 없습니다.\n비밀번호를 입력하세요:");
+        if (pw === "sean1234!") {
+            try {
+                const colls = ["reservations", "quick_vouchers", "schedules"];
+                for (const cName of colls) {
+                    const snap = await getDocs(collection(db, cName));
+                    const docs = snap.docs;
+                    for (let i = 0; i < docs.length; i += 500) {
+                        const batch = writeBatch(db);
+                        const chunk = docs.slice(i, i + 500);
+                        chunk.forEach(d => batch.delete(d.ref));
+                        await batch.commit();
+                    }
+                }
+                alert("모든 데이터가 초기화되었습니다.");
+                location.reload();
+            } catch (error) {
+                console.error("Clear All Error:", error);
+                alert("초기화 중 오류가 발생했습니다.");
+            }
+        } else if (pw !== null) {
+            alert("비밀번호가 틀렸습니다.");
         }
     };
 

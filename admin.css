@@ -143,6 +143,126 @@ body.smartstore-admin { margin: 0; padding: 0; background: var(--ss-bg); font-fa
 .cat-activity { background: #fff7e6; color: #fa8c16; }
 
 
+/* 📅 New Grouped Schedule Card Style (Horizontal Rectangle) */
+.schedule-group-card {
+    min-width: 320px;
+    max-width: 450px;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #eef0f2;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    margin-right: 15px;
+}
+.schedule-group-card:hover { 
+    transform: translateY(-4px); 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+    border-color: var(--ss-orange-theme);
+}
+
+.sg-header { 
+    padding: 12px 15px; 
+    background: #fdfdfd; 
+    border-bottom: 1px solid #f5f7f9;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.sg-time { 
+    font-size: 16px; 
+    font-weight: 900; 
+    color: var(--ss-orange-theme); 
+    padding-right: 12px;
+    border-right: 1px solid #eee;
+}
+.sg-title-row { flex: 1; display: flex; align-items: center; gap: 6px; }
+.sg-title-row .material-icons { font-size: 18px; color: #555; }
+.sg-title { font-size: 14px; font-weight: 800; color: #111; }
+.sg-title small { font-size: 12px; color: #888; font-weight: 600; margin-left: 4px; }
+
+.sg-body { padding: 10px 0; background: #fff; }
+
+.sc-detail-row {
+    padding: 8px 15px;
+    display: grid;
+    grid-template-columns: 80px 40px 1fr;
+    gap: 10px;
+    font-size: 13px;
+    border-bottom: 1px solid #f9fafb;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.sc-detail-row:last-child { border-bottom: none; }
+.sc-detail-row:hover { background: #fff9f5; }
+
+.sc-detail-name { font-weight: 700; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sc-detail-pax { font-weight: 800; color: #ff6a00; text-align: right; }
+.sc-detail-resort { color: #666; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* 📅 New Grouped Schedule Card Style (Horizontal Rectangle) */
+.schedule-group-card {
+    min-width: 320px;
+    max-width: 450px;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #eef0f2;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    margin-right: 15px;
+}
+.schedule-group-card:hover { 
+    transform: translateY(-4px); 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+    border-color: var(--ss-orange-theme);
+}
+
+.sg-header { 
+    padding: 12px 15px; 
+    background: #fdfdfd; 
+    border-bottom: 1px solid #f5f7f9;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.sg-time { 
+    font-size: 16px; 
+    font-weight: 900; 
+    color: var(--ss-orange-theme); 
+    padding-right: 12px;
+    border-right: 1px solid #eee;
+}
+.sg-title-row { flex: 1; display: flex; align-items: center; gap: 6px; }
+.sg-title-row .material-icons { font-size: 18px; color: #555; }
+.sg-title { font-size: 14px; font-weight: 800; color: #111; }
+.sg-title small { font-size: 12px; color: #888; font-weight: 600; margin-left: 4px; }
+
+.sg-body { padding: 10px 0; background: #fff; }
+
+.sc-detail-row {
+    padding: 8px 15px;
+    display: grid;
+    grid-template-columns: 80px 40px 1fr;
+    gap: 10px;
+    font-size: 13px;
+    border-bottom: 1px solid #f9fafb;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.sc-detail-row:last-child { border-bottom: none; }
+.sc-detail-row:hover { background: #fff9f5; }
+
+.sc-detail-name { font-weight: 700; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sc-detail-pax { font-weight: 800; color: #ff6a00; text-align: right; }
+.sc-detail-resort { color: #666; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
 /* Existing Badge & Button Overrides if any... */
 
 /* 💎 Luxury Cleanup Tab View */

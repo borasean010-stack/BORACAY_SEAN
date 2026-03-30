@@ -260,7 +260,9 @@
                 allItems.sort((a, b) => (a.date || "").localeCompare(b.date || "") || (a.time || "00:00").localeCompare(b.time || "00:00"));
 
                 const list = document.getElementById('item-list');
-                list.innerHTML = allItems.map(item => `
+                list.innerHTML = allItems.map(item => {
+                    const isPickupSending = item.name.includes('픽업') || item.name.includes('샌딩');
+                    return `
                     <div class="item-card">
                         <div class="item-header">
                             <div class="item-name">${item.name}</div>
@@ -268,12 +270,12 @@
                         </div>
                         <div class="item-details">
                             <div class="detail-point"><span class="material-icons">calendar_today</span><b>날짜</b>${item.date || '-'}</div>
-                            ${(item.time && item.time.trim()) ? `<div class="detail-point"><span class="material-icons">access_time</span><b>시간</b>${item.time}</div>` : ''}
+                            ${(!isPickupSending && item.time && item.time.trim()) ? `<div class="detail-point"><span class="material-icons">access_time</span><b>시간</b>${item.time}</div>` : ''}
                             <div class="detail-point"><span class="material-icons">people</span><b>인원</b>${item.count || '-'}명</div>
                         </div>
                         ${getTourGuidance(item.name, item, res)}
                     </div>
-                `).join('');
+                `;}).join('');
                 document.getElementById('loading').style.display = 'none';
             }
         } catch (e) { console.error(e); }

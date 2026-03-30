@@ -116,7 +116,8 @@
         }
         // 2. 공항 샌딩
         if (name.includes('공항 샌딩')) {
-            return `<div class="guidance-box"><b>미팅 시간/장소 : ${item.time} ${res.pickupResort || ''}</b>\n\n*교통상황에 따라 샌딩 미팅 시간과 장소가 변경될 수있습니다\n\n★지정된 장소와 시간전에 먼저 도착 하셔서 대기 해주셔야 합니다.\n리조트 체크아웃을 완료하고 샌딩 출발 하는 시간 입니다.\n늦어서 별도로 이동을 해야 하는 경우 추가 요금이 발생 합니다.</div>`;
+            const sendingPlace = res.sendingResort || res.pickupResort || '';
+            return `<div class="guidance-box"><b>미팅 시간/장소 : ${item.time} ${sendingPlace}</b>\n\n*교통상황에 따라 샌딩 미팅 시간과 장소가 변경될 수있습니다\n\n★지정된 장소와 시간전에 먼저 도착 하셔서 대기 해주셔야 합니다.\n리조트 체크아웃을 완료하고 샌딩 출발 하는 시간 입니다.\n늦어서 별도로 이동을 해야 하는 경우 추가 요금이 발생 합니다.</div>`;
         }
         // 3. 블랙펄 호핑
         if (name.includes('호핑')) {

@@ -1,4 +1,4 @@
-// admin.js - Final Full Luxury Admin (Dashboard Tool + Buttons + Detail + Edit + Logic)
+// admin.js - Final Full Luxury Admin (Total Integration)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, where, getDocs, addDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 🚀 6. 럭셔리 상세창 완벽 복구 및 데이터 매핑 정규화
+    // 🚀 6. 럭셔리 상세창 완벽 복구
     window.showDetail = (id, source) => {
         const res = source === 'schedule' ? allSchedules.find(s => s.id === id) : allReservations.find(r => r.id === id);
         if (!res) return;
@@ -229,7 +229,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const itemsHtml = (res.items || []).map((item, idx) => `<div style="padding:12px; background:#f8f9fa; border:1px solid #eee; border-radius:8px; margin-bottom:8px;"><div style="display:flex; justify-content:space-between;"><div style="font-size:15px; font-weight:800;">${item.name}</div><div style="font-size:14px; font-weight:800; color:#ff6a00;">${item.count}명</div></div><div style="margin-top:6px; font-size:13px; color:#666;">📅 ${item.date} ${item.time || ''}</div>${!isQuote ? `<div style="margin-top:10px; display:flex; gap:5px;"><a href="reservation-schedule.html?id=${res.id}&itemIndex=${idx}" target="_blank" style="flex:1; text-align:center; padding:6px; background:#fff; border:1px solid #ddd; border-radius:4px; font-size:11px; text-decoration:none; color:#333;">바우처</a><button onclick="copyVoucherLink('${res.id}', ${idx})" style="flex:1; padding:6px; background:#ff6a00; color:white; border:none; border-radius:4px; font-size:11px; cursor:pointer;">복사</button></div>` : ''}</div>`).join('');
         
-        // 🚀 퀵바우처와 홈페이지 예약의 필드 꼬임 방어 로직
         const isQuick = id.startsWith('Q') || (res.reservationNumber && res.reservationNumber.startsWith('Q'));
         const displayEngName = isQuick ? (res.customerKorName.split('(')[1]?.replace(')','') || '-') : (res.engName || '-');
         const displayExchange = isQuick ? (res.engName || '-') : (res.exchangeAmount || '-');
@@ -250,8 +249,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 ${!isQuote ? `
                 <div style="background:#fff5eb; padding:15px; border-radius:10px; border:1px solid #ffe8cc; margin-bottom:20px;">
                     <div style="font-weight:bold; margin-bottom:10px; color:#ff6a00;">✈️ 항공 및 환전 정보</div>
-                    ${res.pickupDate ? `<p style="margin:5px 0; font-size:13px;"><b>픽업:</b> ${res.pickupDate} / ${res.pickupFlight || '-'} / ${res.pickupResort || '-'}</p>` : ''}
-                    ${res.sendingDate ? `<p style="margin:5px 0; font-size:13px;"><b>샌딩:</b> ${res.sendingDate} / ${res.sendingFlight || '-'} / ${res.sendingResort || '-'}</p>` : ''}
+                    <p style="margin:5px 0; font-size:13px;"><b>픽업:</b> ${res.pickupDate || '-'} / ${res.pickupFlight || '-'} / ${res.pickupResort || '-'}</p>
+                    <p style="margin:5px 0; font-size:13px;"><b>샌딩:</b> ${res.sendingDate || '-'} / ${res.sendingFlight || '-'} / ${res.sendingResort || '-'}</p>
                     <p style="margin-top:10px; padding-top:10px; border-top:1px dashed #ffd8a8;"><b>💰 환전:</b> <span style="font-size:15px; color:#e67e22; font-weight:800;">${displayExchange}</span></p>
                 </div>` : ''}
                 <div style="padding:10px; background:#f8f9fa; border-radius:6px; font-size:13px; white-space:pre-wrap;"><b>[요청사항]</b>\n${res.requests || '없음'}</div>
@@ -278,15 +277,38 @@ document.addEventListener('DOMContentLoaded', () => {
     window.hideInputArea = () => { const qa = document.getElementById('input-area-quick'), ra = document.getElementById('input-area-reg'); if(qa) qa.style.display = 'none'; if(ra) ra.style.display = 'none'; };
     window.closeModal = () => { document.getElementById('res-detail-modal').style.display = 'none'; };
 
+    // 🚀 8. 수정 기능 (픽업/샌딩 리조트 필드 추가)
     window.toggleEditMode = (id) => {
         const res = allReservations.find(r => r.id === id); if (!res) return;
         const scrollArea = document.getElementById('modal-scroll-area');
         const editBtn = document.getElementById('edit-btn');
         if (editBtn.innerText === '수정하기') {
             editBtn.innerText = '저장하기';
-            scrollArea.innerHTML = `<div style="background:#f8f9fa; padding:15px; border-radius:12px;"><label style="font-size:11px; color:#999;">한글명</label><input type="text" id="edit-name" value="${res.customerKorName}" style="width:100%; padding:8px; margin-bottom:10px;"><label style="font-size:11px; color:#999;">연락처</label><input type="text" id="edit-contact" value="${res.contact}" style="width:100%; padding:8px; margin-bottom:10px;"><label style="font-size:11px; color:#999;">픽업일</label><input type="text" id="edit-p-date" value="${res.pickupDate || ''}" style="width:100%; padding:8px; margin-bottom:10px;"><label style="font-size:11px; color:#999;">샌딩일</label><input type="text" id="edit-s-date" value="${res.sendingDate || ''}" style="width:100%; padding:8px; margin-bottom:10px;"><label style="font-size:11px; color:#999;">총 금액</label><input type="number" id="edit-price" value="${res.totalPrice}" style="width:100%; padding:8px; margin-bottom:10px;"><label style="font-size:11px; color:#999;">요청사항</label><textarea id="edit-requests" style="width:100%; height:80px; padding:8px;">${res.requests || ''}</textarea></div>`;
+            scrollArea.innerHTML = `<div style="background:#f8f9fa; padding:15px; border-radius:12px;">
+                <label style="font-size:11px; color:#999;">한글명</label><input type="text" id="edit-name" value="${res.customerKorName}" style="width:100%; padding:8px; margin-bottom:10px;">
+                <label style="font-size:11px; color:#999;">연락처</label><input type="text" id="edit-contact" value="${res.contact}" style="width:100%; padding:8px; margin-bottom:10px;">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <div><label style="font-size:11px; color:#999;">픽업일</label><input type="text" id="edit-p-date" value="${res.pickupDate || ''}" style="width:100%; padding:8px;"></div>
+                    <div><label style="font-size:11px; color:#999;">픽업리조트</label><input type="text" id="edit-p-resort" value="${res.pickupResort || ''}" style="width:100%; padding:8px;"></div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+                    <div><label style="font-size:11px; color:#999;">샌딩일</label><input type="text" id="edit-s-date" value="${res.sendingDate || ''}" style="width:100%; padding:8px;"></div>
+                    <div><label style="font-size:11px; color:#999;">샌딩리조트</label><input type="text" id="edit-s-resort" value="${res.sendingResort || ''}" style="width:100%; padding:8px;"></div>
+                </div>
+                <label style="font-size:11px; color:#999; margin-top:10px; display:block;">총 금액</label><input type="number" id="edit-price" value="${res.totalPrice}" style="width:100%; padding:8px; margin-bottom:10px;">
+                <label style="font-size:11px; color:#999;">요청사항</label><textarea id="edit-requests" style="width:100%; height:80px; padding:8px;">${res.requests || ''}</textarea>
+            </div>`;
         } else {
-            const newData = { customerKorName: document.getElementById('edit-name').value, contact: document.getElementById('edit-contact').value, pickupDate: document.getElementById('edit-p-date').value, sendingDate: document.getElementById('edit-s-date').value, totalPrice: parseInt(document.getElementById('edit-price').value) || 0, requests: document.getElementById('edit-requests').value };
+            const newData = { 
+                customerKorName: document.getElementById('edit-name').value, 
+                contact: document.getElementById('edit-contact').value, 
+                pickupDate: document.getElementById('edit-p-date').value, 
+                pickupResort: document.getElementById('edit-p-resort').value,
+                sendingDate: document.getElementById('edit-s-date').value, 
+                sendingResort: document.getElementById('edit-s-resort').value,
+                totalPrice: parseInt(document.getElementById('edit-price').value) || 0, 
+                requests: document.getElementById('edit-requests').value 
+            };
             updateDoc(doc(db, "reservations", id), newData).then(() => { alert("저장 완료!"); closeModal(); });
         }
     };
@@ -324,7 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 items.push({ name: line.replace(dm[0], '').trim(), date: dateStr, time: "09:00", count: (parseInt(parts[11]) || 0), details: line });
             }
         });
-        const resData = { customerKorName: customerName, engName: engName, contact: (parts[14] || '').trim(), items, status: '예약확정', exchangeAmount: (parts[24] || parts[4] || '-').trim(), createdAt: new Date() };
+        const resData = { customerKorName: customerName, engName: engName, contact: (parts[14] || '').trim(), items, status: '예약확정', exchangeAmount: (parts[24] || parts[4] || '-').trim(), pickupResort: (parts[9] || '').trim(), createdAt: new Date() };
         const docRef = await addDoc(collection(db, "quick_vouchers"), resData);
         navigator.clipboard.writeText(`${window.location.origin}/reservation-schedule.html?id=${docRef.id}&type=quick`).then(() => alert('바우처 생성 및 링크 복사 완료!'));
         hideInputArea();

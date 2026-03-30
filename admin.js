@@ -674,44 +674,27 @@ document.addEventListener('DOMContentLoaded', () => {
                     // --- 🚀 [핵심 수정] 비고란 세부 인원 합산 로직 강화 ---
                     let calculatedPax = 0;
                     
-                    // 1. 산식 우선 처리 (4+3 등)
-                    const plusMatch = trimmed.match(/(\d+)\s*\+\s*(\d+)/);
+                    // 날짜, 시간, 금액($), 시간표현(h, 시간) 등 제외한 순수 텍스트에서 인원 추출
+                    let cleanForPax = trimmed.replace(dateMatch[0], '')
+                                           .replace(timeMatch ? timeMatch[0] : '', '')
+                                           .replace(/GET\$.*|잔금.*|\$.*|￦.*/g, '')
+                                           .replace(/\d+\s*(시간|h|시|분)/gi, '')
+                                           .trim();
+
+                    // 1. 산식 처리 (4+3 등)
+                    const plusMatch = cleanForPax.match(/(\d+)\s*\+\s*(\d+)/);
                     if (plusMatch) {
                         calculatedPax = parseInt(plusMatch[1]) + parseInt(plusMatch[2]);
                     } else {
-                        // 2. 시간(1시간, 2h 등) 제외하고 숫자 추출
-                        let cleanForPax = trimmed.replace(/\d+\s*(시간|h|시)/gi, '');
-                        
-                        // 패턴: 상품명(한글) + 공백? + 숫자
-                        const pattern1 = cleanForPax.match(/[가-힣]+\s*(\d+)/g);
-                        if (pattern1) {
-                            pattern1.forEach(m => {
-                                const num = m.match(/\d+/);
-                                if (num) calculatedPax += parseInt(num[0]);
-                            });
-                        }
-                        // 패턴: 숫자 + 단위(명, 인, pax)
-                        const pattern2 = cleanForPax.match(/(\d+)\s*(명|인|pax)/gi);
-                        if (pattern2) {
-                            pattern2.forEach(m => {
-                                const num = m.match(/\d+/);
-                                if (num) {
-                                    const val = parseInt(num[0]);
-                                    // 이미 위에서 더해진 숫자와 중복될 수 있으므로 중복 체크 로직 대신 
-                                    // pattern2가 더 명확한 인원 표시이므로 pattern1 결과를 초기화하고 pattern2로 재계산하거나 합산 전략 수정
-                                    // 여기선 간단히 pattern1에서 안 잡힌 것들만 고려하거나 전체에서 명확한 것들 합산
-                                }
-                            });
-                        }
-                        
-                        // 만약 위 패턴들로도 안 잡히면 단순 숫자들만 더함 (단, 괄호 밖 숫자 등)
-                        if (calculatedPax === 0) {
-                            const numbers = cleanForPax.match(/\d+/g);
-                            if (numbers) {
-                                numbers.forEach(n => {
-                                    const val = parseInt(n);
-                                    if (val > 0 && val < 20) calculatedPax += val; // 합리적인 인원 범위(1~20)만 합산
-                                });
+                        // 2. 명시적 단위 (2명, 2인, 2pax, 인원 2)
+                        const unitMatch = cleanForPax.match(/(\d+)\s*(명|인|pax)/i) || cleanForPax.match(/인원\s*(\d+)/);
+                        if (unitMatch) {
+                            calculatedPax = parseInt(unitMatch[1] || unitMatch[0].match(/\d+/)[0]);
+                        } else {
+                            // 3. 상품명 뒤의 숫자 (보라스파 2)
+                            const prodPaxMatch = cleanForPax.match(/[가-힣]{2,}\s*(\d+)/);
+                            if (prodPaxMatch) {
+                                calculatedPax = parseInt(prodPaxMatch[1]);
                             }
                         }
                     }

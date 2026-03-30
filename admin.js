@@ -613,17 +613,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 리조트명 변환 매핑
         const translateResort = (name) => {
-            const n = name.toLowerCase().replace(/\s/g, '');
-            if (n.includes('h.garden') || n.includes('헤난가든')) return "헤난 가든";
-            if (n.includes('h.lagoon') || n.includes('헤난라군')) return "헤난 라군";
-            if (n.includes('h.park') || n.includes('헤난파크')) return "헤난 파크";
-            if (n.includes('h.prime') || n.includes('헤난프라임')) return "헤난 프라임";
-            if (n.includes('h.palm') || n.includes('헤난팜')) return "헤난 팜 비치";
-            if (n.includes('h.crystal') || n.includes('헤난크리스탈')) return "헤난 크리스탈 샌즈";
-            if (n.includes('h.regency') || n.includes('헤난리젠시')) return "헤난 리젠시";
+            if (!name) return "";
+            let n = name.toLowerCase().replace(/\s/g, '');
+            
+            // 🚀 [핵심 추가] h. -> 헤난, m. -> 만다린 규칙 적용
+            if (n.startsWith('h.')) n = n.replace('h.', '헤난');
+            if (n.startsWith('m.')) n = n.replace('m.', '만다린');
+
+            // 상세 리조트명 매핑
+            if (n.includes('garden') || n.includes('가든')) return "헤난 가든";
+            if (n.includes('lagoon') || n.includes('라군')) return "헤난 라군";
+            if (n.includes('park') || n.includes('파크')) return "헤난 파크";
+            if (n.includes('prime') || n.includes('프라임')) return "헤난 프라임";
+            if (n.includes('palm') || n.includes('팜')) return "헤난 팜 비치";
+            if (n.includes('crystal') || n.includes('크리스탈')) return "헤난 크리스탈 샌즈";
+            if (n.includes('regency') || n.includes('리젠시')) return "헤난 리젠시";
+            
+            if (n.includes('mandarin') || n.includes('만다린')) {
+                if (n.includes('oriental') || n.includes('오리엔탈')) return "만다린 오리엔탈";
+                if (n.includes('bay') || n.includes('베이')) return "만다린 베이";
+                return "만다린";
+            }
+
             if (n.includes('crimson') || n.includes('크림슨')) return "크림슨";
             if (n.includes('shangrila') || n.includes('샹그릴라')) return "샹그릴라";
             if (n.includes('moira') || n.includes('모이라')) return "모이라";
+            if (n.includes('movenpick') || n.includes('모벤픽')) return "모벤픽";
+            
             return name;
         };
 

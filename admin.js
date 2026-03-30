@@ -29,18 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentScheduleFilter = 'all';
     let currentScheduleDay = 'today'; 
 
-    function showAdminPanel() {
-        if (!loginContainer || !adminContainer) return;
-        loginContainer.style.display = 'none';
-        adminContainer.style.display = 'flex';
-        const adminId = sessionStorage.getItem('adminId') || '관리자';
-        const displayIdEl = document.getElementById('display-admin-id');
-        if (displayIdEl) displayIdEl.innerText = adminId;
-        const systemMenu = document.getElementById('menu-system');
-        if (systemMenu) systemMenu.style.display = 'flex';
-        fetchData();
-    }
-
     if (sessionStorage.getItem('isAdminLoggedIn') === 'true') { showAdminPanel(); }
 
     const loginForm = document.getElementById('login-form');
@@ -57,16 +45,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 sessionStorage.setItem('isAdminLoggedIn', 'true');
                 sessionStorage.setItem('adminId', id);
                 showAdminPanel();
-            } else { alert('아이디 또는 비밀번호가 올바르지 않습니다.'); }
+            } else { 
+                alert('아이디 또는 비밀번호가 올바르지 않습니다.'); 
+            }
         };
     }
 
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        logoutBtn.onclick = () => {
-            sessionStorage.removeItem('isAdminLoggedIn');
-            location.reload();
-        };
+    document.getElementById('logout-btn').onclick = () => {
+        sessionStorage.removeItem('isAdminLoggedIn');
+        location.reload();
+    };
+
+    function showAdminPanel() {
+        loginContainer.style.display = 'none';
+        adminContainer.style.display = 'flex';
+        const adminId = sessionStorage.getItem('adminId') || '관리자';
+        document.getElementById('display-admin-id').innerText = adminId;
+        const systemMenu = document.getElementById('menu-system');
+        if (systemMenu) systemMenu.style.display = 'flex';
+        fetchData();
     }
 
     function fetchData() {
@@ -87,13 +84,10 @@ document.addEventListener('DOMContentLoaded', () => {
             resorts: allReservations.filter(r => r.status === '견적').length, 
             resortConfirmed: allReservations.filter(r => r.status === '리조트확정').length
         };
-        const cNew = document.getElementById('count-new');
-        const cConfirmed = document.getElementById('count-confirmed');
-        const cResorts = document.getElementById('count-resorts');
+        document.getElementById('count-new').innerText = counts.new;
+        document.getElementById('count-confirmed').innerText = counts.confirmed;
+        document.getElementById('count-resorts').innerText = counts.resorts;
         const rcCount = document.getElementById('count-resort-confirmed');
-        if (cNew) cNew.innerText = counts.new;
-        if (cConfirmed) cConfirmed.innerText = counts.confirmed;
-        if (cResorts) cResorts.innerText = counts.resorts;
         if (rcCount) rcCount.innerText = counts.resortConfirmed;
     }
 
@@ -104,12 +98,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (n.includes('샌딩')) return '샌딩';
         if (n.includes('호핑')) return '호핑';
         if (n.includes('말룸파티')) return '말룸파티';
+        if (n.includes('마사지') || n.includes('스파') || n.includes('spa') || n.includes('에스파')) return '액티비티';
         return '액티비티';
     }
 
     function renderSchedule() {
         const container = document.getElementById('active-timeline');
         if (!container) return;
+
         const now = new Date();
         const offset = now.getTimezoneOffset() * 60000;
         const todayStr = new Date(now.getTime() - offset).toISOString().split('T')[0];
@@ -119,62 +115,112 @@ document.addEventListener('DOMContentLoaded', () => {
         allReservations.forEach(res => {
             if (res.items) {
                 res.items.forEach(item => {
-                    if (item.date === targetDate && (currentScheduleFilter === 'all' || getCategory(item.name) === currentScheduleFilter)) {
-                        items.push({ time: item.time || "09:00", name: item.name, customer: res.customerKorName, count: item.count, status: res.status, id: res.id });
+                    const itemCat = getCategory(item.name);
+                    const isMatch = currentScheduleFilter === 'all' || itemCat === currentScheduleFilter;
+                    if (item.date === targetDate && isMatch) {
+                        items.push({ time: item.time || "09:00", name: item.name, customer: res.customerKorName, count: item.count, status: res.status, id: res.id, resort: res.activityPickupResort || res.pickupResort || "-" });
                     }
                 });
             }
         });
+
         items.sort((a, b) => a.time.localeCompare(b.time));
-        container.innerHTML = items.length === 0 ? `<div class="sc-empty">일정이 없습니다.</div>` : items.map(item => `<div class="schedule-card" onclick="showDetail('${item.id}')"><b>${item.time}</b> ${item.name} (${item.customer} ${item.count}명)</div>`).join('');
+
+        if (items.length === 0) {
+            container.innerHTML = `<div class="sc-empty">일정이 없습니다.</div>`;
+            return;
+        }
+
+        container.innerHTML = items.map(item => {
+            const isConfirmed = item.status === '예약확정' || item.status === '리조트확정';
+            return `<div class="schedule-card" onclick="showDetail('${item.id}')" style="border-top-color: ${isConfirmed ? '#ff6a00' : '#ff8c00'}">
+                <div class="sc-status ${isConfirmed ? 'confirmed' : 'pending'}">${item.status}</div>
+                <div class="sc-time"><span class="material-icons">access_time</span> ${item.time}</div>
+                <div class="sc-item">${item.name}</div>
+                <div class="sc-info"><div class="sc-customer"><b>${item.customer}</b> ${item.count}명</div></div>
+            </div>`;
+        }).join('');
     }
 
     window.switchScheduleDay = (day) => { currentScheduleDay = day; renderSchedule(); };
     window.filterSchedule = (category) => { currentScheduleFilter = category; renderSchedule(); };
     window.switchAdminTab = (tab) => { activeTab = tab; renderTable(); };
 
-    window.handleAutoConfirm = async (id) => { if (confirm("예약확정 처리를 진행합니까?")) await updateDoc(doc(db, "reservations", id), { status: "예약확정" }); };
-    window.handleResortQuoteComplete = async (id) => { if (confirm("견적완료 처리를 진행합니까?")) await updateDoc(doc(db, "reservations", id), { status: "견적완료" }); };
-    window.handleResortConfirm = async (id) => {
-        const amount = prompt("입금 금액을 입력해 주세요 (숫자만)");
-        if (amount !== null) {
-            const price = parseInt(amount.replace(/[^0-9]/g, '')) || 0;
-            if (confirm(`입금 금액 ₩ ${price.toLocaleString()}으로 예약 확정 처리하시겠습니까?`)) {
-                await updateDoc(doc(db, "reservations", id), { status: "리조트확정", totalPrice: price });
-                alert("리조트 예약이 확정되었습니다.");
-            }
-        }
-    };
-    window.handleDeleteReservation = async (id) => { if (confirm("영구 삭제하시겠습니까?")) await deleteDoc(doc(db, "reservations", id)); };
-
     function renderTable() {
         if (!tableBody) return;
         tableBody.innerHTML = '';
-        allReservations.filter(r => {
-            if (activeTab === 'new') return r.status === '입금대기' || r.status === '예약접수';
-            if (activeTab === 'confirmed') return r.status === '예약확정';
-            if (activeTab === 'resorts') return r.status === '견적';
-            if (activeTab === 'resort-confirmed') return r.status === '리조트확정';
-            return true;
-        }).forEach((res, idx) => {
+        const searchInput = document.getElementById('header-global-search');
+        const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+
+        let filtered = allReservations.filter(r => {
+            const name = (r.customerKorName || '').toLowerCase();
+            const resNo = (r.reservationNumber || '').toLowerCase();
+            const matchesSearch = name.includes(searchTerm) || resNo.includes(searchTerm);
+            let matchesTab = false;
+            
+            if (activeTab === 'new') matchesTab = (r.status === '입금대기' || r.status === '예약접수');
+            else if (activeTab === 'confirmed') matchesTab = (r.status === '예약확정');
+            else if (activeTab === 'resorts') matchesTab = (r.status === '견적');
+            else if (activeTab === 'resort-confirmed') matchesTab = (r.status === '리조트확정');
+            else if (activeTab === 'system') matchesTab = true;
+            return matchesSearch && matchesTab;
+        });
+
+        filtered.forEach((res, index) => {
             const tr = document.createElement('tr');
-            let actionButtons = `<button onclick="showDetail('${res.id}')">상세</button>`;
-            if (activeTab === 'new') actionButtons = `<button onclick="handleAutoConfirm('${res.id}')">입금확인</button>` + actionButtons;
-            if (activeTab === 'resorts') actionButtons = `<button onclick="handleResortQuoteComplete('${res.id}')">견적완료</button><button onclick="handleResortConfirm('${res.id}')">예약확정</button>` + actionButtons;
-            tr.innerHTML = `<td>${idx+1}</td><td>${res.reservationNumber || '-'}</td><td><b>${res.customerKorName}</b></td><td>${res.items?.[0]?.name || '-'}</td><td>₩ ${(res.totalPrice || 0).toLocaleString()}</td><td>${res.status}</td><td>${actionButtons}</td>`;
+            const status = res.status || '대기';
+            const firstItem = res.items && res.items.length > 0 ? res.items[0] : null;
+            let itemsText = firstItem ? (firstItem.name + (res.items.length > 1 ? ` 외 ${res.items.length-1}건` : '')) : '-';
+
+            let actionButtons = '';
+            if (activeTab === 'resorts') {
+                actionButtons = `
+                    <button class="btn-action-received" onclick="handleResortQuoteComplete('${res.id}')"><span class="material-icons">task_alt</span>견적완료</button>
+                    <button class="btn-action-outline" onclick="showDetail('${res.id}')">상세</button>
+                    <button class="btn-action-received" style="background:#00c73c; border-color:#00c73c;" onclick="handleResortConfirm('${res.id}')">예약확정</button>
+                `;
+            } else {
+                actionButtons = `
+                    ${status !== '예약확정' && status !== '리조트확정' ? `<button class="btn-action-received" onclick="handleAutoConfirm('${res.id}')">입금확인</button>` : ''}
+                    <button class="btn-action-received" style="background:#ff6a00; border-color:#ff6a00;" onclick="showDetail('${res.id}')">상세</button>
+                `;
+            }
+
+            tr.innerHTML = `<td><input type="checkbox"></td><td style="color:#bbb;">${filtered.length - index}</td><td style="font-weight:700;">${res.reservationNumber || '-'}</td><td><div style="font-size:14px; font-weight:800;">${res.customerKorName}</div></td><td>${itemsText}</td><td>₩ ${(res.totalPrice || 0).toLocaleString()}</td><td style="text-align:center;"><span class="n-badge ${status.includes('확정') ? 'badge-green' : 'badge-yellow'}">${status}</span></td><td><div style="display:flex; gap:5px;">${actionButtons}</div></td>`;
             tableBody.appendChild(tr);
         });
     }
 
-    // --- 홈페이지 예약 일정표 링크 복사 ---
-    window.copyCombinedVoucherLink = (contact) => { 
-        const url = `${window.location.origin}/reservation-schedule.html?contact=${encodeURIComponent(contact)}`; 
-        navigator.clipboard.writeText(url).then(() => alert('통합 일정표 링크가 복사되었습니다.')); 
+    window.handleAutoConfirm = async (id) => { if (confirm("예약확정 처리를 진행합니까?")) await updateDoc(doc(db, "reservations", id), { status: "예약확정" }); };
+    window.handleResortQuoteComplete = async (id) => { if (confirm("견적완료 처리를 진행합니까?")) await updateDoc(doc(db, "reservations", id), { status: "견적완료" }); };
+    window.handleResortConfirm = async (id) => {
+        const amount = prompt("입금 금액을 입력해 주세요");
+        if (amount !== null) {
+            const price = parseInt(amount.replace(/[^0-9]/g, '')) || 0;
+            await updateDoc(doc(db, "reservations", id), { status: "리조트확정", totalPrice: price });
+            alert("확정되었습니다.");
+        }
     };
 
-    window.copyVoucherLink = (id, idx) => { 
-        const url = `${window.location.origin}/reservation-schedule.html?id=${id}${idx !== null ? `&itemIndex=${idx}` : ''}`; 
-        navigator.clipboard.writeText(url).then(() => alert('바우처 링크가 복사되었습니다.')); 
+    window.showDetail = (id) => {
+        const res = allReservations.find(r => r.id === id);
+        if (!res) return;
+        const modal = document.getElementById('res-detail-modal');
+        const body = document.getElementById('modal-body');
+        if (modal && body) {
+            body.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h3 style="margin:0;">예약 상세 정보</h3>
+                    <button onclick="copyGuidance('${res.id}')" style="background:#ff6a00; color:white; border:none; padding:8px 14px; border-radius:6px; font-weight:bold;">안내문 복사</button>
+                </div>
+                <div style="max-height: 60vh; overflow-y: auto; background:#f8f9fa; padding:15px; border-radius:10px;">
+                    <pre style="white-space:pre-wrap; font-size:13px;">${JSON.stringify(res, null, 2)}</pre>
+                </div>
+                <div style="margin-top:20px; text-align:right;">
+                    <button onclick="closeModal()" style="padding:10px 20px; background:#333; color:white; border:none; border-radius:6px; font-weight:bold;">닫기</button>
+                </div>`;
+            modal.style.display = 'flex';
+        }
     };
 
     window.makeQuickVoucher = async () => {
@@ -199,7 +245,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return n.trim();
         };
 
-        // 🚀 퀵 바우처 전용 매핑 (홈페이지 예약과 완전 격리)
         const agencySource = (parts[14] || '').trim(); 
         const customerName = (parts[15] || '').trim(); 
         const engName = (parts[10] || '').trim();      
@@ -213,8 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let exchangeMoney = (rawExchange && !rawExchange.includes('/') && (rawExchange.includes('$') || rawExchange.includes('불') || /^\d+$/.test(rawExchange.replace(/[^0-9]/g, '')))) ? rawExchange : '-';
 
         const remarksPart = (parts[16] || '').replace(/^"|"$/g, '').trim();
-        const extraPart1 = (parts[17] || '').replace(/^"|"$/g, '').trim();
-        const fullRemarks = `${remarksPart}\n${extraPart1}`.trim();
+        const fullRemarks = remarksPart + "\n" + (parts[17] || '');
 
         const items = [];
         fullRemarks.split('\n').forEach(line => {
@@ -248,14 +292,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        if ((parts[2] || '').match(/[A-Z]{2}\d{2,}/) && (parts[0] || '').includes('/')) {
-            const dp = parts[0].split('/');
-            items.push({ name: `✈️ 공항 픽업 (${parts[2]})`, date: `${currentYear}-${dp[0].padStart(2,'0')}-${dp[1].trim().padStart(2,'0')}`, time: "00:01", count: totalPaxCount, details: `리조트 : ${resort}` });
-        }
-        if ((parts[3] || '').match(/[A-Z]{2}\d{2,}/) && (parts[1] || '').includes('/')) {
-            const dp = parts[1].split('/');
+        if ((parts[2] || '').match(/[A-Z]{2}\d{2,}/)) items.push({ name: `✈️ 공항 픽업 (${parts[2]})`, date: `${currentYear}-${parts[0].split('/')[0].padStart(2,'0')}-${parts[0].split('/')[1].trim().padStart(2,'0')}`, time: "00:01", count: totalPaxCount, details: `리조트 : ${resort}` });
+        if ((parts[3] || '').match(/[A-Z]{2}\d{2,}/)) {
             let sTime = (parts[3].toUpperCase() === 'TW126') ? "08:30" : "21:00";
-            items.push({ name: `✈️ 공항 샌딩 (${parts[3]})`, date: `${currentYear}-${dp[0].padStart(2,'0')}-${dp[1].trim().padStart(2,'0')}`, time: sTime, count: totalPaxCount, details: `리조트 : ${resort}` });
+            items.push({ name: `✈️ 공항 샌딩 (${parts[3]})`, date: `${currentYear}-${parts[1].split('/')[0].padStart(2,'0')}-${parts[1].split('/')[1].trim().padStart(2,'0')}`, time: sTime, count: totalPaxCount, details: `리조트 : ${resort}` });
         }
 
         items.sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
@@ -275,23 +315,9 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const docRef = await addDoc(collection(db, "quick_vouchers"), reservationData);
             const url = `${window.location.origin}/reservation-schedule.html?id=${docRef.id}&type=quick`;
-            if (confirm(`퀵바우처 생성 완료!\n링크를 복사하시겠습니까?`)) { navigator.clipboard.writeText(url).then(() => alert('복사되었습니다.')); }
+            if (confirm(`성공! 링크를 복사하시겠습니까?`)) { navigator.clipboard.writeText(url).then(() => alert('복사되었습니다.')); }
         } catch (e) { alert('저장 실패: ' + e.message); }
     };
 
-    window.showDetail = (id) => {
-        const res = allReservations.find(r => r.id === id);
-        if (!res) return;
-        const modal = document.getElementById('res-detail-modal');
-        const body = document.getElementById('modal-body');
-        if (modal && body) {
-            body.innerHTML = `<h3>${res.customerKorName} 예약 상세</h3><pre>${JSON.stringify(res, null, 2)}</pre>`;
-            modal.style.display = 'flex';
-        }
-    };
-
-    window.closeModal = () => {
-        const modal = document.getElementById('res-detail-modal');
-        if (modal) modal.style.display = 'none';
-    };
+    window.closeModal = () => { document.getElementById('res-detail-modal').style.display = 'none'; };
 });

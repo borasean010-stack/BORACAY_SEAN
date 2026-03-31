@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (tmBox) tmBox.innerText = tomorrowStr;
     }
 
-    window.switchScheduleDay = (day) => { currentScheduleDay = day; hideInputArea(); renderSchedule(); };
+    window.switchScheduleDay = (day) => { currentScheduleDay = day; window.hideInputArea(); renderSchedule(); };
     window.filterSchedule = (category) => {
         currentScheduleFilter = category;
         document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -463,14 +463,20 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.handleClearSchedules = async () => {
-        if (!confirm("모든 스케줄을 삭제하시겠습니까?")) return;
+        if (!confirm("현재 등록된 모든 일정(스케줄)만 삭제하시겠습니까?\n(예약 내역이나 바우처는 삭제되지 않습니다.)")) return;
         try {
+            if (!db) { alert("데이터베이스 연결 오류"); return; }
             const snap = await getDocs(collection(db, "schedules"));
+            if (snap.empty) { alert("삭제할 일정이 없습니다."); return; }
+            
             const batch = writeBatch(db);
             snap.docs.forEach(d => batch.delete(d.ref));
             await batch.commit();
-            alert("삭제 완료");
-        } catch (e) { alert("삭제 실패"); }
+            alert("일정 데이터만 삭제 완료되었습니다.");
+        } catch (e) { 
+            console.error("Clear Schedules Error:", e);
+            alert("삭제 중 오류가 발생했습니다."); 
+        }
     };
 
     window.handleClearAllData = async () => {
@@ -616,7 +622,7 @@ document.addEventListener('DOMContentLoaded', () => {
         navigator.clipboard.writeText(`${window.location.origin}/reservation-schedule.html?id=${docRef.id}&type=quick`).then(() => {
             alert('통합 바우처 생성 완료!');
             document.getElementById('quick-voucher-input').value = ''; 
-            hideInputArea();
+            window.hideInputArea();
         });
     };
 });

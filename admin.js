@@ -467,18 +467,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const p15 = (parts[15] || '').trim(); // 닉네임 (투윤맘)
             const p19 = (parts[19] || '').trim(); // 실명 한글 (권민경)
             
-            const isP10Korean = /[가-힣]/.test(p10);
-            const isP19Korean = /[가-힣]/.test(p19);
+            const isP19Korean = /[가-힣]/.test(p10);
+            const isP19KoreanReal = /[가-힣]/.test(p19);
             
             let korName = p15; // 기본값은 닉네임
             let engName = p10;
 
-            if (isP19Korean) {
-                korName = p19; // 19번 컬럼에 실명 한글이 있으면 우선 사용
-            } else if (isP10Korean) {
-                korName = p10; // 10번 컬럼이 한글이면 사용
-                engName = p15;
-            }
+            if (isP19KoreanReal) { korName = p19; } else if (isP19Korean) { korName = p10; engName = p15; }
 
             const totalPax = parsePax(parts[11]) + parsePax(parts[12]) + parsePax(parts[13]);
             const resortRaw = (parts[9] || '').trim();
@@ -604,7 +599,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.makeQuickVoucher = async () => {
         const inputVal = document.getElementById('quick-voucher-input').value.trim(); if (!inputVal) return;
-        const rows = inputVal.split('\n').filter(r => r.trim() !== '');
+        
+        // 🚀 멀티라인(따옴표 포함) 로우 분리 로직 개선
+        const rows = [];
+        let currentRowStr = "";
+        let inQuotesRow = false;
+        for (let i = 0; i < inputVal.length; i++) {
+            const char = inputVal[i];
+            if (char === '"') inQuotesRow = !inQuotesRow;
+            if (char === '\n' && !inQuotesRow) {
+                if (currentRowStr.trim()) rows.push(currentRowStr);
+                currentRowStr = "";
+            } else { currentRowStr += char; }
+        }
+        if (currentRowStr.trim()) rows.push(currentRowStr);
+
         const currentYear = new Date().getFullYear();
         
         let combinedKorNames = [];
@@ -617,9 +626,9 @@ document.addEventListener('DOMContentLoaded', () => {
         rows.forEach(row => {
             const parts = row.split('\t'); if (parts.length < 16) return;
             
-            // 이름 파싱
+            // 이름 파싱 및 줄바꿈 정제
             const p10 = (parts[10] || '').trim();
-            const p15 = (parts[15] || '').trim();
+            const p15 = (parts[15] || '').trim().replace(/^"|"$/g, '').replace(/\n/g, ', ');
             const isP10Korean = /[가-힣]/.test(p10);
             let korName = p15; let engName = p10;
             if (isP10Korean && !p10.includes(' ')) { korName = p10; engName = p15; }
@@ -640,15 +649,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const sResort = translateResort(resortRaw.split('/')[1]?.trim() || pResort);
             if (!firstResort) { firstResort = pResort; secondResort = sResort; }
 
-            // 환전 금액 처리 (숫자면 합산, 아니면 나열)
+            // 환전 금액 처리
             let exVal = (parts[5] || '').trim();
             if (exVal && !exVal.includes('/') && !exVal.includes('▲') && exVal !== '0') {
                 const numericEx = parseInt(exVal.replace(/[^0-9]/g, ''));
                 if (!isNaN(numericEx)) totalExAmount += numericEx;
                 else isExNumeric = false;
-            } else if (exVal === '0' || !exVal) {
-                // 패스
-            } else { isExNumeric = false; }
+            } else if (exVal === '0' || !exVal) { } else { isExNumeric = false; }
             if (!firstExVal) firstExVal = exVal;
 
             // 아이템 추출 로직
@@ -679,6 +686,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = '보라스파';
                     else if (lowerLine.includes('land') || lowerLine.includes('랜드')) { itemName = '보라카이 랜드투어'; if(!timeMatch) itemTime = "10:30"; }
                     else if (lowerLine.includes('hopping') || lowerLine.includes('호핑')) { if (lowerLine.includes('(j)') || lowerLine.includes('점보')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!timeMatch) itemTime = "12:30"; } else { itemName = '블랙펄 선셋 호핑투어'; if(!timeMatch) itemTime = "13:30"; } }
+                    else if (lowerLine.includes('malum') || lowerLine.includes('말룸')) { itemName = '말룸파티'; if(!timeMatch) itemTime = "09:00"; }
                     else if (lowerLine.includes('jetski') || lowerLine.includes('제트스키')) itemName = '제트스키';
                     else if (lowerLine.includes('helmet') || lowerLine.includes('헬멧')) itemName = '헬멧다이빙';
                     else if (lowerLine.includes('para') || lowerLine.includes('파라')) itemName = '파라세일링';

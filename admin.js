@@ -348,7 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let matchesTab = false;
             if (activeTab === 'new') matchesTab = (r.status === '입금대기' || r.status === '예약접수');
             else if (activeTab === 'confirmed') matchesTab = (r.status === '예약확정');
-            else if (activeTab === 'resorts') matchesTab = (r.status === '견적' || r.status === '견적완료');
+            else if (activeTab === 'resorts') matchesTab = (r.status === '견적');
             else if (activeTab === 'resort-confirmed') matchesTab = (r.status === '리조트확정');
             return name.includes(searchTerm) && matchesTab;
         });

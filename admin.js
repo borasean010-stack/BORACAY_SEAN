@@ -421,12 +421,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const timeMatch = row.match(/(\d{1,2}):(\d{2})/);
                 const timeStr = timeMatch ? `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}` : "09:00";
                 
+                // 1. 인원 계산 (마사지 세부 인원 합계 우선, 없으면 성인+아동 합계)
                 let paxCount = 0;
                 const mCount = row.match(/\d+(?=명|인|태반|성장|스톤|오일|포쉘|진주)/g);
-                if (mCount) paxCount = mCount.reduce((a, b) => parseInt(a) + parseInt(b), 0);
+                if (mCount) paxCount = mCount.reduce((a, b) => a + parseInt(b), 0);
+                
                 if (paxCount === 0) {
-                    const simplePax = row.match(/(\d+)\s+(\d+)\s+(\d+)/);
-                    if (simplePax) paxCount = parseInt(simplePax[1]) + parseInt(simplePax[2]);
+                    const triplePax = row.match(/(\d+)\s+(\d+)\s+(\d+)/);
+                    if (triplePax) paxCount = parseInt(triplePax[1]) + parseInt(triplePax[2]);
                     else {
                         const lastNum = row.match(/(\d+)(?!.*[\d:])/);
                         if (lastNum) paxCount = parseInt(lastNum[1]);
@@ -434,27 +436,49 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 if (paxCount === 0) paxCount = 2;
 
+                // 2. 고객명 추출 (영문명 및 한글명 대응)
+                const allParts = row.split(/\s+/);
+                let customer = "고객";
+                const skipWords = ['pick','up','lunaspa','boraspa','sspa','savemore','세이브모어','픽업','샌딩','spa','스파','마사지'];
+                for (let i = 0; i < Math.min(allParts.length, 5); i++) {
+                    const p = allParts[i];
+                    if (/[가-힣a-zA-Z]{2,}/.test(p) && !p.includes('/') && !p.includes(':') && !skipWords.includes(p.toLowerCase())) {
+                        customer = p;
+                        if (allParts[i+1] && /^[a-zA-Z]{2,}$/.test(allParts[i+1]) && !skipWords.includes(allParts[i+1].toLowerCase())) customer += ' ' + allParts[i+1];
+                        if (allParts[i+2] && /^[a-zA-Z]{2,}$/.test(allParts[i+2]) && !skipWords.includes(allParts[i+2].toLowerCase())) customer += ' ' + allParts[i+2];
+                        break;
+                    }
+                }
+
+                // 3. 상품명 및 리조트(픽업장소) 추출
                 let name = "기타 일정";
+                let resort = "-";
+                const locMatch = row.match(/([a-zA-Z가-힣]+)\s?(?:pick\s?up|픽업)/i);
+                if (locMatch && !['공항','샌딩'].includes(locMatch[1])) resort = locMatch[1];
+
                 if (row.includes('픽업')) name = '공항 픽업';
                 else if (row.includes('샌딩')) name = '공항 샌딩';
                 else if (row.includes('호핑')) name = '호핑투어';
                 else if (row.includes('말룸')) name = '말룸파티';
                 else if (row.includes('랜드')) name = '보라카이 랜드투어';
-                else if (row.includes('스파') || row.includes('마사지') || row.includes('spa')) {
-                    if (row.includes('루나')) name = '루나스파';
-                    else if (row.includes('보라')) name = '보라스파';
-                    else if (row.includes('에스파') || row.includes('sspa')) name = '에스파(S-SPA)';
-                    else if (row.includes('헬리오스')) name = '헬리오스 스파';
-                    else if (row.includes('포세이돈')) name = '포세이돈 스파';
+                else if (row.toLowerCase().includes('spa') || row.includes('스파') || row.includes('마사지')) {
+                    if (row.toLowerCase().includes('luna') || row.includes('루나')) name = '루나스파';
+                    else if (row.toLowerCase().includes('bora') || row.includes('보라')) name = '보라스파';
+                    else if (row.toLowerCase().includes('sspa') || row.includes('에스파')) name = '에스파(S-SPA)';
                     else name = '마사지';
                 }
 
-                const parts = row.split(/\s+/);
-                let customer = "고객";
-                for (const p of parts) { if (/[가-힣]{2,}/.test(p) && !p.includes('/') && !p.includes(':')) { customer = p; break; } }
-
                 const docRef = doc(collection(db, "schedules"));
-                batch.set(docRef, { date: dateStr, time: timeStr, name: name, customerName: customer, count: paxCount, details: row, createdAt: new Date() });
+                batch.set(docRef, { 
+                    date: dateStr, 
+                    time: timeStr, 
+                    name: name, 
+                    customerName: customer, 
+                    count: paxCount, 
+                    resort: translateResort(resort), 
+                    details: row, 
+                    createdAt: new Date() 
+                });
                 count++;
             }
             if (count > 0) { await batch.commit(); alert(`${count}건의 스케줄이 업데이트되었습니다.`); document.getElementById('schedule-reg-input').value = ''; window.hideInputArea(); }

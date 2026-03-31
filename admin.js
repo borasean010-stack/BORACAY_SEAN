@@ -346,6 +346,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    window.handleAutoConfirm = async (id) => {
+        if (!confirm("입금 확인 및 예약 확정 처리를 하시겠습니까?")) return;
+        try {
+            await updateDoc(doc(db, "reservations", id), { status: '예약확정' });
+            alert("예약이 확정되었습니다.");
+            fetchData();
+        } catch (e) { alert("확정 처리 실패"); }
+    };
+
+    window.handleResortConfirm = async (id) => {
+        if (!confirm("리조트 예약을 확정하시겠습니까?")) return;
+        try {
+            await updateDoc(doc(db, "reservations", id), { status: '리조트확정' });
+            alert("리조트 예약이 확정되었습니다.");
+            fetchData();
+        } catch (e) { alert("확정 처리 실패"); }
+    };
+
     window.handleResortQuoteComplete = async (id) => {
         try { await deleteDoc(doc(db, "reservations", id)); fetchData(); } catch (e) { console.error("삭제 실패", e); }
     };
@@ -384,9 +402,91 @@ document.addEventListener('DOMContentLoaded', () => {
     window.copyVoucherLink = (id, idx) => { const url = `${window.location.origin}/reservation-schedule.html?id=${id}${idx !== null ? `&itemIndex=${idx}` : ''}`; navigator.clipboard.writeText(url).then(() => alert('바우처 링크가 복사되었습니다.')); };
     window.copyCombinedVoucherLink = (contact) => { navigator.clipboard.writeText(`${window.location.origin}/reservation-schedule.html?contact=${encodeURIComponent(contact)}`).then(() => alert('통합 일정표 링크 복사 완료!')); };
     window.copyGuidance = (id) => { const res = allReservations.find(r => r.id === id); if (!res) return; let msg = `[보라카이션 예약 확정 안내]\n\n대표자: ${res.customerKorName}\n투어내역:\n${res.items.map(i => `- ${i.name} (${i.date} ${i.time || ''}) / ${i.count}명`).join('\n')}\n\n감사합니다.`; navigator.clipboard.writeText(msg).then(() => alert('안내문이 복사되었습니다.')); };
-    window.showInputArea = (type) => { hideInputArea(); document.getElementById(`input-area-${type}`).style.display = 'block'; window.scrollTo({ top: 0, behavior: 'smooth' }); };
+    window.showInputArea = (type) => { window.hideInputArea(); document.getElementById(`input-area-${type}`).style.display = 'block'; window.scrollTo({ top: 0, behavior: 'smooth' }); };
     window.hideInputArea = () => { const qa = document.getElementById('input-area-quick'), ra = document.getElementById('input-area-reg'); if(qa) qa.style.display = 'none'; if(ra) ra.style.display = 'none'; };
     window.closeModal = () => { document.getElementById('res-detail-modal').style.display = 'none'; };
+
+    window.registerBulkSchedule = async () => {
+        const input = document.getElementById('schedule-reg-input').value.trim();
+        if (!input) return;
+        try {
+            const rows = input.split('\n').filter(r => r.trim());
+            const batch = writeBatch(db);
+            let count = 0;
+            const currentYear = new Date().getFullYear();
+            for (const row of rows) {
+                const dateMatch = row.match(/(\d{1,2})\/(\d{1,2})/);
+                if (!dateMatch) continue;
+                const dateStr = `${currentYear}-${dateMatch[1].padStart(2,'0')}-${dateMatch[2].padStart(2,'0')}`;
+                const timeMatch = row.match(/(\d{1,2}):(\d{2})/);
+                const timeStr = timeMatch ? `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}` : "09:00";
+                
+                let paxCount = 0;
+                const mCount = row.match(/\d+(?=명|인|태반|성장|스톤|오일|포쉘|진주)/g);
+                if (mCount) paxCount = mCount.reduce((a, b) => parseInt(a) + parseInt(b), 0);
+                if (paxCount === 0) {
+                    const simplePax = row.match(/(\d+)\s+(\d+)\s+(\d+)/);
+                    if (simplePax) paxCount = parseInt(simplePax[1]) + parseInt(simplePax[2]);
+                    else {
+                        const lastNum = row.match(/(\d+)(?!.*[\d:])/);
+                        if (lastNum) paxCount = parseInt(lastNum[1]);
+                    }
+                }
+                if (paxCount === 0) paxCount = 2;
+
+                let name = "기타 일정";
+                if (row.includes('픽업')) name = '공항 픽업';
+                else if (row.includes('샌딩')) name = '공항 샌딩';
+                else if (row.includes('호핑')) name = '호핑투어';
+                else if (row.includes('말룸')) name = '말룸파티';
+                else if (row.includes('랜드')) name = '보라카이 랜드투어';
+                else if (row.includes('스파') || row.includes('마사지') || row.includes('spa')) {
+                    if (row.includes('루나')) name = '루나스파';
+                    else if (row.includes('보라')) name = '보라스파';
+                    else if (row.includes('에스파') || row.includes('sspa')) name = '에스파(S-SPA)';
+                    else if (row.includes('헬리오스')) name = '헬리오스 스파';
+                    else if (row.includes('포세이돈')) name = '포세이돈 스파';
+                    else name = '마사지';
+                }
+
+                const parts = row.split(/\s+/);
+                let customer = "고객";
+                for (const p of parts) { if (/[가-힣]{2,}/.test(p) && !p.includes('/') && !p.includes(':')) { customer = p; break; } }
+
+                const docRef = doc(collection(db, "schedules"));
+                batch.set(docRef, { date: dateStr, time: timeStr, name: name, customerName: customer, count: paxCount, details: row, createdAt: new Date() });
+                count++;
+            }
+            if (count > 0) { await batch.commit(); alert(`${count}건의 스케줄이 업데이트되었습니다.`); document.getElementById('schedule-reg-input').value = ''; window.hideInputArea(); }
+            else alert("날짜 형식이 포함된 데이터를 찾지 못했습니다 (예: 3/30).");
+        } catch (e) { console.error(e); alert("등록 중 오류 발생"); }
+    };
+
+    window.handleClearSchedules = async () => {
+        if (!confirm("모든 스케줄을 삭제하시겠습니까?")) return;
+        try {
+            const snap = await getDocs(collection(db, "schedules"));
+            const batch = writeBatch(db);
+            snap.docs.forEach(d => batch.delete(d.ref));
+            await batch.commit();
+            alert("삭제 완료");
+        } catch (e) { alert("삭제 실패"); }
+    };
+
+    window.handleClearAllData = async () => {
+        if (!confirm("정말로 모든 데이터를 초기화하시겠습니까? (예약, 바우처, 스케줄 포함)")) return;
+        try {
+            const colls = ["reservations", "quick_vouchers", "schedules", "resort_quotes"];
+            for (const c of colls) {
+                const snap = await getDocs(collection(db, c));
+                const batch = writeBatch(db);
+                snap.docs.forEach(d => batch.delete(d.ref));
+                await batch.commit();
+            }
+            alert("전체 초기화 완료");
+            location.reload();
+        } catch (e) { alert("초기화 실패"); }
+    };
 
     window.toggleEditMode = (id) => {
         const res = allReservations.find(r => r.id === id); if (!res) return;

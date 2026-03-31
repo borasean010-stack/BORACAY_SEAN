@@ -375,6 +375,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    window.handleAutoConfirm = async (id) => {
+        try {
+            await updateDoc(doc(db, "reservations", id), { status: '예약확정' });
+            alert("확정되었습니다.");
+            fetchData();
+        } catch (e) { alert("확정 실패"); }
+    };
+
+    window.handleResortQuoteComplete = async (id) => {
+        if (confirm("견적을 완료하고 데이터를 삭제하시겠습니까?")) {
+            try {
+                await deleteDoc(doc(db, "reservations", id));
+                alert("삭제되었습니다.");
+                fetchData();
+            } catch (e) { alert("삭제 실패"); }
+        }
+    };
+
+    window.handleResortConfirm = async (id) => {
+        try {
+            await updateDoc(doc(db, "reservations", id), { status: '리조트확정' });
+            alert("리조트 확정 완료!");
+            fetchData();
+        } catch (e) { alert("확정 실패"); }
+    };
+
     function renderCleanupTable() {
         if (!tableBody) return;
         tableBody.innerHTML = '';

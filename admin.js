@@ -604,78 +604,119 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.makeQuickVoucher = async () => {
         const inputVal = document.getElementById('quick-voucher-input').value.trim(); if (!inputVal) return;
-        const parts = inputVal.split('\t'); if (parts.length < 16) return;
+        const rows = inputVal.split('\n').filter(r => r.trim() !== '');
         const currentYear = new Date().getFullYear();
         
-        const p10 = (parts[10] || '').trim();
-        const p15 = (parts[15] || '').trim();
-        const isP10Korean = /[가-힣]/.test(p10);
-        const isP15Nickname = p15.includes('맘') || p15.includes('아빠') || p15.includes('네') || p15.length > 5;
-        
-        let korName = p15; let engName = p10;
-        if (isP10Korean && !p10.includes(' ')) { korName = p10; engName = p15; }
-        else if (isP15Nickname) { if (isP10Korean) { korName = p10; engName = p15; } }
+        let combinedKorNames = [];
+        let totalAdults = 0, totalChildren = 0, totalInfants = 0;
+        let allItems = [];
+        let firstResort = '', secondResort = '', firstContact = '', firstExVal = '';
+        let totalExAmount = 0;
+        let isExNumeric = true;
 
-        const totalPax = (parseInt(parts[11]) || 0) + (parseInt(parts[12]) || 0) + (parseInt(parts[13]) || 0);
-        const resortRaw = (parts[9] || '').trim();
-        const pResort = translateResort(resortRaw.split('/')[0].trim());
-        const sResort = translateResort(resortRaw.split('/')[1]?.trim() || pResort);
+        rows.forEach(row => {
+            const parts = row.split('\t'); if (parts.length < 16) return;
+            
+            // 이름 파싱
+            const p10 = (parts[10] || '').trim();
+            const p15 = (parts[15] || '').trim();
+            const isP10Korean = /[가-힣]/.test(p10);
+            let korName = p15; let engName = p10;
+            if (isP10Korean && !p10.includes(' ')) { korName = p10; engName = p15; }
+            else if (p15.includes('맘') || p15.includes('아빠') || p15.includes('네') || p15.length > 5) {
+                if (isP10Korean) { korName = p10; engName = p15; }
+            }
+            combinedKorNames.push(`${korName} (${engName})`);
 
-        const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${currentYear}-${m}-${d}`; };
-        
-        const remarkRaw = (parts[16] || '').replace(/^"|"$/g, '');
-        // 💰 환전 금액 추출: 5번 인덱스에서만 정확하게 가져옴 (24번 등 입금 금액 절대 사용 금지)
-        let exVal = (parts[5] || '').trim();
-        
-        // 날짜 데이터이거나 특정 기호(▲)가 포함된 경우, 혹은 값이 비어있는 경우 '-' 처리
-        if (exVal.includes('/') || exVal.includes('▲') || exVal === '0' || !exVal) {
-            exVal = '-';
-        }
+            // 인원 합산
+            totalAdults += (parseInt(parts[11]) || 0);
+            totalChildren += (parseInt(parts[12]) || 0);
+            totalInfants += (parseInt(parts[13]) || 0);
 
-        const items = [];
-        if (parts[2] && parts[2].match(/[A-Z]{2}\d+/)) items.push({ name: `✈️ 공항 픽업 (${parts[2].toUpperCase()})`, date: formatDate(parts[0]), time: "14:00", count: totalPax });
-        if (parts[3] && parts[3].match(/[A-Z]{2}\d+/)) items.push({ name: `✈️ 공항 샌딩 (${parts[3].toUpperCase()})`, date: formatDate(parts[1]), time: (parts[3].toUpperCase() === 'TW126' ? "08:30" : "21:00"), count: totalPax });
-        remarkRaw.split('\n').forEach(line => {
-            const dm = line.trim().match(/^(\d{1,2})\/(\d{1,2})/);
-            if (dm) {
-                let itemName = line.replace(dm[0], '').trim(); let itemTime = "09:00"; let itemPax = totalPax;
-                // 🏷️ 인원수 추출 로직 개선 (날짜/시간 오인 방지)
-                const mCount = line.match(/\d+(?=명|인|태반|성장|스톤|오일|포쉘|진주)/g);
-                if ((line.includes('spa') || line.includes('스파')) && mCount) {
-                    const sum = mCount.filter(n => parseInt(n) < 15).reduce((a, b) => parseInt(a) + parseInt(b), 0);
-                    if (sum > 0) itemPax = sum;
-                } else if (line.includes('spa') || line.includes('스파')) {
-                    // 명시적 키워드가 없는 경우, 줄에서 숫자만 찾되 날짜(dm)와 시간(20:00 등) 제외
-                    const lineWithoutTime = line.replace(/\d{1,2}:\d{2}/g, '').replace(dm[0], '');
-                    const simpleNumbers = lineWithoutTime.match(/\d+/g);
-                    if (simpleNumbers) {
-                        const sum = simpleNumbers.filter(n => parseInt(n) < 15).reduce((a, b) => parseInt(a) + parseInt(b), 0);
+            // 리조트 및 연락처 (첫 번째 행 기준)
+            if (!firstContact) firstContact = (parts[14] || '').trim();
+            const resortRaw = (parts[9] || '').trim();
+            const pResort = translateResort(resortRaw.split('/')[0].trim());
+            const sResort = translateResort(resortRaw.split('/')[1]?.trim() || pResort);
+            if (!firstResort) { firstResort = pResort; secondResort = sResort; }
+
+            // 환전 금액 처리 (숫자면 합산, 아니면 나열)
+            let exVal = (parts[5] || '').trim();
+            if (exVal && !exVal.includes('/') && !exVal.includes('▲') && exVal !== '0') {
+                const numericEx = parseInt(exVal.replace(/[^0-9]/g, ''));
+                if (!isNaN(numericEx)) totalExAmount += numericEx;
+                else isExNumeric = false;
+            } else if (exVal === '0' || !exVal) {
+                // 패스
+            } else { isExNumeric = false; }
+            if (!firstExVal) firstExVal = exVal;
+
+            // 아이템 추출 로직
+            const totalPax = (parseInt(parts[11]) || 0) + (parseInt(parts[12]) || 0) + (parseInt(parts[13]) || 0);
+            const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${currentYear}-${m}-${d}`; };
+            
+            if (parts[2] && parts[2].match(/[A-Z]{2}\d+/)) {
+                allItems.push({ name: `✈️ 공항 픽업 (${parts[2].toUpperCase()})`, date: formatDate(parts[0]), time: "14:00", count: totalPax });
+            }
+            if (parts[3] && parts[3].match(/[A-Z]{2}\d+/)) {
+                allItems.push({ name: `✈️ 공항 샌딩 (${parts[3].toUpperCase()})`, date: formatDate(parts[1]), time: (parts[3].toUpperCase() === 'TW126' ? "08:30" : "21:00"), count: totalPax });
+            }
+
+            const remarkRaw = (parts[16] || '').replace(/^"|"$/g, '');
+            remarkRaw.split('\n').forEach(line => {
+                const dm = line.trim().match(/^(\d{1,2})\/(\d{1,2})/);
+                if (dm) {
+                    let itemName = line.replace(dm[0], '').trim(); let itemTime = "09:00"; let itemPax = totalPax;
+                    const mCount = line.match(/\d+(?=명|인|태반|성장|스톤|오일|포쉘|진주)/g);
+                    if ((line.includes('spa') || line.includes('스파')) && mCount) {
+                        const sum = mCount.filter(n => parseInt(n) < 15).reduce((a, b) => parseInt(a) + parseInt(b), 0);
                         if (sum > 0) itemPax = sum;
                     }
+                    const timeMatch = line.match(/(\d{1,2}):(\d{2})/); if (timeMatch) itemTime = `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}`;
+                    const lowerLine = itemName.toLowerCase();
+                    if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = '에스파(S-SPA)';
+                    else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = '루나스파';
+                    else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = '보라스파';
+                    else if (lowerLine.includes('land')) { itemName = '보라카이 랜드투어'; if(!timeMatch) itemTime = "10:30"; }
+                    else if (lowerLine.includes('hopping')) { if (lowerLine.includes('(j)')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!timeMatch) itemTime = "12:30"; } else { itemName = '블랙펄 선셋 호핑투어'; if(!timeMatch) itemTime = "13:30"; } }
+                    
+                    if (line.includes('afh') || line.includes('AFH')) itemTime = "18:00";
+                    else if (line.includes('afm') || line.includes('AFM')) itemTime = "17:00";
+                    
+                    allItems.push({ name: itemName, date: formatDate(dm[0]), time: itemTime, count: itemPax, details: line });
                 }
-                const timeMatch = line.match(/(\d{1,2}):(\d{2})/); if (timeMatch) itemTime = `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}`;
-                const lowerLine = itemName.toLowerCase();
-                if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = '에스파(S-SPA)';
-                else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = '루나스파';
-                else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = '보라스파';
-                else if (lowerLine.includes('land')) { itemName = '보라카이 랜드투어'; if(!timeMatch) itemTime = "10:30"; }
-                else if (lowerLine.includes('hopping')) { if (lowerLine.includes('(j)')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!timeMatch) itemTime = "12:30"; } else { itemName = '블랙펄 선셋 호핑투어'; if(!timeMatch) itemTime = "13:30"; } }
-                else if (lowerLine.includes('para') || lowerLine.includes('파라')) itemName = '파라세일링';
-                else if (lowerLine.includes('diving') || lowerLine.includes('다이빙')) itemName = '체험다이빙';
-                else if (lowerLine.includes('zetski') || lowerLine.includes('jetski') || lowerLine.includes('제트') || lowerLine.includes('젯스키')) itemName = '제트스키';
-                else if (lowerLine.includes('helmet') || lowerLine.includes('헬멧')) itemName = '헬멧다이빙';
-                
-                if (line.includes('afh') || line.includes('AFH')) itemTime = "18:00";
-                else if (line.includes('afm') || line.includes('AFM')) itemTime = "17:00";
-                
-                items.push({ name: itemName, date: formatDate(dm[0]), time: itemTime, count: itemPax, details: line });
-            }
+            });
         });
-        const resData = { customerKorName: `${korName} (${engName})`, contact: (parts[14] || '').trim(), items, status: '예약확정', exchangeAmount: exVal, paxInfo: `성인 ${parts[11]}, 아동 ${parts[12]}, 유아 ${parts[13]}`, pickupResort: pResort, sendingResort: sResort, createdAt: new Date() };
+
+        if (combinedKorNames.length === 0) return;
+
+        // 아이템 중복 제거 및 인원 합산
+        const mergedItemsMap = {};
+        allItems.forEach(it => {
+            const key = `${it.name}_${it.date}_${it.time}`;
+            if (!mergedItemsMap[key]) { mergedItemsMap[key] = { ...it }; }
+            else { mergedItemsMap[key].count += it.count; }
+        });
+        const finalItems = Object.values(mergedItemsMap);
+
+        const finalExAmount = (isExNumeric && totalExAmount > 0) ? totalExAmount.toString() : firstExVal;
+
+        const resData = { 
+            customerKorName: combinedKorNames.join(', '), 
+            contact: firstContact, 
+            items: finalItems, 
+            status: '예약확정', 
+            exchangeAmount: finalExAmount || '-', 
+            paxInfo: `성인 ${totalAdults}, 아동 ${totalChildren}, 유아 ${totalInfants}`, 
+            pickupResort: firstResort, 
+            sendingResort: secondResort, 
+            createdAt: new Date() 
+        };
+
         const docRef = await addDoc(collection(db, "quick_vouchers"), resData);
         navigator.clipboard.writeText(`${window.location.origin}/reservation-schedule.html?id=${docRef.id}&type=quick`).then(() => {
-            alert('바우처 생성 완료!');
-            document.getElementById('quick-voucher-input').value = ''; // 🔄 입력칸 리셋
+            alert('통합 바우처 생성 완료!');
+            document.getElementById('quick-voucher-input').value = ''; 
             hideInputArea();
         });
     };

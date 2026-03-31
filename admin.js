@@ -92,13 +92,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function fetchData() {
         if (!db) return;
         
-        // 🚀 홈페이지 예약건만 관리 (퀵바우처 제외)
         onSnapshot(query(collection(db, "reservations"), orderBy("createdAt", "desc")), (snap) => {
             allReservations = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             renderAll();
         });
         
-        // 🚀 스케줄 등록(운영용) 데이터 관리 및 자동 지난 일정 삭제
         onSnapshot(query(collection(db, "schedules"), orderBy("date", "asc")), (snap) => {
             allSchedules = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             renderAll();
@@ -113,16 +111,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const now = new Date();
             const offset = now.getTimezoneOffset() * 60000;
             const todayStr = new Date(now.getTime() - offset).toISOString().split('T')[0];
-            
-            // 오늘 날짜 이전(<)의 모든 스케줄을 쿼리
             const q = query(collection(db, "schedules"), where("date", "<", todayStr));
             const snap = await getDocs(q);
-            
             if (!snap.empty) {
                 const batch = writeBatch(db);
                 snap.docs.forEach(d => batch.delete(d.ref));
                 await batch.commit();
-                console.log("지난 일정 자동 정리 완료");
             }
         } catch (e) { console.error("Auto cleanup error:", e); }
     }
@@ -135,7 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateSummaryCounts() {
-        // 🚀 홈페이지 예약건(allReservations)에 대해서만 카운트 계산
         const counts = {
             new: allReservations.filter(r => r.status === '입금대기' || r.status === '예약접수').length,
             confirmed: allReservations.filter(r => r.status === '예약확정').length,
@@ -172,15 +165,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getCategory(name, details = '') {
         const combined = ((name || '') + ' ' + (details || '')).toLowerCase();
-
         if (combined.includes('픽업')) return '픽업';
         if (combined.includes('샌딩')) return '샌딩';
         if (combined.includes('hopping') || combined.includes('호핑')) return '호핑투어';
         if (combined.includes('land') || combined.includes('랜드')) return '랜드투어';
         if (combined.includes('malum') || combined.includes('말룸')) return '말룸파티';
-
         return '액티비티';
     }
+
     function renderSchedule() {
         const container = document.getElementById('active-timeline');
         if (!container) return;
@@ -191,7 +183,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetDate = (currentScheduleDay === 'tomorrow') ? tomorrowStr : todayStr;
 
         let rawItems = [];
-        
         allSchedules.forEach(s => { 
             if (s.date === targetDate) {
                 const lines = (s.details || '').split('\n').filter(l => l.trim() !== '');
@@ -213,13 +204,11 @@ document.addEventListener('DOMContentLoaded', () => {
         rawItems.forEach(item => {
             const cat = getCategory(item.name, item.details);
             let groupTitle = item.name;
-            
             if (cat === '픽업' || cat === '샌딩') {
                 groupTitle = (item.flight !== '-' && item.flight) ? item.flight : '기타 항공편';
             } else if (item.name.toLowerCase().includes('마사지') || item.name.toLowerCase().includes('스파')) {
                 groupTitle = item.name.replace(/마사지|스파|\(|\)/g, '').trim() || '마사지';
             }
-            
             const key = `${cat}_${groupTitle}_${item.time}`;
             if (!groups[key]) {
                 groups[key] = { title: groupTitle, time: item.time, items: [], totalCount: 0, category: cat };
@@ -229,7 +218,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const sortedGroupKeys = Object.keys(groups).sort((a, b) => groups[a].time.localeCompare(groups[b].time));
-
         if (sortedGroupKeys.length === 0) { container.innerHTML = `<div class="sc-empty" style="width:100%; text-align:center; padding:30px; color:#999; font-size:12px;">일정이 없습니다.</div>`; return; }
 
         container.innerHTML = sortedGroupKeys.map(key => {
@@ -243,15 +231,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (group.items.some(it => it.name.toLowerCase().includes('마사지') || it.name.toLowerCase().includes('스파'))) icon = "spa";
 
             let headerTitle = `${group.title} <small>(${group.totalCount}명)</small>`;
-            if (group.category === '픽업' || group.category === '샌딩') {
-                headerTitle = `${group.title} <small>(총 ${group.totalCount}명)</small>`;
-            }
+            if (group.category === '픽업' || group.category === '샌딩') { headerTitle = `${group.title} <small>(총 ${group.totalCount}명)</small>`; }
 
             let bodyHtml = "";
             if (group.category === '호핑투어') {
                 const withJumbo = group.items.filter(it => it.name.includes('점보') || it.name.toLowerCase().includes('(j)'));
                 const withoutJumbo = group.items.filter(it => !it.name.includes('점보') && !it.name.toLowerCase().includes('(j)'));
-                
                 if (withJumbo.length > 0) {
                     const count = withJumbo.reduce((acc, i) => acc + i.count, 0);
                     bodyHtml += `<div style="padding:8px 12px; background:#fff5eb; font-weight:bold; font-size:12px; color:#e67e22;">- 점보크랩 런치 포함 (${count}명)</div>`;
@@ -292,7 +277,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }).join('');
     }
 
-
     window.switchMainView = () => {
         document.querySelectorAll('.ss-nav-item').forEach(el => el.classList.remove('active'));
         const firstNav = document.querySelector('.ss-nav-item:first-child');
@@ -311,11 +295,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const statCard = document.getElementById(`stat-${tab}`);
         if (statCard) statCard.classList.add('active');
         const bActive = document.getElementById('breadcrumb-active');
-        
-        // 🚀 시스템 초기화 탭일 때 레이아웃 숨기기 처리
         const toolGrid = document.querySelector('.main-tool-grid');
         const timelineSec = document.querySelector('.timeline-section');
-        
         if (tab === 'system') {
             if (toolGrid) toolGrid.style.display = 'none';
             if (timelineSec) timelineSec.style.display = 'none';
@@ -347,7 +328,6 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (activeTab === 'resort-confirmed') matchesTab = (r.status === '리조트확정');
             return name.includes(searchTerm) && matchesTab;
         });
-
         filtered.forEach((res, index) => {
             const tr = document.createElement('tr');
             const status = res.status || '대기';
@@ -362,19 +342,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.deleteSingleReservation = async (id) => {
         if (confirm("이 예약을 정말로 삭제하시겠습니까?")) {
-            try {
-                await deleteDoc(doc(db, "reservations", id));
-                alert("삭제되었습니다.");
-                fetchData();
-            } catch (e) { alert("삭제 실패"); }
+            try { await deleteDoc(doc(db, "reservations", id)); alert("삭제되었습니다."); fetchData(); } catch (e) { alert("삭제 실패"); }
         }
     };
 
     window.handleResortQuoteComplete = async (id) => {
-        try {
-            await deleteDoc(doc(db, "reservations", id));
-            fetchData();
-        } catch (e) { console.error("삭제 실패", e); }
+        try { await deleteDoc(doc(db, "reservations", id)); fetchData(); } catch (e) { console.error("삭제 실패", e); }
     };
 
     function renderCleanupTable() {
@@ -388,27 +361,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-
     window.showDetail = (id, source) => {
         const res = source === 'schedule' ? allSchedules.find(s => s.id === id) : allReservations.find(r => r.id === id);
         if (!res) return;
         const modal = document.getElementById('res-detail-modal');
         const body = document.getElementById('modal-body');
         if (!modal || !body) return;
-
         if (source === 'schedule') {
             body.innerHTML = `<h3>스케줄 상세</h3><div style="background:#f8f9fa; padding:15px; border-radius:10px;"><p><b>고객명:</b> ${res.customerName}</p><p><b>상품명:</b> ${res.name}</p><p><b>날짜:</b> ${res.date}</p><p><b>시간:</b> ${res.time}</p><p><b>인원:</b> ${res.count}명</p></div>`;
             modal.style.display = 'flex'; return;
         }
-
         const isQuote = res.status === '견적' || res.status === '견적완료';
         const totalVoucherBtn = isQuote ? '' : `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;"><button onclick="copyCombinedVoucherLink('${res.contact}')" style="padding:12px; background:#00c73c; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;"><span class="material-icons" style="font-size:18px;">people</span> 통합 링크</button><button onclick="copyVoucherLink('${res.id}', null)" style="padding:12px; background:#ff6a00; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;"><span class="material-icons" style="font-size:18px;">share</span> 주문 일정</button></div>`;
         const itemsHtml = (res.items || []).map((item, idx) => `<div style="padding:12px; background:#f8f9fa; border:1px solid #eee; border-radius:8px; margin-bottom:8px;"><div style="display:flex; justify-content:space-between;"><div style="font-size:15px; font-weight:800;">${item.name}</div><div style="font-size:14px; font-weight:800; color:#ff6a00;">${item.count}명</div></div><div style="margin-top:6px; font-size:13px; color:#666;">📅 ${item.date} ${item.time || ''}</div>${!isQuote ? `<div style="margin-top:10px; display:flex; gap:5px;"><a href="reservation-schedule.html?id=${res.id}&itemIndex=${idx}" target="_blank" style="flex:1; text-align:center; padding:6px; background:#fff; border:1px solid #ddd; border-radius:4px; font-size:11px; text-decoration:none; color:#333;">바우처</a><button onclick="copyVoucherLink('${res.id}', ${idx})" style="flex:1; padding:6px; background:#ff6a00; color:white; border:none; border-radius:4px; font-size:11px; cursor:pointer;">복사</button></div>` : ''}</div>`).join('');
-        const isQuick = id.startsWith('Q') || (res.reservationNumber && res.reservationNumber.startsWith('Q'));
         const displayEngName = res.engName || '-';
         const displayExchange = res.exchangeAmount || '-';
         const displayPax = res.paxInfo || (res.items?.[0]?.count ? `${res.items[0].count}명` : '-');
-
         body.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:1px solid #eee;"><h3 style="margin:0;">예약 상세 정보</h3><button onclick="copyGuidance('${res.id}')" style="background:#ff6a00; color:white; border:none; padding:8px 14px; border-radius:6px; font-weight:bold; cursor:pointer;">👉 안내문 복사</button></div><div id="modal-scroll-area" style="max-height: 60vh; overflow-y: auto;"><div style="margin-bottom:20px;">${totalVoucherBtn}${itemsHtml}</div><div style="background:#fcfcfc; padding:15px; border-radius:10px; border:1px solid #f0f0f0; margin-bottom:20px;"><p style="margin:0;">이름 | <b>${res.customerKorName}</b> (${displayEngName})</p><p style="margin:5px 0 0 0;">연락처 | <b>${res.contact}</b></p><p style="margin:5px 0 0 0;">인원 | <b>${displayPax}</b></p></div>${!isQuote ? `<div style="background:#fff5eb; padding:15px; border-radius:10px; border:1px solid #ffe8cc; margin-bottom:20px;"><div style="font-weight:bold; margin-bottom:10px; color:#ff6a00;">✈️ 항공 및 환전 정보</div><p style="margin:5px 0; font-size:13px;"><b>픽업:</b> ${res.pickupDate || '-'} / ${res.pickupFlight || '-'} / ${res.pickupResort || '-'}</p><p style="margin:5px 0; font-size:13px;"><b>샌딩:</b> ${res.sendingDate || '-'} / ${res.sendingFlight || '-'} / ${res.sendingResort || '-'}</p><p style="margin-top:10px; padding-top:10px; border-top:1px dashed #ffd8a8;"><b>💰 환전:</b> <span style="font-size:15px; color:#e67e22; font-weight:800;">${displayExchange}</span></p></div>` : ''}<div style="padding:10px; background:#f8f9fa; border-radius:6px; font-size:13px; white-space:pre-wrap;"><b>[요청사항]</b>\n${res.requests || '없음'}</div></div><div style="display:flex; gap:10px; margin-top:20px; padding-top:15px; border-top:1px solid #eee;"><button id="edit-btn" onclick="toggleEditMode('${res.id}')" style="flex:1; padding:12px; background:#ff6a00; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">수정하기</button><button onclick="closeModal()" style="flex:1; padding:12px; background:#333; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">창 닫기</button></div>`;
         modal.style.display = 'flex';
     };
@@ -432,188 +400,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    window.registerBulkSchedule = async () => {
-        const inputVal = document.getElementById('schedule-reg-input').value.trim(); if (!inputVal) return;
-        const currentYear = new Date().getFullYear(); const batch = writeBatch(db); let count = 0;
-        const tempAddedSet = new Set();
-
-        // 🚀 인원수 파싱 보강 (4 3 1 형태 합산 처리)
-        const parsePax = (val) => {
-            if (!val) return 0;
-            const nums = val.toString().match(/\d+/g);
-            return nums ? nums.reduce((acc, n) => acc + parseInt(n), 0) : 0;
-        };
-
-        // 🚀 멀티라인(따옴표 포함) 로우 분리 로직
-        const rows = [];
-        let currentRow = "";
-        let inQuotes = false;
-        for (let i = 0; i < inputVal.length; i++) {
-            const char = inputVal[i];
-            if (char === '"') inQuotes = !inQuotes;
-            if (char === '\n' && !inQuotes) {
-                rows.push(currentRow);
-                currentRow = "";
-            } else {
-                currentRow += char;
-            }
-        }
-        if (currentRow) rows.push(currentRow);
-
-        for (let line of rows) {
-            const parts = line.split('\t'); if (parts.length < 16) continue;
-            
-            const p10 = (parts[10] || '').trim(); // 영어 이름 (kwon min kyung)
-            const p15 = (parts[15] || '').trim(); // 닉네임 (투윤맘)
-            const p19 = (parts[19] || '').trim(); // 실명 한글 (권민경)
-            
-            const isP19Korean = /[가-힣]/.test(p10);
-            const isP19KoreanReal = /[가-힣]/.test(p19);
-            
-            let korName = p15; // 기본값은 닉네임
-            let engName = p10;
-
-            if (isP19KoreanReal) { korName = p19; } else if (isP19Korean) { korName = p10; engName = p15; }
-
-            const totalPax = parsePax(parts[11]) + parsePax(parts[12]) + parsePax(parts[13]);
-            const resortRaw = (parts[9] || '').trim();
-            const pResort = translateResort(resortRaw.split('/')[0].trim());
-            const sResort = translateResort(resortRaw.split('/')[1]?.trim() || pResort);
-
-            const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${currentYear}-${m}-${d}`; };
-            
-            const checkAndAdd = (name, date, time, specPax = totalPax, flight = "-") => { 
-                if (!date) return; const uniqueKey = `${korName}_${date}_${name}`;
-                if (!allSchedules.some(s => s.customerName.includes(korName) && s.date === date && s.name === name) && !tempAddedSet.has(uniqueKey)) { 
-                    const resort = (name.includes('샌딩') || name.includes('TW126')) ? sResort : pResort;
-                    batch.set(doc(collection(db, "schedules")), { 
-                        customerName: `${korName} (${engName})`, 
-                        name, date, time, count: specPax, flight, resort, createdAt: new Date(), 
-                        details: `리조트: ${resort}` 
-                    }); 
-                    tempAddedSet.add(uniqueKey); count++; 
-                } 
-            };
-
-            // 🚀 항공편 처리 (샌딩 TW126 등)
-            const pickFlight = (parts[2] || '').trim().toUpperCase();
-            const sendFlight = (parts[3] || '').trim().toUpperCase();
-            if (pickFlight && pickFlight !== '-') checkAndAdd(`✈️ 공항 픽업 (${pickFlight})`, formatDate(parts[0]), "14:00", totalPax, pickFlight);
-            if (sendFlight && sendFlight !== '-') checkAndAdd(`✈️ 공항 샌딩 (${sendFlight})`, formatDate(parts[1]), (sendFlight === 'TW126' ? "08:30" : "21:00"), totalPax, sendFlight);
-            
-            const remarkRaw = (parts[16] || '').replace(/^"|"$/g, '');
-            remarkRaw.split('\n').forEach(rLine => {
-                const dm = rLine.trim().match(/^(\d{1,2})\/(\d{1,2})/);
-                if (dm) {
-                    const tDate = formatDate(dm[0]); 
-                    let rawItemName = rLine.replace(dm[0], '').replace(/GET\$.*|잔금.*|\$.*/g, '').trim();
-                    let itemTime = "09:00"; let itemPax = totalPax;
-                    
-                    const mCount = rLine.match(/\d+(?=명|인|태반|성장|스톤|오일|포쉘|진주)/g) || rLine.match(/\d+/g);
-                    if ((rLine.includes('spa') || rLine.includes('스파')) && mCount) {
-                        const sum = mCount.filter(n => parseInt(n) < 20).reduce((a, b) => parseInt(a) + parseInt(b), 0);
-                        if (sum > 0) itemPax = sum;
-                    }
-
-                    const timeMatch = rLine.match(/(\d{1,2}):(\d{2})/); 
-                    if (timeMatch) itemTime = `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}`;
-                    
-                    let finalItemName = rawItemName;
-                    const lowerLine = rLine.toLowerCase();
-                    
-                    if (lowerLine.includes('land') || lowerLine.includes('랜드')) { 
-                        finalItemName = '보라카이 랜드투어'; if(!timeMatch) itemTime = "10:30"; 
-                    } else if (lowerLine.includes('hopping') || lowerLine.includes('호핑')) { 
-                        if (lowerLine.includes('(j)') || lowerLine.includes('점보')) { 
-                            finalItemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!timeMatch) itemTime = "12:30"; 
-                        } else { 
-                            finalItemName = '블랙펄 선셋 호핑투어'; if(!timeMatch) itemTime = "13:30"; 
-                        } 
-                    } else if (lowerLine.includes('malum') || lowerLine.includes('말룸')) {
-                        finalItemName = '말룸파티'; if(!timeMatch) itemTime = "09:00";
-                    } else if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) finalItemName = '에스파(S-SPA)';
-                    else if (lowerLine.includes('luna') || lowerLine.includes('루나')) finalItemName = '루나스파';
-                    else if (lowerLine.includes('bora') || lowerLine.includes('보라')) finalItemName = '보라스파';
-                    else if (lowerLine.includes('para') || lowerLine.includes('파라')) finalItemName = '파라세일링';
-                    else if (lowerLine.includes('diving') || lowerLine.includes('다이빙')) finalItemName = '체험다이빙';
-                    else if (lowerLine.includes('zetski') || lowerLine.includes('jetski') || lowerLine.includes('제트') || lowerLine.includes('젯스키')) finalItemName = '제트스키';
-                    else if (lowerLine.includes('helmet') || lowerLine.includes('헬멧')) finalItemName = '헬멧다이빙';
-                    
-                    if (rLine.includes('afh') || rLine.includes('AFH')) itemTime = "18:00";
-                    else if (rLine.includes('afm') || rLine.includes('AFM')) itemTime = "17:00";
-                    
-                    checkAndAdd(finalItemName, tDate, itemTime, itemPax);
-                }
-            });
-        }
-        if (count > 0) { 
-            await batch.commit(); 
-            alert(`${count}건 업데이트 완료!`); 
-            document.getElementById('schedule-reg-input').value = ''; 
-            hideInputArea(); 
-        }
-    };
-
-    window.handleClearSchedules = async () => {
-        if (confirm("🚨 모든 스케줄 데이터를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.")) {
-            try {
-                const snap = await getDocs(collection(db, "schedules"));
-                if (snap.empty) { alert("삭제할 스케줄이 없습니다."); return; }
-                const docs = snap.docs;
-                for (let i = 0; i < docs.length; i += 500) {
-                    const batch = writeBatch(db);
-                    const chunk = docs.slice(i, i + 500);
-                    chunk.forEach(d => batch.delete(d.ref));
-                    await batch.commit();
-                }
-                alert("스케줄 데이터가 초기화되었습니다.");
-            } catch (e) { alert("삭제 중 오류가 발생했습니다."); }
-        }
-    };
-
-    window.handleClearAllData = async () => {
-        const pw = prompt("🚨 모든 데이터를 삭제하시겠습니까?\n이 작업은 절대 되돌릴 수 없습니다.\n비밀번호를 입력하세요:");
-        if (pw === "sean1234!") {
-            try {
-                const colls = ["reservations", "quick_vouchers", "schedules"];
-                for (const cName of colls) {
-                    const snap = await getDocs(collection(db, cName));
-                    const docs = snap.docs;
-                    for (let i = 0; i < docs.length; i += 500) {
-                        const batch = writeBatch(db);
-                        const chunk = docs.slice(i, i + 500);
-                        chunk.forEach(d => batch.delete(d.ref));
-                        await batch.commit();
-                    }
-                }
-                alert("모든 데이터가 초기화되었습니다.");
-                location.reload();
-            } catch (error) {
-                console.error("Clear All Error:", error);
-                alert("초기화 중 오류가 발생했습니다.");
-            }
-        } else if (pw !== null) {
-            alert("비밀번호가 틀렸습니다.");
-        }
-    };
-
     window.makeQuickVoucher = async () => {
         const inputVal = document.getElementById('quick-voucher-input').value.trim(); if (!inputVal) return;
         
-        // 🚀 멀티라인(따옴표 포함) 로우 분리 로직 개선
-        const rows = [];
-        let currentRowStr = "";
-        let inQuotesRow = false;
-        for (let i = 0; i < inputVal.length; i++) {
-            const char = inputVal[i];
-            if (char === '"') inQuotesRow = !inQuotesRow;
-            if (char === '\n' && !inQuotesRow) {
-                if (currentRowStr.trim()) rows.push(currentRowStr);
-                currentRowStr = "";
-            } else { currentRowStr += char; }
-        }
-        if (currentRowStr.trim()) rows.push(currentRowStr);
+        const parseRobustTSV = (text) => {
+            const rows = [];
+            let currentRow = [];
+            let currentField = "";
+            let inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                if (char === '"') { inQuotes = !inQuotes; }
+                else if (char === '\t' && !inQuotes) { currentRow.push(currentField); currentField = ""; }
+                else if (char === '\n' && !inQuotes) { currentRow.push(currentField); rows.push(currentRow); currentRow = []; currentField = ""; }
+                else { currentField += char; }
+            }
+            if (currentField || currentRow.length > 0) { currentRow.push(currentField); rows.push(currentRow); }
+            return rows;
+        };
 
+        const rows = parseRobustTSV(inputVal);
         const currentYear = new Date().getFullYear();
         
         let combinedKorNames = [];
@@ -624,55 +430,43 @@ document.addEventListener('DOMContentLoaded', () => {
         let isExNumeric = true;
 
         rows.forEach(row => {
-            const parts = row.split('\t'); if (parts.length < 16) return;
-            
-            // 이름 파싱 및 줄바꿈 정제
-            const p10 = (parts[10] || '').trim();
-            const p15 = (parts[15] || '').trim().replace(/^"|"$/g, '').replace(/\n/g, ', ');
+            if (row.length < 16) return;
+            const p10 = (row[10] || '').trim();
+            const p15 = (row[15] || '').trim().replace(/\n/g, ', ');
             const isP10Korean = /[가-힣]/.test(p10);
             let korName = p15; let engName = p10;
             if (isP10Korean && !p10.includes(' ')) { korName = p10; engName = p15; }
-            else if (p15.includes('맘') || p15.includes('아빠') || p15.includes('네') || p15.length > 5) {
-                if (isP10Korean) { korName = p10; engName = p15; }
-            }
+            else if (p15.includes('맘') || p15.includes('아빠') || p15.includes('네') || p15.length > 5) { if (isP10Korean) { korName = p10; engName = p15; } }
             combinedKorNames.push(`${korName} (${engName})`);
 
-            // 인원 합산
-            totalAdults += (parseInt(parts[11]) || 0);
-            totalChildren += (parseInt(parts[12]) || 0);
-            totalInfants += (parseInt(parts[13]) || 0);
+            totalAdults += (parseInt(row[11]) || 0);
+            totalChildren += (parseInt(row[12]) || 0);
+            totalInfants += (parseInt(row[13]) || 0);
 
-            // 리조트 및 연락처 (첫 번째 행 기준)
-            if (!firstContact) firstContact = (parts[14] || '').trim();
-            const resortRaw = (parts[9] || '').trim();
+            if (!firstContact) firstContact = (row[14] || '').trim();
+            const resortRaw = (row[9] || '').trim();
             const pResort = translateResort(resortRaw.split('/')[0].trim());
             const sResort = translateResort(resortRaw.split('/')[1]?.trim() || pResort);
             if (!firstResort) { firstResort = pResort; secondResort = sResort; }
 
-            // 환전 금액 처리
-            let exVal = (parts[5] || '').trim();
+            let exVal = (row[5] || '').trim();
             if (exVal && !exVal.includes('/') && !exVal.includes('▲') && exVal !== '0') {
                 const numericEx = parseInt(exVal.replace(/[^0-9]/g, ''));
-                if (!isNaN(numericEx)) totalExAmount += numericEx;
-                else isExNumeric = false;
+                if (!isNaN(numericEx)) totalExAmount += numericEx; else isExNumeric = false;
             } else if (exVal === '0' || !exVal) { } else { isExNumeric = false; }
             if (!firstExVal) firstExVal = exVal;
 
-            // 아이템 추출 로직
-            const totalPax = (parseInt(parts[11]) || 0) + (parseInt(parts[12]) || 0) + (parseInt(parts[13]) || 0);
+            const totalPax = (parseInt(row[11]) || 0) + (parseInt(row[12]) || 0) + (parseInt(row[13]) || 0);
             const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${currentYear}-${m}-${d}`; };
             
-            if (parts[2] && parts[2].match(/[A-Z]{2}\d+/)) {
-                allItems.push({ name: `✈️ 공항 픽업 (${parts[2].toUpperCase()})`, date: formatDate(parts[0]), time: "14:00", count: totalPax });
-            }
-            if (parts[3] && parts[3].match(/[A-Z]{2}\d+/)) {
-                allItems.push({ name: `✈️ 공항 샌딩 (${parts[3].toUpperCase()})`, date: formatDate(parts[1]), time: (parts[3].toUpperCase() === 'TW126' ? "08:30" : "21:00"), count: totalPax });
-            }
+            if (row[2] && row[2].match(/[A-Z]{2}\d+/)) { allItems.push({ name: `✈️ 공항 픽업 (${row[2].toUpperCase()})`, date: formatDate(row[0]), time: "14:00", count: totalPax }); }
+            if (row[3] && row[3].match(/[A-Z]{2}\d+/)) { allItems.push({ name: `✈️ 공항 샌딩 (${row[3].toUpperCase()})`, date: formatDate(row[1]), time: (row[3].toUpperCase() === 'TW126' ? "08:30" : "21:00"), count: totalPax }); }
 
-            const remarkRaw = (parts[16] || '').replace(/^"|"$/g, '');
+            const remarkRaw = (row[16] || '').trim();
             remarkRaw.split('\n').forEach(line => {
                 const dm = line.trim().match(/^(\d{1,2})\/(\d{1,2})/);
                 if (dm) {
+                    const tDate = formatDate(dm[0]);
                     let itemName = line.replace(dm[0], '').trim(); let itemTime = "09:00"; let itemPax = totalPax;
                     const mCount = line.match(/\d+(?=명|인|태반|성장|스톤|오일|포쉘|진주)/g);
                     if ((line.includes('spa') || line.includes('스파')) && mCount) {
@@ -680,7 +474,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (sum > 0) itemPax = sum;
                     }
                     const timeMatch = line.match(/(\d{1,2}):(\d{2})/); if (timeMatch) itemTime = `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}`;
-                    const lowerLine = itemName.toLowerCase();
+                    const lowerLine = line.toLowerCase();
                     if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = '에스파(S-SPA)';
                     else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = '루나스파';
                     else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = '보라스파';
@@ -694,29 +488,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     if (line.includes('afh') || line.includes('AFH')) itemTime = "18:00";
                     else if (line.includes('afm') || line.includes('AFM')) itemTime = "17:00";
-                    
-                    allItems.push({ name: itemName, date: formatDate(dm[0]), time: itemTime, count: itemPax, details: line });
+                    allItems.push({ name: itemName, date: tDate, time: itemTime, count: itemPax, details: line });
                 }
             });
         });
 
         if (combinedKorNames.length === 0) return;
-
-        // 아이템 중복 제거 및 인원 합산
         const mergedItemsMap = {};
         allItems.forEach(it => {
             const key = `${it.name}_${it.date}_${it.time}`;
             if (!mergedItemsMap[key]) { mergedItemsMap[key] = { ...it }; }
             else { mergedItemsMap[key].count += it.count; }
         });
-        const finalItems = Object.values(mergedItemsMap);
-
         const finalExAmount = (isExNumeric && totalExAmount > 0) ? totalExAmount.toString() : firstExVal;
-
         const resData = { 
             customerKorName: combinedKorNames.join(', '), 
             contact: firstContact, 
-            items: finalItems, 
+            items: Object.values(mergedItemsMap), 
             status: '예약확정', 
             exchangeAmount: finalExAmount || '-', 
             paxInfo: `성인 ${totalAdults}, 아동 ${totalChildren}, 유아 ${totalInfants}`, 
@@ -724,7 +512,6 @@ document.addEventListener('DOMContentLoaded', () => {
             sendingResort: secondResort, 
             createdAt: new Date() 
         };
-
         const docRef = await addDoc(collection(db, "quick_vouchers"), resData);
         navigator.clipboard.writeText(`${window.location.origin}/reservation-schedule.html?id=${docRef.id}&type=quick`).then(() => {
             alert('통합 바우처 생성 완료!');

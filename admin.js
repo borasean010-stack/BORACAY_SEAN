@@ -677,8 +677,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = '에스파(S-SPA)';
                     else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = '루나스파';
                     else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = '보라스파';
-                    else if (lowerLine.includes('land')) { itemName = '보라카이 랜드투어'; if(!timeMatch) itemTime = "10:30"; }
-                    else if (lowerLine.includes('hopping')) { if (lowerLine.includes('(j)')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!timeMatch) itemTime = "12:30"; } else { itemName = '블랙펄 선셋 호핑투어'; if(!timeMatch) itemTime = "13:30"; } }
+                    else if (lowerLine.includes('land') || lowerLine.includes('랜드')) { itemName = '보라카이 랜드투어'; if(!timeMatch) itemTime = "10:30"; }
+                    else if (lowerLine.includes('hopping') || lowerLine.includes('호핑')) { if (lowerLine.includes('(j)') || lowerLine.includes('점보')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!timeMatch) itemTime = "12:30"; } else { itemName = '블랙펄 선셋 호핑투어'; if(!timeMatch) itemTime = "13:30"; } }
+                    else if (lowerLine.includes('jetski') || lowerLine.includes('제트스키')) itemName = '제트스키';
+                    else if (lowerLine.includes('helmet') || lowerLine.includes('헬멧')) itemName = '헬멧다이빙';
+                    else if (lowerLine.includes('para') || lowerLine.includes('파라')) itemName = '파라세일링';
+                    else if (lowerLine.includes('diving') || lowerLine.includes('다이빙')) itemName = '체험다이빙';
                     
                     if (line.includes('afh') || line.includes('AFH')) itemTime = "18:00";
                     else if (line.includes('afm') || line.includes('AFM')) itemTime = "17:00";

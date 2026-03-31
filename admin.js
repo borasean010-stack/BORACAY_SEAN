@@ -188,10 +188,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 const lines = (s.details || '').split('\n').filter(l => l.trim() !== '');
                 const displayLines = lines.length > 0 ? lines : [''];
                 displayLines.forEach(line => {
+                    // 세부 인원 파싱 (한 줄에 여러 명이 섞여 있을 수 있음)
+                    const mCount = line.match(/\d+(?=명|인|태반|성장|스톤|오일|포쉘|진주)/g);
+                    let displayPax = s.count;
+                    if (mCount) displayPax = mCount.reduce((a, b) => a + parseInt(b), 0);
+
                     rawItems.push({ 
-                        time: s.time || "09:00", name: s.name, customer: s.customerName, count: s.count, status: '스케줄', id: s.id, source: 'schedule', 
-                        resort: translateResort(s.resort || s.details?.split('리조트: ')[1] || "-"), 
-                        flight: s.flight || s.details?.split('항공편: ')[1]?.split(' / ')[0] || "-",
+                        time: s.time || "09:00", 
+                        name: s.name, 
+                        customer: s.customerName, 
+                        count: displayPax, 
+                        status: '스케줄', id: s.id, source: 'schedule', 
+                        resort: translateResort(s.resort || "-"), 
+                        flight: s.flight || "-",
                         details: line
                     }); 
                 });
@@ -228,15 +237,22 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (group.category === '호핑투어') { icon = "sailing"; catClass = "cat-hopping"; catLabel = "호핑투어"; }
             else if (group.category === '말룸파티') { icon = "nature_people"; catClass = "cat-malum"; catLabel = "말룸파티"; }
             else if (group.category === '랜드투어') { icon = "directions_car"; catClass = "cat-activity"; catLabel = "랜드투어"; }
-            if (group.items.some(it => it.name.toLowerCase().includes('마사지') || it.name.toLowerCase().includes('스파'))) icon = "spa";
+            
+            const isSpa = group.items.some(it => it.name.toLowerCase().includes('마사지') || it.name.toLowerCase().includes('스파'));
+            if (isSpa) icon = "spa";
 
+            // 헤더 구성
             let headerTitle = `${group.title} <small>(${group.totalCount}명)</small>`;
-            if (group.category === '픽업' || group.category === '샌딩') { headerTitle = `${group.title} <small>(총 ${group.totalCount}명)</small>`; }
+            if (group.category === '픽업' || group.category === '샌딩') {
+                headerTitle = `${group.title} (${group.totalCount}명)`;
+            } else if (group.category === '호핑투어' || group.category === '말룸파티' || group.category === '랜드투어') {
+                headerTitle = `${group.category} (${group.totalCount}명)`;
+            }
 
             let bodyHtml = "";
             if (group.category === '호핑투어') {
-                const withJumbo = group.items.filter(it => it.name.includes('점보') || it.name.toLowerCase().includes('(j)'));
-                const withoutJumbo = group.items.filter(it => !it.name.includes('점보') && !it.name.toLowerCase().includes('(j)'));
+                const withJumbo = group.items.filter(it => it.details.includes('점보') || it.details.toLowerCase().includes('(j)'));
+                const withoutJumbo = group.items.filter(it => !it.details.includes('점보') && !it.details.toLowerCase().includes('(j)'));
                 if (withJumbo.length > 0) {
                     const count = withJumbo.reduce((acc, i) => acc + i.count, 0);
                     bodyHtml += `<div style="padding:8px 12px; background:#fff5eb; font-weight:bold; font-size:12px; color:#e67e22;">- 점보크랩 런치 포함 (${count}명)</div>`;
@@ -247,19 +263,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     bodyHtml += `<div style="padding:8px 12px; background:#f8f9fa; font-weight:bold; font-size:12px; color:#666;">- 점보크랩 런치 불포함 (${count}명)</div>`;
                     bodyHtml += withoutJumbo.map(it => `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')"><span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span></div>`).join('');
                 }
-            } else if (icon === "spa") {
+            } else if (isSpa) {
                 const hasShuttle = ["에스파", "루나", "보라"].some(s => group.title.includes(s));
                 bodyHtml += `<div style="padding:8px 12px; background:#f0f7ff; font-weight:bold; font-size:12px; color:#007bff;">${group.title} (${hasShuttle ? '셔틀O' : '셔틀X'})</div>`;
                 bodyHtml += group.items.map(it => {
                     const resortStr = hasShuttle ? `<span class="sc-detail-resort">${it.resort}</span>` : "";
                     return `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')"><span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span>${resortStr}</div>`;
                 }).join('');
+            } else if (group.category === '픽업' || group.category === '샌딩') {
+                bodyHtml = group.items.map(it => {
+                    return `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')"><span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span><span class="sc-detail-resort">${it.resort}</span></div>`;
+                }).join('');
+            } else if (group.category === '액티비티') {
+                bodyHtml = group.items.map(it => {
+                    return `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')"><span style="font-size:11px; color:#999; margin-right:5px;">[${it.name}]</span><span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span><span class="sc-detail-resort">${it.resort}</span></div>`;
+                }).join('');
             } else {
                 bodyHtml = group.items.map(it => {
-                    const showResort = (group.category === '픽업' || group.category === '샌딩' || group.category === '액티비티');
-                    const resortStr = (showResort && it.resort !== '-') ? `<span class="sc-detail-resort">${it.resort}</span>` : '';
-                    const activityName = (group.category === '액티비티' && !it.name.includes('마사지') && !it.name.includes('스파')) ? `<span style="font-size:11px; color:#999; margin-right:5px;">[${it.name}]</span>` : "";
-                    return `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')">${activityName}<span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span>${resortStr}</div>`;
+                    return `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')"><span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span></div>`;
                 }).join('');
             }
 

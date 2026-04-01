@@ -165,8 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getCategory(name, details = '') {
         const combined = ((name || '') + ' ' + (details || '')).toLowerCase();
-        if (combined.includes('픽업')) return '픽업';
-        if (combined.includes('샌딩')) return '샌딩';
+        if (combined.includes('픽업') || combined.includes('샌딩')) return '픽업/샌딩';
         if (combined.includes('hopping') || combined.includes('호핑')) return '호핑투어';
         if (combined.includes('land') || combined.includes('랜드')) return '랜드투어';
         if (combined.includes('malum') || combined.includes('말룸')) return '말룸파티';
@@ -213,8 +212,10 @@ document.addEventListener('DOMContentLoaded', () => {
         rawItems.forEach(item => {
             const cat = getCategory(item.name, item.details);
             let groupTitle = item.name;
-            if (cat === '픽업' || cat === '샌딩') {
+            if (cat === '픽업/샌딩') {
                 groupTitle = (item.flight !== '-' && item.flight) ? item.flight : '기타 항공편';
+            } else if (cat === '호핑투어' || cat === '말룸파티' || cat === '랜드투어') {
+                groupTitle = cat;
             } else if (item.name.toLowerCase().includes('마사지') || item.name.toLowerCase().includes('스파')) {
                 groupTitle = item.name.replace(/마사지|스파|\(|\)/g, '').trim() || '마사지';
             }
@@ -232,8 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
         container.innerHTML = sortedGroupKeys.map(key => {
             const group = groups[key];
             let icon = "event_available", catClass = "cat-activity", catLabel = group.category;
-            if (group.category === '픽업') { icon = "flight_land"; catClass = "cat-pickup"; catLabel = "공항 픽업"; }
-            else if (group.category === '샌딩') { icon = "flight_takeoff"; catClass = "cat-sending"; catLabel = "공항 샌딩"; }
+            if (group.category === '픽업/샌딩') { icon = "local_airport"; catClass = "cat-pickup"; catLabel = "픽업/샌딩"; }
             else if (group.category === '호핑투어') { icon = "sailing"; catClass = "cat-hopping"; catLabel = "호핑투어"; }
             else if (group.category === '말룸파티') { icon = "nature_people"; catClass = "cat-malum"; catLabel = "말룸파티"; }
             else if (group.category === '랜드투어') { icon = "directions_car"; catClass = "cat-activity"; catLabel = "랜드투어"; }
@@ -242,11 +242,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isSpa) icon = "spa";
 
             // 헤더 구성
-            let headerTitle = `${group.title} <small>(${group.totalCount}명)</small>`;
-            if (group.category === '픽업' || group.category === '샌딩') {
-                headerTitle = `${group.title} (${group.totalCount}명)`;
-            } else if (group.category === '호핑투어' || group.category === '말룸파티' || group.category === '랜드투어') {
-                headerTitle = `${group.category} (${group.totalCount}명)`;
+            let headerTitle = `${group.title} (${group.totalCount}명)`;
+            if (isSpa) {
+                const hasShuttle = ["에스파", "루나", "보라"].some(s => group.title.includes(s));
+                headerTitle = `${group.title} (${hasShuttle ? '셔틀O' : '셔틀X'}) (${group.totalCount}명)`;
             }
 
             let bodyHtml = "";
@@ -265,12 +264,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } else if (isSpa) {
                 const hasShuttle = ["에스파", "루나", "보라"].some(s => group.title.includes(s));
-                bodyHtml += `<div style="padding:8px 12px; background:#f0f7ff; font-weight:bold; font-size:12px; color:#007bff;">${group.title} (${hasShuttle ? '셔틀O' : '셔틀X'})</div>`;
                 bodyHtml += group.items.map(it => {
                     const resortStr = hasShuttle ? `<span class="sc-detail-resort">${it.resort}</span>` : "";
                     return `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')"><span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span>${resortStr}</div>`;
                 }).join('');
-            } else if (group.category === '픽업' || group.category === '샌딩') {
+            } else if (group.category === '픽업/샌딩') {
                 bodyHtml = group.items.map(it => {
                     return `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')"><span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span><span class="sc-detail-resort">${it.resort}</span></div>`;
                 }).join('');

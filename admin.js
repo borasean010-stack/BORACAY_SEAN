@@ -441,102 +441,142 @@ document.addEventListener('DOMContentLoaded', () => {
     window.registerBulkSchedule = async () => {
         const input = document.getElementById('schedule-reg-input').value.trim();
         if (!input) return;
+        
+        const parseRobustTSV = (text) => {
+            const rows = [];
+            let currentRow = [];
+            let currentField = "";
+            let inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                if (char === '"') { inQuotes = !inQuotes; }
+                else if (char === '\t' && !inQuotes) { currentRow.push(currentField); currentField = ""; }
+                else if (char === '\n' && !inQuotes) { currentRow.push(currentField); rows.push(currentRow); currentRow = []; currentField = ""; }
+                else { currentField += char; }
+            }
+            if (currentField || currentRow.length > 0) { currentRow.push(currentField); rows.push(currentRow); }
+            return rows;
+        };
+
         try {
-            // "베스트" 로직: 빈 줄을 기준으로 데이터 블록을 나누거나, 이름 패턴으로 블록을 구분
-            const blocks = input.split(/\n(?=[가-힣a-zA-Z]{2,}\t|\n)/).filter(b => b.trim());
+            const rows = parseRobustTSV(input);
             const batch = writeBatch(db);
             let count = 0;
             const currentYear = new Date().getFullYear();
 
-            for (const block of blocks) {
-                const lines = block.split('\n').filter(l => l.trim());
-                if (lines.length === 0) continue;
+            for (const row of rows) {
+                if (row.length < 10) continue; // 유효하지 않은 행 스킵
 
-                // 첫 번째 줄에서 이름과 기본 인원 파악 (탭 구분 우선)
-                const firstLine = lines[0];
-                const tabs = firstLine.split('\t');
-                let customer = "고객";
-                let basePax = 0;
+                // 데이터 위치 (제공된 스니펫 기준)
+                // 0:픽업일, 1:샌딩일, 2:픽업편, 3:샌딩편, 9:리조트, 10:영문명, 11~13:인원, 15:한글명, 16:비고
+                const pickupDateRaw = (row[0] || '').trim();
+                const sendingDateRaw = (row[1] || '').trim();
+                const pickupFlight = (row[2] || '').trim();
+                const sendingFlight = (row[3] || '').trim();
+                const resortRaw = (row[9] || '').trim();
+                const korName = (row[15] || row[16] || row[10] || '고객').trim();
+                const remarks = (row[16] || row[17] || '').trim();
+                
+                const p1 = parseInt(row[11]) || 0;
+                const p2 = parseInt(row[12]) || 0;
+                const p3 = parseInt(row[13]) || 0;
+                const totalPax = p1 + p2 + p3 || 1;
 
-                if (tabs.length >= 2) {
-                    customer = tabs[0].trim();
-                    // 4 3 1 패턴 인식 (탭으로 구분된 경우)
-                    const p1 = parseInt(tabs[1]) || 0;
-                    const p2 = parseInt(tabs[2]) || 0;
-                    basePax = p1 + p2; // 성인 + 아동
-                } else {
-                    // 탭이 없는 경우 이름 추출
-                    const nameMatch = firstLine.match(/^[가-힣a-zA-Z\s]{2,}/);
-                    if (nameMatch) customer = nameMatch[0].trim();
-                }
+                const formatDate = (raw) => {
+                    if (!raw || !raw.includes('/')) return null;
+                    const parts = raw.split('/');
+                    const m = parts[0].trim().padStart(2, '0');
+                    const d = parts[1].trim().replace(/[^0-9]/g, '').padStart(2, '0');
+                    return `${currentYear}-${m}-${d}`;
+                };
 
-                // 블록 내의 모든 줄을 검사하여 날짜가 있는 줄을 스케줄로 등록
-                for (const line of lines) {
-                    const dateMatch = line.match(/(\d{1,2})\/(\d{1,2})/);
-                    if (!dateMatch) continue;
-
-                    const dateStr = `${currentYear}-${dateMatch[1].padStart(2,'0')}-${dateMatch[2].padStart(2,'0')}`;
-                    const timeMatch = line.match(/(\d{1,2}):(\d{2})/);
-                    const timeStr = timeMatch ? `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}` : "09:00";
-
-                    // 세부 인원 계산 (태반4, 성장3 등)
-                    let paxCount = 0;
-                    const mCount = line.match(/\d+(?=명|인|태반|성장|스톤|오일|포쉘|진주)/g);
-                    if (mCount) {
-                        paxCount = mCount.reduce((a, b) => a + parseInt(b), 0);
-                    }
-                    if (paxCount === 0) paxCount = basePax || 2;
-
-                    // 장소 및 상품명 추출
-                    let name = "기타 일정";
-                    let resort = "-";
-                    const lowerLine = line.toLowerCase();
-                    
-                    // Savemore 등 장소 키워드
-                    if (lowerLine.includes('savemore') || line.includes('세이브모어')) resort = "세이브모어";
-                    else {
-                        const locMatch = line.match(/([가-힣a-zA-Z]+)\s?(?:pick\s?up|픽업)/i);
-                        if (locMatch && !['공항','샌딩'].includes(locMatch[1])) resort = locMatch[1];
-                    }
-
-                    if (line.includes('픽업')) name = '공항 픽업';
-                    else if (line.includes('샌딩')) name = '공항 샌딩';
-                    else if (line.includes('호핑')) name = '호핑투어';
-                    else if (line.includes('말룸')) name = '말룸파티';
-                    else if (line.includes('랜드')) name = '보라카이 랜드투어';
-                    else if (lowerLine.includes('spa') || line.includes('스파') || line.includes('마사지')) {
-                        if (lowerLine.includes('luna') || line.includes('루나')) name = '루나스파';
-                        else if (lowerLine.includes('bora') || line.includes('보라')) name = '보라스파';
-                        else if (lowerLine.includes('sspa') || line.includes('에스파')) name = '에스파(S-SPA)';
-                        else name = '마사지';
-                    }
-
+                // 1. 공항 픽업 등록
+                const pDate = formatDate(pickupDateRaw);
+                if (pDate && pickupFlight && pickupFlight !== '-') {
                     const docRef = doc(collection(db, "schedules"));
-                    batch.set(docRef, { 
-                        date: dateStr, 
-                        time: timeStr, 
-                        name: name, 
-                        customerName: customer, 
-                        count: paxCount, 
-                        resort: translateResort(resort), 
-                        details: line.trim(), 
-                        createdAt: new Date() 
+                    batch.set(docRef, {
+                        date: pDate, time: "14:00", name: "공항 픽업",
+                        customerName: korName, count: totalPax, flight: pickupFlight,
+                        resort: translateResort(resortRaw), details: `픽업편: ${pickupFlight}`,
+                        createdAt: new Date()
                     });
                     count++;
                 }
+
+                // 2. 공항 샌딩 등록
+                const sDate = formatDate(sendingDateRaw);
+                if (sDate && sendingFlight && sendingFlight !== '-') {
+                    const docRef = doc(collection(db, "schedules"));
+                    batch.set(docRef, {
+                        date: sDate, time: "21:00", name: "공항 샌딩",
+                        customerName: korName, count: totalPax, flight: sendingFlight,
+                        resort: translateResort(resortRaw), details: `샌딩편: ${sendingFlight}`,
+                        createdAt: new Date()
+                    });
+                    count++;
+                }
+
+                // 3. 비고란 상세 스케줄 파싱
+                if (remarks) {
+                    const lines = remarks.split('\n');
+                    for (const line of lines) {
+                        const dateMatch = line.match(/(\d{1,2})\/(\d{1,2})/);
+                        if (!dateMatch) continue;
+
+                        const itemDate = `${currentYear}-${dateMatch[1].padStart(2, '0')}-${dateMatch[2].padStart(2, '0')}`;
+                        let itemTime = "09:00";
+                        let itemName = "기타 일정";
+                        const lowerLine = line.toLowerCase();
+
+                        // 시간 추출
+                        const timeMatch = line.match(/(\d{1,2}):(\d{2})/);
+                        if (timeMatch) itemTime = `${timeMatch[1].padStart(2, '0')}:${timeMatch[2]}`;
+
+                        // 상품명 및 특이 시간 설정
+                        if (lowerLine.includes('land') || lowerLine.includes('랜드')) {
+                            itemName = "보라카이 랜드투어";
+                            itemTime = "10:30"; // 랜드투어 무조건 10:30
+                        }
+                        else if (lowerLine.includes('hopping') || lowerLine.includes('호핑')) {
+                            if (lowerLine.includes('j') || lowerLine.includes('점보')) itemName = "블랙펄 호핑투어 (+점보크랩 점심)";
+                            else itemName = "블랙펄 선셋 호핑투어";
+                            if (!timeMatch) itemTime = lowerLine.includes('j') ? "12:30" : "13:30";
+                        }
+                        else if (lowerLine.includes('malum') || lowerLine.includes('말룸')) itemName = "말룸파티";
+                        else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = "루나스파";
+                        else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = "보라스파";
+                        else if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = "에스파(S-SPA)";
+                        else if (lowerLine.includes('마사지') || lowerLine.includes('스파')) itemName = "마사지";
+
+                        // 세부 인원 (태반4 등)
+                        let itemPax = totalPax;
+                        const mCount = line.match(/\d+(?=명|인|태반|성장|스톤|오일|포쉘|진주)/g);
+                        if (mCount) itemPax = mCount.reduce((a, b) => a + parseInt(b), 0);
+
+                        const docRef = doc(collection(db, "schedules"));
+                        batch.set(docRef, {
+                            date: itemDate, time: itemTime, name: itemName,
+                            customerName: korName, count: itemPax,
+                            resort: translateResort(resortRaw), details: line.trim(),
+                            createdAt: new Date()
+                        });
+                        count++;
+                    }
+                }
             }
 
-            if (count > 0) { 
-                await batch.commit(); 
-                alert(`${count}건의 스케줄이 성공적으로 등록되었습니다.`); 
-                document.getElementById('schedule-reg-input').value = ''; 
-                window.hideInputArea(); 
+            if (count > 0) {
+                await batch.commit();
+                alert(`${count}건의 스케줄이 성공적으로 등록되었습니다.`);
+                document.getElementById('schedule-reg-input').value = '';
+                window.hideInputArea();
+                renderSchedule();
             } else {
-                alert("등록 가능한 날짜 정보(예: 3/30)를 찾지 못했습니다.");
+                alert("등록 가능한 데이터를 찾지 못했습니다. 형식을 확인해주세요.");
             }
-        } catch (e) { 
+        } catch (e) {
             console.error("Bulk Register Error:", e);
-            alert("등록 중 오류가 발생했습니다."); 
+            alert("등록 중 오류가 발생했습니다.");
         }
     };
 

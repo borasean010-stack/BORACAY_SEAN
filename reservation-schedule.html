@@ -149,6 +149,7 @@
         'belmont': '벨몬트',
         'savoy': '사보이',
         'la carmela': '라카멜라',
+        'lacarmela': '라카멜라',
         'two seasons': '투 시즌스',
         'red coconut': '레드 코코넛',
         'canyon': '캐년'
@@ -223,7 +224,7 @@
             return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : 10:30 / 보라카이션 사무실</b>\n<a href="https://goo.gl/maps/pQkmCErHLjmQGRYM9" class="map-btn" target="_blank">📍 사무실 구글맵 확인</a>\n\n★ 준비물\n편한 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품</div>`;
         }
         // 6. 마사지 (에스파, 루나, 보라스파, 카바얀 등)
-        if (name.includes('에스파') || name.includes('루나') || name.includes('보라스파') || name.includes('카바얀') || name.includes('힐롯')) {
+        if (name.includes('에스파') || name.includes('루나') || name.includes('보라스파') || name.includes('카바얀') || name.includes('힐롯') || name.includes('포세이돈') || name.includes('마리스') || name.includes('헬리오스')) {
             let meetingPlace = "";
             let mapLink = "";
             const lowerDetails = (item.details || "").toLowerCase();
@@ -235,7 +236,7 @@
             } else if (item.details && (item.details.includes('픽업') || item.details.includes('이동'))) {
                 meetingPlace = item.details;
             } else {
-                if (name.includes('에스파')) {
+                if (name.includes('에스파') || name.toLowerCase().includes('sspa')) {
                     mapLink = "https://maps.app.goo.gl/QbuPCqypyURVhth38";
                     meetingPlace = "에스파 마사지샵 개별이동";
                 } else if (name.includes('루나')) {
@@ -247,6 +248,15 @@
                 } else if (name.includes('카바얀')) {
                     mapLink = "https://maps.app.goo.gl/DsXg4tSonc5KsF4K6";
                     meetingPlace = "카바얀 마사지샵 개별이동";
+                } else if (name.includes('포세이돈')) {
+                    mapLink = "https://maps.app.goo.gl/9yGv7TzU1W7jE7N68";
+                    meetingPlace = "포세이돈 마사지샵 개별이동";
+                } else if (name.includes('마리스')) {
+                    mapLink = "https://maps.app.goo.gl/r6fD7D5t7Y6J8rXm8";
+                    meetingPlace = "마리스 마사지샵 개별이동";
+                } else if (name.includes('헬리오스')) {
+                    mapLink = "https://maps.app.goo.gl/v3VfR5k7X7J2N7Y6A";
+                    meetingPlace = "헬리오스 마사지샵 개별이동";
                 } else if (name.includes('힐롯')) {
                     meetingPlace = (item.time || '12:30') + " / 메인로드 졸리비";
                 }

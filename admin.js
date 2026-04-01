@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (n.includes('hgarden') || n.includes('henanngarden')) return '헤난 가든';
         if (n.includes('lagoon')) return '헤난 라군';
         if (n.includes('prime')) return '헤난 프라임';
-        if (n.includes('palm')) return '헤난 팜';
+        if (n.includes('palm')) return '헤난 팜비치';
         if (n.includes('park')) return '헤난 파크';
         if (n.includes('crystal') || n.includes('sands')) return '헤난 크리스탈';
         if (n.includes('regency')) return '헤난 리젠시';
@@ -54,6 +54,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (n.includes('coast')) return '코스트';
         if (n.includes('gray')) return '세븐스톤';
         if (n.includes('henann')) return '헤난';
+        if (n.includes('aqua')) return '아쿠아';
+        if (n.includes('canyon')) return '캐년';
+        if (n.includes('lacarmela')) return '라카멜라';
         return name; 
     }
 
@@ -151,7 +154,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (tmBox) tmBox.innerText = tomorrowStr;
     }
 
-    window.switchScheduleDay = (day) => { currentScheduleDay = day; window.hideInputArea(); renderSchedule(); };
+    window.switchScheduleDay = (day) => { 
+        currentScheduleDay = day; 
+        window.hideInputArea(); 
+        document.getElementById('tool-box-today')?.classList.toggle('active', day === 'today');
+        document.getElementById('tool-box-tomorrow')?.classList.toggle('active', day === 'tomorrow');
+        renderSchedule(); 
+    };
     window.filterSchedule = (category) => {
         currentScheduleFilter = category;
         document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -186,6 +195,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const tomorrowStr = tomorrow.toISOString().split('T')[0];
         
         const targetDate = (currentScheduleDay === 'tomorrow') ? tomorrowStr : todayStr;
+        const titleDateEl = document.getElementById('schedule-title-date');
+        if (titleDateEl) titleDateEl.innerText = targetDate;
 
         let rawItems = [];
         allSchedules.forEach(s => { 
@@ -477,7 +488,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const engName = (row[10] || '').trim();
                 const korNameOnly = (row[15] || '').trim();
-                const customerName = korNameOnly ? `${korNameOnly} (${engName})` : (engName || '고객');
+                const customerName = engName || korNameOnly || '고객';
                 const remarks = (row[16] || '').trim();
                 
                 const p1 = parseInt(row[11]) || 0;
@@ -551,6 +562,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = "루나스파";
                         else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = "보라스파";
                         else if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = "SSPA";
+                        else if (lowerLine.includes('kabayan') || lowerLine.includes('카바얀')) itemName = "카바얀";
+                        else if (lowerLine.includes('hilot') || lowerLine.includes('힐롯')) itemName = "힐롯마사지";
+                        else if (lowerLine.includes('poseidon') || lowerLine.includes('포세이돈')) itemName = "포세이돈";
+                        else if (lowerLine.includes('maris') || lowerLine.includes('마리스')) itemName = "마리스";
+                        else if (lowerLine.includes('helios') || lowerLine.includes('헬리오스')) itemName = "헬리오스";
                         else if (lowerLine.includes('마사지') || lowerLine.includes('스파')) itemName = "마사지";
 
                         // 세부 인원 (태반4 등)
@@ -666,7 +682,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let korName = p15; let engName = p10;
             if (isP10Korean && !p10.includes(' ')) { korName = p10; engName = p15; }
             else if (p15.includes('맘') || p15.includes('아빠') || p15.includes('네') || p15.length > 5) { if (isP10Korean) { korName = p10; engName = p15; } }
-            combinedKorNames.push(`${korName} (${engName})`);
+            combinedKorNames.push(engName || korName || '고객');
 
             totalAdults += (parseInt(row[11]) || 0);
             totalChildren += (parseInt(row[12]) || 0);
@@ -707,6 +723,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = 'SSPA';
                     else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = '루나스파';
                     else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = '보라스파';
+                    else if (lowerLine.includes('kabayan') || lowerLine.includes('카바얀')) itemName = '카바얀';
+                    else if (lowerLine.includes('hilot') || lowerLine.includes('힐롯')) itemName = '힐롯마사지';
+                    else if (lowerLine.includes('poseidon') || lowerLine.includes('포세이돈')) itemName = '포세이돈';
+                    else if (lowerLine.includes('maris') || lowerLine.includes('마리스')) itemName = '마리스';
+                    else if (lowerLine.includes('helios') || lowerLine.includes('헬리오스')) itemName = '헬리오스';
                     else if (lowerLine.includes('land') || lowerLine.includes('랜드')) { itemName = '보라카이 랜드투어'; if(!timeMatch) itemTime = "10:30"; }
                     else if (lowerLine.includes('hopping') || lowerLine.includes('호핑')) { if (lowerLine.includes('(j)') || lowerLine.includes('점보')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!timeMatch) itemTime = "12:30"; } else { itemName = '블랙펄 선셋 호핑투어'; if(!timeMatch) itemTime = "13:30"; } }
                     else if (lowerLine.includes('malum') || lowerLine.includes('말룸')) { itemName = '말룸파티'; if(!timeMatch) itemTime = "09:00"; }

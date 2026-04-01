@@ -15,12 +15,17 @@
         .main-tool-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px; }
         .tool-box { background: #fff; border-radius: 12px; padding: 20px; border-top: 5px solid #ff6a00; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; cursor: pointer; transition: transform 0.2s; }
         .tool-box:hover { transform: translateY(-3px); }
+        .tool-box.active { background: #fffaf5; border-color: #ff6a00; box-shadow: 0 0 15px rgba(255, 106, 0, 0.2); transform: translateY(-3px); }
+        .tool-box.active h4 { color: #ff6a00; font-weight: 800; }
         .tool-box h4 { margin: 0; font-size: 14px; color: #666; font-weight: 600; }
         .tool-box .date-val { margin-top: 8px; font-size: 18px; font-weight: 800; color: #333; }
         .tool-box.system-box { border-top-color: #00c73c; }
 
         .timeline-section { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .filter-bar { display: flex; gap: 10px; padding-bottom: 15px; border-bottom: 1px solid #eee; margin-bottom: 15px; overflow-x: auto; }
+        .timeline-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .timeline-title { font-size: 16px; font-weight: 900; color: #111; display: flex; align-items: center; gap: 8px; }
+        .timeline-title span { color: #ff6a00; }
+        .filter-bar { display: flex; gap: 10px; overflow-x: auto; }
         .filter-btn { padding: 8px 16px; border-radius: 20px; border: 1px solid #ddd; background: #fff; font-size: 13px; font-weight: 700; color: #666; cursor: pointer; white-space: nowrap; }
         .filter-btn.active { background: #ff6a00; color: #fff; border-color: #ff6a00; }
 
@@ -85,11 +90,11 @@
             <div class="ss-content">
                 <!-- 상단 4분할 박스 -->
                 <div class="main-tool-grid">
-                    <div class="tool-box" onclick="switchScheduleDay('today')">
+                    <div id="tool-box-today" class="tool-box active" onclick="switchScheduleDay('today')">
                         <h4>오늘 일정</h4>
                         <div id="box-date-today" class="date-val">-</div>
                     </div>
-                    <div class="tool-box" onclick="switchScheduleDay('tomorrow')">
+                    <div id="tool-box-tomorrow" class="tool-box" onclick="switchScheduleDay('tomorrow')">
                         <h4>내일 일정</h4>
                         <div id="box-date-tomorrow" class="date-val">-</div>
                     </div>
@@ -126,13 +131,16 @@
 
                 <!-- 일정표 섹션 -->
                 <div class="timeline-section">
-                    <div class="filter-bar">
-                        <button class="filter-btn active" onclick="filterSchedule('all')">전체</button>
-                        <button class="filter-btn" onclick="filterSchedule('픽업/샌딩')">픽업/샌딩</button>
-                        <button class="filter-btn" onclick="filterSchedule('호핑투어')">호핑투어</button>
-                        <button class="filter-btn" onclick="filterSchedule('말룸파티')">말룸파티</button>
-                        <button class="filter-btn" onclick="filterSchedule('랜드투어')">랜드투어</button>
-                        <button class="filter-btn" onclick="filterSchedule('액티비티')">액티비티</button>
+                    <div class="timeline-header">
+                        <div class="timeline-title"><span class="material-icons">calendar_today</span> <span id="schedule-title-date">-</span> 일정</div>
+                        <div class="filter-bar">
+                            <button class="filter-btn active" onclick="filterSchedule('all')">전체</button>
+                            <button class="filter-btn" onclick="filterSchedule('픽업/샌딩')">픽업/샌딩</button>
+                            <button class="filter-btn" onclick="filterSchedule('호핑투어')">호핑투어</button>
+                            <button class="filter-btn" onclick="filterSchedule('말룸파티')">말룸파티</button>
+                            <button class="filter-btn" onclick="filterSchedule('랜드투어')">랜드투어</button>
+                            <button class="filter-btn" onclick="filterSchedule('액티비티')">액티비티</button>
+                        </div>
                     </div>
                     <div id="active-timeline" class="timeline-content">
                         <div class="sc-empty">데이터 로딩 중...</div>

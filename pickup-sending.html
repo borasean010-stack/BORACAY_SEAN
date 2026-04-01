@@ -123,12 +123,6 @@
         
         .btn-buy, .btn-cart { padding: 16px !important; font-size: 16px !important; border-radius: 16px !important; }
     }
-    /* 🎥 상품 미리보기 영상 전용 스타일 */
-    .preview-video-container { width: 100%; background: #000; margin-bottom: 20px; overflow: hidden; line-height: 0; }
-    .preview-video { width: 100%; height: auto; max-height: 80vh; object-fit: cover; display: block; margin: 0 auto; }
-    @media (max-width: 768px) {
-        .preview-video { max-height: none; aspect-ratio: 9/16; }
-    }
 </style>
 </head>
 <body>
@@ -172,17 +166,15 @@
     </div>
 </div>
 <div class="tour-detail-container">
-    <!-- 🎥 상품 미리보기 영상 (최상단) -->
-    <div class="preview-video-container">
-        <video class="preview-video" autoplay muted loop playsinline>
-            <source src="pickup.mp4" type="video/mp4">
-            브라우저가 비디오 태그를 지원하지 않습니다.
-        </video>
-    </div>
     <div class="tour-content">
         <h1>공항 왕복 픽업샌딩</h1>
         <div class="section-title">투어 일정</div>
         <div class="itinerary">
+            <div class="itinerary-img">
+                <video style="width: 100%; border-radius: 20px; display: block; box-shadow: 0 5px 15px rgba(0,0,0,0.05); background: #000; aspect-ratio: 9/16; object-fit: cover;" autoplay muted loop playsinline controls>
+                    <source src="pickup.mp4" type="video/mp4">
+                </video>
+            </div>
             <div class="itinerary-img"><img src="pickup.jpg" alt="보라카이 왕복 픽업샌딩 서비스 - 보라카이션 자유여행"></div>
             <div class="itinerary-img"><img src="pickup2.jpg"></div>
             <div class="itinerary-img"><img src="칼리보-픽업샌딩-조인-Recovered.jpg"></div>

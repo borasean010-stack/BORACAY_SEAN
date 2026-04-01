@@ -20,6 +20,15 @@ BORACAY SEAN is a comprehensive travel service website for Boracay, Philippines.
 - **AI Counselor:** A specialized AI agent ('Sean') provides travel advice and product recommendations using Firebase Cloud Functions and Gemini.
 - **Pricing Management:** Prices are centralized in `main.js` and mirrored in individual HTML files and backend logic for consistency.
 
+## Recently Implemented Changes (April 1, 2026)
+
+### Admin UI & Consistency Updates
+- **Schedule Tab Visual Feedback:** Added an `active` state highlight (orange glow and translation) for "Today's Schedule" and "Tomorrow's Schedule" buttons in the admin panel to provide clear visual feedback on the currently viewed day.
+- **Date Awareness Enhancement:** Integrated a dynamic date display heading (`timeline-header`) in the schedule timeline section to clearly show which date's schedule is being viewed (e.g., "2026-04-01 일정").
+- **Resort Name Standardization:** Updated the `translateResort` function in `admin.js` and `resortMap` in `reservation-schedule.html` to ensure all resort names are consistently displayed in Korean (e.g., "헤난 가든", "헤난 팜비치", "크림슨") across the admin and voucher views.
+- **Representative Name Priority:** Modified `registerBulkSchedule` and `makeQuickVoucher` logic to prioritize the English name of the representative for display in the schedule list, ensuring a cleaner and more professional appearance.
+- **Quick Voucher Massage Shop Content:** Expanded the parsing logic in `makeQuickVoucher` to recognize more massage shops (e.g., 카바얀, 힐롯, 포세이돈, 마리스, 헬리오스) and added detailed guidance with Google Maps links for these shops in the `reservation-schedule.html` voucher view.
+
 ## Recently Implemented Changes (March 30, 2026)
 
 ### Admin System & Quick Voucher Updates

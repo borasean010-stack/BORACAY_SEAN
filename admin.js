@@ -765,4 +765,84 @@ document.addEventListener('DOMContentLoaded', () => {
             window.hideInputArea();
         });
     };
+
+    window.openSchedulePopup = (mode) => {
+        const now = new Date();
+        const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+        const krTime = new Date(utc + (9 * 3600000));
+        const todayStr = krTime.toISOString().split('T')[0];
+        const tomorrow = new Date(krTime.getTime() + 86400000);
+        const tomorrowStr = tomorrow.toISOString().split('T')[0];
+        const targetDate = (currentScheduleDay === 'tomorrow') ? tomorrowStr : todayStr;
+
+        let rawItems = [];
+        allSchedules.forEach(s => {
+            if (s.date === targetDate) {
+                const lines = (s.details || '').split('\n').filter(l => l.trim() !== '');
+                const displayLines = lines.length > 0 ? lines : [''];
+                displayLines.forEach(line => {
+                    const mCount = line.match(/\d+(?=명|인|태반|성장|스톤|오일|포쉘|진주)/g);
+                    let displayPax = s.count;
+                    if (mCount) displayPax = mCount.reduce((a, b) => a + parseInt(b), 0);
+                    rawItems.push({
+                        time: s.time || "09:00",
+                        name: s.name,
+                        customer: s.customerName || "고객",
+                        count: displayPax,
+                        resort: translateResort(s.resort || "-"),
+                        flight: s.flight || "-",
+                        details: line || s.name
+                    });
+                });
+            }
+        });
+
+        let filtered = [];
+        if (mode === 'pickup') {
+            filtered = rawItems.filter(i => getCategory(i.name, i.details) === '픽업/샌딩');
+        } else {
+            filtered = rawItems.filter(i => getCategory(i.name, i.details) !== '픽업/샌딩');
+        }
+
+        // 시간순 정렬
+        filtered.sort((a, b) => a.time.localeCompare(b.time));
+
+        if (filtered.length === 0) { alert('해당 항목이 없습니다.'); return; }
+
+        const popup = window.open('', '_blank', 'width=1000,height=800');
+        const title = mode === 'pickup' ? `✈️ 픽업샌딩 명단 (${targetDate})` : `🏖️ 액티비티 명단 (${targetDate})`;
+        
+        let html = `<html><head><title>${title}</title><style>
+            body { font-family: 'Pretendard', sans-serif; padding: 30px; }
+            h1 { font-size: 22px; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 10px; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+            th, td { border: 1px solid #ddd; padding: 12px 10px; text-align: left; font-size: 13px; }
+            th { background: #f8f9fa; font-weight: 800; }
+            tr:nth-child(even) { background: #fafafa; }
+            .pax { font-weight: 800; color: #ff6a00; }
+            .time { font-weight: 900; color: #333; }
+            .btn-print { background: #333; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+            @media print { .btn-print { display: none; } }
+        </style></head><body>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h1>${title}</h1>
+                <button class="btn-print" onclick="window.print()">인쇄하기</button>
+            </div>
+            <table>
+                <thead><tr><th>시간</th><th>이름</th><th>인원</th><th>리조트</th><th>항공/상품</th><th>상세내용</th></tr></thead>
+                <tbody>
+                    ${filtered.map(it => `<tr>
+                        <td class="time">${it.time}</td>
+                        <td style="font-weight:700;">${it.customer}</td>
+                        <td class="pax">${it.count}인</td>
+                        <td>${it.resort}</td>
+                        <td>${mode === 'pickup' ? it.flight : it.name}</td>
+                        <td style="font-size:12px; color:#666;">${it.details}</td>
+                    </tr>`).join('')}
+                </tbody>
+            </table>
+        </body></html>`;
+        popup.document.write(html);
+        popup.document.close();
+    };
 });

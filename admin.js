@@ -32,7 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function translateResort(name) {
         if (!name || name === '-') return '-';
         const n = name.toLowerCase().replace(/\s/g, '').replace(/\./g, '').replace(/,/g, '');
-        if (n.includes('hgarden') || n.includes('henanngarden') || n.includes('asya')) return '헤난 가든';
+        if (n.includes('hgarden') || n.includes('henanngarden')) return '헤난 가든';
+        if (n.includes('asya')) return '아샤';
         if (n.includes('lagoon')) return '헤난 라군';
         if (n.includes('prime')) return '헤난 프라임';
         if (n.includes('palm')) return '헤난 팜비치';
@@ -555,7 +556,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         else if (lowerLine.includes('malum') || lowerLine.includes('말룸')) itemName = "말룸파티";
                         else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = "루나스파";
                         else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = "보라스파";
-                        else if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = "SSPA";
+                        else if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = "에스파(SSPA)";
                         else if (lowerLine.includes('kabayan') || lowerLine.includes('카바얀')) itemName = "카바얀";
                         else if (lowerLine.includes('hilot') || lowerLine.includes('힐롯')) itemName = "힐롯마사지";
                         else if (lowerLine.includes('poseidon') || lowerLine.includes('포세이돈')) itemName = "포세이돈";
@@ -714,7 +715,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     const timeMatch = line.match(/(\d{1,2}):(\d{2})/); if (timeMatch) itemTime = `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}`;
                     const lowerLine = line.toLowerCase();
-                    if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = 'SSPA';
+                    if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = '에스파(SSPA)';
                     else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = '루나스파';
                     else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = '보라스파';
                     else if (lowerLine.includes('kabayan') || lowerLine.includes('카바얀')) itemName = '카바얀';

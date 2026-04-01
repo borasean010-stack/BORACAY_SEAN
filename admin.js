@@ -287,7 +287,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }).join('');
             } else if (group.category === '픽업/샌딩') {
                 bodyHtml = group.items.map(it => {
-                    return `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')"><span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span><span class="sc-detail-resort">${it.resort}</span></div>`;
+                    const flightInfo = (it.flight && it.flight !== '-') ? `[${it.flight}] ` : "";
+                    return `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')"><span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span><span class="sc-detail-resort">${flightInfo}${it.resort}</span></div>`;
                 }).join('');
             } else if (group.category === '액티비티' || group.category === '랜드투어' || group.category === '말룸파티') {
                 bodyHtml = group.items.map(it => {
@@ -853,7 +854,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <td style="font-weight:700;">${it.customer}</td>
                         <td class="pax">${it.count}인</td>
                         <td>${it.resort}</td>
-                        <td>${mode === 'pickup' ? it.flight : it.name}</td>
+                        <td style="font-weight:bold; color:#1890ff;">${mode === 'pickup' ? it.flight : it.name}</td>
                         <td style="font-size:12px; color:#666;">${it.details}</td>
                     </tr>`).join('')}
                 </tbody>

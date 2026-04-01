@@ -493,9 +493,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 1. 공항 픽업 등록
                 const pDate = formatDate(pickupDateRaw);
                 if (pDate && pickupFlight && pickupFlight !== '-') {
+                    let pTime = "14:00"; // 기본 14:00 (TW125 포함)
                     const docRef = doc(collection(db, "schedules"));
                     batch.set(docRef, {
-                        date: pDate, time: "14:00", name: "공항 픽업",
+                        date: pDate, time: pTime, name: "공항 픽업",
                         customerName: korName, count: totalPax, flight: pickupFlight,
                         resort: translateResort(resortRaw), details: `픽업편: ${pickupFlight}`,
                         createdAt: new Date()
@@ -506,9 +507,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 2. 공항 샌딩 등록
                 const sDate = formatDate(sendingDateRaw);
                 if (sDate && sendingFlight && sendingFlight !== '-') {
+                    let sTime = sendingFlight.toUpperCase().includes('TW126') ? "08:30" : "21:00";
                     const docRef = doc(collection(db, "schedules"));
                     batch.set(docRef, {
-                        date: sDate, time: "21:00", name: "공항 샌딩",
+                        date: sDate, time: sTime, name: "공항 샌딩",
                         customerName: korName, count: totalPax, flight: sendingFlight,
                         resort: translateResort(resortRaw), details: `샌딩편: ${sendingFlight}`,
                         createdAt: new Date()

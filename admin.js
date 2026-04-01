@@ -175,10 +175,16 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderSchedule() {
         const container = document.getElementById('active-timeline');
         if (!container) return;
+        
+        // 🌏 필리핀 시간(UTC+8) 기준으로 오늘/내일 날짜 계산
         const now = new Date();
-        const offset = now.getTimezoneOffset() * 60000;
-        const todayStr = new Date(now.getTime() - offset).toISOString().split('T')[0];
-        const tomorrowStr = new Date(now.getTime() - offset + 86400000).toISOString().split('T')[0];
+        const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+        const krTime = new Date(utc + (9 * 3600000)); // 한국/필리핀 시간 (거의 동일)
+        
+        const todayStr = krTime.toISOString().split('T')[0];
+        const tomorrow = new Date(krTime.getTime() + 86400000);
+        const tomorrowStr = tomorrow.toISOString().split('T')[0];
+        
         const targetDate = (currentScheduleDay === 'tomorrow') ? tomorrowStr : todayStr;
 
         let rawItems = [];
@@ -187,7 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const lines = (s.details || '').split('\n').filter(l => l.trim() !== '');
                 const displayLines = lines.length > 0 ? lines : [''];
                 displayLines.forEach(line => {
-                    // 세부 인원 파싱 (한 줄에 여러 명이 섞여 있을 수 있음)
                     const mCount = line.match(/\d+(?=명|인|태반|성장|스톤|오일|포쉘|진주)/g);
                     let displayPax = s.count;
                     if (mCount) displayPax = mCount.reduce((a, b) => a + parseInt(b), 0);
@@ -195,21 +200,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     rawItems.push({ 
                         time: s.time || "09:00", 
                         name: s.name, 
-                        customer: s.customerName, 
+                        customer: s.customerName || "고객", 
                         count: displayPax, 
                         status: '스케줄', id: s.id, source: 'schedule', 
                         resort: translateResort(s.resort || "-"), 
                         flight: s.flight || "-",
-                        details: line
+                        details: line || s.name
                     }); 
                 });
             }
         });
 
-        if (currentScheduleFilter !== 'all') rawItems = rawItems.filter(i => getCategory(i.name, i.details) === currentScheduleFilter);
+        // 필터링 적용
+        let filteredItems = rawItems;
+        if (currentScheduleFilter !== 'all') {
+            filteredItems = rawItems.filter(i => getCategory(i.name, i.details) === currentScheduleFilter);
+        }
         
         const groups = {};
-        rawItems.forEach(item => {
+        filteredItems.forEach(item => {
             const cat = getCategory(item.name, item.details);
             let groupTitle = item.name;
             if (cat === '픽업/샌딩') {
@@ -228,7 +237,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const sortedGroupKeys = Object.keys(groups).sort((a, b) => groups[a].time.localeCompare(groups[b].time));
-        if (sortedGroupKeys.length === 0) { container.innerHTML = `<div class="sc-empty" style="width:100%; text-align:center; padding:30px; color:#999; font-size:12px;">일정이 없습니다.</div>`; return; }
+        if (sortedGroupKeys.length === 0) { 
+            container.innerHTML = `<div class="sc-empty" style="width:100%; text-align:center; padding:30px; color:#999; font-size:12px;">일정이 없습니다. (${targetDate})</div>`; 
+            return; 
+        }
 
         container.innerHTML = sortedGroupKeys.map(key => {
             const group = groups[key];
@@ -241,7 +253,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const isSpa = group.items.some(it => it.name.toLowerCase().includes('마사지') || it.name.toLowerCase().includes('스파'));
             if (isSpa) icon = "spa";
 
-            // 헤더 구성
             let headerTitle = `${group.title} (${group.totalCount}명)`;
             if (isSpa) {
                 const hasShuttle = ["에스파", "루나", "보라"].some(s => group.title.includes(s));
@@ -272,9 +283,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 bodyHtml = group.items.map(it => {
                     return `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')"><span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span><span class="sc-detail-resort">${it.resort}</span></div>`;
                 }).join('');
-            } else if (group.category === '액티비티') {
+            } else if (group.category === '액티비티' || group.category === '랜드투어' || group.category === '말룸파티') {
                 bodyHtml = group.items.map(it => {
-                    return `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')"><span style="font-size:11px; color:#999; margin-right:5px;">[${it.name}]</span><span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span><span class="sc-detail-resort">${it.resort}</span></div>`;
+                    const prefix = group.category === '액티비티' ? `<span style="font-size:11px; color:#999; margin-right:5px;">[${it.name}]</span>` : "";
+                    const resortStr = (group.category === '랜드투어' || group.category === '액티비티') ? `<span class="sc-detail-resort">${it.resort}</span>` : "";
+                    return `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')">${prefix}<span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span>${resortStr}</div>`;
                 }).join('');
             } else {
                 bodyHtml = group.items.map(it => {

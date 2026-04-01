@@ -203,68 +203,6 @@ body.smartstore-admin { margin: 0; padding: 0; background: var(--ss-bg); font-fa
 .sc-detail-pax { font-weight: 800; color: #ff6a00; text-align: right; }
 .sc-detail-resort { color: #666; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* 📅 New Grouped Schedule Card Style (Horizontal Rectangle) */
-.schedule-group-card {
-    min-width: 320px;
-    max-width: 450px;
-    background: #fff;
-    border-radius: 12px;
-    border: 1px solid #eef0f2;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    flex-shrink: 0;
-    transition: all 0.2s;
-    margin-right: 15px;
-}
-.schedule-group-card:hover { 
-    transform: translateY(-4px); 
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
-    border-color: var(--ss-orange-theme);
-}
-
-.sg-header { 
-    padding: 12px 15px; 
-    background: #fdfdfd; 
-    border-bottom: 1px solid #f5f7f9;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-.sg-time { 
-    font-size: 16px; 
-    font-weight: 900; 
-    color: var(--ss-orange-theme); 
-    padding-right: 12px;
-    border-right: 1px solid #eee;
-}
-.sg-title-row { flex: 1; display: flex; align-items: center; gap: 6px; }
-.sg-title-row .material-icons { font-size: 18px; color: #555; }
-.sg-title { font-size: 14px; font-weight: 800; color: #111; }
-.sg-title small { font-size: 12px; color: #888; font-weight: 600; margin-left: 4px; }
-
-.sg-body { padding: 10px 0; background: #fff; }
-
-.sc-detail-row {
-    padding: 8px 15px;
-    display: grid;
-    grid-template-columns: 140px 40px 1fr;
-    gap: 10px;
-    font-size: 13px;
-    border-bottom: 1px solid #f9fafb;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-.sc-detail-row:last-child { border-bottom: none; }
-.sc-detail-row:hover { background: #fff9f5; }
-
-.sc-detail-name { font-weight: 700; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.sc-detail-pax { font-weight: 800; color: #ff6a00; text-align: right; }
-.sc-detail-resort { color: #666; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-/* Existing Badge & Button Overrides if any... */
-
 /* 💎 Luxury Cleanup Tab View */
 .system-view { background: #fff; border-radius: 12px; padding: 40px; border: 1px solid var(--ss-border); text-align: center; box-shadow: var(--ss-shadow); }
 .sv-icon { font-size: 64px; color: #ff4d4f; margin-bottom: 20px; }
@@ -525,3 +463,80 @@ body.smartstore-admin { margin: 0; padding: 0; background: var(--ss-bg); font-fa
 .res-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; border-top: 2px solid #333; padding-top: 15px; }
 .detail-item label { font-size: 11px; color: #999; display: block; margin-bottom: 3px; font-weight: 600; }
 .detail-item div { font-size: 14px; font-weight: 700; }
+
+/* 📱 Mobile Responsive & Luxury Design (max-width: 768px) */
+@media (max-width: 768px) {
+    /* Layout */
+    .admin-full-layout { flex-direction: column; overflow-y: auto; height: auto; min-height: 100vh; }
+    .ss-sidebar { display: none !important; }
+    .ss-main { width: 100%; min-width: 100%; height: auto; padding-bottom: 80px; } /* Space for bottom nav */
+    
+    /* Top Header Mobile */
+    .ss-top-header { position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #eee; box-shadow: 0 2px 10px rgba(0,0,0,0.05); background: #fff; }
+    .ss-header-left { font-size: 11px; }
+    .ss-header-right { font-size: 11px; }
+
+    /* Content Area */
+    .ss-content { padding: 15px; overflow-y: visible; }
+
+    /* Luxury Dashboard Grid */
+    .main-tool-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; margin-bottom: 20px !important; }
+    .tool-box { padding: 15px 10px !important; border-top-width: 3px !important; }
+    .tool-box h4 { font-size: 12px !important; }
+    .tool-box .date-val { font-size: 15px !important; }
+
+    /* Status Cards Row */
+    .status-cards-row { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; margin-bottom: 20px !important; }
+    .stat-card { padding: 15px 10px !important; }
+    .stat-card .label { font-size: 11px !important; }
+    .stat-card .count { font-size: 20px !important; }
+
+    /* Timeline Section */
+    .timeline-header { flex-direction: column; align-items: flex-start !important; gap: 12px !important; }
+    .timeline-header > div:first-child { width: 100%; flex-direction: column; align-items: flex-start !important; gap: 10px !important; }
+    .timeline-title { font-size: 14px !important; }
+    .filter-bar { width: 100%; padding-bottom: 5px !important; display: flex; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .filter-bar::-webkit-scrollbar { display: none; }
+    
+    .timeline-header div[style*="display:flex; gap:8px;"] { width: 100%; display: flex !important; }
+    .timeline-header button { flex: 1; font-size: 11px !important; padding: 0 5px !important; height: 36px !important; }
+
+    /* Schedule Cards Mobile */
+    .schedule-group-card { min-width: 280px !important; max-width: 300px !important; margin-right: 10px !important; }
+    .sg-time { font-size: 14px !important; padding-right: 8px !important; }
+    .sg-title { font-size: 12px !important; }
+    .sc-detail-row { grid-template-columns: 100px 35px 1fr !important; font-size: 12px !important; padding: 10px 12px !important; }
+
+    /* Table Mobile */
+    .ss-view-header { flex-direction: column; align-items: flex-start !important; gap: 10px; margin-bottom: 15px; }
+    .ss-search { width: 100% !important; box-sizing: border-box; }
+    
+    /* Hide non-essential table columns on mobile */
+    .ss-table th:nth-child(1), .ss-table td:nth-child(1),
+    .ss-table th:nth-child(2), .ss-table td:nth-child(2),
+    .ss-table th:nth-child(3), .ss-table td:nth-child(3),
+    .ss-table th:nth-child(7), .ss-table td:nth-child(7) { display: none; }
+
+    /* 💎 Luxury Bottom Navigation (Mobile Only) */
+    .ss-mobile-bottom-nav {
+        display: flex; position: fixed; bottom: 0; left: 0; width: 100%; height: 65px;
+        background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(15px);
+        border-top: 1px solid rgba(0,0,0,0.05); z-index: 2000;
+        justify-content: space-around; align-items: center;
+        box-shadow: 0 -5px 25px rgba(0,0,0,0.08);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+    .mobile-nav-item {
+        display: flex; flex-direction: column; align-items: center; gap: 4px;
+        background: none; border: none; color: #aaa; font-size: 10px; font-weight: 700;
+        cursor: pointer; flex: 1; transition: all 0.3s;
+    }
+    .mobile-nav-item .material-icons { font-size: 24px; }
+    .mobile-nav-item.active { color: var(--ss-orange-theme); }
+    .mobile-nav-item.active .material-icons { transform: translateY(-2px); text-shadow: 0 4px 10px rgba(255, 106, 0, 0.2); }
+}
+
+/* Hide mobile nav on desktop */
+@media (min-width: 769px) {
+    .ss-mobile-bottom-nav { display: none !important; }
+}

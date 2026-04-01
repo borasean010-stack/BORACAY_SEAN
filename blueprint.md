@@ -23,7 +23,12 @@ BORACAY SEAN is a comprehensive travel service website for Boracay, Philippines.
 ## Recently Implemented Changes (April 1, 2026)
 
 ### Admin UI & Consistency Updates
-- **Schedule Tab Visual Feedback:** Added an `active` state highlight (orange glow and translation) for "Today's Schedule" and "Tomorrow's Schedule" buttons in the admin panel to provide clear visual feedback on the currently viewed day.
+- **Luxury Mobile Admin View**: Implemented a responsive, high-end mobile interface for the admin panel.
+    - **Bottom Navigation**: Added a glassmorphism-style fixed bottom nav for quick access to Home, Schedule, New Reservations, and Confirmed list.
+    - **Dashboard Optimization**: Redesigned the main dashboard into a 2x2 grid for mobile, focusing on Today/Tomorrow schedules and reservation counts.
+    - **Responsive Data Views**: Optimized schedule cards and reservation tables for small screens, hiding non-essential columns and improving touch targets.
+- **Schedule Tab Visual Feedback**: Added an `active` state highlight (orange glow and translation) for "Today's Schedule" and "Tomorrow's Schedule" buttons in the admin panel.
+
 - **Date Awareness Enhancement:** Integrated a dynamic date display heading (`timeline-header`) in the schedule timeline section to clearly show which date's schedule is being viewed (e.g., "2026-04-01 일정").
 - **Resort Name Standardization:** Updated the `translateResort` function in `admin.js` and `resortMap` in `reservation-schedule.html` to ensure all resort names are consistently displayed in Korean (e.g., "헤난 가든", "헤난 팜비치", "크림슨") across the admin and voucher views.
 - **Representative Name Priority:** Modified `registerBulkSchedule` and `makeQuickVoucher` logic to prioritize the English name of the representative for display in the schedule list, ensuring a cleaner and more professional appearance.

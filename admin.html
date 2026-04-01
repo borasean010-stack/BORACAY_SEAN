@@ -219,6 +219,33 @@
         </div>
     </div>
 
+    <!-- 💎 Luxury Mobile Bottom Navigation -->
+    <nav class="ss-mobile-bottom-nav">
+        <button class="mobile-nav-item active" onclick="switchMainView(); updateMobileNav(this)">
+            <span class="material-icons">dashboard</span>
+            <span>홈</span>
+        </button>
+        <button class="mobile-nav-item" onclick="switchScheduleDay('today'); updateMobileNav(this)">
+            <span class="material-icons">calendar_today</span>
+            <span>오늘일정</span>
+        </button>
+        <button class="mobile-nav-item" onclick="switchAdminTab('new'); updateMobileNav(this)">
+            <span class="material-icons">inbox</span>
+            <span>신규예약</span>
+        </button>
+        <button class="mobile-nav-item" onclick="switchAdminTab('confirmed'); updateMobileNav(this)">
+            <span class="material-icons">task_alt</span>
+            <span>확정내역</span>
+        </button>
+    </nav>
+
+    <script>
+        // 모바일 네비게이션 활성화 상태 업데이트
+        window.updateMobileNav = (el) => {
+            document.querySelectorAll('.mobile-nav-item').forEach(item => item.classList.remove('active'));
+            el.classList.add('active');
+        };
+    </script>
     <script type="module" src="admin.js"></script>
 </body>
 </html>

@@ -804,8 +804,12 @@ document.addEventListener('DOMContentLoaded', () => {
             filtered = rawItems.filter(i => getCategory(i.name, i.details) !== '픽업/샌딩');
         }
 
-        // 시간순 정렬
-        filtered.sort((a, b) => a.time.localeCompare(b.time));
+        // 시간순 정렬 + 같은 시간일 경우 리조트순 정렬
+        filtered.sort((a, b) => {
+            const timeCompare = a.time.localeCompare(b.time);
+            if (timeCompare !== 0) return timeCompare;
+            return a.resort.localeCompare(b.resort);
+        });
 
         if (filtered.length === 0) { alert('해당 항목이 없습니다.'); return; }
 

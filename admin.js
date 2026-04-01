@@ -290,10 +290,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     const flightInfo = (it.flight && it.flight !== '-') ? `[${it.flight}] ` : "";
                     return `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')"><span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span><span class="sc-detail-resort">${flightInfo}${it.resort}</span></div>`;
                 }).join('');
-            } else if (group.category === '액티비티' || group.category === '랜드투어' || group.category === '시크릿가든 말룸파티') {
+            } else if (group.category === '액티비티' || group.category === '랜드투어') {
                 bodyHtml = group.items.map(it => {
                     const prefix = group.category === '액티비티' ? `<span style="font-size:11px; color:#999; margin-right:5px;">[${it.name}]</span>` : "";
-                    const resortStr = (group.category === '랜드투어' || group.category === '액티비티' || group.category === '시크릿가든 말룸파티') ? `<span class="sc-detail-resort">${it.resort}</span>` : "";
+                    const resortStr = `<span class="sc-detail-resort">${it.resort}</span>`;
                     return `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')">${prefix}<span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span>${resortStr}</div>`;
                 }).join('');
             } else {

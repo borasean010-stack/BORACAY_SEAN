@@ -569,8 +569,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         else if (lowerLine.includes('hilot') || lowerLine.includes('힐롯')) itemName = "힐롯마사지";
                         else if (lowerLine.includes('poseidon') || lowerLine.includes('포세이돈')) itemName = "포세이돈";
                         else if (lowerLine.includes('maris') || lowerLine.includes('마리스')) itemName = "마리스";
-                        else if (lowerLine.includes('helios') || lowerLine.includes('헬리오스')) itemName = "헬리오스";
+                        else if (lowerLine.includes('diving') || lowerLine.includes('다이빙')) itemName = "체험다이빙";
+                        else if (lowerLine.includes('golf') || lowerLine.includes('골프')) itemName = "골프";
                         else if (lowerLine.includes('마사지') || lowerLine.includes('스파')) itemName = "마사지";
+
 
                         // 세부 인원 (태반4 등)
                         let itemPax = totalPax;
@@ -752,6 +754,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     else if (lowerLine.includes('helmet') || lowerLine.includes('헬멧')) itemName = '헬멧다이빙';
                     else if (lowerLine.includes('para') || lowerLine.includes('파라')) itemName = '파라세일링';
                     else if (lowerLine.includes('diving') || lowerLine.includes('다이빙')) itemName = '체험다이빙';
+                    else if (lowerLine.includes('golf') || lowerLine.includes('골프')) itemName = '골프';
                     
                     if (line.includes('afh') || line.includes('AFH')) itemTime = "18:00";
                     else if (line.includes('afm') || line.includes('AFM')) itemTime = "17:00";

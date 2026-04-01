@@ -182,37 +182,42 @@
     function getAirportName(flight) {
         if (!flight) return "칼리보 공항";
         const fl = flight.toUpperCase().replace(/\s/g, '');
-        // 국제선 및 칼리보 직항 패턴 (KLO)
-        if (fl.startsWith('TW') || fl.startsWith('7C') || fl.startsWith('LJ') || fl.startsWith('BX') || 
-            fl.startsWith('ZE') || fl.startsWith('RS') || fl.startsWith('KE') || fl.startsWith('OZ') || 
-            fl.startsWith('PR4') || fl.startsWith('PR14') || fl.startsWith('5J1') || fl.includes('KLO')) {
-            return "칼리보 공항";
-        }
-        // 카티클란 (MPH) 국내선 대표 패턴
-        if (fl.startsWith('DG') || fl.startsWith('PR20') || fl.startsWith('5J8') || fl.startsWith('5J9') || 
-            fl.startsWith('Z22') || fl.includes('MPH')) {
+        
+        // 1. 카티클란 (MPH) 국내선 대표 패턴 (매우 구체적으로 설정)
+        if (fl.startsWith('PR20') || fl.startsWith('5J8') || fl.startsWith('5J9') || 
+            fl.startsWith('DG') || fl.startsWith('Z22') || fl.includes('MPH')) {
             return "카티클란 공항";
         }
-        // 그 외 국내선 항공사 패턴은 카티클란일 확률이 높으므로 국내선 기본값은 카티클란
+        
+        // 2. 칼리보 (KLO) 패턴 (국제선 및 칼리보 국내선)
+        if (fl.startsWith('TW') || fl.startsWith('7C') || fl.startsWith('LJ') || fl.startsWith('BX') || 
+            fl.startsWith('ZE') || fl.startsWith('RS') || fl.startsWith('KE') || fl.startsWith('OZ') || 
+            fl.startsWith('PR4') || fl.startsWith('PR14') || fl.startsWith('5J1') || 
+            fl.startsWith('PR29') || fl.startsWith('Z27') || fl.includes('KLO')) {
+            return "칼리보 공항";
+        }
+        
+        // 3. 기본값 (알 수 없는 경우 카티클란으로 안내하여 안전성 확보)
         return "카티클란 공항";
     }
 
     // --- 📅 투어별 상세 안내문 생성기 ---
     function getTourGuidance(name, item, res) {
         const details = (item.details || "").toLowerCase();
+        const lowerName = name.toLowerCase();
         const tourMonth = item.date ? parseInt(item.date.split('-')[1]) : new Date().getMonth() + 1;
         const isDrySeason = tourMonth <= 5 || tourMonth >= 11;
 
-        // 1. 공항 픽업
-        if (name.includes('공항 픽업')) {
-            const airport = getAirportName(res.pickupFlight);
+        // 1. 공항 픽업 (명칭 유연하게 매칭)
+        if (lowerName.includes('공항 픽업') || lowerName.includes('meeting') || lowerName.includes('pickup')) {
+            const airport = getAirportName(res.pickupFlight || item.details);
             return `<div class="guidance-box"><b>미팅 장소 : ${airport} 밖 피켓 대기</b>\n\n★공항 밖에서 보라카이션 픽업 직원이 보라카이션 피켓을 들고 대기 하고 있습니다.\n픽업 직원과 대표자 성함 확인 후 안내에 따라 주시기 바랍니다. 항공이 딜레이가 되도 기다립니다.</div>`;
         }
-        // 2. 공항 샌딩
-        if (name.includes('공항 샌딩')) {
+        // 2. 공항 샌딩 (명칭 유연하게 매칭)
+        if (lowerName.includes('공항 샌딩') || lowerName.includes('sending')) {
             const rawResort = res.sendingResort || res.pickupResort || '';
             let sendingPlace = getKorResort(rawResort);
-            const airport = getAirportName(res.sendingFlight);
+            const airport = getAirportName(res.sendingFlight || item.details);
             
             // 📍 페어웨이 정문 게이트 규칙 적용
             if (sendingPlace.includes('페어웨이')) {

@@ -726,7 +726,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     const timeMatch = line.match(/(\d{1,2}):(\d{2})/); if (timeMatch) itemTime = `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}`;
                     const lowerLine = line.toLowerCase();
-                    if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = '에스파(SSPA)';
+                    
+                    if (lowerLine.includes('meeting') || lowerLine.includes('pickup') || lowerLine.includes('픽업')) itemName = '공항 픽업';
+                    else if (lowerLine.includes('sending') || lowerLine.includes('샌딩')) itemName = '공항 샌딩';
+                    else if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = '에스파(SSPA)';
                     else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = '루나스파';
                     else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = '보라스파';
                     else if (lowerLine.includes('kabayan') || lowerLine.includes('카바얀')) itemName = '카바얀';

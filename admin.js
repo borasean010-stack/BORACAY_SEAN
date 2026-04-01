@@ -292,9 +292,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }).join('');
             } else if (group.category === '액티비티' || group.category === '랜드투어') {
                 bodyHtml = group.items.map(it => {
-                    const prefix = group.category === '액티비티' ? `<span style="font-size:11px; color:#999; margin-right:5px;">[${it.name}]</span>` : "";
-                    const resortStr = `<span class="sc-detail-resort">${it.resort}</span>`;
-                    return `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')">${prefix}<span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span>${resortStr}</div>`;
+                    const prefix = group.category === '액티비티' ? `[${it.name}] ` : "";
+                    return `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')"><span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span><span class="sc-detail-resort">${prefix}${it.resort}</span></div>`;
                 }).join('');
             } else {
                 bodyHtml = group.items.map(it => {

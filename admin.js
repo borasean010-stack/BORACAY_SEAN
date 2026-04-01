@@ -677,7 +677,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         rows.forEach(row => {
             if (row.length < 16) return;
-            // ... (기존 이름 처리 로직 유지)
+            const p10 = (row[10] || '').trim();
+            const p15 = (row[15] || '').trim().replace(/\n/g, ', ');
+            const isP10Korean = /[가-힣]/.test(p10);
+            let korName = p15; let engName = p10;
+            if (isP10Korean && !p10.includes(' ')) { korName = p10; engName = p15.toUpperCase(); }
+            else if (p15.includes('맘') || p15.includes('아빠') || p15.includes('네') || p15.length > 5) { if (isP10Korean) { korName = p10; engName = p15.toUpperCase(); } }
+            else { engName = p10.toUpperCase(); korName = p15; }
             combinedKorNames.push(engName ? `${engName} (${korName || ''})`.replace(' ()', '') : (korName || '고객'));
 
             if (!firstPickupFlight) firstPickupFlight = (row[2] || '').trim().toUpperCase();

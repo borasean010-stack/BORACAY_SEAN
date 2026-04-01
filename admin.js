@@ -558,7 +558,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             else itemName = "블랙펄 선셋 호핑투어";
                             if (!timeMatch) itemTime = lowerLine.includes('j') ? "12:30" : "13:30";
                         }
-                        else if (lowerLine.includes('malum') || lowerLine.includes('말룸')) itemName = "시크릿가든 말룸파티";
+                        else if (lowerLine.includes('malum') || lowerLine.includes('말룸')) {
+                            itemName = "시크릿가든 말룸파티";
+                            if (!timeMatch) itemTime = "09:40";
+                        }
                         else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = "루나스파";
                         else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = "보라스파";
                         else if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = "에스파(SSPA)";
@@ -744,7 +747,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     else if (lowerLine.includes('helios') || lowerLine.includes('헬리오스')) itemName = '헬리오스';
                     else if (lowerLine.includes('land') || lowerLine.includes('랜드')) { itemName = '보라카이 랜드투어'; if(!timeMatch) itemTime = "10:30"; }
                     else if (lowerLine.includes('hopping') || lowerLine.includes('호핑')) { if (lowerLine.includes('(j)') || lowerLine.includes('점보')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!timeMatch) itemTime = "12:30"; } else { itemName = '블랙펄 선셋 호핑투어'; if(!timeMatch) itemTime = "13:30"; } }
-                    else if (lowerLine.includes('malum') || lowerLine.includes('말룸')) { itemName = '시크릿가든 말룸파티'; if(!timeMatch) itemTime = "09:00"; }
+                    else if (lowerLine.includes('malum') || lowerLine.includes('말룸')) { itemName = '시크릿가든 말룸파티'; if(!timeMatch) itemTime = "09:40"; }
                     else if (lowerLine.includes('jetski') || lowerLine.includes('제트스키')) itemName = '제트스키';
                     else if (lowerLine.includes('helmet') || lowerLine.includes('헬멧')) itemName = '헬멧다이빙';
                     else if (lowerLine.includes('para') || lowerLine.includes('파라')) itemName = '파라세일링';

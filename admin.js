@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (combined.includes('픽업') || combined.includes('샌딩')) return '픽업/샌딩';
         if (combined.includes('hopping') || combined.includes('호핑')) return '호핑투어';
         if (combined.includes('land') || combined.includes('랜드')) return '랜드투어';
-        if (combined.includes('malum') || combined.includes('말룸')) return '말룸파티';
+        if (combined.includes('malum') || combined.includes('말룸')) return '시크릿가든 말룸파티';
         return '액티비티';
     }
 
@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let groupTitle = item.name;
             if (cat === '픽업/샌딩') {
                 groupTitle = (item.flight !== '-' && item.flight) ? item.flight : '기타 항공편';
-            } else if (cat === '호핑투어' || cat === '말룸파티' || cat === '랜드투어') {
+            } else if (cat === '호핑투어' || cat === '시크릿가든 말룸파티' || cat === '랜드투어') {
                 groupTitle = cat;
             } else if (item.name.toLowerCase().includes('마사지') || item.name.toLowerCase().includes('스파')) {
                 groupTitle = item.name.replace(/마사지|스파|\(|\)/g, '').trim() || '마사지';
@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let icon = "event_available", catClass = "cat-activity", catLabel = group.category;
             if (group.category === '픽업/샌딩') { icon = "local_airport"; catClass = "cat-pickup"; catLabel = "픽업/샌딩"; }
             else if (group.category === '호핑투어') { icon = "sailing"; catClass = "cat-hopping"; catLabel = "호핑투어"; }
-            else if (group.category === '말룸파티') { icon = "nature_people"; catClass = "cat-malum"; catLabel = "말룸파티"; }
+            else if (group.category === '시크릿가든 말룸파티') { icon = "nature_people"; catClass = "cat-malum"; catLabel = "시크릿가든 말룸파티"; }
             else if (group.category === '랜드투어') { icon = "directions_car"; catClass = "cat-activity"; catLabel = "랜드투어"; }
             
             const isSpa = group.items.some(it => it.name.toLowerCase().includes('마사지') || it.name.toLowerCase().includes('스파'));
@@ -290,10 +290,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     const flightInfo = (it.flight && it.flight !== '-') ? `[${it.flight}] ` : "";
                     return `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')"><span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span><span class="sc-detail-resort">${flightInfo}${it.resort}</span></div>`;
                 }).join('');
-            } else if (group.category === '액티비티' || group.category === '랜드투어' || group.category === '말룸파티') {
+            } else if (group.category === '액티비티' || group.category === '랜드투어' || group.category === '시크릿가든 말룸파티') {
                 bodyHtml = group.items.map(it => {
                     const prefix = group.category === '액티비티' ? `<span style="font-size:11px; color:#999; margin-right:5px;">[${it.name}]</span>` : "";
-                    const resortStr = (group.category === '랜드투어' || group.category === '액티비티') ? `<span class="sc-detail-resort">${it.resort}</span>` : "";
+                    const resortStr = (group.category === '랜드투어' || group.category === '액티비티' || group.category === '시크릿가든 말룸파티') ? `<span class="sc-detail-resort">${it.resort}</span>` : "";
                     return `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')">${prefix}<span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span>${resortStr}</div>`;
                 }).join('');
             } else {
@@ -558,7 +558,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             else itemName = "블랙펄 선셋 호핑투어";
                             if (!timeMatch) itemTime = lowerLine.includes('j') ? "12:30" : "13:30";
                         }
-                        else if (lowerLine.includes('malum') || lowerLine.includes('말룸')) itemName = "말룸파티";
+                        else if (lowerLine.includes('malum') || lowerLine.includes('말룸')) itemName = "시크릿가든 말룸파티";
                         else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = "루나스파";
                         else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = "보라스파";
                         else if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = "에스파(SSPA)";
@@ -744,7 +744,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     else if (lowerLine.includes('helios') || lowerLine.includes('헬리오스')) itemName = '헬리오스';
                     else if (lowerLine.includes('land') || lowerLine.includes('랜드')) { itemName = '보라카이 랜드투어'; if(!timeMatch) itemTime = "10:30"; }
                     else if (lowerLine.includes('hopping') || lowerLine.includes('호핑')) { if (lowerLine.includes('(j)') || lowerLine.includes('점보')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!timeMatch) itemTime = "12:30"; } else { itemName = '블랙펄 선셋 호핑투어'; if(!timeMatch) itemTime = "13:30"; } }
-                    else if (lowerLine.includes('malum') || lowerLine.includes('말룸')) { itemName = '말룸파티'; if(!timeMatch) itemTime = "09:00"; }
+                    else if (lowerLine.includes('malum') || lowerLine.includes('말룸')) { itemName = '시크릿가든 말룸파티'; if(!timeMatch) itemTime = "09:00"; }
                     else if (lowerLine.includes('jetski') || lowerLine.includes('제트스키')) itemName = '제트스키';
                     else if (lowerLine.includes('helmet') || lowerLine.includes('헬멧')) itemName = '헬멧다이빙';
                     else if (lowerLine.includes('para') || lowerLine.includes('파라')) itemName = '파라세일링';

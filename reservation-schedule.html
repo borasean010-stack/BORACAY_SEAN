@@ -354,42 +354,49 @@
                 const rawItems = res.items || [];
 
                 rawItems.forEach(item => {
-                    if (item.name.includes('픽업샌딩')) {
-                        allItems.push({
-                            name: `✈️ 공항 픽업 (${(res.pickupFlight || '').toUpperCase()})`,
-                            date: item.pickupDate || res.pickupDate || item.date,
-                            time: "14:00",
-                            count: item.count,
-                            details: item.details
-                        });
-                        
-                        // 📍 공항 샌딩 시간 규칙 적용
-                        let flight = (res.sendingFlight || '').toUpperCase().trim();
-                        let sandingTime = res.sendingTime;
-                        
-                        if (!sandingTime) {
-                            if (flight === 'TW126') {
-                                sandingTime = isStation10(res.sendingResort || res.pickupResort) ? "08:10" : "08:30";
-                            } else if (flight.startsWith('TW') || flight.startsWith('5J') || flight.startsWith('Z2') || flight.startsWith('DG') || (flight.startsWith('PR') && !['PR469', 'PR489'].includes(flight))) {
-                                // ✈️ 국내선 또는 사용자 지정 항공편 (샌딩 시간 전날 재안내)
-                                sandingTime = "전날 재안내";
-                            } else {
-                                sandingTime = "21:00"; // 기타 국제선 기본값
-                            }
+                    const itemName = item.name || '';
+                    if (itemName.includes('픽업샌딩') || itemName.includes('픽업') || itemName.includes('샌딩')) {
+                        // 1. 공항 픽업 아이템 추가 (왕복 또는 픽업 포함 시)
+                        if (itemName.includes('픽업샌딩') || itemName.includes('픽업')) {
+                            allItems.push({
+                                name: `✈️ 공항 픽업 (${(res.pickupFlight || '').toUpperCase()})`,
+                                date: item.pickupDate || res.pickupDate || item.date,
+                                time: item.pickupTime || "14:00",
+                                count: item.count,
+                                details: item.details
+                            });
                         }
 
-                        allItems.push({
-                            name: `✈️ 공항 샌딩 (${(res.sendingFlight || '').toUpperCase()})`,
-                            date: item.sendingDate || res.sendingDate || item.date,
-                            time: sandingTime,
-                            count: item.count,
-                            details: item.details
-                        });
+                        // 2. 공항 샌딩 아이템 추가 (왕복 또는 샌딩 포함 시)
+                        if (itemName.includes('픽업샌딩') || itemName.includes('샌딩')) {
+                            // 📍 공항 샌딩 시간 규칙 적용
+                            let flight = (res.sendingFlight || item.flight || '').toUpperCase().trim();
+                            let sandingTime = res.sendingTime || item.time;
+
+                            // 숫자가 아닌 시간(이미 전날 재안내 등)이거나 수동 입력값이 없을 때만 자동 계산
+                            if (!sandingTime || sandingTime.includes(':')) {
+                                if (flight === 'TW126') {
+                                    sandingTime = isStation10(res.sendingResort || res.pickupResort) ? "08:10" : "08:30";
+                                } else if (flight.startsWith('TW') || flight.startsWith('5J') || flight.startsWith('Z2') || flight.startsWith('DG') || (flight.startsWith('PR') && !['PR469', 'PR489'].includes(flight))) {
+                                    // ✈️ 국내선 또는 사용자 지정 항공편 (샌딩 시간 전날 재안내)
+                                    sandingTime = "전날 재안내";
+                                } else if (flight) {
+                                    sandingTime = "21:00"; // 기타 국제선 기본값
+                                }
+                            }
+
+                            allItems.push({
+                                name: `✈️ 공항 샌딩 (${flight})`,
+                                date: item.sendingDate || res.sendingDate || item.date,
+                                time: sandingTime,
+                                count: item.count,
+                                details: item.details
+                            });
+                        }
                     } else {
                         allItems.push(item);
                     }
                 });
-
                 allItems.sort((a, b) => (a.date || "").localeCompare(b.date || "") || (a.time || "00:00").localeCompare(b.time || "00:00"));
 
                 const list = document.getElementById('item-list');

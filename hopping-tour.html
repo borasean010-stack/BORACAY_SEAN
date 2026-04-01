@@ -104,6 +104,12 @@
         }
         .m-btn-buy { flex: 1; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 17px; font-weight: 800; }
     }
+    /* 🎥 상품 미리보기 영상 전용 스타일 */
+    .preview-video-container { width: 100%; background: #000; margin-bottom: 20px; overflow: hidden; line-height: 0; }
+    .preview-video { width: 100%; height: auto; max-height: 80vh; object-fit: cover; display: block; margin: 0 auto; }
+    @media (max-width: 768px) {
+        .preview-video { max-height: none; aspect-ratio: 9/16; }
+    }
 </style>
 </head>
 <body>
@@ -147,6 +153,13 @@
     </div>
 </div>
 <div class="tour-detail-container">
+    <!-- 🎥 상품 미리보기 영상 (최상단) -->
+    <div class="preview-video-container">
+        <video class="preview-video" autoplay muted loop playsinline>
+            <source src="hopping.mp4" type="video/mp4">
+            브라우저가 비디오 태그를 지원하지 않습니다.
+        </video>
+    </div>
     <div class="tour-content">
         <h1>블랙펄 요트 호핑투어</h1>
         <div class="section-title">투어 일정</div>

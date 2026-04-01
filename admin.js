@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (n.includes('movenpick')) return '모벤픽';
         if (n.includes('shangri')) return '샹그릴라';
         if (n.includes('astoria')) return '아스토리아';
-        if (n.includes('mandarin') || n.includes('mbay')) return '만다린 베이';
+        if (n.includes('mandarin') || n.includes('mbay') || n === 'mbay' || n === 'm bay') return '만다린 베이';
         if (n.includes('lind')) return '더 린드';
         if (n.includes('feliz')) return '펠리즈';
         if (n.includes('coast')) return '코스트';
@@ -482,7 +482,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const engName = (row[10] || '').trim();
                 const korNameOnly = (row[15] || '').trim();
-                const customerName = korNameOnly ? `${korNameOnly} (${engName})` : (engName || '고객');
+                const customerName = engName ? `${engName} (${korNameOnly || ''})`.replace(' ()', '') : (korNameOnly || '고객');
                 const remarks = (row[16] || '').trim();
                 
                 const p1 = parseInt(row[11]) || 0;
@@ -676,7 +676,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let korName = p15; let engName = p10;
             if (isP10Korean && !p10.includes(' ')) { korName = p10; engName = p15; }
             else if (p15.includes('맘') || p15.includes('아빠') || p15.includes('네') || p15.length > 5) { if (isP10Korean) { korName = p10; engName = p15; } }
-            combinedKorNames.push(`${korName} (${engName})`);
+            combinedKorNames.push(engName ? `${engName} (${korName || ''})`.replace(' ()', '') : (korName || '고객'));
 
             totalAdults += (parseInt(row[11]) || 0);
             totalChildren += (parseInt(row[12]) || 0);

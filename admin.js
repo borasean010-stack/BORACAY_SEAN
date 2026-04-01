@@ -474,8 +474,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const pickupFlight = (row[2] || '').trim();
                 const sendingFlight = (row[3] || '').trim();
                 const resortRaw = (row[9] || '').trim();
-                const korName = (row[15] || row[16] || row[10] || '고객').trim();
-                const remarks = (row[16] || row[17] || '').trim();
+                
+                const engName = (row[10] || '').trim();
+                const korNameOnly = (row[15] || '').trim();
+                const customerName = korNameOnly ? `${korNameOnly} (${engName})` : (engName || '고객');
+                const remarks = (row[16] || '').trim();
                 
                 const p1 = parseInt(row[11]) || 0;
                 const p2 = parseInt(row[12]) || 0;
@@ -493,11 +496,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 1. 공항 픽업 등록
                 const pDate = formatDate(pickupDateRaw);
                 if (pDate && pickupFlight && pickupFlight !== '-') {
-                    let pTime = "14:00"; // 기본 14:00 (TW125 포함)
+                    let pTime = "14:00"; // TW125 포함 모든 픽업 기본 14:00
                     const docRef = doc(collection(db, "schedules"));
                     batch.set(docRef, {
                         date: pDate, time: pTime, name: "공항 픽업",
-                        customerName: korName, count: totalPax, flight: pickupFlight,
+                        customerName: customerName, count: totalPax, flight: pickupFlight,
                         resort: translateResort(resortRaw), details: `픽업편: ${pickupFlight}`,
                         createdAt: new Date()
                     });
@@ -511,7 +514,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const docRef = doc(collection(db, "schedules"));
                     batch.set(docRef, {
                         date: sDate, time: sTime, name: "공항 샌딩",
-                        customerName: korName, count: totalPax, flight: sendingFlight,
+                        customerName: customerName, count: totalPax, flight: sendingFlight,
                         resort: translateResort(resortRaw), details: `샌딩편: ${sendingFlight}`,
                         createdAt: new Date()
                     });
@@ -558,7 +561,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const docRef = doc(collection(db, "schedules"));
                         batch.set(docRef, {
                             date: itemDate, time: itemTime, name: itemName,
-                            customerName: korName, count: itemPax,
+                            customerName: customerName, count: itemPax,
                             resort: translateResort(resortRaw), details: line.trim(),
                             createdAt: new Date()
                         });

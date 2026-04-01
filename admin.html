@@ -129,17 +129,18 @@
                     </div>
                 </div>
 
-                <!-- 일정표 섹션 -->
                 <div class="timeline-section">
                     <div class="timeline-header">
-                        <div class="timeline-title"><span class="material-icons">calendar_today</span> <span id="schedule-title-date">-</span> 일정</div>
-                        <div class="filter-bar">
-                            <button class="filter-btn active" onclick="filterSchedule('all')">전체</button>
-                            <button class="filter-btn" onclick="filterSchedule('픽업/샌딩')">픽업/샌딩</button>
-                            <button class="filter-btn" onclick="filterSchedule('호핑투어')">호핑투어</button>
-                            <button class="filter-btn" onclick="filterSchedule('말룸파티')">말룸파티</button>
-                            <button class="filter-btn" onclick="filterSchedule('랜드투어')">랜드투어</button>
-                            <button class="filter-btn" onclick="filterSchedule('액티비티')">액티비티</button>
+                        <div style="display:flex; align-items:center; gap:20px;">
+                            <div class="timeline-title"><span class="material-icons">calendar_today</span> <span id="schedule-title-date">-</span> 일정</div>
+                            <div class="filter-bar" style="border-bottom:none; padding-bottom:0; margin-bottom:0;">
+                                <button class="filter-btn active" onclick="filterSchedule('all')">전체</button>
+                                <button class="filter-btn" onclick="filterSchedule('픽업/샌딩')">픽업/샌딩</button>
+                                <button class="filter-btn" onclick="filterSchedule('호핑투어')">호핑투어</button>
+                                <button class="filter-btn" onclick="filterSchedule('말룸파티')">말룸파티</button>
+                                <button class="filter-btn" onclick="filterSchedule('랜드투어')">랜드투어</button>
+                                <button class="filter-btn" onclick="filterSchedule('액티비티')">액티비티</button>
+                            </div>
                         </div>
                     </div>
                     <div id="active-timeline" class="timeline-content">

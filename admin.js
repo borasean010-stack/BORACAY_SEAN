@@ -31,8 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // 🚀 리조트 번역기 (한글 우선)
     function translateResort(name) {
         if (!name || name === '-') return '-';
-        const n = name.toLowerCase().replace(/\s/g, '').replace(/\./g, '');
-        if (n.includes('hgarden') || n.includes('henanngarden')) return '헤난 가든';
+        const n = name.toLowerCase().replace(/\s/g, '').replace(/\./g, '').replace(/,/g, '');
+        if (n.includes('hgarden') || n.includes('henanngarden') || n.includes('asya')) return '헤난 가든';
         if (n.includes('lagoon')) return '헤난 라군';
         if (n.includes('prime')) return '헤난 프라임';
         if (n.includes('palm')) return '헤난 팜비치';
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (n.includes('movenpick')) return '모벤픽';
         if (n.includes('shangri')) return '샹그릴라';
         if (n.includes('astoria')) return '아스토리아';
-        if (n.includes('mandarin')) return '만다린베이';
+        if (n.includes('mandarin') || n.includes('mbay')) return '만다린 베이';
         if (n.includes('lind')) return '더 린드';
         if (n.includes('feliz')) return '펠리즈';
         if (n.includes('coast')) return '코스트';
@@ -265,10 +265,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isSpa) icon = "spa";
 
             let headerTitle = `${group.title} (${group.totalCount}명)`;
-            if (isSpa) {
-                const hasShuttle = ["SSPA", "루나", "보라"].some(s => group.title.includes(s));
-                headerTitle = `${group.title} (${hasShuttle ? '셔틀O' : '셔틀X'}) (${group.totalCount}명)`;
-            }
 
             let bodyHtml = "";
             if (group.category === '호핑투어') {
@@ -285,10 +281,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     bodyHtml += withoutJumbo.map(it => `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')"><span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span></div>`).join('');
                 }
             } else if (isSpa) {
-                const hasShuttle = ["SSPA", "루나", "보라"].some(s => group.title.includes(s));
                 bodyHtml += group.items.map(it => {
-                    const resortStr = hasShuttle ? `<span class="sc-detail-resort">${it.resort}</span>` : "";
-                    return `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')"><span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span>${resortStr}</div>`;
+                    return `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')"><span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span><span class="sc-detail-resort">${it.resort}</span></div>`;
                 }).join('');
             } else if (group.category === '픽업/샌딩') {
                 bodyHtml = group.items.map(it => {
@@ -488,7 +482,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const engName = (row[10] || '').trim();
                 const korNameOnly = (row[15] || '').trim();
-                const customerName = engName || korNameOnly || '고객';
+                const customerName = korNameOnly ? `${korNameOnly} (${engName})` : (engName || '고객');
                 const remarks = (row[16] || '').trim();
                 
                 const p1 = parseInt(row[11]) || 0;
@@ -682,7 +676,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let korName = p15; let engName = p10;
             if (isP10Korean && !p10.includes(' ')) { korName = p10; engName = p15; }
             else if (p15.includes('맘') || p15.includes('아빠') || p15.includes('네') || p15.length > 5) { if (isP10Korean) { korName = p10; engName = p15; } }
-            combinedKorNames.push(engName || korName || '고객');
+            combinedKorNames.push(`${korName} (${engName})`);
 
             totalAdults += (parseInt(row[11]) || 0);
             totalChildren += (parseInt(row[12]) || 0);

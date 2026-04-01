@@ -189,7 +189,7 @@ body.smartstore-admin { margin: 0; padding: 0; background: var(--ss-bg); font-fa
 .sc-detail-row {
     padding: 8px 15px;
     display: grid;
-    grid-template-columns: 80px 40px 1fr;
+    grid-template-columns: 140px 40px 1fr;
     gap: 10px;
     font-size: 13px;
     border-bottom: 1px solid #f9fafb;
@@ -249,7 +249,7 @@ body.smartstore-admin { margin: 0; padding: 0; background: var(--ss-bg); font-fa
 .sc-detail-row {
     padding: 8px 15px;
     display: grid;
-    grid-template-columns: 80px 40px 1fr;
+    grid-template-columns: 140px 40px 1fr;
     gap: 10px;
     font-size: 13px;
     border-bottom: 1px solid #f9fafb;

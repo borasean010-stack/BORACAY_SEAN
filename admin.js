@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (n.includes('movenpick')) return '모벤픽';
         if (n.includes('shangri')) return '샹그릴라';
         if (n.includes('astoria')) return '아스토리아';
-        if (n.includes('mandarin') || n.includes('mbay') || n === 'mbay' || n === 'm bay') return '만다린 베이';
+        if (n.includes('mandarin') || n.includes('mbay') || n.includes('m,bay') || n === 'mbay' || n === 'm bay') return '만다린 베이';
         if (n.includes('lind')) return '더 린드';
         if (n.includes('feliz')) return '펠리즈';
         if (n.includes('coast')) return '코스트';
@@ -481,7 +481,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const sendingFlight = (row[3] || '').trim();
                 const resortRaw = (row[9] || '').trim();
                 
-                const engName = (row[10] || '').trim();
+                const engName = (row[10] || '').trim().toUpperCase();
                 const korNameOnly = (row[15] || '').trim();
                 const customerName = engName ? `${engName} (${korNameOnly || ''})`.replace(' ()', '') : (korNameOnly || '고객');
                 const remarks = (row[16] || '').trim();
@@ -675,8 +675,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const p15 = (row[15] || '').trim().replace(/\n/g, ', ');
             const isP10Korean = /[가-힣]/.test(p10);
             let korName = p15; let engName = p10;
-            if (isP10Korean && !p10.includes(' ')) { korName = p10; engName = p15; }
-            else if (p15.includes('맘') || p15.includes('아빠') || p15.includes('네') || p15.length > 5) { if (isP10Korean) { korName = p10; engName = p15; } }
+            if (isP10Korean && !p10.includes(' ')) { korName = p10; engName = p15.toUpperCase(); }
+            else if (p15.includes('맘') || p15.includes('아빠') || p15.includes('네') || p15.length > 5) { if (isP10Korean) { korName = p10; engName = p15.toUpperCase(); } }
+            else { engName = p10.toUpperCase(); korName = p15; }
             combinedKorNames.push(engName ? `${engName} (${korName || ''})`.replace(' ()', '') : (korName || '고객'));
 
             totalAdults += (parseInt(row[11]) || 0);

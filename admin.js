@@ -255,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let headerTitle = `${group.title} (${group.totalCount}명)`;
             if (isSpa) {
-                const hasShuttle = ["에스파", "루나", "보라"].some(s => group.title.includes(s));
+                const hasShuttle = ["SSPA", "루나", "보라"].some(s => group.title.includes(s));
                 headerTitle = `${group.title} (${hasShuttle ? '셔틀O' : '셔틀X'}) (${group.totalCount}명)`;
             }
 
@@ -274,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     bodyHtml += withoutJumbo.map(it => `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')"><span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span></div>`).join('');
                 }
             } else if (isSpa) {
-                const hasShuttle = ["에스파", "루나", "보라"].some(s => group.title.includes(s));
+                const hasShuttle = ["SSPA", "루나", "보라"].some(s => group.title.includes(s));
                 bodyHtml += group.items.map(it => {
                     const resortStr = hasShuttle ? `<span class="sc-detail-resort">${it.resort}</span>` : "";
                     return `<div class="sc-detail-row" onclick="showDetail('${it.id}', '${it.source}')"><span class="sc-detail-name">${it.customer}</span><span class="sc-detail-pax">${it.count}인</span>${resortStr}</div>`;
@@ -550,7 +550,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         else if (lowerLine.includes('malum') || lowerLine.includes('말룸')) itemName = "말룸파티";
                         else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = "루나스파";
                         else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = "보라스파";
-                        else if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = "에스파(S-SPA)";
+                        else if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = "SSPA";
                         else if (lowerLine.includes('마사지') || lowerLine.includes('스파')) itemName = "마사지";
 
                         // 세부 인원 (태반4 등)
@@ -704,7 +704,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     const timeMatch = line.match(/(\d{1,2}):(\d{2})/); if (timeMatch) itemTime = `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}`;
                     const lowerLine = line.toLowerCase();
-                    if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = '에스파(S-SPA)';
+                    if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = 'SSPA';
                     else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = '루나스파';
                     else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = '보라스파';
                     else if (lowerLine.includes('land') || lowerLine.includes('랜드')) { itemName = '보라카이 랜드투어'; if(!timeMatch) itemTime = "10:30"; }

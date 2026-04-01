@@ -343,9 +343,18 @@
                         });
                         
                         // 📍 공항 샌딩 시간 규칙 적용
-                        let sandingTime = res.sendingTime || (res.sendingFlight?.toUpperCase() === 'TW126' ? "08:30" : "21:00");
-                        if (res.sendingFlight?.toUpperCase() === 'TW126' && isStation10(res.sendingResort || res.pickupResort)) {
-                            sandingTime = "08:10";
+                        let flight = (res.sendingFlight || '').toUpperCase().trim();
+                        let sandingTime = res.sendingTime;
+                        
+                        if (!sandingTime) {
+                            if (flight === 'TW126') {
+                                sandingTime = isStation10(res.sendingResort || res.pickupResort) ? "08:10" : "08:30";
+                            } else if (flight.startsWith('TW') || flight.startsWith('5J') || flight.startsWith('Z2') || flight.startsWith('DG') || (flight.startsWith('PR') && !['PR469', 'PR489'].includes(flight))) {
+                                // ✈️ 국내선 또는 사용자 지정 항공편 (샌딩 시간 전날 재안내)
+                                sandingTime = "전날 재안내";
+                            } else {
+                                sandingTime = "21:00"; // 기타 국제선 기본값
+                            }
                         }
 
                         allItems.push({

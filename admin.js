@@ -516,7 +516,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 2. 공항 샌딩 등록
                 const sDate = formatDate(sendingDateRaw);
                 if (sDate && sendingFlight && sendingFlight !== '-') {
-                    let sTime = sendingFlight.toUpperCase().includes('TW126') ? "08:30" : "21:00";
+                    const fl = sendingFlight.toUpperCase().trim();
+                    let sTime = "21:00";
+                    if (fl === 'TW126') sTime = "08:30";
+                    else if (fl.startsWith('TW') || fl.startsWith('5J') || fl.startsWith('Z2') || fl.startsWith('DG') || (fl.startsWith('PR') && !['PR469', 'PR489'].includes(fl))) sTime = "전날 재안내";
+                    
                     const docRef = doc(collection(db, "schedules"));
                     batch.set(docRef, {
                         date: sDate, time: sTime, name: "공항 샌딩",
@@ -701,7 +705,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${currentYear}-${m}-${d}`; };
             
             if (row[2] && row[2].match(/[A-Z]{2}\d+/)) { allItems.push({ name: `✈️ 공항 픽업 (${row[2].toUpperCase()})`, date: formatDate(row[0]), time: "14:00", count: totalPax }); }
-            if (row[3] && row[3].match(/[A-Z]{2}\d+/)) { allItems.push({ name: `✈️ 공항 샌딩 (${row[3].toUpperCase()})`, date: formatDate(row[1]), time: (row[3].toUpperCase() === 'TW126' ? "08:30" : "21:00"), count: totalPax }); }
+            if (row[3] && row[3].match(/[A-Z]{2}\d+/)) { 
+                const fl = row[3].toUpperCase().trim();
+                let sTime = "21:00";
+                if (fl === 'TW126') sTime = "08:30";
+                else if (fl.startsWith('TW') || fl.startsWith('5J') || fl.startsWith('Z2') || fl.startsWith('DG') || (fl.startsWith('PR') && !['PR469', 'PR489'].includes(fl))) sTime = "전날 재안내";
+                allItems.push({ name: `✈️ 공항 샌딩 (${fl})`, date: formatDate(row[1]), time: sTime, count: totalPax }); 
+            }
 
             const remarkRaw = (row[16] || '').trim();
             remarkRaw.split('\n').forEach(line => {

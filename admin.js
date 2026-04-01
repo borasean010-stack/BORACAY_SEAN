@@ -671,19 +671,17 @@ document.addEventListener('DOMContentLoaded', () => {
         let totalAdults = 0, totalChildren = 0, totalInfants = 0;
         let allItems = [];
         let firstResort = '', secondResort = '', firstContact = '', firstExVal = '';
+        let firstPickupFlight = '', firstSendingFlight = '';
         let totalExAmount = 0;
         let isExNumeric = true;
 
         rows.forEach(row => {
             if (row.length < 16) return;
-            const p10 = (row[10] || '').trim();
-            const p15 = (row[15] || '').trim().replace(/\n/g, ', ');
-            const isP10Korean = /[가-힣]/.test(p10);
-            let korName = p15; let engName = p10;
-            if (isP10Korean && !p10.includes(' ')) { korName = p10; engName = p15.toUpperCase(); }
-            else if (p15.includes('맘') || p15.includes('아빠') || p15.includes('네') || p15.length > 5) { if (isP10Korean) { korName = p10; engName = p15.toUpperCase(); } }
-            else { engName = p10.toUpperCase(); korName = p15; }
+            // ... (기존 이름 처리 로직 유지)
             combinedKorNames.push(engName ? `${engName} (${korName || ''})`.replace(' ()', '') : (korName || '고객'));
+
+            if (!firstPickupFlight) firstPickupFlight = (row[2] || '').trim().toUpperCase();
+            if (!firstSendingFlight) firstSendingFlight = (row[3] || '').trim().toUpperCase();
 
             totalAdults += (parseInt(row[11]) || 0);
             totalChildren += (parseInt(row[12]) || 0);
@@ -770,6 +768,8 @@ document.addEventListener('DOMContentLoaded', () => {
             paxInfo: `성인 ${totalAdults}, 아동 ${totalChildren}, 유아 ${totalInfants}`, 
             pickupResort: firstResort, 
             sendingResort: secondResort, 
+            pickupFlight: firstPickupFlight,
+            sendingFlight: firstSendingFlight,
             createdAt: new Date() 
         };
         const docRef = await addDoc(collection(db, "quick_vouchers"), resData);

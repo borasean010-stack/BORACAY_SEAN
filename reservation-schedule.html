@@ -362,18 +362,19 @@
                     const itemName = item.name || '';
                     if (itemName.includes('픽업샌딩') || itemName.includes('픽업') || itemName.includes('샌딩')) {
                         // 1. 공항 픽업 아이템 추가 (왕복 또는 픽업 포함 시)
-                        if (itemName.includes('픽업샌딩') || itemName.includes('픽업')) {
+                        if (itemName.includes('픽업샌딩') || itemName.includes('픽업') || itemName.toLowerCase().includes('meeting')) {
+                            const pFlight = (res.pickupFlight || '').toUpperCase().trim();
                             allItems.push({
-                                name: `✈️ 공항 픽업 (${(res.pickupFlight || '').toUpperCase()})`,
+                                name: pFlight ? `✈️ 공항 픽업 (${pFlight})` : `✈️ 공항 픽업`,
                                 date: item.pickupDate || res.pickupDate || item.date,
-                                time: item.pickupTime || "14:00",
+                                time: item.pickupTime || item.time || "14:00",
                                 count: item.count,
                                 details: item.details
                             });
                         }
 
                         // 2. 공항 샌딩 아이템 추가 (왕복 또는 샌딩 포함 시)
-                        if (itemName.includes('픽업샌딩') || itemName.includes('샌딩')) {
+                        if (itemName.includes('픽업샌딩') || itemName.includes('샌딩') || itemName.toLowerCase().includes('sending')) {
                             // 📍 공항 샌딩 시간 규칙 적용
                             let flight = (res.sendingFlight || item.flight || '').toUpperCase().trim();
                             let sandingTime = res.sendingTime || item.time;
@@ -391,13 +392,14 @@
                             }
 
                             allItems.push({
-                                name: `✈️ 공항 샌딩 (${flight})`,
+                                name: flight ? `✈️ 공항 샌딩 (${flight})` : `✈️ 공항 샌딩`,
                                 date: item.sendingDate || res.sendingDate || item.date,
                                 time: sandingTime,
                                 count: item.count,
                                 details: item.details
                             });
                         }
+
                     } else {
                         allItems.push(item);
                     }

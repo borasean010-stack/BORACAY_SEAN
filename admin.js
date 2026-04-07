@@ -452,45 +452,17 @@ document.addEventListener('DOMContentLoaded', () => {
     window.copyVoucherLink = (id, idx) => { const url = `${window.location.origin}/reservation-schedule.html?id=${id}${idx !== null ? `&itemIndex=${idx}` : ''}`; navigator.clipboard.writeText(url).then(() => alert('바우처 링크가 복사되었습니다.')); };
     window.copyCombinedVoucherLink = (contact) => { navigator.clipboard.writeText(`${window.location.origin}/reservation-schedule.html?contact=${encodeURIComponent(contact)}`).then(() => alert('통합 일정표 링크 복사 완료!')); };
     window.copyGuidance = (id) => { const res = allReservations.find(r => r.id === id); if (!res) return; let msg = `[보라카이션 예약 확정 안내]\n\n대표자: ${res.customerKorName}\n투어내역:\n${res.items.map(i => `- ${i.name} (${i.date} ${i.time || ''}) / ${i.count}명`).join('\n')}\n\n감사합니다.`; navigator.clipboard.writeText(msg).then(() => alert('안내문이 복사되었습니다.')); };
-    window.showInputArea = (type) => { window.hideInputArea(); document.getElementById(`input-area-${type}`).style.display = 'block'; window.scrollTo({ top: 0, behavior: 'smooth' }); };
+    window.showInputArea = (type) => { 
+        if (type === 'quote') {
+            window.open('admin-quote-maker.html', '_blank');
+            return;
+        }
+        window.hideInputArea(); 
+        document.getElementById(`input-area-${type}`).style.display = 'block'; 
+        window.scrollTo({ top: 0, behavior: 'smooth' }); 
+    };
     window.hideInputArea = () => { ['quick', 'reg', 'quote'].forEach(id => { const el = document.getElementById(`input-area-${id}`); if(el) el.style.display = 'none'; }); };
     window.closeModal = () => { document.getElementById('res-detail-modal').style.display = 'none'; };
-
-    window.createCustomQuote = async () => {
-        const customer = document.getElementById('quote-customer').value.trim();
-        const contact = document.getElementById('quote-contact').value.trim();
-        const itemsText = document.getElementById('quote-items-input').value.trim();
-        const total = parseInt(document.getElementById('quote-total').value) || 0;
-
-        if (!customer || !total || !itemsText) { alert('고객명, 상품정보, 총 금액은 필수입니다.'); return; }
-
-        const items = itemsText.split('\n').filter(l => l.trim()).map(line => {
-            const dateMatch = line.match(/(\d{1,2})\/(\d{1,2})/);
-            const countMatch = line.match(/(\d+)(?=명|인)/);
-            return {
-                name: line.replace(/(\d{1,2})\/(\d{1,2})|(\d+)(?=명|인)|명|인/g, '').trim(),
-                date: dateMatch ? `${new Date().getFullYear()}-${dateMatch[1].padStart(2, '0')}-${dateMatch[2].padStart(2, '0')}` : '-',
-                count: countMatch ? parseInt(countMatch[1]) : 0,
-                time: ''
-            };
-        });
-
-        try {
-            const docRef = await addDoc(collection(db, "reservations"), {
-                customerKorName: customer,
-                contact: contact,
-                items: items,
-                totalPrice: total,
-                status: '견적발송',
-                createdAt: new Date()
-            });
-            const url = `${window.location.origin}/quote.html?id=${docRef.id}`;
-            navigator.clipboard.writeText(url).then(() => {
-                alert('견적서 링크가 생성되어 복사되었습니다!');
-                window.hideInputArea();
-            });
-        } catch (e) { console.error(e); alert('생성 실패'); }
-    };
 
     window.registerBulkSchedule = async () => {
         const input = document.getElementById('schedule-reg-input').value.trim();

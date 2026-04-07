@@ -13,15 +13,15 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- 📦 상세 상품 및 옵션 데이터 (픽업/호핑 옵션 세분화) ---
+// --- 📦 상세 상품 및 옵션 데이터 (현지불 로직 반영) ---
 const PRODUCT_DATA = {
     "보라카이 왕복 픽업샌딩": [
         { name: "조인 픽업샌딩 ( Join )", price: 54900 },
-        { name: "단독 픽업샌딩 ( Private )", price: 180000 }
+        { name: "단독 픽업샌딩 ( 팀당 현지불 $40 별도 )", price: 54900 }
     ],
     "블랙펄 요트호핑투어": [
         { name: "점심 불포함 ( 선셋호핑 )", price: 85000 },
-        { name: "점심 포함 ( 점보크랩 식사 )", price: 125000 }
+        { name: "점심 포함 ( 인당 현지불 $30 별도 )", price: 85000 }
     ],
     "시크릿 가든 말룸파티": [
         { name: "일반 투어 ( 09:40 )", price: 99000 },

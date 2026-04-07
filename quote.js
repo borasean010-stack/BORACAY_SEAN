@@ -13,13 +13,15 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- 🏷️ 상품별 설정 (전체 마사지 샵 및 액티비티 시간 업데이트) ---
+// --- 🏷️ 상품별 설정 (셔틀 유무 정밀화) ---
 const PRODUCT_CONFIG = {
-    // 🌊 투어 (관리자 확정 상품)
-    "호핑": { noOptions: true, hasPickup: false, meetingInfo: "보라카이션 오피스 미팅 (개별 이동)" },
-    "말룸": { noOptions: true, hasPickup: false, meetingInfo: "보라카이션 오피스 미팅 (개별 이동)" },
-    
-    // 💆 마사지 - 셔틀 있음 (픽업 리조트 입력)
+    "호핑": { noOptions: true, hasPickup: false, meetingInfo: "" },
+    "말룸": { noOptions: true, hasPickup: false, meetingInfo: "" },
+    "에스파": { options: ["12:30", "14:30", "16:30", "18:30", "19:30"], hasPickup: false, meetingInfo: "" },
+    "루나": { options: ["10:00", "13:00", "16:00", "20:00"], hasPickup: false, meetingInfo: "" },
+    "보라스파": { options: ["10:00", "13:00", "16:00", "20:00"], hasPickup: false, meetingInfo: "" },
+    "카바얀": { options: ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"], hasPickup: false, meetingInfo: "" },
+    "태반": { options: ["10:00", "13:00", "16:00", "20:00"], hasPickup: false, meetingInfo: "" },
     "마리스": { options: ["10:00", "13:30", "16:30", "19:30"], hasPickup: true },
     "포세이돈": { options: ["10:00", "13:00", "16:00", "19:00"], hasPickup: true },
     "힐롯": { options: ["10:00", "13:00", "16:00", "19:00"], hasPickup: true },
@@ -28,24 +30,11 @@ const PRODUCT_CONFIG = {
     "아리스": { options: ["10:00", "13:00", "16:00", "19:30"], hasPickup: true },
     "가야": { options: ["10:00", "13:00", "16:00", "19:30"], hasPickup: true },
     "궁스파": { options: ["10:00", "13:30", "16:30", "19:30"], hasPickup: true },
-
-    // 💆 마사지 - 셔틀 없음 (개별 이동)
-    "에스파": { options: ["12:30", "14:30", "16:30", "18:30", "19:30"], hasPickup: false, meetingInfo: "직접 이동 상품 (셔틀 없음)" },
-    "루나": { options: ["10:00", "13:00", "16:00", "20:00"], hasPickup: false, meetingInfo: "직접 이동 상품 (셔틀 없음)" },
-    "보라스파": { options: ["10:00", "13:00", "16:00", "20:00"], hasPickup: false, meetingInfo: "직접 이동 상품 (셔틀 없음)" },
-    "카바얀": { options: ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"], hasPickup: false, meetingInfo: "직접 이동 상품 (셔틀 없음)" },
-    "태반": { options: ["10:00", "13:00", "16:00", "20:00"], hasPickup: false, meetingInfo: "직접 이동 상품 (셔틀 없음)" },
-
-    // 🏄 액티비티
     "다이빙": { options: ["09:00", "11:00", "13:00", "15:00"], hasPickup: true },
     "파라세일링": { options: ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"], hasPickup: true },
     "제트스키": { options: ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"], hasPickup: true },
     "헬멧": { options: ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"], hasPickup: true },
     "랜드투어": { options: ["10:30"], hasPickup: true },
-    "잠수함": { options: ["09:00", "10:00", "11:00", "13:00", "14:00", "15:00"], hasPickup: true },
-    "요트": { options: ["16:00"], hasPickup: true },
-    "선셋": { options: ["16:30", "17:00"], hasPickup: true },
-    
     "default": { options: ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"], hasPickup: true }
 };
 
@@ -114,9 +103,9 @@ function renderDynamicProductFields() {
         html += `
             <div class="product-spec-box">
                 <div class="product-spec-title"><span class="material-icons" style="color:var(--primary);">flight_takeoff</span> ✈️ 픽업/샌딩 정보 입력</div>
-                <div class="input-group"><label>픽업 항공편명 (인천➔칼리보)</label><input type="text" id="p-flight" placeholder="예: TW123"></div>
+                <div class="input-group"><label>픽업 항공편명 (예: TW125)</label><input type="text" id="p-flight" placeholder="예: TW125"></div>
                 <div class="input-group"><label>픽업 리조트 (첫날)</label><input type="text" id="p-resort" placeholder="숙소명"></div>
-                <div class="input-group"><label>샌딩 항공편명 (칼리보➔인천)</label><input type="text" id="s-flight" placeholder="예: TW124"></div>
+                <div class="input-group"><label>샌딩 항공편명 (예: TW126)</label><input type="text" id="s-flight" placeholder="예: TW126"></div>
                 <div class="input-group"><label>샌딩 리조트 (마지막날)</label><input type="text" id="s-resort" placeholder="숙소명"></div>
                 <div class="input-group"><label>환전 요청 (달러➔페소)</label><input type="text" id="p-exchange" placeholder="예: 100달러"></div>
             </div>
@@ -150,14 +139,6 @@ function renderDynamicProductFields() {
             html += `<div class="input-group">
                 <label>픽업 받으실 리조트명<span>*</span></label>
                 <input type="text" id="resort-${idx}" placeholder="숙소 이름을 적어주세요">
-            </div>`;
-        } else {
-            html += `<div class="input-group">
-                <label>미팅 정보</label>
-                <div style="padding:12px; background:#f8f9fa; border-radius:8px; color:var(--primary); font-size:13px; font-weight:700;">
-                    <span class="material-icons" style="font-size:16px; vertical-align:middle; margin-right:5px;">info</span>
-                    ${config.meetingInfo}
-                </div>
             </div>`;
         }
         

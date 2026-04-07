@@ -13,7 +13,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- 📦 상세 상품 및 옵션 데이터 (현지불 로직 반영) ---
+// --- 📦 상세 상품 및 옵션 데이터 (사용자 요청 가격 반영) ---
 const PRODUCT_DATA = {
     "보라카이 왕복 픽업샌딩": [
         { name: "조인 픽업샌딩 ( Join )", price: 54900 },
@@ -57,19 +57,34 @@ const PRODUCT_DATA = {
         { name: "태반 마사지", price: 55000 }
     ],
     "마리스 스파": [
-        { name: "기본 패키지", price: 91000 }
+        { name: "스파 (스크럽 불포함)", price: 91000 },
+        { name: "스파 (스크럽 포함)", price: 105000 },
+        { name: "성장 마사지 (1시간)", price: 42000 },
+        { name: "성장 마사지 (2시간)", price: 55000 }
     ],
     "포세이돈 스파": [
-        { name: "기본 패키지", price: 105000 }
+        { name: "VIP 마사지", price: 105000 },
+        { name: "VVIP 마사지", price: 119000 },
+        { name: "성장 마사지 (1시간)", price: 42000 },
+        { name: "성장 마사지 (2시간)", price: 55000 }
     ],
     "헬리오스 스파": [
-        { name: "기본 패키지", price: 91000 }
+        { name: "허니스톤 마사지", price: 91000 },
+        { name: "코코스파", price: 105000 },
+        { name: "허니스톤 + 코코스파", price: 119000 },
+        { name: "성장 마사지 (1시간)", price: 42000 },
+        { name: "성장 마사지 (2시간)", price: 55000 }
     ],
     "카바얀 스파": [
-        { name: "전신 마사지", price: 49000 }
+        { name: "딥티슈 마사지", price: 49000 }
     ],
-    "아유르베다 스파": [
-        { name: "기본 패키지", price: 55000 }
+    "아유르베다": [
+        { name: "태반 마사지", price: 55000 },
+        { name: "스톤 마사지", price: 55000 },
+        { name: "골든링 마사지", price: 77000 },
+        { name: "아유르베다 스파", price: 91000 },
+        { name: "성장 마사지 (1시간)", price: 42000 },
+        { name: "성장 마사지 (2시간)", price: 55000 }
     ],
     "기타(수동입력)": [
         { name: "직접 입력 옵션", price: 0 }
@@ -149,6 +164,9 @@ function updateTotal() {
 }
 
 window.submitQuote = async () => {
+    const btn = document.querySelector('.btn-submit');
+    if (btn.disabled) return;
+
     const rows = document.querySelectorAll('.item-row');
     if (rows.length === 0) { alert('상품을 추가해 주세요.'); return; }
 
@@ -175,20 +193,27 @@ window.submitQuote = async () => {
     if (items.length === 0) { alert('상품 구성을 완료해 주세요.'); return; }
 
     try {
+        btn.disabled = true;
+        btn.innerText = "생성 중...";
+
         const docRef = await addDoc(collection(db, "reservations"), {
             customerKorName: "(고객 입력 대기)",
             contact: "-",
             items: items,
             totalPrice: totalPrice,
-            status: '견적',
+            status: '견적발송',
             createdAt: new Date()
         });
 
         const url = `${window.location.origin}/quote.html?id=${docRef.id}`;
         await navigator.clipboard.writeText(url);
-        alert('견적 링크가 생성되어 복사되었습니다!');
+        alert('견적 링크가 생성되어 복사되었습니다!\n[신규예약] 탭에서 확인 가능합니다.');
         window.close();
-    } catch (e) { console.error(e); }
+    } catch (e) { 
+        console.error(e); 
+        btn.disabled = false;
+        btn.innerText = "견적서 생성 및 링크 복사";
+    }
 };
 
 addItemRow();

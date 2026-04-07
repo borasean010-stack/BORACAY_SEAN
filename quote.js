@@ -13,7 +13,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- 🏷️ 상품별 공식 시간대 정의 (기존 상품 페이지 기준) ---
+// --- 🏷️ 상품별 공식 미팅 시간대 ---
 const PRODUCT_TIMES = {
     "에스파": ["10:00", "12:30 (AFM)", "13:00", "16:00", "17:00 (AFM)", "18:00 (AFH)", "20:00"],
     "보라스파": ["10:00", "13:00", "16:00", "20:00"],
@@ -29,45 +29,20 @@ const PRODUCT_TIMES = {
     "랜드투어": ["10:30"],
     "다이빙": ["09:00", "11:00", "13:00", "15:00"],
     "파라세일링": ["10:00", "11:00", "13:00", "14:00", "15:00"],
-    "제트스키": ["10:00", "11:00", "13:00", "14:00", "15:00"],
-    "골프": ["07:40"],
-    "default": ["10:00", "11:00", "13:00", "14:00", "15:00", "16:00", "17:00"]
+    "default": ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"]
 };
 
-const PRODUCT_FIELDS = {
-    "pickup": [
-        { label: "도착 항공편명", key: "pFlight", type: "text", placeholder: "예: TW123" },
-        { label: "출국 항공편명", key: "sFlight", type: "text", placeholder: "예: TW124" },
-        { label: "숙소명", key: "resort", type: "text", placeholder: "리조트 이름" }
-    ],
-    "massage": [
-        { label: "예약 시간", key: "time", type: "select" },
-        { label: "마사지 종류", key: "type", type: "text", placeholder: "예: 태반, 스톤 등" },
-        { label: "픽업 장소", key: "pickup", type: "text", placeholder: "리조트 로비 등" }
-    ],
-    "activity": [
-        { label: "이용 시간", key: "time", type: "select" },
-        { label: "숙소명", key: "resort", type: "text", placeholder: "머무시는 리조트" }
-    ],
-    "tour": [
-        { label: "미팅 시간", key: "time", type: "select" },
-        { label: "미팅 장소", key: "meeting", type: "text", placeholder: "리조트명 또는 사무실" }
-    ]
-};
-
-function getTimeOptions(name) {
-    for (const key in PRODUCT_TIMES) {
-        if (name.includes(key)) return PRODUCT_TIMES[key];
+// --- 📅 날짜 제한 로직 (홀/짝) ---
+function isDateAllowed(productName, dateStr) {
+    if (!dateStr) return true;
+    const day = new Date(dateStr).getDate();
+    if (productName.includes('블랙펄') || productName.includes('호핑')) {
+        return day % 2 !== 0; // 홀수일만
     }
-    return PRODUCT_TIMES.default;
-}
-
-function getFieldsForProduct(name) {
-    const n = name.toLowerCase();
-    if (n.includes('픽업') || n.includes('샌딩')) return PRODUCT_FIELDS.pickup;
-    if (n.includes('마사지') || n.includes('스파') || n.includes('에스파') || n.includes('보라') || n.includes('루나') || n.includes('마리스') || n.includes('힐롯') || n.includes('포세이돈') || n.includes('카바얀') || n.includes('헬리오스')) return PRODUCT_FIELDS.massage;
-    if (n.includes('호핑') || n.includes('말룸') || n.includes('랜드')) return PRODUCT_FIELDS.tour;
-    return PRODUCT_FIELDS.activity;
+    if (productName.includes('말룸파티')) {
+        return day % 2 === 0; // 짝수일만
+    }
+    return true;
 }
 
 async function loadQuote() {
@@ -75,7 +50,7 @@ async function loadQuote() {
     const quoteId = urlParams.get('id');
     
     if (!quoteId) {
-        document.getElementById('loading').innerText = "견적서 ID가 올바르지 않습니다.";
+        document.getElementById('loading').innerText = "견적서 ID를 확인할 수 없습니다.";
         return;
     }
 
@@ -84,147 +59,173 @@ async function loadQuote() {
         const docSnap = await getDoc(docRef);
         
         if (!docSnap.exists()) {
-            document.getElementById('loading').innerText = "견적서를 찾을 수 없습니다.";
+            document.getElementById('loading').innerText = "존재하지 않는 견적서입니다.";
             return;
         }
 
         const data = docSnap.data();
         
-        document.getElementById('q-name').innerText = data.customerKorName || '-';
-        document.getElementById('q-contact').innerText = data.contact || '-';
-        document.getElementById('q-date').innerText = data.createdAt?.toDate ? data.createdAt.toDate().toLocaleString() : '-';
-        document.getElementById('q-total').innerText = `₩ ${(data.totalPrice || 0).toLocaleString()}`;
-        
-        const statusMap = { '견적': '견적 확인 중', '입금대기': '입금 대기 중', '입금확인요청': '입금 확인 중', '예약확정': '예약 확정 완료' };
-        document.getElementById('q-status').innerText = statusMap[data.status] || data.status;
-
-        const itemList = document.getElementById('item-list');
-        itemList.innerHTML = (data.items || []).map(item => `
-            <div class="item-card">
-                <div class="item-header">
-                    <div class="item-name">${item.name}</div>
-                    <div class="item-status">${data.status === '견적' ? '입력대기' : '확인완료'}</div>
+        // 1. 견적 상세 리스트 출력 (요청하신 형식)
+        const listContainer = document.getElementById('item-list-container');
+        listContainer.innerHTML = (data.items || []).map(item => `
+            <div style="margin-bottom:20px; padding-bottom:15px; border-bottom:1px solid #f5f5f5;">
+                <div class="detail-row">
+                    <div class="detail-label">${item.name}</div>
+                    <div class="detail-value price-val">₩ ${((item.price || 0) * (item.count || 1)).toLocaleString()}</div>
                 </div>
-                <div class="item-details">
-                    <div class="detail-point"><span class="material-icons">calendar_today</span><b>날짜</b>${item.date || '-'}</div>
-                    <div class="detail-point"><span class="material-icons">people</span><b>인원</b>${item.count || '-'}명</div>
+                <div class="detail-row">
+                    <div class="detail-label">인원</div>
+                    <div class="detail-value">${item.count}명</div>
                 </div>
             </div>
         `).join('');
 
-        if (data.status === '견적') {
-            document.getElementById('customer-form').style.display = 'block';
-            renderDynamicFields(data.items);
-        } else {
-            document.getElementById('payment-section').style.display = 'block';
-            if (data.status === '입금확인요청' || data.status === '예약확정') {
-                const btn = document.getElementById('btn-paid');
-                btn.disabled = true;
-                btn.innerHTML = `<span class="material-icons">check_circle</span> 이미 처리되었습니다`;
+        document.getElementById('q-total').innerText = `₩ ${(data.totalPrice || 0).toLocaleString()}`;
+
+        // 2. 정보 입력 섹션 토글
+        document.getElementById('btn-show-form').onclick = () => {
+            document.getElementById('info-form-section').style.display = 'block';
+            document.getElementById('btn-show-form').style.display = 'none';
+            window.scrollTo({ top: document.getElementById('info-form-section').offsetTop - 50, behavior: 'smooth' });
+        };
+
+        // 3. 상품별 상세 필드 렌더링
+        renderProductFields(data.items);
+
+        // 4. 최종 예약 신청 처리
+        document.getElementById('btn-final-submit').onclick = async () => {
+            const korName = document.getElementById('cust-kor-name').value.trim();
+            const engName = document.getElementById('cust-eng-name').value.trim();
+            const contact = document.getElementById('cust-contact').value.trim();
+
+            if (!korName || !engName || !contact) { alert('필수 기본 정보를 모두 입력해 주세요.'); return; }
+
+            const updatedItems = [...data.items];
+            let allValid = true;
+            let combinedReq = "";
+
+            // 상세 데이터 수집
+            updatedItems.forEach((item, idx) => {
+                const dateEl = document.getElementById(`date-${idx}`);
+                const timeEl = document.getElementById(`time-${idx}`);
+                
+                if (!dateEl.value) { alert(`[${item.name}] 날짜를 선택해 주세요.`); allValid = false; return; }
+                if (!isDateAllowed(item.name, dateEl.value)) { 
+                    const msg = item.name.includes('호핑') ? '홀수일' : '짝수일';
+                    alert(`[${item.name}] 상품은 ${msg}에만 이용 가능합니다.`); 
+                    allValid = false; return; 
+                }
+
+                item.date = dateEl.value;
+                if (timeEl) item.time = timeEl.value;
+
+                // 픽업샌딩 전용 정보
+                if (item.name.includes('픽업') || item.name.includes('샌딩')) {
+                    const pFlight = document.getElementById('p-flight')?.value;
+                    const sFlight = document.getElementById('s-flight')?.value;
+                    const resort = document.getElementById('p-resort')?.value;
+                    const exVal = document.getElementById('p-exchange')?.value;
+                    
+                    item.details = `픽업:${pFlight} / 샌딩:${sFlight} / 호텔:${resort} / 환전:${exVal}`;
+                    combinedReq += `[픽업샌딩 정보] ${item.details}\n`;
+                } else {
+                    // 기타 상품 상세 정보
+                    const specFields = document.querySelectorAll(`.spec-input-${idx}`);
+                    let specStr = `[${item.name}] `;
+                    specFields.forEach(f => { if(f.value) specStr += `${f.placeholder}:${f.value} / `; });
+                    item.requests = specStr;
+                    combinedReq += specStr + "\n";
+                }
+            });
+
+            if (!allValid) return;
+
+            if (confirm("정보 입력을 완료하고 입금 확인을 요청하시겠습니까?")) {
+                try {
+                    const btn = document.getElementById('btn-final-submit');
+                    btn.disabled = true;
+                    btn.innerText = "처리 중...";
+
+                    await updateDoc(docRef, {
+                        customerKorName: korName,
+                        engName: engName,
+                        contact: contact,
+                        items: updatedItems,
+                        requests: combinedReq,
+                        status: '입금확인요청',
+                        updatedAt: new Date()
+                    });
+                    document.getElementById('success-overlay').style.display = 'flex';
+                } catch (e) { alert('오류가 발생했습니다. 다시 시도해 주세요.'); btn.disabled = false; }
             }
-        }
+        };
 
         document.getElementById('loading').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
 
-        document.getElementById('btn-submit-info').onclick = async () => {
-            const name = document.getElementById('input-name').value.trim();
-            const contact = document.getElementById('input-contact').value.trim();
-            if (!name || !contact) { alert('성함과 연락처를 입력해 주세요.'); return; }
-
-            const updatedItems = [...data.items];
-            let allDatesFilled = true;
-            let combinedRequests = "";
-
-            updatedItems.forEach((item, idx) => {
-                const dateVal = document.querySelector(`.item-date-input[data-idx="${idx}"]`).value;
-                if (!dateVal) allDatesFilled = false;
-                item.date = dateVal;
-
-                const fields = getFieldsForProduct(item.name);
-                let itemSpec = `[${item.name}] `;
-                fields.forEach(f => {
-                    const el = document.querySelector(`.extra-info[data-idx="${idx}"][data-key="${f.key}"]`);
-                    if (el && el.value.trim()) {
-                        itemSpec += `${f.label}: ${el.value.trim()} / `;
-                        if (f.key === 'time') item.time = el.value.trim().split(' ')[0]; // 시간만 추출 (괄호 제외)
-                    }
-                });
-                item.requests = itemSpec;
-                combinedRequests += itemSpec + "\n";
-            });
-
-            if (!allDatesFilled) { alert('모든 상품의 이용 날짜를 선택해 주세요.'); return; }
-
-            if (confirm("입력하신 정보로 예약을 진행하시겠습니까?")) {
-                try {
-                    await updateDoc(docRef, {
-                        customerKorName: name,
-                        contact: contact,
-                        items: updatedItems,
-                        requests: combinedRequests,
-                        status: '입금대기',
-                        updatedAt: new Date()
-                    });
-                    alert('정보가 등록되었습니다! 입금 안내를 확인해 주세요.');
-                    location.reload();
-                } catch (e) { alert('오류가 발생했습니다.'); }
-            }
-        };
-
-        document.getElementById('btn-paid').onclick = async () => {
-            if (confirm("입금을 완료하셨습니까?")) {
-                try {
-                    await updateDoc(docRef, { status: '입금확인요청', updatedAt: new Date() });
-                    document.getElementById('success-overlay').style.display = 'flex';
-                } catch (e) { alert('오류가 발생했습니다.'); }
-            }
-        };
-
-    } catch (e) { console.error(e); document.getElementById('loading').innerText = "오류가 발생했습니다."; }
+    } catch (e) { console.error(e); document.getElementById('loading').innerText = "데이터 로딩 오류"; }
 }
 
-function renderDynamicFields(items) {
-    const container = document.getElementById('dynamic-fields');
+function renderProductFields(items) {
+    const container = document.getElementById('dynamic-product-fields');
     let html = "";
     
+    // 픽업샌딩이 포함되어 있는지 확인 (공통 섹션으로 묶기 위해)
+    const hasPickup = items.some(it => it.name.includes('픽업') || it.name.includes('샌딩'));
+    if (hasPickup) {
+        html += `
+            <div class="product-spec-box">
+                <div class="product-spec-title"><span class="material-icons">flight_takeoff</span> ✈️ 픽업/샌딩 항공 및 호텔 정보</div>
+                <div class="input-group"><label>픽업 항공편명 (인천➔칼리보)</label><input type="text" id="p-flight" placeholder="예: TW123 (14:00 도착)"></div>
+                <div class="input-group"><label>픽업 리조트/호텔 (첫날)</label><input type="text" id="p-resort" placeholder="체크인 하시는 숙소명"></div>
+                <div class="input-group"><label>샌딩 항공편명 (칼리보➔인천)</label><input type="text" id="s-flight" placeholder="예: TW124 (23:00 출발)"></div>
+                <div class="input-group"><label>샌딩 리조트/호텔 (마지막날)</label><input type="text" id="s-resort" placeholder="체크아웃 하시는 숙소명"></div>
+                <div class="input-group"><label>환전 요청 금액 (달러 ➔ 페소)</label><input type="text" id="p-exchange" placeholder="예: 200달러"></div>
+            </div>
+        `;
+    }
+
     items.forEach((item, idx) => {
-        const fields = getFieldsForProduct(item.name);
-        const timeOptions = getTimeOptions(item.name);
+        const isPickup = item.name.includes('픽업') || item.name.includes('샌딩');
+        const times = getOptionsForProduct(item.name);
         
-        html += `<div style="margin-top:25px; border-top:1px solid #eee; padding-top:20px;">
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:15px;">
-                <span class="material-icons" style="color:#007aff;">stars</span>
-                <b style="color:#111; font-size:16px;">${item.name} (${item.count}명)</b>
-            </div>
-            
-            <div class="info-item" style="margin-bottom:15px;">
-                <label style="font-size:12px; color:#666; font-weight:700; display:block; margin-bottom:5px;">📅 이용 날짜 선택</label>
-                <input type="date" class="item-date-input" data-idx="${idx}" style="width:100%; padding:12px; border:1px solid #ddd; border-radius:10px; box-sizing:border-box;">
-            </div>
+        html += `
+            <div class="product-spec-box">
+                <div class="product-spec-title"><span class="material-icons">event_note</span> ${item.name} 상세 설정</div>
+                <div class="input-group calendar-wrap">
+                    <label>이용 날짜 선택<span>*</span></label>
+                    <input type="date" id="date-${idx}" class="item-date-input" min="${new Date().toISOString().split('T')[0]}">
+                    <span class="material-icons calendar-input-icon">calendar_today</span>
+                    ${item.name.includes('블랙펄') ? '<p style="font-size:11px; color:#ff6a00; margin-top:5px;">※ 홀수일에만 운영되는 상품입니다.</p>' : ''}
+                    ${item.name.includes('말룸파티') ? '<p style="font-size:11px; color:#ff6a00; margin-top:5px;">※ 짝수일에만 운영되는 상품입니다.</p>' : ''}
+                </div>
+        `;
 
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">`;
-        
-        fields.forEach(f => {
-            html += `<div>
-                <label style="font-size:11px; color:#888; font-weight:600;">${f.label}</label>`;
-            
-            if (f.type === 'select') {
-                html += `<select class="extra-info" data-idx="${idx}" data-key="${f.key}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:10px; box-sizing:border-box; background:#fff;">
-                    <option value="">시간 선택</option>
-                    ${timeOptions.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
-                </select>`;
-            } else {
-                html += `<input type="text" class="extra-info" data-idx="${idx}" data-key="${f.key}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:10px; box-sizing:border-box;" placeholder="${f.placeholder}">`;
-            }
-            
-            html += `</div>`;
-        });
+        if (times.length > 0) {
+            html += `
+                <div class="input-group">
+                    <label>미팅/예약 시간 선택</label>
+                    <select id="time-${idx}">
+                        ${times.map(t => `<option value="${t}">${t}</option>`).join('')}
+                    </select>
+                </div>
+            `;
+        }
 
-        html += `</div></div>`;
+        // 픽업샌딩이 아닌 경우 숙소명 등 추가 입력
+        if (!isPickup) {
+            html += `<div class="input-group"><label>숙소명 또는 미팅장소</label><input type="text" class="spec-input-${idx}" placeholder="리조트 이름"></div>`;
+        }
+
+        html += `</div>`;
     });
     
     container.innerHTML = html;
+}
+
+function getOptionsForProduct(name) {
+    for (const key in PRODUCT_TIMES) { if (name.includes(key)) return PRODUCT_TIMES[key]; }
+    return [];
 }
 
 loadQuote();

@@ -36,31 +36,37 @@ let selectedDates = {};
 async function loadQuote() {
     const urlParams = new URLSearchParams(window.location.search);
     const quoteId = urlParams.get('id');
-    if (!quoteId) return;
+    if (!quoteId) { document.getElementById('loading').innerText = "견적서 ID를 찾을 수 없습니다."; return; }
 
     try {
         const docRef = doc(db, "reservations", quoteId);
         const docSnap = await getDoc(docRef);
-        if (!docSnap.exists()) return;
-        currentQuoteData = docSnap.data();
+        if (!docSnap.exists()) { document.getElementById('loading').innerText = "만료되었거나 없는 견적서입니다."; return; }
         
+        currentQuoteData = docSnap.data();
         renderItemList();
         
+        // 버튼 이벤트 바인딩
         document.getElementById('btn-show-form').onclick = () => {
             document.getElementById('info-form-section').style.display = 'block';
             document.getElementById('btn-show-form').style.display = 'none';
             renderDynamicProductFields();
+            window.scrollTo({ top: document.getElementById('info-form-section').offsetTop - 50, behavior: 'smooth' });
         };
 
         document.getElementById('btn-final-submit').onclick = handleFinalSubmit;
+        
         document.getElementById('loading').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
-    } catch (e) { console.error(e); }
+    } catch (e) {
+        console.error(e);
+        document.getElementById('loading').innerText = "오류가 발생했습니다.";
+    }
 }
 
 function renderItemList() {
     const container = document.getElementById('item-list-container');
-    container.innerHTML = currentQuoteData.items.map((item, idx) => `
+    container.innerHTML = (currentQuoteData.items || []).map((item, idx) => `
         <div style="margin-bottom:20px; padding-bottom:15px; border-bottom:1px solid #f5f5f5;">
             <div class="detail-row">
                 <div class="detail-label">${item.name}</div>
@@ -72,13 +78,14 @@ function renderItemList() {
             </div>
         </div>
     `).join('');
-    document.getElementById('q-total').innerText = `₩ ${currentQuoteData.totalPrice.toLocaleString()}`;
+    document.getElementById('q-total').innerText = `₩ ${(currentQuoteData.totalPrice || 0).toLocaleString()}`;
 }
 
 function renderDynamicProductFields() {
     const container = document.getElementById('dynamic-product-fields');
     let html = "";
 
+    // 픽업샌딩 공통 정보
     const hasPickup = currentQuoteData.items.some(it => it.name.includes('픽업') || it.name.includes('샌딩'));
     if (hasPickup) {
         html += `
@@ -93,6 +100,7 @@ function renderDynamicProductFields() {
         `;
     }
 
+    // 각 상품별 날짜/시간 선택
     currentQuoteData.items.forEach((item, idx) => {
         if (item.name.includes('픽업') || item.name.includes('샌딩')) return;
 
@@ -101,15 +109,16 @@ function renderDynamicProductFields() {
             <div class="product-spec-title"><span class="material-icons" style="color:var(--primary);">event_available</span> ${item.name} 상세 정보</div>
             
             <div class="input-group">
-                <label>날짜 선택 (클릭하여 선택)<span>*</span></label>
+                <label>이용 날짜 선택<span>*</span></label>
                 <div id="cal-container-${idx}"></div>
                 <input type="hidden" id="date-${idx}">
             </div>`;
 
         if (!config.noOptions) {
             html += `<div class="input-group">
-                <label>${config.label || '시간 선택'}</label>
+                <label>${config.label || '미팅 시간 선택'}</label>
                 <select id="opt-${idx}">
+                    <option value="">시간을 선택해 주세요</option>
                     ${config.options.map(o => `<option value="${o}">${o}</option>`).join('')}
                 </select>
             </div>`;
@@ -117,17 +126,25 @@ function renderDynamicProductFields() {
 
         const isDirect = !config.hasPickup;
         html += `<div class="input-group">
-            <label>${isDirect ? '<span style="color:#ff4b4b;">미팅지 (직접이동 상품)</span>' : '픽업 받으실 리조트명'}</label>
-            ${isDirect ? `<input type="text" value="현장 직접이동 상품입니다" readonly style="background:#f0f0f0; color:#888; border:none;">` : `<input type="text" id="resort-${idx}" placeholder="숙소 이름을 적어주세요">`}
+            <label>${isDirect ? '<span style="color:#ff4b4b;">미팅지 (직접 이동 상품)</span>' : '픽업 받으실 리조트명'}</label>
+            ${isDirect ? `<input type="text" value="현장 직접 이동 상품입니다" readonly style="background:#f0f0f0; color:#888; border:none;">` : `<input type="text" id="resort-${idx}" placeholder="숙소 이름을 적어주세요">`}
         </div></div>`;
     });
 
     container.innerHTML = html;
-    currentQuoteData.items.forEach((item, idx) => { if (!item.name.includes('픽업')) createCalendar(idx, item.name); });
+    
+    // 달력 생성 (DOM 업데이트 후 실행)
+    currentQuoteData.items.forEach((item, idx) => {
+        if (!item.name.includes('픽업') && !item.name.includes('샌딩')) {
+            createCalendar(idx, item.name);
+        }
+    });
 }
 
 function createCalendar(idx, productName) {
     const container = document.getElementById(`cal-container-${idx}`);
+    if (!container) return;
+    
     let displayDate = new Date();
     displayDate.setDate(1);
 
@@ -136,9 +153,9 @@ function createCalendar(idx, productName) {
         const month = displayDate.getMonth();
         let html = `<div class="custom-calendar">
             <div class="cal-header">
-                <button type="button" class="cal-btn-prev" style="border:none; background:none; color:var(--primary); cursor:pointer;">◀</button>
+                <button type="button" class="cal-btn-prev" style="border:none; background:none; color:var(--primary); cursor:pointer; font-size:18px;">◀</button>
                 <strong>${year}년 ${month + 1}월</strong>
-                <button type="button" class="cal-btn-next" style="border:none; background:none; color:var(--primary); cursor:pointer;">▶</button>
+                <button type="button" class="cal-btn-next" style="border:none; background:none; color:var(--primary); cursor:pointer; font-size:18px;">▶</button>
             </div>
             <div class="cal-grid">
                 ${['일','월','화','수','목','금','토'].map(d => `<div class="cal-day-label">${d}</div>`).join('')}`;
@@ -153,7 +170,7 @@ function createCalendar(idx, productName) {
             
             let statusClass = "";
             const isOdd = i % 2 !== 0;
-            if (productName.includes('블랙펄') && !isOdd) statusClass = "disabled";
+            if ((productName.includes('블랙펄') || productName.includes('호핑')) && !isOdd) statusClass = "disabled";
             if (productName.includes('말룸파티') && isOdd) statusClass = "disabled";
             if (isPast) statusClass = "disabled";
             if (selectedDates[idx] === dateStr) statusClass = "selected";
@@ -161,16 +178,17 @@ function createCalendar(idx, productName) {
             html += `<div class="cal-date ${statusClass}" data-date="${dateStr}">${i}</div>`;
         }
         html += `</div>`;
-        if (productName.includes('블랙펄')) html += `<p style="font-size:11px; color:var(--primary); margin-top:10px; font-weight:700;">※ 홀수일만 운영되는 상품입니다.</p>`;
+        if (productName.includes('블랙펄') || productName.includes('호핑')) html += `<p style="font-size:11px; color:var(--primary); margin-top:10px; font-weight:700;">※ 홀수일만 운영되는 상품입니다.</p>`;
         if (productName.includes('말룸파티')) html += `<p style="font-size:11px; color:var(--primary); margin-top:10px; font-weight:700;">※ 짝수일만 운영되는 상품입니다.</p>`;
         html += `</div>`;
         container.innerHTML = html;
 
-        container.querySelector('.cal-btn-prev').onclick = () => { displayDate.setMonth(displayDate.getMonth() - 1); render(); };
-        container.querySelector('.cal-btn-next').onclick = () => { displayDate.setMonth(displayDate.getMonth() + 1); render(); };
+        container.querySelector('.cal-btn-prev').onclick = (e) => { e.preventDefault(); displayDate.setMonth(displayDate.getMonth() - 1); render(); };
+        container.querySelector('.cal-btn-next').onclick = (e) => { e.preventDefault(); displayDate.setMonth(displayDate.getMonth() + 1); render(); };
         container.querySelectorAll('.cal-date:not(.disabled)').forEach(el => {
             el.onclick = () => {
                 selectedDates[idx] = el.dataset.date;
+                document.getElementById(`date-${idx}`).value = el.dataset.date;
                 render();
             };
         });
@@ -180,21 +198,26 @@ function createCalendar(idx, productName) {
 
 async function handleFinalSubmit() {
     const korName = document.getElementById('cust-kor-name').value.trim();
+    const engName = document.getElementById('cust-eng-name').value.trim();
     const contact = document.getElementById('cust-contact').value.trim();
-    if (!korName || !contact) { alert('성함과 연락처를 입력해 주세요.'); return; }
+    if (!korName || !engName || !contact) { alert('대표자 필수 정보를 모두 입력해 주세요.'); return; }
 
     const updatedItems = [...currentQuoteData.items];
     let allDatesFilled = true;
     let combinedReq = "";
 
     updatedItems.forEach((item, idx) => {
-        if (item.name.includes('픽업')) { item.date = "항공정보참조"; return; }
+        if (item.name.includes('픽업') || item.name.includes('샌딩')) { item.date = "항공정보참조"; return; }
+        
         const dateVal = selectedDates[idx];
         if (!dateVal) { alert(`[${item.name}] 날짜를 선택해 주세요.`); allDatesFilled = false; return; }
         item.date = dateVal;
         
         const optEl = document.getElementById(`opt-${idx}`);
-        if (optEl) item.time = optEl.value.split(' ')[0];
+        if (optEl) {
+            if(!optEl.value) { alert(`[${item.name}] 시간을 선택해 주세요.`); allDatesFilled = false; return; }
+            item.time = optEl.value.split(' ')[0];
+        }
         
         const resortEl = document.getElementById(`resort-${idx}`);
         if (resortEl && resortEl.value) combinedReq += `[${item.name}] 숙소:${resortEl.value}\n`;
@@ -211,14 +234,26 @@ async function handleFinalSubmit() {
 
     try {
         const btn = document.getElementById('btn-final-submit');
-        btn.disabled = true; btn.innerText = "신청 중...";
-        await updateDoc(doc(db, "reservations", window.location.search.split('id=')[1]), {
-            customerKorName: korName, contact: contact, engName: document.getElementById('cust-eng-name').value,
-            items: updatedItems, requests: combinedReq, status: '입금확인요청', updatedAt: new Date()
+        btn.disabled = true; btn.innerText = "처리 중...";
+        
+        const quoteId = new URLSearchParams(window.location.search).get('id');
+        await updateDoc(doc(db, "reservations", quoteId), {
+            customerKorName: korName, 
+            engName: engName,
+            contact: contact,
+            items: updatedItems, 
+            requests: combinedReq, 
+            status: '입금확인요청', 
+            updatedAt: new Date()
         });
+        
         window.open('http://pf.kakao.com/_zBArM/chat', '_blank');
         document.getElementById('success-overlay').style.display = 'flex';
-    } catch (e) { alert('저장 실패'); btn.disabled = false; }
+    } catch (e) { 
+        alert('저장에 실패했습니다. 다시 시도해 주세요.'); 
+        btn.disabled = false; 
+        btn.innerText = "입금 완료 및 예약 신청";
+    }
 }
 
 loadQuote();

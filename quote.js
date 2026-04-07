@@ -13,8 +13,26 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- 🏷️ 상품별 필수 입력 정보 정의 ---
-const TIME_OPTIONS = ["10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00"];
+// --- 🏷️ 상품별 공식 시간대 정의 (기존 상품 페이지 기준) ---
+const PRODUCT_TIMES = {
+    "에스파": ["10:00", "12:30 (AFM)", "13:00", "16:00", "17:00 (AFM)", "18:00 (AFH)", "20:00"],
+    "보라스파": ["10:00", "13:00", "16:00", "20:00"],
+    "루나스파": ["10:00", "13:00", "16:00", "20:00"],
+    "마리스": ["10:00", "13:30", "16:30", "19:30"],
+    "포세이돈": ["10:00", "13:00", "16:00", "19:00"],
+    "힐롯": ["10:00", "13:00", "16:00", "19:00"],
+    "카바얀": ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"],
+    "아유르베다": ["10:00", "13:00", "16:00", "19:00"],
+    "헬리오스": ["10:00", "13:30", "16:30", "19:30"],
+    "호핑": ["12:30 (점심포함)", "13:30 (선셋)"],
+    "말룸": ["09:00 (샌딩팩)", "09:40 (일반)"],
+    "랜드투어": ["10:30"],
+    "다이빙": ["09:00", "11:00", "13:00", "15:00"],
+    "파라세일링": ["10:00", "11:00", "13:00", "14:00", "15:00"],
+    "제트스키": ["10:00", "11:00", "13:00", "14:00", "15:00"],
+    "골프": ["07:40"],
+    "default": ["10:00", "11:00", "13:00", "14:00", "15:00", "16:00", "17:00"]
+};
 
 const PRODUCT_FIELDS = {
     "pickup": [
@@ -23,26 +41,33 @@ const PRODUCT_FIELDS = {
         { label: "숙소명", key: "resort", type: "text", placeholder: "리조트 이름" }
     ],
     "massage": [
-        { label: "희망 시간", key: "time", type: "select", options: TIME_OPTIONS },
+        { label: "예약 시간", key: "time", type: "select" },
         { label: "마사지 종류", key: "type", type: "text", placeholder: "예: 태반, 스톤 등" },
         { label: "픽업 장소", key: "pickup", type: "text", placeholder: "리조트 로비 등" }
     ],
-    "tour": [
-        { label: "미팅 장소", key: "meeting", type: "text", placeholder: "리조트명 또는 사무실" },
-        { label: "추가 요청사항", key: "note", type: "text", placeholder: "특이사항 입력" }
-    ],
-    "default": [
-        { label: "이용 희망 시간", key: "time", type: "select", options: TIME_OPTIONS },
+    "activity": [
+        { label: "이용 시간", key: "time", type: "select" },
         { label: "숙소명", key: "resort", type: "text", placeholder: "머무시는 리조트" }
+    ],
+    "tour": [
+        { label: "미팅 시간", key: "time", type: "select" },
+        { label: "미팅 장소", key: "meeting", type: "text", placeholder: "리조트명 또는 사무실" }
     ]
 };
+
+function getTimeOptions(name) {
+    for (const key in PRODUCT_TIMES) {
+        if (name.includes(key)) return PRODUCT_TIMES[key];
+    }
+    return PRODUCT_TIMES.default;
+}
 
 function getFieldsForProduct(name) {
     const n = name.toLowerCase();
     if (n.includes('픽업') || n.includes('샌딩')) return PRODUCT_FIELDS.pickup;
-    if (n.includes('마사지') || n.includes('스파') || n.includes('에스파') || n.includes('보라') || n.includes('루나') || n.includes('마리스')) return PRODUCT_FIELDS.massage;
-    if (n.includes('호핑') || n.includes('말룸')) return PRODUCT_FIELDS.tour;
-    return PRODUCT_FIELDS.default;
+    if (n.includes('마사지') || n.includes('스파') || n.includes('에스파') || n.includes('보라') || n.includes('루나') || n.includes('마리스') || n.includes('힐롯') || n.includes('포세이돈') || n.includes('카바얀') || n.includes('헬리오스')) return PRODUCT_FIELDS.massage;
+    if (n.includes('호핑') || n.includes('말룸') || n.includes('랜드')) return PRODUCT_FIELDS.tour;
+    return PRODUCT_FIELDS.activity;
 }
 
 async function loadQuote() {
@@ -122,7 +147,7 @@ async function loadQuote() {
                     const el = document.querySelector(`.extra-info[data-idx="${idx}"][data-key="${f.key}"]`);
                     if (el && el.value.trim()) {
                         itemSpec += `${f.label}: ${el.value.trim()} / `;
-                        if (f.key === 'time') item.time = el.value.trim(); // 시간 필드는 item.time으로도 저장
+                        if (f.key === 'time') item.time = el.value.trim().split(' ')[0]; // 시간만 추출 (괄호 제외)
                     }
                 });
                 item.requests = itemSpec;
@@ -131,7 +156,7 @@ async function loadQuote() {
 
             if (!allDatesFilled) { alert('모든 상품의 이용 날짜를 선택해 주세요.'); return; }
 
-            if (confirm("입력하신 정보로 예약을 확정하시겠습니까?")) {
+            if (confirm("입력하신 정보로 예약을 진행하시겠습니까?")) {
                 try {
                     await updateDoc(docRef, {
                         customerKorName: name,
@@ -165,6 +190,7 @@ function renderDynamicFields(items) {
     
     items.forEach((item, idx) => {
         const fields = getFieldsForProduct(item.name);
+        const timeOptions = getTimeOptions(item.name);
         
         html += `<div style="margin-top:25px; border-top:1px solid #eee; padding-top:20px;">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:15px;">
@@ -185,8 +211,8 @@ function renderDynamicFields(items) {
             
             if (f.type === 'select') {
                 html += `<select class="extra-info" data-idx="${idx}" data-key="${f.key}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:10px; box-sizing:border-box; background:#fff;">
-                    <option value="">선택하세요</option>
-                    ${f.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+                    <option value="">시간 선택</option>
+                    ${timeOptions.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
                 </select>`;
             } else {
                 html += `<input type="text" class="extra-info" data-idx="${idx}" data-key="${f.key}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:10px; box-sizing:border-box;" placeholder="${f.placeholder}">`;

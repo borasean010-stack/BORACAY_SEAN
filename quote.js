@@ -13,23 +13,39 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- 🏷️ 상품별 설정 (셔틀 유무 정밀화) ---
+// --- 🏷️ 상품별 설정 (전체 마사지 샵 및 액티비티 시간 업데이트) ---
 const PRODUCT_CONFIG = {
+    // 🌊 투어 (관리자 확정 상품)
     "호핑": { noOptions: true, hasPickup: false, meetingInfo: "보라카이션 오피스 미팅 (개별 이동)" },
     "말룸": { noOptions: true, hasPickup: false, meetingInfo: "보라카이션 오피스 미팅 (개별 이동)" },
+    
+    // 💆 마사지 - 셔틀 있음 (픽업 리조트 입력)
+    "마리스": { options: ["10:00", "13:30", "16:30", "19:30"], hasPickup: true },
+    "포세이돈": { options: ["10:00", "13:00", "16:00", "19:00"], hasPickup: true },
+    "힐롯": { options: ["10:00", "13:00", "16:00", "19:00"], hasPickup: true },
+    "헬리오스": { options: ["10:00", "13:30", "16:30", "19:30"], hasPickup: true },
+    "아브라": { options: ["10:00", "13:00", "16:00", "19:30"], hasPickup: true },
+    "아리스": { options: ["10:00", "13:00", "16:00", "19:30"], hasPickup: true },
+    "가야": { options: ["10:00", "13:00", "16:00", "19:30"], hasPickup: true },
+    "궁스파": { options: ["10:00", "13:30", "16:30", "19:30"], hasPickup: true },
+
+    // 💆 마사지 - 셔틀 없음 (개별 이동)
     "에스파": { options: ["12:30", "14:30", "16:30", "18:30", "19:30"], hasPickup: false, meetingInfo: "직접 이동 상품 (셔틀 없음)" },
     "루나": { options: ["10:00", "13:00", "16:00", "20:00"], hasPickup: false, meetingInfo: "직접 이동 상품 (셔틀 없음)" },
     "보라스파": { options: ["10:00", "13:00", "16:00", "20:00"], hasPickup: false, meetingInfo: "직접 이동 상품 (셔틀 없음)" },
     "카바얀": { options: ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"], hasPickup: false, meetingInfo: "직접 이동 상품 (셔틀 없음)" },
-    "마리스": { options: ["10:00", "13:30", "16:30", "19:30"], hasPickup: true }, // 셔틀 있음
-    "포세이돈": { options: ["10:00", "13:00", "16:00", "19:00"], hasPickup: true }, // 셔틀 있음
-    "힐롯": { options: ["10:00", "13:00", "16:00", "19:00"], hasPickup: true }, // 셔틀 있음
-    "헬리오스": { options: ["10:00", "13:30", "16:30", "19:30"], hasPickup: true }, // 셔틀 있음
+    "태반": { options: ["10:00", "13:00", "16:00", "20:00"], hasPickup: false, meetingInfo: "직접 이동 상품 (셔틀 없음)" },
+
+    // 🏄 액티비티
     "다이빙": { options: ["09:00", "11:00", "13:00", "15:00"], hasPickup: true },
-    "파라세일링": { options: ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00"], hasPickup: true },
-    "제트스키": { options: ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"], hasPickup: true },
-    "헬멧": { options: ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"], hasPickup: true },
+    "파라세일링": { options: ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"], hasPickup: true },
+    "제트스키": { options: ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"], hasPickup: true },
+    "헬멧": { options: ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"], hasPickup: true },
     "랜드투어": { options: ["10:30"], hasPickup: true },
+    "잠수함": { options: ["09:00", "10:00", "11:00", "13:00", "14:00", "15:00"], hasPickup: true },
+    "요트": { options: ["16:00"], hasPickup: true },
+    "선셋": { options: ["16:30", "17:00"], hasPickup: true },
+    
     "default": { options: ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"], hasPickup: true }
 };
 
@@ -130,14 +146,12 @@ function renderDynamicProductFields() {
             </div>`;
         }
 
-        // 셔틀 제공 여부에 따른 입력란 노출 제어
         if (config.hasPickup) {
             html += `<div class="input-group">
                 <label>픽업 받으실 리조트명<span>*</span></label>
                 <input type="text" id="resort-${idx}" placeholder="숙소 이름을 적어주세요">
             </div>`;
         } else {
-            // 셔틀 없는 경우 안내 문구만 표시 (입력란 없음)
             html += `<div class="input-group">
                 <label>미팅 정보</label>
                 <div style="padding:12px; background:#f8f9fa; border-radius:8px; color:var(--primary); font-size:13px; font-weight:700;">

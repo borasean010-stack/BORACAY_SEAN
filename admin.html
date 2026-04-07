@@ -11,15 +11,18 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* 🚀 명령하신 메인 레이아웃 전용 스타일 */
-        .main-tool-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px; }
-        .tool-box { background: #fff; border-radius: 12px; padding: 20px; border-top: 5px solid #ff6a00; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; cursor: pointer; transition: transform 0.2s; }
+        /* 🚀 명령하신 메인 레이아웃 전용 스타일 (5분할 한줄 배치) */
+        .main-tool-grid { display: grid; grid-template-columns: repeat(4, 1fr) 0.7fr; gap: 10px; margin-bottom: 25px; }
+        .tool-box { background: #fff; border-radius: 12px; padding: 15px 10px; border-top: 5px solid #ff6a00; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; cursor: pointer; transition: transform 0.2s; }
         .tool-box:hover { transform: translateY(-3px); }
         .tool-box.active { background: #fffaf5; border-color: #ff6a00; box-shadow: 0 0 15px rgba(255, 106, 0, 0.2); transform: translateY(-3px); }
         .tool-box.active h4 { color: #ff6a00; font-weight: 800; }
-        .tool-box h4 { margin: 0; font-size: 14px; color: #666; font-weight: 600; }
-        .tool-box .date-val { margin-top: 8px; font-size: 18px; font-weight: 800; color: #333; }
+        .tool-box h4 { margin: 0; font-size: 13px; color: #666; font-weight: 600; white-space: nowrap; }
+        .tool-box .date-val { margin-top: 8px; font-size: 16px; font-weight: 800; color: #333; }
         .tool-box.system-box { border-top-color: #00c73c; }
+        .tool-box.small-box { padding: 10px 5px; }
+        .tool-box.small-box h4 { font-size: 11px; }
+        .tool-box.small-box .date-val { font-size: 12px; margin-top: 4px; }
 
         .timeline-section { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .timeline-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
@@ -88,7 +91,7 @@
             </header>
 
             <div class="ss-content">
-                <!-- 상단 4분할 박스 -->
+                <!-- 상단 5분할 박스 (한줄 배치) -->
                 <div class="main-tool-grid">
                     <div id="tool-box-today" class="tool-box active" onclick="switchScheduleDay('today')">
                         <h4>오늘 일정</h4>
@@ -100,15 +103,15 @@
                     </div>
                     <div class="tool-box system-box" onclick="showInputArea('quick')">
                         <h4>퀵바우처</h4>
-                        <div class="date-val" style="font-size:14px;">생성기 열기</div>
-                    </div>
-                    <div class="tool-box system-box" onclick="showInputArea('reg')">
-                        <h4>스케줄 등록</h4>
-                        <div class="date-val" style="font-size:14px;">수입시트(Q열)</div>
+                        <div class="date-val" style="font-size:12px;">생성기</div>
                     </div>
                     <div class="tool-box" style="border-top-color: #007aff;" onclick="showInputArea('quote')">
                         <h4>견적서 생성</h4>
-                        <div class="date-val" style="font-size:14px;">커스텀 링크</div>
+                        <div class="date-val" style="font-size:12px;">커스텀</div>
+                    </div>
+                    <div class="tool-box system-box small-box" onclick="showInputArea('reg')">
+                        <h4>스케줄 등록</h4>
+                        <div class="date-val">Q열</div>
                     </div>
                 </div>
 

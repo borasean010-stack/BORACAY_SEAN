@@ -89,12 +89,10 @@ function updateTotal() {
 }
 
 window.submitQuote = async () => {
-    const name = document.getElementById('customer-name').value.trim();
-    const contact = document.getElementById('customer-contact').value.trim();
     const rows = document.querySelectorAll('.item-row');
     
-    if (!name || rows.length === 0) {
-        alert('고객명과 최소 하나의 상품 항목이 필요합니다.');
+    if (rows.length === 0) {
+        alert('최소 하나의 상품 항목이 필요합니다.');
         return;
     }
 
@@ -113,19 +111,24 @@ window.submitQuote = async () => {
         }
     });
 
+    if (items.length === 0) {
+        alert('상품을 선택해 주세요.');
+        return;
+    }
+
     try {
         const docRef = await addDoc(collection(db, "reservations"), {
-            customerKorName: name,
-            contact: contact,
+            customerKorName: "(고객 입력 대기)",
+            contact: "-",
             items: items,
             totalPrice: totalPrice,
-            status: '견적발송',
+            status: '견적',
             createdAt: new Date()
         });
 
         const url = `${window.location.origin}/quote.html?id=${docRef.id}`;
         await navigator.clipboard.writeText(url);
-        alert('견적서가 저장되었습니다!\n링크가 클립보드에 복사되었습니다.');
+        alert('견적 링크가 생성되었습니다!\n링크가 클립보드에 복사되었습니다.\n이 링크를 고객에게 보내주세요.');
         window.close();
     } catch (e) {
         console.error(e);

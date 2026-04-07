@@ -25,7 +25,8 @@ const PRODUCT_DATA = {
     ],
     "시크릿 가든 말룸파티": [
         { name: "일반 투어 ( 09:40 )", price: 99000 },
-        { name: "샌딩팩 투어 ( 09:00 )", price: 110000 }
+        { name: "샌딩팩 투어 ( 09:00 )", price: 110000 },
+        { name: "소인 투어", price: 90000 }
     ],
     "액티비티 (Activity)": [
         { name: "체험 다이빙", price: 55000 },

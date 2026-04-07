@@ -13,32 +13,34 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- 🏷️ 상품별 필수 입력 정보 정의 (기존 예약 폼 기준) ---
+// --- 🏷️ 상품별 필수 입력 정보 정의 ---
+const TIME_OPTIONS = ["10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00"];
+
 const PRODUCT_FIELDS = {
     "pickup": [
-        { label: "도착 항공편명", key: "pFlight", placeholder: "예: TW123" },
-        { label: "출국 항공편명", key: "sFlight", placeholder: "예: TW124" },
-        { label: "숙소명", key: "resort", placeholder: "리조트 이름" }
+        { label: "도착 항공편명", key: "pFlight", type: "text", placeholder: "예: TW123" },
+        { label: "출국 항공편명", key: "sFlight", type: "text", placeholder: "예: TW124" },
+        { label: "숙소명", key: "resort", type: "text", placeholder: "리조트 이름" }
     ],
     "massage": [
-        { label: "희망 시간", key: "time", placeholder: "예: 14:00" },
-        { label: "픽업 장소", key: "pickup", placeholder: "리조트 로비 등" },
-        { label: "마사지 종류", key: "type", placeholder: "예: 태반, 스톤 등" }
+        { label: "희망 시간", key: "time", type: "select", options: TIME_OPTIONS },
+        { label: "마사지 종류", key: "type", type: "text", placeholder: "예: 태반, 스톤 등" },
+        { label: "픽업 장소", key: "pickup", type: "text", placeholder: "리조트 로비 등" }
     ],
     "tour": [
-        { label: "미팅 장소", key: "meeting", placeholder: "리조트명 또는 사무실" },
-        { label: "추가 요청사항", key: "note", placeholder: "특이사항 입력" }
+        { label: "미팅 장소", key: "meeting", type: "text", placeholder: "리조트명 또는 사무실" },
+        { label: "추가 요청사항", key: "note", type: "text", placeholder: "특이사항 입력" }
     ],
     "default": [
-        { label: "이용 희망 시간", key: "time", placeholder: "예: 10:00" },
-        { label: "숙소명", key: "resort", placeholder: "머무시는 리조트" }
+        { label: "이용 희망 시간", key: "time", type: "select", options: TIME_OPTIONS },
+        { label: "숙소명", key: "resort", type: "text", placeholder: "머무시는 리조트" }
     ]
 };
 
 function getFieldsForProduct(name) {
     const n = name.toLowerCase();
     if (n.includes('픽업') || n.includes('샌딩')) return PRODUCT_FIELDS.pickup;
-    if (n.includes('마사지') || n.includes('스파') || n.includes('에스파')) return PRODUCT_FIELDS.massage;
+    if (n.includes('마사지') || n.includes('스파') || n.includes('에스파') || n.includes('보라') || n.includes('루나') || n.includes('마리스')) return PRODUCT_FIELDS.massage;
     if (n.includes('호핑') || n.includes('말룸')) return PRODUCT_FIELDS.tour;
     return PRODUCT_FIELDS.default;
 }
@@ -63,7 +65,6 @@ async function loadQuote() {
 
         const data = docSnap.data();
         
-        // 1. 기본 정보 표시
         document.getElementById('q-name').innerText = data.customerKorName || '-';
         document.getElementById('q-contact').innerText = data.contact || '-';
         document.getElementById('q-date').innerText = data.createdAt?.toDate ? data.createdAt.toDate().toLocaleString() : '-';
@@ -72,7 +73,6 @@ async function loadQuote() {
         const statusMap = { '견적': '견적 확인 중', '입금대기': '입금 대기 중', '입금확인요청': '입금 확인 중', '예약확정': '예약 확정 완료' };
         document.getElementById('q-status').innerText = statusMap[data.status] || data.status;
 
-        // 2. 상품 리스트 렌더링
         const itemList = document.getElementById('item-list');
         itemList.innerHTML = (data.items || []).map(item => `
             <div class="item-card">
@@ -87,7 +87,6 @@ async function loadQuote() {
             </div>
         `).join('');
 
-        // 3. 상태에 따른 화면 구성
         if (data.status === '견적') {
             document.getElementById('customer-form').style.display = 'block';
             renderDynamicFields(data.items);
@@ -103,7 +102,6 @@ async function loadQuote() {
         document.getElementById('loading').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
 
-        // 4. 정보 입력 완료 버튼 클릭 이벤트
         document.getElementById('btn-submit-info').onclick = async () => {
             const name = document.getElementById('input-name').value.trim();
             const contact = document.getElementById('input-contact').value.trim();
@@ -118,13 +116,13 @@ async function loadQuote() {
                 if (!dateVal) allDatesFilled = false;
                 item.date = dateVal;
 
-                // 상품별 상세 필드 수집
                 const fields = getFieldsForProduct(item.name);
                 let itemSpec = `[${item.name}] `;
                 fields.forEach(f => {
                     const el = document.querySelector(`.extra-info[data-idx="${idx}"][data-key="${f.key}"]`);
                     if (el && el.value.trim()) {
                         itemSpec += `${f.label}: ${el.value.trim()} / `;
+                        if (f.key === 'time') item.time = el.value.trim(); // 시간 필드는 item.time으로도 저장
                     }
                 });
                 item.requests = itemSpec;
@@ -139,19 +137,18 @@ async function loadQuote() {
                         customerKorName: name,
                         contact: contact,
                         items: updatedItems,
-                        requests: combinedRequests, // 전체 요청사항에도 합산
+                        requests: combinedRequests,
                         status: '입금대기',
                         updatedAt: new Date()
                     });
-                    alert('정보가 성공적으로 등록되었습니다!\n이제 아래 안내된 계좌로 입금을 진행해 주세요.');
+                    alert('정보가 등록되었습니다! 입금 안내를 확인해 주세요.');
                     location.reload();
                 } catch (e) { alert('오류가 발생했습니다.'); }
             }
         };
 
-        // 5. 입금 완료 버튼 클릭 이벤트
         document.getElementById('btn-paid').onclick = async () => {
-            if (confirm("입금을 완료하셨습니까? 관리자가 확인 후 확정 바우처를 보내드립니다.")) {
+            if (confirm("입금을 완료하셨습니까?")) {
                 try {
                     await updateDoc(docRef, { status: '입금확인요청', updatedAt: new Date() });
                     document.getElementById('success-overlay').style.display = 'flex';
@@ -159,10 +156,7 @@ async function loadQuote() {
             }
         };
 
-    } catch (e) {
-        console.error(e);
-        document.getElementById('loading').innerText = "오류가 발생했습니다.";
-    }
+    } catch (e) { console.error(e); document.getElementById('loading').innerText = "오류가 발생했습니다."; }
 }
 
 function renderDynamicFields(items) {
@@ -187,9 +181,18 @@ function renderDynamicFields(items) {
         
         fields.forEach(f => {
             html += `<div>
-                <label style="font-size:11px; color:#888; font-weight:600;">${f.label}</label>
-                <input type="text" class="extra-info" data-idx="${idx}" data-key="${f.key}" data-label="${f.label}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:10px; box-sizing:border-box;" placeholder="${f.placeholder}">
-            </div>`;
+                <label style="font-size:11px; color:#888; font-weight:600;">${f.label}</label>`;
+            
+            if (f.type === 'select') {
+                html += `<select class="extra-info" data-idx="${idx}" data-key="${f.key}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:10px; box-sizing:border-box; background:#fff;">
+                    <option value="">선택하세요</option>
+                    ${f.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+                </select>`;
+            } else {
+                html += `<input type="text" class="extra-info" data-idx="${idx}" data-key="${f.key}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:10px; box-sizing:border-box;" placeholder="${f.placeholder}">`;
+            }
+            
+            html += `</div>`;
         });
 
         html += `</div></div>`;

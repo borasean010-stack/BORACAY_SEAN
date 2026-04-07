@@ -13,17 +13,19 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- 📦 상세 상품 및 옵션 데이터 (순서 및 종류 최적화) ---
+// --- 📦 상세 상품 및 옵션 데이터 (픽업/호핑 옵션 세분화) ---
 const PRODUCT_DATA = {
     "보라카이 왕복 픽업샌딩": [
-        { name: "왕복 이용권 (조인/단독)", price: 54900 }
+        { name: "조인 픽업샌딩 ( Join )", price: 54900 },
+        { name: "단독 픽업샌딩 ( Private )", price: 180000 }
     ],
     "블랙펄 요트호핑투어": [
-        { name: "점심 불포함 (13:30 미팅)", price: 85000 }
+        { name: "점심 불포함 ( 선셋호핑 )", price: 85000 },
+        { name: "점심 포함 ( 점보크랩 식사 )", price: 125000 }
     ],
     "시크릿 가든 말룸파티": [
-        { name: "일반 투어 (09:40 미팅)", price: 99000 },
-        { name: "샌딩팩 (09:00 미팅)", price: 110000 }
+        { name: "일반 투어 ( 09:40 )", price: 99000 },
+        { name: "샌딩팩 투어 ( 09:00 )", price: 110000 }
     ],
     "액티비티 (Activity)": [
         { name: "체험 다이빙", price: 55000 },
@@ -55,19 +57,19 @@ const PRODUCT_DATA = {
         { name: "태반 마사지", price: 55000 }
     ],
     "마리스 스파": [
-        { name: "기본 이용", price: 91000 }
+        { name: "기본 패키지", price: 91000 }
     ],
     "포세이돈 스파": [
-        { name: "기본 이용", price: 105000 }
+        { name: "기본 패키지", price: 105000 }
     ],
     "헬리오스 스파": [
-        { name: "기본 이용", price: 91000 }
+        { name: "기본 패키지", price: 91000 }
     ],
     "카바얀 스파": [
         { name: "전신 마사지", price: 49000 }
     ],
     "아유르베다 스파": [
-        { name: "기본 이용", price: 55000 }
+        { name: "기본 패키지", price: 55000 }
     ],
     "기타(수동입력)": [
         { name: "직접 입력 옵션", price: 0 }

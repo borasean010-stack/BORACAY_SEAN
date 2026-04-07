@@ -756,27 +756,31 @@ document.addEventListener('DOMContentLoaded', () => {
                         const sum = mCount.filter(n => parseInt(n) < 15).reduce((a, b) => parseInt(a) + parseInt(b), 0);
                         if (sum > 0) itemPax = sum;
                     }
-                    const timeMatch = line.match(/(\d{1,2}):(\d{2})/); if (timeMatch) itemTime = `${timeMatch[1].padStart(2,'0')}:${timeMatch[2]}`;
+                    const timeMatch = line.match(/(\d{1,2})\/(\d{1,2})/); // Prevent re-matching dates
+                    const actualTimeMatch = line.match(/(\d{1,2}):(\d{2})/); if (actualTimeMatch) itemTime = `${actualTimeMatch[1].padStart(2,'0')}:${actualTimeMatch[2]}`;
                     const lowerLine = line.toLowerCase();
                     
-                    if (lowerLine.includes('meeting') || lowerLine.includes('pickup') || lowerLine.includes('픽업')) itemName = '공항 픽업';
-                    else if (lowerLine.includes('sending') || lowerLine.includes('샌딩')) itemName = '공항 샌딩';
-                    else if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = '에스파(SSPA)';
+                    if (lowerLine.includes('meeting') || lowerLine.includes('pickup') || lowerLine.includes('픽업')) itemName = '✈️ 공항 픽업';
+                    else if (lowerLine.includes('sending') || lowerLine.includes('샌딩')) itemName = '✈️ 공항 샌딩';
+                    else if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = '에스파(S-SPA)';
                     else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = '루나스파';
                     else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = '보라스파';
-                    else if (lowerLine.includes('kabayan') || lowerLine.includes('카바얀')) itemName = '카바얀';
+                    else if (lowerLine.includes('kabayan') || lowerLine.includes('카바얀')) itemName = '카바얀스파';
                     else if (lowerLine.includes('hilot') || lowerLine.includes('힐롯')) itemName = '힐롯마사지';
-                    else if (lowerLine.includes('poseidon') || lowerLine.includes('포세이돈')) itemName = '포세이돈';
-                    else if (lowerLine.includes('maris') || lowerLine.includes('마리스')) itemName = '마리스';
-                    else if (lowerLine.includes('helios') || lowerLine.includes('헬리오스')) itemName = '헬리오스';
-                    else if (lowerLine.includes('land') || lowerLine.includes('랜드')) { itemName = '보라카이 랜드투어'; if(!timeMatch) itemTime = "10:30"; }
-                    else if (lowerLine.includes('hopping') || lowerLine.includes('호핑')) { if (lowerLine.includes('(j)') || lowerLine.includes('점보')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!timeMatch) itemTime = "12:30"; } else { itemName = '블랙펄 선셋 호핑투어'; if(!timeMatch) itemTime = "13:30"; } }
-                    else if (lowerLine.includes('malum') || lowerLine.includes('말룸')) { itemName = '시크릿가든 말룸파티'; if(!timeMatch) itemTime = "09:40"; }
+                    else if (lowerLine.includes('poseidon') || lowerLine.includes('포세이돈')) itemName = '포세이돈 스파';
+                    else if (lowerLine.includes('maris') || lowerLine.includes('마리스')) itemName = '마리스 스파';
+                    else if (lowerLine.includes('helios') || lowerLine.includes('헬리오스')) itemName = '헬리오스 스파';
+                    else if (lowerLine.includes('land') || lowerLine.includes('랜드')) { itemName = '보라카이 랜드투어'; if(!actualTimeMatch) itemTime = "10:30"; }
+                    else if (lowerLine.includes('hopping') || lowerLine.includes('호핑')) { if (lowerLine.includes('(j)') || lowerLine.includes('점보')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!actualTimeMatch) itemTime = "12:30"; } else { itemName = '블랙펄 선셋 호핑투어'; if(!actualTimeMatch) itemTime = "13:30"; } }
+                    else if (lowerLine.includes('malum') || lowerLine.includes('말룸')) { itemName = '시크릿가든 말룸파티'; if(!actualTimeMatch) itemTime = "09:40"; }
                     else if (lowerLine.includes('jetski') || lowerLine.includes('zetski') || lowerLine.includes('제트스키')) itemName = '제트스키';
                     else if (lowerLine.includes('helmet') || lowerLine.includes('헬멧')) itemName = '헬멧다이빙';
                     else if (lowerLine.includes('para') || lowerLine.includes('파라')) itemName = '파라세일링';
                     else if (lowerLine.includes('diving') || lowerLine.includes('다이빙')) itemName = '체험다이빙';
-                    else if (lowerLine.includes('golf') || lowerLine.includes('골프')) itemName = '골프';
+                    else if (lowerLine.includes('golf') || lowerLine.includes('골프')) itemName = '페어웨이 골프';
+                    else if (lowerLine.includes('sub') || lowerLine.includes('잠수함')) itemName = '잠수함';
+                    else if (lowerLine.includes('yacht') || lowerLine.includes('요트')) itemName = '프라이빗 요트';
+                    else if (lowerLine.includes('sunset') || lowerLine.includes('선셋')) itemName = '선셋 세일링';
                     
                     if (line.includes('afh') || line.includes('AFH')) itemTime = "18:00";
                     else if (line.includes('afm') || line.includes('AFM')) itemTime = "17:00";

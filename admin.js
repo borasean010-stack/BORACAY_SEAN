@@ -134,10 +134,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateSummaryCounts() {
         const counts = {
-            new: allReservations.filter(r => ['입금대기', '예약접수', '견적발송', '입금확인요청'].includes(r.status)).length,
-            confirmed: allReservations.filter(r => r.status === '예약확정').length,
-            resorts: allReservations.filter(r => r.status === '견적').length,
-            resortConfirmed: allReservations.filter(r => r.status === '리조트확정').length
+            new: allReservations.filter(r => ['입금대기', '예약접수', '견적발송', '입금확인요청', '견적'].includes(r.status)).length,
+            confirmed: allReservations.filter(r => ['예약확정', '리조트확정'].includes(r.status)).length,
+            resorts: allReservations.filter(r => r.status === '리조트견적_사용안함').length,
+            resortConfirmed: allReservations.filter(r => r.status === '리조트확정_사용안함').length
         };
         const cIds = ['count-new', 'count-confirmed', 'count-resorts', 'count-resort-confirmed'];
         const vals = [counts.new, counts.confirmed, counts.resorts, counts.resortConfirmed];
@@ -360,10 +360,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const filtered = allReservations.filter(r => {
             const name = (r.customerKorName || '').toLowerCase();
             let matchesTab = false;
-            if (activeTab === 'new') matchesTab = ['입금대기', '예약접수', '견적발송', '입금확인요청'].includes(r.status);
-            else if (activeTab === 'confirmed') matchesTab = (r.status === '예약확정');
-            else if (activeTab === 'resorts') matchesTab = (r.status === '견적');
-            else if (activeTab === 'resort-confirmed') matchesTab = (r.status === '리조트확정');
+            if (activeTab === 'new') matchesTab = ['입금대기', '예약접수', '견적발송', '입금확인요청', '견적'].includes(r.status);
+            else if (activeTab === 'confirmed') matchesTab = ['예약확정', '리조트확정'].includes(r.status);
+            else if (activeTab === 'resorts') matchesTab = (r.status === '리조트견적_사용안함');
+            else if (activeTab === 'resort-confirmed') matchesTab = (r.status === '리조트확정_사용안함');
             return name.includes(searchTerm) && matchesTab;
         });
         filtered.forEach((res, index) => {

@@ -18,23 +18,25 @@ const PRODUCTS = [
     { name: "보라카이 왕복 픽업샌딩", price: 54900 },
     { name: "블랙펄 요트호핑투어", price: 85000 },
     { name: "시크릿가든 말룸파티", price: 99000 },
+    { name: "에스파 - 태반/스톤/오일", price: 55000 },
+    { name: "에스파 - 힐롯 마사지", price: 70000 },
+    { name: "에스파 - 포핸드 마사지", price: 84000 },
+    { name: "에스파 - 성장 마사지", price: 42000 },
+    { name: "보라스파 - 꿀/진주/태반", price: 55000 },
+    { name: "루나스파 - 스톤/노니/태반", price: 55000 },
+    { name: "마리스 스파", price: 91000 },
+    { name: "포세이돈 스파", price: 105000 },
+    { name: "헬리오스 스파", price: 91000 },
+    { name: "카바얀 전신 마사지", price: 49000 },
+    { name: "아유르베다 스파", price: 55000 },
+    { name: "체험 다이빙", price: 55000 },
+    { name: "파라세일링", price: 55000 },
+    { name: "제트스키", price: 55000 },
+    { name: "헬멧 다이빙", price: 44000 },
     { name: "프리다이빙 체험", price: 112500 },
     { name: "보라카이 랜드투어", price: 45000 },
     { name: "JL 스냅사진 촬영", price: 300000 },
-    { name: "보라아재 호핑투어", price: 180000 },
-    { name: "파라세일링", price: 55000 },
-    { name: "체험 다이빙", price: 55000 },
-    { name: "헬멧 다이빙", price: 44000 },
-    { name: "제트스키", price: 55000 },
     { name: "페어웨이 골프클럽", price: 192000 },
-    { name: "아유르베다 스파", price: 55000 },
-    { name: "에스파 (S-SPA)", price: 55000 },
-    { name: "포세이돈 스파", price: 105000 },
-    { name: "마리스 스파", price: 91000 },
-    { name: "카바얀 스파", price: 49000 },
-    { name: "루나 스파", price: 55000 },
-    { name: "보라스파", price: 55000 },
-    { name: "헬리오스 스파", price: 91000 },
     { name: "기타(수동입력)", price: 0 }
 ];
 
@@ -89,11 +91,7 @@ function updateTotal() {
 
 window.submitQuote = async () => {
     const rows = document.querySelectorAll('.item-row');
-    
-    if (rows.length === 0) {
-        alert('최소 하나의 상품 항목이 필요합니다.');
-        return;
-    }
+    if (rows.length === 0) { alert('상품을 추가해 주세요.'); return; }
 
     const items = [];
     let totalPrice = 0;
@@ -102,18 +100,13 @@ window.submitQuote = async () => {
         const productName = row.querySelector('.item-select').value;
         const count = parseInt(row.querySelector('.item-count').value) || 0;
         const price = parseInt(row.querySelector('.item-price').value) || 0;
-        
         if (productName !== '선택하세요') {
-            // 관리자는 날짜를 넣지 않으므로 기본값 "-"로 저장
             items.push({ name: productName, date: "-", count, price });
             totalPrice += (count * price);
         }
     });
 
-    if (items.length === 0) {
-        alert('상품을 선택해 주세요.');
-        return;
-    }
+    if (items.length === 0) { alert('상품을 선택해 주세요.'); return; }
 
     try {
         const docRef = await addDoc(collection(db, "reservations"), {
@@ -127,13 +120,9 @@ window.submitQuote = async () => {
 
         const url = `${window.location.origin}/quote.html?id=${docRef.id}`;
         await navigator.clipboard.writeText(url);
-        alert('견적 링크가 생성되었습니다!\n링크가 클립보드에 복사되었습니다.\n이 링크를 고객에게 보내주세요.');
+        alert('견적 링크가 생성되었습니다!\n상품 종류와 가격이 고정된 링크입니다.');
         window.close();
-    } catch (e) {
-        console.error(e);
-        alert('저장 중 오류가 발생했습니다.');
-    }
+    } catch (e) { console.error(e); }
 };
 
-// 초기 행 하나 추가
 addItemRow();

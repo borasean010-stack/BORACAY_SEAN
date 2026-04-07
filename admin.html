@@ -34,7 +34,7 @@
 
         .timeline-content { display: flex; gap: 15px; overflow-x: auto; padding: 10px 0; min-height: 100px; }
         
-        .status-cards-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 25px; }
+        .status-cards-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px; }
         .stat-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; cursor: pointer; border-bottom: 4px solid #eee; }
         .stat-card.active { border-bottom-color: #ff6a00; background: #fffaf5; }
         .stat-card .label { font-size: 13px; font-weight: 700; color: #888; }
@@ -71,8 +71,8 @@
                     <button class="ss-nav-item active" onclick="switchMainView()"><span class="material-icons">dashboard</span> 메인 페이지</button>
                     <button class="ss-nav-item" onclick="switchAdminTab('new')"><span class="material-icons">inbox</span> 신규예약</button>
                     <button class="ss-nav-item" onclick="switchAdminTab('confirmed')"><span class="material-icons">task_alt</span> 예약확정</button>
-                    <button class="ss-nav-item" style="display:none;" onclick="switchAdminTab('resorts')"><span class="material-icons">hotel</span> 리조트 견적</button>
-                    <button class="ss-nav-item" style="display:none;" onclick="switchAdminTab('resort-confirmed')"><span class="material-icons">check_circle</span> 리조트 확정</button>
+                    <button class="ss-nav-item" onclick="switchAdminTab('resorts')"><span class="material-icons">hotel</span> 리조트 견적</button>
+                    <button class="ss-nav-item" onclick="switchAdminTab('resort-confirmed')"><span class="material-icons">check_circle</span> 리조트 확정</button>
                 </div>
                 <div class="ss-nav-group">
                     <p class="ss-nav-label">시스템</p>
@@ -182,10 +182,10 @@
                     <div class="stat-card" id="stat-confirmed" onclick="switchAdminTab('confirmed')">
                         <div class="label">예약 확정</div><div class="count" id="count-confirmed">0</div>
                     </div>
-                    <div class="stat-card" id="stat-resorts" style="display:none;" onclick="switchAdminTab('resorts')">
+                    <div class="stat-card" id="stat-resorts" onclick="switchAdminTab('resorts')">
                         <div class="label">리조트 견적</div><div class="count" id="count-resorts">0</div>
                     </div>
-                    <div class="stat-card" id="stat-resort-confirmed" style="display:none;" onclick="switchAdminTab('resort-confirmed')">
+                    <div class="stat-card" id="stat-resort-confirmed" onclick="switchAdminTab('resort-confirmed')">
                         <div class="label">리조트 확정</div><div class="count" id="count-resort-confirmed">0</div>
                     </div>
                 </div>

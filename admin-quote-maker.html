@@ -9,20 +9,19 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         body { background: #f0f2f5; font-family: 'Pretendard', sans-serif; padding: 40px 20px; }
-        .maker-container { max-width: 900px; margin: 0 auto; background: #fff; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; }
+        .maker-container { max-width: 1000px; margin: 0 auto; background: #fff; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; }
         .maker-header { background: #007aff; color: #fff; padding: 30px; display: flex; justify-content: space-between; align-items: center; }
         .maker-header h1 { margin: 0; font-size: 22px; font-weight: 800; }
         
         .maker-body { padding: 30px; }
-        .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
-        .input-item label { display: block; font-size: 13px; color: #666; margin-bottom: 8px; font-weight: 700; }
-        .input-item input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 15px; box-sizing: border-box; }
-
-        .item-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        .item-table th { text-align: left; padding: 12px; border-bottom: 2px solid #eee; font-size: 14px; color: #888; }
-        .item-table td { padding: 12px; border-bottom: 1px solid #eee; }
         
-        .item-row select, .item-row input { width: 100%; padding: 10px; border: 1px solid #eee; border-radius: 8px; font-size: 14px; box-sizing: border-box; }
+        .item-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .item-table th { text-align: left; padding: 15px 12px; border-bottom: 2px solid #eee; font-size: 14px; color: #888; }
+        .item-table td { padding: 15px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
+        
+        .item-row select, .item-row input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 14px; box-sizing: border-box; transition: 0.2s; }
+        .item-row select:focus, .item-row input:focus { border-color: #007aff; outline: none; }
+        
         .btn-add { background: #f0f7ff; color: #007aff; border: 1px dashed #007aff; width: 100%; padding: 15px; border-radius: 12px; font-weight: 700; cursor: pointer; margin-bottom: 30px; transition: 0.2s; }
         .btn-add:hover { background: #e0eeff; }
 
@@ -34,7 +33,7 @@
         .btn-submit { flex: 2; background: #111; color: #fff; border: none; padding: 18px; border-radius: 12px; font-size: 18px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .btn-close { flex: 1; background: #eee; color: #666; border: none; padding: 18px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; }
         
-        .btn-remove { color: #ff4b4b; background: none; border: none; cursor: pointer; }
+        .btn-remove { color: #ff4b4b; background: none; border: none; cursor: pointer; font-size: 20px; }
     </style>
 </head>
 <body>
@@ -42,27 +41,27 @@
 <div class="maker-container">
     <div class="maker-header">
         <h1>📝 맞춤 견적서 메이커</h1>
-        <div style="font-size: 14px; opacity: 0.8;">Boracay Sean Admin Tool</div>
+        <div style="font-size: 14px; opacity: 0.8;">Admin Mode</div>
     </div>
 
     <div class="maker-body">
-        <div style="margin-bottom: 20px; padding: 15px; background: #f0f7ff; border-radius: 12px; color: #007aff; font-size: 14px; font-weight: 700;">
-            <span class="material-icons" style="vertical-align: middle; font-size: 18px; margin-right: 5px;">info</span>
-            상품과 인원만 설정하여 링크를 보내주세요. 고객이 직접 정보를 입력하게 됩니다.
+        <div style="margin-bottom: 25px; padding: 15px; background: #f0f7ff; border-radius: 12px; color: #007aff; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+            <span class="material-icons">info</span>
+            상품을 선택하면 해당 상품의 옵션(마사지 종류 등)이 자동으로 활성화됩니다.
         </div>
 
         <table class="item-table">
             <thead>
                 <tr>
-                    <th>상품 선택</th>
+                    <th width="300">상품 선택</th>
                     <th width="100">인원</th>
-                    <th width="150">단가 (원)</th>
-                    <th width="150">소계</th>
-                    <th width="40"></th>
+                    <th width="300">종류 / 옵션</th>
+                    <th width="180" style="text-align:right;">소계</th>
+                    <th width="50"></th>
                 </tr>
             </thead>
             <tbody id="item-tbody">
-                <!-- Rows added here -->
+                <!-- Rows injected here -->
             </tbody>
         </table>
 

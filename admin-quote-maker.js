@@ -13,55 +13,97 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const PRODUCTS = [
-    { name: "선택하세요", price: 0 },
-    { name: "보라카이 왕복 픽업샌딩", price: 54900 },
-    { name: "블랙펄 요트호핑투어", price: 85000 },
-    { name: "시크릿가든 말룸파티", price: 99000 },
-    { name: "에스파 - 태반/스톤/오일", price: 55000 },
-    { name: "에스파 - 힐롯 마사지", price: 70000 },
-    { name: "에스파 - 포핸드 마사지", price: 84000 },
-    { name: "에스파 - 성장 마사지", price: 42000 },
-    { name: "보라스파 - 꿀/진주/태반", price: 55000 },
-    { name: "루나스파 - 스톤/노니/태반", price: 55000 },
-    { name: "마리스 스파", price: 91000 },
-    { name: "포세이돈 스파", price: 105000 },
-    { name: "헬리오스 스파", price: 91000 },
-    { name: "카바얀 전신 마사지", price: 49000 },
-    { name: "아유르베다 스파", price: 55000 },
-    { name: "체험 다이빙", price: 55000 },
-    { name: "파라세일링", price: 55000 },
-    { name: "제트스키", price: 55000 },
-    { name: "헬멧 다이빙", price: 44000 },
-    { name: "프리다이빙 체험", price: 112500 },
-    { name: "보라카이 랜드투어", price: 45000 },
-    { name: "JL 스냅사진 촬영", price: 300000 },
-    { name: "페어웨이 골프클럽", price: 192000 },
-    { name: "기타(수동입력)", price: 0 }
-];
+// --- 📦 상세 상품 및 옵션 데이터 ---
+const PRODUCT_DATA = {
+    "에스파 (S-SPA)": [
+        { name: "태반/스톤/오일", price: 55000 },
+        { name: "힐롯 마사지", price: 70000 },
+        { name: "포핸드 마사지", price: 84000 },
+        { name: "성장 마사지", price: 42000 }
+    ],
+    "보라스파": [
+        { name: "꿀/진주/태반", price: 55000 }
+    ],
+    "루나스파": [
+        { name: "스톤/노니/태반", price: 55000 }
+    ],
+    "마리스 스파": [
+        { name: "기본 패키지", price: 91000 }
+    ],
+    "포세이돈 스파": [
+        { name: "기본 패키지", price: 105000 }
+    ],
+    "카바얀 스파": [
+        { name: "전신 마사지", price: 49000 }
+    ],
+    "블랙펄 요트호핑": [
+        { name: "기본 투어 (점심별도)", price: 85000 }
+    ],
+    "시크릿가든 말룸파티": [
+        { name: "일반 투어", price: 99000 }
+    ],
+    "보라카이 왕복 픽업샌딩": [
+        { name: "단독/조인 통합", price: 54900 }
+    ],
+    "체험 다이빙": [
+        { name: "기본 체험", price: 55000 }
+    ],
+    "파라세일링": [
+        { name: "기본 이용", price: 55000 }
+    ],
+    "제트스키": [
+        { name: "기본 이용", price: 55000 }
+    ],
+    "기타(직접입력)": [
+        { name: "일반 옵션", price: 0 }
+    ]
+};
 
 window.addItemRow = () => {
     const tbody = document.getElementById('item-tbody');
     const row = document.createElement('tr');
     row.className = 'item-row';
     
-    const options = PRODUCTS.map(p => `<option value="${p.name}" data-price="${p.price}">${p.name}</option>`).join('');
+    const productOptions = Object.keys(PRODUCT_DATA).map(name => `<option value="${name}">${name}</option>`).join('');
     
     row.innerHTML = `
-        <td><select class="item-select" onchange="onProductChange(this)">${options}</select></td>
+        <td><select class="item-select" onchange="onProductChange(this)">
+            <option value="">선택하세요</option>
+            ${productOptions}
+        </select></td>
         <td><input type="number" class="item-count" value="1" min="1" oninput="calculateRow(this)"></td>
-        <td><input type="number" class="item-price" value="0" oninput="calculateRow(this)"></td>
-        <td><input type="text" class="item-subtotal" value="₩ 0" readonly></td>
+        <td><select class="item-type" onchange="onTypeChange(this)">
+            <option value="">상품 먼저 선택</option>
+        </select></td>
+        <td><input type="text" class="item-subtotal" value="₩ 0" readonly style="background:#f9fafb; border:none; text-align:right; font-weight:800; color:#ff6a00;"></td>
         <td><button class="btn-remove" onclick="removeRow(this)">✕</button></td>
+        <input type="hidden" class="item-price" value="0">
     `;
     tbody.appendChild(row);
 };
 
 window.onProductChange = (select) => {
     const row = select.closest('tr');
+    const typeSelect = row.querySelector('.item-type');
+    const productName = select.value;
+    
+    if (!productName) {
+        typeSelect.innerHTML = '<option value="">선택하세요</option>';
+        return;
+    }
+
+    const types = PRODUCT_DATA[productName];
+    typeSelect.innerHTML = types.map(t => `<option value="${t.name}" data-price="${t.price}">${t.name} (₩${t.price.toLocaleString()})</option>`).join('');
+    
+    onTypeChange(typeSelect);
+};
+
+window.onTypeChange = (select) => {
+    const row = select.closest('tr');
     const priceInput = row.querySelector('.item-price');
     const selectedOption = select.options[select.selectedIndex];
-    priceInput.value = selectedOption.dataset.price;
+    
+    priceInput.value = selectedOption.dataset.price || 0;
     calculateRow(select);
 };
 
@@ -98,15 +140,22 @@ window.submitQuote = async () => {
 
     rows.forEach(row => {
         const productName = row.querySelector('.item-select').value;
+        const typeName = row.querySelector('.item-type').value;
         const count = parseInt(row.querySelector('.item-count').value) || 0;
         const price = parseInt(row.querySelector('.item-price').value) || 0;
-        if (productName !== '선택하세요') {
-            items.push({ name: productName, date: "-", count, price });
+        
+        if (productName && typeName) {
+            items.push({ 
+                name: `${productName} (${typeName})`, 
+                date: "-", 
+                count: count, 
+                price: price 
+            });
             totalPrice += (count * price);
         }
     });
 
-    if (items.length === 0) { alert('상품을 선택해 주세요.'); return; }
+    if (items.length === 0) { alert('상품을 완성해 주세요.'); return; }
 
     try {
         const docRef = await addDoc(collection(db, "reservations"), {
@@ -120,7 +169,7 @@ window.submitQuote = async () => {
 
         const url = `${window.location.origin}/quote.html?id=${docRef.id}`;
         await navigator.clipboard.writeText(url);
-        alert('견적 링크가 생성되었습니다!\n상품 종류와 가격이 고정된 링크입니다.');
+        alert('견적 링크가 생성되었습니다!\n상품명과 옵션이 정확히 포함되었습니다.');
         window.close();
     } catch (e) { console.error(e); }
 };

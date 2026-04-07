@@ -14,7 +14,6 @@
         
         .quote-container { max-width: 600px; margin: 0 auto; background: #fff; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.1); }
         
-        /* 헤더 스타일 */
         .quote-header { background: var(--dark); color: #fff; padding: 40px 30px; text-align: center; }
         .quote-header img { width: 70px; margin-bottom: 15px; }
         .quote-header h1 { margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 2px; }
@@ -22,52 +21,49 @@
 
         .quote-body { padding: 30px; }
         
-        /* 섹션 타이틀 */
         .section-title { font-size: 18px; font-weight: 800; margin: 30px 0 20px; display: flex; align-items: center; gap: 10px; color: var(--dark); }
         .section-title::before { content: ''; width: 4px; height: 18px; background: var(--primary); border-radius: 2px; }
         .section-title:first-child { margin-top: 0; }
 
-        /* 견적 리스트 스타일 (요청하신 형식) */
         .detail-card { background: #fff; border: 1px solid #eee; border-radius: 20px; padding: 25px; margin-bottom: 20px; }
         .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f5f5f5; }
         .detail-row:last-child { border-bottom: none; }
-        .detail-label { font-size: 15px; color: #666; font-weight: 600; }
-        .detail-value { font-size: 16px; color: var(--dark); font-weight: 800; }
+        .detail-label { font-size: 15px; color: #666; font-weight: 600; flex: 1; }
+        .detail-divider { width: 1px; height: 12px; background: #ddd; margin: 0 15px; }
+        .detail-value { font-size: 16px; color: var(--dark); font-weight: 800; flex: 1; text-align: right; }
         .price-val { color: var(--primary); }
 
-        /* 총액 섹션 */
         .total-box { background: #fffaf5; border: 2px solid var(--primary); border-radius: 20px; padding: 25px; text-align: center; margin: 30px 0; }
         .total-box label { font-size: 14px; color: var(--primary); font-weight: 700; display: block; margin-bottom: 5px; }
         .total-box .amount { font-size: 32px; font-weight: 900; color: var(--dark); }
 
-        /* 입금하기 버튼 */
-        .btn-main { background: var(--primary); color: #fff; border: none; padding: 20px; border-radius: 50px; font-size: 18px; font-weight: 800; width: 100%; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 10px 30px rgba(255,106,0,0.3); }
+        .btn-main { background: var(--primary); color: #fff; border: none; padding: 20px; border-radius: 50px; font-size: 18px; font-weight: 800; width: 100%; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 10px 30px rgba(255,106,0,0.3); text-decoration: none; }
         .btn-main:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(255,106,0,0.4); }
 
-        /* 입력 폼 스타일 */
         .input-group { margin-bottom: 25px; }
         .input-group label { display: block; font-size: 13px; color: #666; margin-bottom: 8px; font-weight: 700; }
         .input-group label span { color: var(--primary); margin-left: 3px; }
-        .input-group input, .input-group select { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; font-size: 15px; box-sizing: border-box; transition: 0.2s; background: #fff; }
+        .input-group input, .input-group select { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; font-size: 15px; box-sizing: border-box; transition: 0.2s; background: #fff; font-family: inherit; }
         .input-group input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px rgba(255,106,0,0.1); }
 
-        /* 상품별 상세 정보 박스 */
         .product-spec-box { background: #f9fafb; border-radius: 20px; padding: 25px; margin-bottom: 25px; border: 1px solid #eee; }
         .product-spec-title { font-size: 15px; font-weight: 800; margin-bottom: 15px; color: var(--dark); display: flex; align-items: center; gap: 8px; }
         .product-spec-title .material-icons { font-size: 18px; color: var(--primary); }
 
-        /* 럭셔리 달력 스타일 */
-        .calendar-wrap { position: relative; }
-        .calendar-input-icon { position: absolute; right: 15px; top: 43px; color: #aaa; pointer-events: none; }
-        
-        /* 입금 정보 창 */
-        .bank-card { background: #f0f2f5; border-radius: 20px; padding: 25px; margin-top: 30px; text-align: center; }
+        .bank-card { background: #f0f2f5; border-radius: 20px; padding: 25px; margin-top: 30px; text-align: center; position: relative; }
         .bank-card h3 { margin: 0 0 10px 0; font-size: 16px; color: #666; }
         .bank-card .acc { font-size: 20px; font-weight: 900; color: var(--dark); margin-bottom: 5px; }
         .bank-card .owner { font-size: 15px; color: #888; }
+        .copy-chip { display: inline-block; padding: 4px 10px; background: var(--dark); color: #fff; font-size: 11px; border-radius: 50px; cursor: pointer; margin-top: 10px; transition: 0.2s; }
+        .copy-chip:hover { background: var(--primary); }
 
         .success-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.98); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; text-align: center; padding: 20px; }
         
+        #toast { visibility: hidden; min-width: 200px; background-color: #333; color: #fff; text-align: center; border-radius: 10px; padding: 12px; position: fixed; z-index: 2000; left: 50%; bottom: 50px; transform: translateX(-50%); font-size: 14px; font-weight: 600; }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 50px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 50px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
         @media (max-width: 480px) {
             body { padding: 15px; }
             .quote-container { border-radius: 20px; }
@@ -77,6 +73,8 @@
     </style>
 </head>
 <body>
+
+<div id="toast">복사되었습니다.</div>
 
 <div class="quote-container" id="quote-app">
     <div class="quote-header">
@@ -89,56 +87,51 @@
         <div id="loading" style="text-align:center; padding:40px; color:#999;">견적 데이터를 불러오는 중...</div>
         
         <div id="main-content" style="display:none;">
-            <!-- 1. 견적 상세 내역 -->
             <div class="section-title">견적 상세 내역</div>
-            <div class="detail-card" id="item-list-container">
-                <!-- 상품별 리스트가 여기에 들어감 -->
-            </div>
+            <div class="detail-card" id="item-list-container"></div>
 
-            <!-- 2. 총액 및 입금하기 버튼 -->
             <div class="total-box">
                 <label>최종 합계 금액</label>
                 <div class="amount" id="q-total">₩ 0</div>
             </div>
 
             <button class="btn-main" id="btn-show-form">
-                <span class="material-icons">touch_app</span> 예약 정보 입력하고 입금하기
+                <span class="material-icons">touch_app</span> 입금하기
             </button>
 
-            <!-- 3. 예약자 정보 입력 (처음엔 숨김) -->
             <div id="info-form-section" style="display:none; margin-top:40px; border-top:2px dashed #eee; padding-top:40px;">
-                <div class="section-title">예약자 기본 정보</div>
+                <div class="section-title">예약자 정보 입력</div>
                 <div class="input-group">
                     <label>대표자 성함 (한글)<span>*</span></label>
                     <input type="text" id="cust-kor-name" placeholder="실명을 입력해 주세요">
                 </div>
                 <div class="input-group">
+                    <label>카카오톡 ID 또는 연락처<span>*</span></label>
+                    <input type="text" id="cust-contact" placeholder="안내 메시지를 받으실 수 있는 정보">
+                </div>
+                <div class="input-group">
                     <label>대표자 영문 이름 (여권과 동일)<span>*</span></label>
                     <input type="text" id="cust-eng-name" placeholder="예: HONG GILDONG">
                 </div>
-                <div class="input-group">
-                    <label>카카오톡 ID 또는 연락처<span>*</span></label>
-                    <input type="text" id="cust-contact" placeholder="연락 가능한 정보를 남겨주세요">
-                </div>
 
-                <!-- 상품별 상세 정보 입력 (항공, 호텔 등) -->
                 <div id="dynamic-product-fields"></div>
 
                 <div class="section-title">결제 및 확정 안내</div>
                 <div class="bank-card">
                     <h3>입금 계좌 정보</h3>
-                    <div class="acc">국민은행 058137-04-003860</div>
+                    <div class="acc" id="bank-acc">국민은행 058137-04-003860</div>
                     <div class="owner">예금주: 윤오현 (보라카이션)</div>
+                    <div class="copy-chip" onclick="copyText('058137-04-003860')">계좌번호 복사</div>
                 </div>
 
                 <div style="margin-top:30px;">
                     <button class="btn-main" id="btn-final-submit" style="background:#111;">
                         <span class="material-icons">check_circle</span> 입금 완료 및 예약 신청
                     </button>
-                    <p style="text-align:center; font-size:13px; color:#999; margin-top:15px;">
+                    <div style="text-align:center; font-size:13px; color:#666; margin-top:20px; line-height:1.6; word-break:keep-all;">
                         정보를 모두 입력하신 후 '입금 완료' 버튼을 눌러주세요.<br>
-                        관리자 확인 후 10분 내로 확정 바우처를 보내드립니다.
-                    </p>
+                        <b style="color:var(--primary);">그리고 보라카이션 카카오채널로 대표자분 성함 꼭 보내주세요!</b>
+                    </div>
                 </div>
             </div>
         </div>
@@ -148,14 +141,25 @@
 <div id="success-overlay" class="success-overlay">
     <span class="material-icons" style="font-size:80px; color:#00c73c; margin-bottom:20px;">check_circle</span>
     <div style="font-size:26px; font-weight:900; margin-bottom:15px;">예약 신청 완료!</div>
-    <div style="color:#666; line-height:1.7; font-size:16px;">
+    <div style="color:#666; line-height:1.7; font-size:16px; margin-bottom:30px;">
         소중한 예약 감사합니다.<br>
         관리자가 입금을 확인하는 즉시<br>
         <strong>카카오톡으로 확정 바우처</strong>를 보내드립니다.
     </div>
-    <button class="btn-main" onclick="location.href='/'" style="margin-top:30px; width:200px;">홈으로 가기</button>
+    <button class="btn-main" onclick="window.open('http://pf.kakao.com/_zBArM/chat', '_blank')" style="width:240px;">
+        카카오톡으로 성함 보내기
+    </button>
 </div>
 
+<script>
+    window.copyText = (text) => {
+        navigator.clipboard.writeText(text).then(() => {
+            const toast = document.getElementById("toast");
+            toast.className = "show";
+            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+        });
+    };
+</script>
 <script type="module" src="quote.js"></script>
 </body>
 </html>

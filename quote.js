@@ -13,18 +13,18 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- 🏷️ 상품별 설정 (사용자 요청 반영) ---
+// --- 🏷️ 상품별 설정 (셔틀 유무 정밀화) ---
 const PRODUCT_CONFIG = {
-    "호핑": { noOptions: true, hasPickup: false }, // 관리자가 이미 식사여부 결정함, 미팅지 고정
-    "말룸": { noOptions: true, hasPickup: false }, // 미팅지 고정
-    "에스파": { options: ["12:30", "14:30", "16:30", "18:30", "19:30"], hasPickup: false },
-    "루나": { options: ["10:00", "13:00", "16:00", "20:00"], hasPickup: false },
-    "보라스파": { options: ["10:00", "13:00", "16:00", "20:00"], hasPickup: false },
-    "카바얀": { options: ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"], hasPickup: false },
-    "마리스": { options: ["10:00", "13:30", "16:30", "19:30"], hasPickup: true },
-    "포세이돈": { options: ["10:00", "13:00", "16:00", "19:00"], hasPickup: true },
-    "힐롯": { options: ["10:00", "13:00", "16:00", "19:00"], hasPickup: true },
-    "헬리오스": { options: ["10:00", "13:30", "16:30", "19:30"], hasPickup: true },
+    "호핑": { noOptions: true, hasPickup: false, meetingInfo: "보라카이션 오피스 미팅 (개별 이동)" },
+    "말룸": { noOptions: true, hasPickup: false, meetingInfo: "보라카이션 오피스 미팅 (개별 이동)" },
+    "에스파": { options: ["12:30", "14:30", "16:30", "18:30", "19:30"], hasPickup: false, meetingInfo: "직접 이동 상품 (셔틀 없음)" },
+    "루나": { options: ["10:00", "13:00", "16:00", "20:00"], hasPickup: false, meetingInfo: "직접 이동 상품 (셔틀 없음)" },
+    "보라스파": { options: ["10:00", "13:00", "16:00", "20:00"], hasPickup: false, meetingInfo: "직접 이동 상품 (셔틀 없음)" },
+    "카바얀": { options: ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"], hasPickup: false, meetingInfo: "직접 이동 상품 (셔틀 없음)" },
+    "마리스": { options: ["10:00", "13:30", "16:30", "19:30"], hasPickup: true }, // 셔틀 있음
+    "포세이돈": { options: ["10:00", "13:00", "16:00", "19:00"], hasPickup: true }, // 셔틀 있음
+    "힐롯": { options: ["10:00", "13:00", "16:00", "19:00"], hasPickup: true }, // 셔틀 있음
+    "헬리오스": { options: ["10:00", "13:30", "16:30", "19:30"], hasPickup: true }, // 셔틀 있음
     "다이빙": { options: ["09:00", "11:00", "13:00", "15:00"], hasPickup: true },
     "파라세일링": { options: ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00"], hasPickup: true },
     "제트스키": { options: ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"], hasPickup: true },
@@ -120,7 +120,6 @@ function renderDynamicProductFields() {
                 <input type="hidden" id="date-${idx}">
             </div>`;
 
-        // 마사지/액티비티 등 시간이 필요한 경우만 표시 (호핑/말룸 제외)
         if (!config.noOptions) {
             html += `<div class="input-group">
                 <label>예약 시간 선택<span>*</span></label>
@@ -131,18 +130,20 @@ function renderDynamicProductFields() {
             </div>`;
         }
 
-        // 픽업이 필요한 상품만 리조트 입력창 표시
+        // 셔틀 제공 여부에 따른 입력란 노출 제어
         if (config.hasPickup) {
             html += `<div class="input-group">
                 <label>픽업 받으실 리조트명<span>*</span></label>
                 <input type="text" id="resort-${idx}" placeholder="숙소 이름을 적어주세요">
             </div>`;
         } else {
-            // 직접 이동 상품 안내
-            const meetingPlace = item.name.includes('말룸') || item.name.includes('호핑') ? '보라카이션 오피스' : '개별 이동 상품입니다';
+            // 셔틀 없는 경우 안내 문구만 표시 (입력란 없음)
             html += `<div class="input-group">
-                <label>미팅 장소 안내</label>
-                <input type="text" value="${meetingPlace}" readonly style="background:#f0f0f0; color:#888; border:none;">
+                <label>미팅 정보</label>
+                <div style="padding:12px; background:#f8f9fa; border-radius:8px; color:var(--primary); font-size:13px; font-weight:700;">
+                    <span class="material-icons" style="font-size:16px; vertical-align:middle; margin-right:5px;">info</span>
+                    ${config.meetingInfo}
+                </div>
             </div>`;
         }
         
@@ -188,9 +189,7 @@ function createCalendar(idx, productName) {
             let statusClass = "";
             const isOdd = i % 2 !== 0;
             
-            // 홀수일 운영 상품 (블랙펄 호핑)
             if ((productName.includes('블랙펄') || productName.includes('호핑')) && !isOdd) statusClass = "disabled";
-            // 짝수일 운영 상품 (말룸파티)
             if (productName.includes('말룸파티') && isOdd) statusClass = "disabled";
             
             if (isPast) statusClass = "disabled";

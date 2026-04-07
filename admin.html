@@ -106,9 +106,13 @@
                         <h4>스케줄 등록</h4>
                         <div class="date-val" style="font-size:14px;">수입시트(Q열)</div>
                     </div>
+                    <div class="tool-box" style="border-top-color: #007aff;" onclick="showInputArea('quote')">
+                        <h4>견적서 생성</h4>
+                        <div class="date-val" style="font-size:14px;">커스텀 링크</div>
+                    </div>
                 </div>
 
-                <!-- 🚀 퀵바우처 / 스케줄 등록 입력창 (직사각형 스타일) -->
+                <!-- 🚀 퀵바우처 / 스케줄 등록 / 견적서 생성 입력창 (직사각형 스타일) -->
                 <div id="input-area-quick" class="input-area-card">
                     <h3 style="margin:0 0 15px 0; color:#ff6a00; font-size:15px;">🎫 퀵바우처 생성</h3>
                     <textarea id="quick-voucher-input" class="tool-textarea" placeholder="데이터를 붙여넣으세요..."></textarea>
@@ -125,6 +129,19 @@
                         <button class="btn-action-danger" style="height:40px; padding: 0 10px;" onclick="handleClearSchedules()" title="모든 스케줄 삭제">
                             <span class="material-icons">delete_sweep</span> 클리어
                         </button>
+                        <button class="btn-action-outline" style="height:40px;" onclick="hideInputArea()">닫기</button>
+                    </div>
+                </div>
+                <div id="input-area-quote" class="input-area-card" style="border-color: #007aff;">
+                    <h3 style="margin:0 0 15px 0; color:#007aff; font-size:15px;">📝 맞춤 견적서 생성</h3>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                        <input type="text" id="quote-customer" class="tool-textarea" style="height:35px; margin:0;" placeholder="고객명">
+                        <input type="text" id="quote-contact" class="tool-textarea" style="height:35px; margin:0;" placeholder="연락처">
+                    </div>
+                    <textarea id="quote-items-input" class="tool-textarea" style="height:60px;" placeholder="상품정보 (예: 4/10 호핑 2명, 4/11 마사지 2명)"></textarea>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <input type="number" id="quote-total" class="tool-textarea" style="height:40px; margin:0; flex:1;" placeholder="총 합계 금액 (원)">
+                        <button class="btn-action-received" style="background:#007aff; border-color:#007aff; height:40px; flex:1;" onclick="createCustomQuote()">견적 링크 생성</button>
                         <button class="btn-action-outline" style="height:40px;" onclick="hideInputArea()">닫기</button>
                     </div>
                 </div>

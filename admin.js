@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateSummaryCounts() {
         const counts = {
-            new: allReservations.filter(r => r.status === '입금대기' || r.status === '예약접수').length,
+            new: allReservations.filter(r => ['입금대기', '예약접수', '견적발송', '입금확인요청'].includes(r.status)).length,
             confirmed: allReservations.filter(r => r.status === '예약확정').length,
             resorts: allReservations.filter(r => r.status === '견적').length,
             resortConfirmed: allReservations.filter(r => r.status === '리조트확정').length
@@ -360,7 +360,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const filtered = allReservations.filter(r => {
             const name = (r.customerKorName || '').toLowerCase();
             let matchesTab = false;
-            if (activeTab === 'new') matchesTab = (r.status === '입금대기' || r.status === '예약접수');
+            if (activeTab === 'new') matchesTab = ['입금대기', '예약접수', '견적발송', '입금확인요청'].includes(r.status);
             else if (activeTab === 'confirmed') matchesTab = (r.status === '예약확정');
             else if (activeTab === 'resorts') matchesTab = (r.status === '견적');
             else if (activeTab === 'resort-confirmed') matchesTab = (r.status === '리조트확정');
@@ -371,9 +371,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const status = res.status || '대기';
             const firstItem = (res.items?.[0]?.name || '-') + (res.items?.length > 1 ? ` 외 ${res.items.length-1}건` : '');
             let actionButtons = `<button class="btn-action-received" style="background:#ff6a00; border-color:#ff6a00;" onclick="showDetail('${res.id}', 'reservation')"><span class="material-icons">visibility</span>상세</button><button class="btn-action-outline" onclick="copyCombinedVoucherLink('${res.contact}')"><span class="material-icons">content_copy</span>일정표</button>`;
-            if (status === '예약접수' || status === '입금대기') actionButtons = `<button class="btn-action-received" onclick="handleAutoConfirm('${res.id}')"><span class="material-icons">payments</span>입금확인</button>` + actionButtons;
+            
+            if (status === '입금확인요청') {
+                actionButtons = `<button class="btn-action-received" style="background:#00c73c; border-color:#00c73c;" onclick="handleAutoConfirm('${res.id}')"><span class="material-icons">payments</span>입금확인</button>` + actionButtons;
+            } else if (status === '예약접수' || status === '입금대기') {
+                actionButtons = `<button class="btn-action-received" onclick="handleAutoConfirm('${res.id}')"><span class="material-icons">payments</span>입금확인</button>` + actionButtons;
+            } else if (status === '견적발송') {
+                actionButtons = `<button class="btn-action-outline" onclick="navigator.clipboard.writeText('${window.location.origin}/quote.html?id=${res.id}').then(()=>alert('링크복사됨'))"><span class="material-icons">link</span>견적링크</button>` + actionButtons;
+            }
+
             if (status === '견적') actionButtons = `<button class="btn-action-received" onclick="handleResortQuoteComplete('${res.id}')"><span class="material-icons">task_alt</span>견적완료</button><button class="btn-action-received" style="background:#00c73c; border-color:#00c73c;" onclick="handleResortConfirm('${res.id}')"><span class="material-icons">check_circle</span>확정</button>` + actionButtons;
-            tr.innerHTML = `<td><input type="checkbox"></td><td style="color:#bbb;">${filtered.length - index}</td><td>${res.reservationNumber || '-'}</td><td><div style="font-size:14px; font-weight:800;">${res.customerKorName}</div></td><td>${firstItem}</td><td>₩ ${(res.totalPrice || 0).toLocaleString()}</td><td>${res.createdAt?.toDate ? res.createdAt.toDate().toLocaleDateString() : '-'}</td><td><span class="n-badge ${status.includes('확정') ? 'badge-green' : 'badge-yellow'}">${status}</span></td><td><div style="display:flex; gap:5px;">${actionButtons}</div></td>`;
+            
+            const badgeClass = status === '입금확인요청' ? 'badge-yellow' : (status.includes('확정') ? 'badge-green' : 'badge-yellow');
+            const displayStatus = status === '입금확인요청' ? '입금완료' : status;
+            
+            tr.innerHTML = `<td><input type="checkbox"></td><td style="color:#bbb;">${filtered.length - index}</td><td>${res.reservationNumber || '-'}</td><td><div style="font-size:14px; font-weight:800;">${res.customerKorName}</div></td><td>${firstItem}</td><td>₩ ${(res.totalPrice || 0).toLocaleString()}</td><td>${res.createdAt?.toDate ? res.createdAt.toDate().toLocaleDateString() : '-'}</td><td><span class="n-badge ${badgeClass}">${displayStatus}</span></td><td><div style="display:flex; gap:5px;">${actionButtons}</div></td>`;
             tableBody.appendChild(tr);
         });
     }
@@ -441,8 +453,44 @@ document.addEventListener('DOMContentLoaded', () => {
     window.copyCombinedVoucherLink = (contact) => { navigator.clipboard.writeText(`${window.location.origin}/reservation-schedule.html?contact=${encodeURIComponent(contact)}`).then(() => alert('통합 일정표 링크 복사 완료!')); };
     window.copyGuidance = (id) => { const res = allReservations.find(r => r.id === id); if (!res) return; let msg = `[보라카이션 예약 확정 안내]\n\n대표자: ${res.customerKorName}\n투어내역:\n${res.items.map(i => `- ${i.name} (${i.date} ${i.time || ''}) / ${i.count}명`).join('\n')}\n\n감사합니다.`; navigator.clipboard.writeText(msg).then(() => alert('안내문이 복사되었습니다.')); };
     window.showInputArea = (type) => { window.hideInputArea(); document.getElementById(`input-area-${type}`).style.display = 'block'; window.scrollTo({ top: 0, behavior: 'smooth' }); };
-    window.hideInputArea = () => { const qa = document.getElementById('input-area-quick'), ra = document.getElementById('input-area-reg'); if(qa) qa.style.display = 'none'; if(ra) ra.style.display = 'none'; };
+    window.hideInputArea = () => { ['quick', 'reg', 'quote'].forEach(id => { const el = document.getElementById(`input-area-${id}`); if(el) el.style.display = 'none'; }); };
     window.closeModal = () => { document.getElementById('res-detail-modal').style.display = 'none'; };
+
+    window.createCustomQuote = async () => {
+        const customer = document.getElementById('quote-customer').value.trim();
+        const contact = document.getElementById('quote-contact').value.trim();
+        const itemsText = document.getElementById('quote-items-input').value.trim();
+        const total = parseInt(document.getElementById('quote-total').value) || 0;
+
+        if (!customer || !total || !itemsText) { alert('고객명, 상품정보, 총 금액은 필수입니다.'); return; }
+
+        const items = itemsText.split('\n').filter(l => l.trim()).map(line => {
+            const dateMatch = line.match(/(\d{1,2})\/(\d{1,2})/);
+            const countMatch = line.match(/(\d+)(?=명|인)/);
+            return {
+                name: line.replace(/(\d{1,2})\/(\d{1,2})|(\d+)(?=명|인)|명|인/g, '').trim(),
+                date: dateMatch ? `${new Date().getFullYear()}-${dateMatch[1].padStart(2, '0')}-${dateMatch[2].padStart(2, '0')}` : '-',
+                count: countMatch ? parseInt(countMatch[1]) : 0,
+                time: ''
+            };
+        });
+
+        try {
+            const docRef = await addDoc(collection(db, "reservations"), {
+                customerKorName: customer,
+                contact: contact,
+                items: items,
+                totalPrice: total,
+                status: '견적발송',
+                createdAt: new Date()
+            });
+            const url = `${window.location.origin}/quote.html?id=${docRef.id}`;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('견적서 링크가 생성되어 복사되었습니다!');
+                window.hideInputArea();
+            });
+        } catch (e) { console.error(e); alert('생성 실패'); }
+    };
 
     window.registerBulkSchedule = async () => {
         const input = document.getElementById('schedule-reg-input').value.trim();

@@ -13,10 +13,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- 🏷️ 상품별 설정 (미팅 시간 및 픽업 여부) ---
+// --- 🏷️ 상품별 설정 (사용자 요청 반영) ---
 const PRODUCT_CONFIG = {
-    "호핑": { label: "옵션 선택", options: ["점심 포함 (12:30 미팅) - $30 현장지불", "선셋 호핑 (13:30 미팅)"], hasPickup: false },
-    "말룸": { hasPickup: false, noOptions: true },
+    "호핑": { noOptions: true, hasPickup: false }, // 관리자가 이미 식사여부 결정함, 미팅지 고정
+    "말룸": { noOptions: true, hasPickup: false }, // 미팅지 고정
     "에스파": { options: ["12:30", "14:30", "16:30", "18:30", "19:30"], hasPickup: false },
     "루나": { options: ["10:00", "13:00", "16:00", "20:00"], hasPickup: false },
     "보라스파": { options: ["10:00", "13:00", "16:00", "20:00"], hasPickup: false },
@@ -27,8 +27,18 @@ const PRODUCT_CONFIG = {
     "헬리오스": { options: ["10:00", "13:30", "16:30", "19:30"], hasPickup: true },
     "다이빙": { options: ["09:00", "11:00", "13:00", "15:00"], hasPickup: true },
     "파라세일링": { options: ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00"], hasPickup: true },
+    "제트스키": { options: ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"], hasPickup: true },
+    "헬멧": { options: ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"], hasPickup: true },
+    "랜드투어": { options: ["10:30"], hasPickup: true },
     "default": { options: ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"], hasPickup: true }
 };
+
+function getProductConfig(name) {
+    for (const key in PRODUCT_CONFIG) {
+        if (name.includes(key)) return PRODUCT_CONFIG[key];
+    }
+    return PRODUCT_CONFIG.default;
+}
 
 let currentQuoteData = null;
 let selectedDates = {}; 
@@ -46,7 +56,6 @@ async function loadQuote() {
         currentQuoteData = docSnap.data();
         renderItemList();
         
-        // 버튼 이벤트 바인딩
         document.getElementById('btn-show-form').onclick = () => {
             document.getElementById('info-form-section').style.display = 'block';
             document.getElementById('btn-show-form').style.display = 'none';
@@ -55,7 +64,6 @@ async function loadQuote() {
         };
 
         document.getElementById('btn-final-submit').onclick = handleFinalSubmit;
-        
         document.getElementById('loading').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
     } catch (e) {
@@ -85,9 +93,8 @@ function renderDynamicProductFields() {
     const container = document.getElementById('dynamic-product-fields');
     let html = "";
 
-    // 픽업샌딩 공통 정보
-    const hasPickup = currentQuoteData.items.some(it => it.name.includes('픽업') || it.name.includes('샌딩'));
-    if (hasPickup) {
+    const hasPickupSending = currentQuoteData.items.some(it => it.name.includes('픽업') || it.name.includes('샌딩'));
+    if (hasPickupSending) {
         html += `
             <div class="product-spec-box">
                 <div class="product-spec-title"><span class="material-icons" style="color:var(--primary);">flight_takeoff</span> ✈️ 픽업/샌딩 정보 입력</div>
@@ -100,13 +107,12 @@ function renderDynamicProductFields() {
         `;
     }
 
-    // 각 상품별 날짜/시간 선택
     currentQuoteData.items.forEach((item, idx) => {
         if (item.name.includes('픽업') || item.name.includes('샌딩')) return;
 
         const config = getProductConfig(item.name);
         html += `<div class="product-spec-box">
-            <div class="product-spec-title"><span class="material-icons" style="color:var(--primary);">event_available</span> ${item.name} 상세 정보</div>
+            <div class="product-spec-title"><span class="material-icons" style="color:var(--primary);">event_available</span> ${item.name}</div>
             
             <div class="input-group">
                 <label>이용 날짜 선택<span>*</span></label>
@@ -114,9 +120,10 @@ function renderDynamicProductFields() {
                 <input type="hidden" id="date-${idx}">
             </div>`;
 
+        // 마사지/액티비티 등 시간이 필요한 경우만 표시 (호핑/말룸 제외)
         if (!config.noOptions) {
             html += `<div class="input-group">
-                <label>${config.label || '미팅 시간 선택'}</label>
+                <label>예약 시간 선택<span>*</span></label>
                 <select id="opt-${idx}">
                     <option value="">시간을 선택해 주세요</option>
                     ${config.options.map(o => `<option value="${o}">${o}</option>`).join('')}
@@ -124,16 +131,26 @@ function renderDynamicProductFields() {
             </div>`;
         }
 
-        const isDirect = !config.hasPickup;
-        html += `<div class="input-group">
-            <label>${isDirect ? '<span style="color:#ff4b4b;">미팅지 (직접 이동 상품)</span>' : '픽업 받으실 리조트명'}</label>
-            ${isDirect ? `<input type="text" value="현장 직접 이동 상품입니다" readonly style="background:#f0f0f0; color:#888; border:none;">` : `<input type="text" id="resort-${idx}" placeholder="숙소 이름을 적어주세요">`}
-        </div></div>`;
+        // 픽업이 필요한 상품만 리조트 입력창 표시
+        if (config.hasPickup) {
+            html += `<div class="input-group">
+                <label>픽업 받으실 리조트명<span>*</span></label>
+                <input type="text" id="resort-${idx}" placeholder="숙소 이름을 적어주세요">
+            </div>`;
+        } else {
+            // 직접 이동 상품 안내
+            const meetingPlace = item.name.includes('말룸') || item.name.includes('호핑') ? '보라카이션 오피스' : '개별 이동 상품입니다';
+            html += `<div class="input-group">
+                <label>미팅 장소 안내</label>
+                <input type="text" value="${meetingPlace}" readonly style="background:#f0f0f0; color:#888; border:none;">
+            </div>`;
+        }
+        
+        html += `</div>`;
     });
 
     container.innerHTML = html;
     
-    // 달력 생성 (DOM 업데이트 후 실행)
     currentQuoteData.items.forEach((item, idx) => {
         if (!item.name.includes('픽업') && !item.name.includes('샌딩')) {
             createCalendar(idx, item.name);
@@ -153,9 +170,9 @@ function createCalendar(idx, productName) {
         const month = displayDate.getMonth();
         let html = `<div class="custom-calendar">
             <div class="cal-header">
-                <button type="button" class="cal-btn-prev" style="border:none; background:none; color:var(--primary); cursor:pointer; font-size:18px;">◀</button>
+                <button type="button" class="cal-btn-prev">◀</button>
                 <strong>${year}년 ${month + 1}월</strong>
-                <button type="button" class="cal-btn-next" style="border:none; background:none; color:var(--primary); cursor:pointer; font-size:18px;">▶</button>
+                <button type="button" class="cal-btn-next">▶</button>
             </div>
             <div class="cal-grid">
                 ${['일','월','화','수','목','금','토'].map(d => `<div class="cal-day-label">${d}</div>`).join('')}`;
@@ -170,16 +187,24 @@ function createCalendar(idx, productName) {
             
             let statusClass = "";
             const isOdd = i % 2 !== 0;
+            
+            // 홀수일 운영 상품 (블랙펄 호핑)
             if ((productName.includes('블랙펄') || productName.includes('호핑')) && !isOdd) statusClass = "disabled";
+            // 짝수일 운영 상품 (말룸파티)
             if (productName.includes('말룸파티') && isOdd) statusClass = "disabled";
+            
             if (isPast) statusClass = "disabled";
             if (selectedDates[idx] === dateStr) statusClass = "selected";
 
             html += `<div class="cal-date ${statusClass}" data-date="${dateStr}">${i}</div>`;
         }
         html += `</div>`;
-        if (productName.includes('블랙펄') || productName.includes('호핑')) html += `<p style="font-size:11px; color:var(--primary); margin-top:10px; font-weight:700;">※ 홀수일만 운영되는 상품입니다.</p>`;
-        if (productName.includes('말룸파티')) html += `<p style="font-size:11px; color:var(--primary); margin-top:10px; font-weight:700;">※ 짝수일만 운영되는 상품입니다.</p>`;
+        
+        if (productName.includes('블랙펄') || productName.includes('호핑')) 
+            html += `<p class="cal-notice">※ 홀수일만 운영되는 상품입니다.</p>`;
+        if (productName.includes('말룸파티')) 
+            html += `<p class="cal-notice">※ 짝수일만 운영되는 상품입니다.</p>`;
+            
         html += `</div>`;
         container.innerHTML = html;
 
@@ -203,34 +228,38 @@ async function handleFinalSubmit() {
     if (!korName || !engName || !contact) { alert('대표자 필수 정보를 모두 입력해 주세요.'); return; }
 
     const updatedItems = [...currentQuoteData.items];
-    let allDatesFilled = true;
+    let allValid = true;
     let combinedReq = "";
 
     updatedItems.forEach((item, idx) => {
         if (item.name.includes('픽업') || item.name.includes('샌딩')) { item.date = "항공정보참조"; return; }
         
         const dateVal = selectedDates[idx];
-        if (!dateVal) { alert(`[${item.name}] 날짜를 선택해 주세요.`); allDatesFilled = false; return; }
+        if (!dateVal) { alert(`[${item.name}] 날짜를 선택해 주세요.`); allValid = false; return; }
         item.date = dateVal;
         
-        const optEl = document.getElementById(`opt-${idx}`);
-        if (optEl) {
-            if(!optEl.value) { alert(`[${item.name}] 시간을 선택해 주세요.`); allDatesFilled = false; return; }
-            item.time = optEl.value.split(' ')[0];
+        const config = getProductConfig(item.name);
+        if (!config.noOptions) {
+            const optEl = document.getElementById(`opt-${idx}`);
+            if(!optEl.value) { alert(`[${item.name}] 시간을 선택해 주세요.`); allValid = false; return; }
+            item.time = optEl.value;
         }
         
-        const resortEl = document.getElementById(`resort-${idx}`);
-        if (resortEl && resortEl.value) combinedReq += `[${item.name}] 숙소:${resortEl.value}\n`;
+        if (config.hasPickup) {
+            const resortEl = document.getElementById(`resort-${idx}`);
+            if (!resortEl.value.trim()) { alert(`[${item.name}] 픽업 리조트를 입력해 주세요.`); allValid = false; return; }
+            combinedReq += `[${item.name}] 픽업:${resortEl.value}\n`;
+        }
     });
 
-    if (!allDatesFilled) return;
+    if (!allValid) return;
 
     const pF = document.getElementById('p-flight')?.value;
     const pR = document.getElementById('p-resort')?.value;
     const sF = document.getElementById('s-flight')?.value;
     const sR = document.getElementById('s-resort')?.value;
     const ex = document.getElementById('p-exchange')?.value;
-    if (pF || pR) combinedReq += `[픽업정보] 항공:${pF} / 호텔:${pR}\n[샌딩정보] 항공:${sF} / 호텔:${sR}\n[환전] ${ex}\n`;
+    if (pF || pR) combinedReq += `[항공/환전] 픽업:${pF}(${pR}) / 샌딩:${sF}(${sR}) / 환전:${ex}\n`;
 
     try {
         const btn = document.getElementById('btn-final-submit');

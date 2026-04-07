@@ -48,7 +48,7 @@ async function loadQuote() {
             <div class="item-card">
                 <div class="item-header">
                     <div class="item-name">${item.name}</div>
-                    <div class="item-status">상세확인</div>
+                    <div class="item-status">${data.status === '견적' ? '날짜미정' : '예약정보'}</div>
                 </div>
                 <div class="item-details">
                     <div class="detail-point"><span class="material-icons">calendar_today</span><b>날짜</b>${item.date || '-'}</div>
@@ -59,11 +59,9 @@ async function loadQuote() {
 
         // 3. 상태에 따른 화면 구성
         if (data.status === '견적') {
-            // 손님이 아직 정보를 입력하지 않은 경우 -> 입력 폼 표시
             document.getElementById('customer-form').style.display = 'block';
             renderDynamicFields(data.items);
         } else {
-            // 이미 정보가 입력된 경우 -> 결제 섹션 표시
             document.getElementById('payment-section').style.display = 'block';
             if (data.status === '입금확인요청' || data.status === '예약확정') {
                 const btn = document.getElementById('btn-paid');
@@ -82,18 +80,27 @@ async function loadQuote() {
             if (!name || !contact) { alert('성함과 연락처를 입력해 주세요.'); return; }
 
             const updatedItems = [...data.items];
-            const extraFields = document.querySelectorAll('.extra-info');
-            extraFields.forEach(field => {
-                const idx = field.dataset.idx;
-                const label = field.dataset.label;
-                const val = field.value.trim();
-                if (val) {
-                    if (!updatedItems[idx].requests) updatedItems[idx].requests = "";
-                    updatedItems[idx].requests += `[${label}: ${val}] `;
-                }
+            
+            // 상품별 날짜 및 정보 수집
+            let allDatesFilled = true;
+            updatedItems.forEach((item, idx) => {
+                const dateVal = document.querySelector(`.item-date-input[data-idx="${idx}"]`).value;
+                if (!dateVal) allDatesFilled = false;
+                item.date = dateVal;
+
+                // 추가 정보(항공편 등) 수집
+                const extraFields = document.querySelectorAll(`.extra-info[data-idx="${idx}"]`);
+                if (!item.requests) item.requests = "";
+                extraFields.forEach(field => {
+                    const label = field.dataset.label;
+                    const val = field.value.trim();
+                    if (val) item.requests += `[${label}: ${val}] `;
+                });
             });
 
-            if (confirm("입력하신 정보로 예약을 진행하시겠습니까?")) {
+            if (!allDatesFilled) { alert('모든 상품의 이용 날짜를 선택해 주세요.'); return; }
+
+            if (confirm("입력하신 정보와 이용 날짜로 예약을 진행하시겠습니까?")) {
                 try {
                     await updateDoc(docRef, {
                         customerKorName: name,
@@ -130,24 +137,30 @@ function renderDynamicFields(items) {
     
     items.forEach((item, idx) => {
         const name = item.name.toLowerCase();
-        html += `<div style="margin-top:20px; border-top:1px dashed #ddd; padding-top:15px;"><b style="color:#007aff; font-size:14px;">[${item.name}] 상세 정보</b></div>`;
+        html += `<div style="margin-top:25px; border-top:1px solid #eee; padding-top:20px;">
+            <b style="color:#007aff; font-size:15px; display:block; margin-bottom:15px;">📍 [${item.name}] 이용 정보 입력</b>
+            <div class="info-item" style="margin-bottom:15px;">
+                <label style="font-size:12px; color:#666; font-weight:700; display:block; margin-bottom:5px;">이용 날짜 선택</label>
+                <input type="date" class="item-date-input" data-idx="${idx}" style="width:100%; padding:12px; border:1px solid #ddd; border-radius:10px; box-sizing:border-box;">
+            </div>`;
         
         if (name.includes('픽업') || name.includes('샌딩')) {
             html += `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
-                <div><label style="font-size:11px; color:#888;">항공편명</label><input type="text" class="extra-info" data-idx="${idx}" data-label="항공편" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px;" placeholder="예: TW123"></div>
-                <div><label style="font-size:11px; color:#888;">숙소명</label><input type="text" class="extra-info" data-idx="${idx}" data-label="숙소" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px;" placeholder="리조트 이름"></div>
+                <div><label style="font-size:11px; color:#888;">항공편명</label><input type="text" class="extra-info" data-idx="${idx}" data-label="항공편" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:10px; box-sizing:border-box;" placeholder="예: TW123"></div>
+                <div><label style="font-size:11px; color:#888;">숙소명</label><input type="text" class="extra-info" data-idx="${idx}" data-label="숙소" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:10px; box-sizing:border-box;" placeholder="리조트 이름"></div>
             </div>`;
         } else if (name.includes('마사지') || name.includes('스파')) {
             html += `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
-                <div><label style="font-size:11px; color:#888;">희망 시간</label><input type="text" class="extra-info" data-idx="${idx}" data-label="예약시간" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px;" placeholder="예: 14:00"></div>
-                <div><label style="font-size:11px; color:#888;">픽업 장소</label><input type="text" class="extra-info" data-idx="${idx}" data-label="픽업지" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px;" placeholder="리조트 로비 등"></div>
+                <div><label style="font-size:11px; color:#888;">희망 시간</label><input type="text" class="extra-info" data-idx="${idx}" data-label="예약시간" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:10px; box-sizing:border-box;" placeholder="예: 14:00"></div>
+                <div><label style="font-size:11px; color:#888;">픽업 장소</label><input type="text" class="extra-info" data-idx="${idx}" data-label="픽업지" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:10px; box-sizing:border-box;" placeholder="리조트 로비 등"></div>
             </div>`;
         } else {
             html += `<div style="margin-top:10px;">
                 <label style="font-size:11px; color:#888;">추가 요청사항 (선택)</label>
-                <input type="text" class="extra-info" data-idx="${idx}" data-label="요청사항" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px;" placeholder="특이사항이 있으면 입력해 주세요">
+                <input type="text" class="extra-info" data-idx="${idx}" data-label="요청사항" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:10px; box-sizing:border-box;" placeholder="특이사항이 있으면 입력해 주세요">
             </div>`;
         }
+        html += `</div>`;
     });
     
     container.innerHTML = html;

@@ -46,7 +46,6 @@ window.addItemRow = () => {
     const options = PRODUCTS.map(p => `<option value="${p.name}" data-price="${p.price}">${p.name}</option>`).join('');
     
     row.innerHTML = `
-        <td><input type="date" class="item-date"></td>
         <td><select class="item-select" onchange="onProductChange(this)">${options}</select></td>
         <td><input type="number" class="item-count" value="1" min="1" oninput="calculateRow(this)"></td>
         <td><input type="number" class="item-price" value="0" oninput="calculateRow(this)"></td>
@@ -101,12 +100,12 @@ window.submitQuote = async () => {
 
     rows.forEach(row => {
         const productName = row.querySelector('.item-select').value;
-        const date = row.querySelector('.item-date').value;
         const count = parseInt(row.querySelector('.item-count').value) || 0;
         const price = parseInt(row.querySelector('.item-price').value) || 0;
         
         if (productName !== '선택하세요') {
-            items.push({ name: productName, date, count, price });
+            // 관리자는 날짜를 넣지 않으므로 기본값 "-"로 저장
+            items.push({ name: productName, date: "-", count, price });
             totalPrice += (count * price);
         }
     });

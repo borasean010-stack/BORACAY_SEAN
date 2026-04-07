@@ -23,60 +23,58 @@
         
         .section-title { font-size: 18px; font-weight: 800; margin: 30px 0 20px; display: flex; align-items: center; gap: 10px; color: var(--dark); }
         .section-title::before { content: ''; width: 4px; height: 18px; background: var(--primary); border-radius: 2px; }
-        .section-title:first-child { margin-top: 0; }
 
         .detail-card { background: #fff; border: 1px solid #eee; border-radius: 20px; padding: 25px; margin-bottom: 20px; }
         .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f5f5f5; }
         .detail-row:last-child { border-bottom: none; }
-        .detail-label { font-size: 15px; color: #666; font-weight: 600; flex: 1; }
-        .detail-divider { width: 1px; height: 12px; background: #ddd; margin: 0 15px; }
-        .detail-value { font-size: 16px; color: var(--dark); font-weight: 800; flex: 1; text-align: right; }
+        .detail-label { font-size: 15px; color: #666; font-weight: 600; }
+        .detail-value { font-size: 16px; color: var(--dark); font-weight: 800; text-align: right; }
         .price-val { color: var(--primary); }
 
         .total-box { background: #fffaf5; border: 2px solid var(--primary); border-radius: 20px; padding: 25px; text-align: center; margin: 30px 0; }
         .total-box label { font-size: 14px; color: var(--primary); font-weight: 700; display: block; margin-bottom: 5px; }
         .total-box .amount { font-size: 32px; font-weight: 900; color: var(--dark); }
 
-        .btn-main { background: var(--primary); color: #fff; border: none; padding: 20px; border-radius: 50px; font-size: 18px; font-weight: 800; width: 100%; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 10px 30px rgba(255,106,0,0.3); text-decoration: none; }
+        .btn-main { background: var(--primary); color: #fff; border: none; padding: 20px; border-radius: 50px; font-size: 18px; font-weight: 800; width: 100%; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 10px 30px rgba(255,106,0,0.3); text-decoration: none; font-family: inherit; }
         .btn-main:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(255,106,0,0.4); }
+
+        /* 홈페이지 스타일 커스텀 달력 */
+        .custom-calendar { border: 1px solid #eee; border-radius: 20px; padding: 20px; background: #fff; margin-bottom: 15px; }
+        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .cal-header strong { font-size: 16px; font-weight: 800; }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
+        .cal-day-label { font-size: 11px; color: #bbb; font-weight: 800; padding-bottom: 10px; }
+        .cal-date { padding: 10px 0; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 10px; transition: 0.2s; }
+        .cal-date:hover:not(.disabled) { background: #fff1e6; color: var(--primary); }
+        .cal-date.selected { background: var(--primary) !important; color: #fff !important; font-weight: 800; }
+        .cal-date.disabled { color: #eee; cursor: not-allowed; }
+        .cal-date.today { border: 1px solid var(--primary); }
 
         .input-group { margin-bottom: 25px; }
         .input-group label { display: block; font-size: 13px; color: #666; margin-bottom: 8px; font-weight: 700; }
         .input-group label span { color: var(--primary); margin-left: 3px; }
-        .input-group input, .input-group select { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; font-size: 15px; box-sizing: border-box; transition: 0.2s; background: #fff; font-family: inherit; }
-        .input-group input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px rgba(255,106,0,0.1); }
+        .input-group input, .input-group select { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; font-size: 15px; box-sizing: border-box; background: #fff; font-family: inherit; }
 
-        .product-spec-box { background: #f9fafb; border-radius: 20px; padding: 25px; margin-bottom: 25px; border: 1px solid #eee; }
-        .product-spec-title { font-size: 15px; font-weight: 800; margin-bottom: 15px; color: var(--dark); display: flex; align-items: center; gap: 8px; }
-        .product-spec-title .material-icons { font-size: 18px; color: var(--primary); }
-
-        .bank-card { background: #f0f2f5; border-radius: 20px; padding: 25px; margin-top: 30px; text-align: center; position: relative; }
-        .bank-card h3 { margin: 0 0 10px 0; font-size: 16px; color: #666; }
-        .bank-card .acc { font-size: 20px; font-weight: 900; color: var(--dark); margin-bottom: 5px; }
-        .bank-card .owner { font-size: 15px; color: #888; }
-        .copy-chip { display: inline-block; padding: 4px 10px; background: var(--dark); color: #fff; font-size: 11px; border-radius: 50px; cursor: pointer; margin-top: 10px; transition: 0.2s; }
-        .copy-chip:hover { background: var(--primary); }
-
-        .success-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.98); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; text-align: center; padding: 20px; }
+        .product-spec-box { background: #f9fafb; border-radius: 24px; padding: 25px; margin-bottom: 30px; border: 1px solid #eee; }
+        .product-spec-title { font-size: 16px; font-weight: 800; margin-bottom: 20px; color: var(--dark); display: flex; align-items: center; gap: 8px; }
         
-        #toast { visibility: hidden; min-width: 200px; background-color: #333; color: #fff; text-align: center; border-radius: 10px; padding: 12px; position: fixed; z-index: 2000; left: 50%; bottom: 50px; transform: translateX(-50%); font-size: 14px; font-weight: 600; }
+        .bank-card { background: #f0f2f5; border-radius: 20px; padding: 25px; margin-top: 30px; text-align: center; }
+        .bank-card .acc { font-size: 20px; font-weight: 900; color: var(--dark); }
+        .copy-btn { display: inline-block; padding: 5px 12px; background: var(--dark); color: #fff; font-size: 11px; border-radius: 50px; cursor: pointer; margin-top: 10px; }
+
+        #toast { visibility: hidden; min-width: 200px; background-color: #333; color: #fff; text-align: center; border-radius: 10px; padding: 12px; position: fixed; z-index: 2000; left: 50%; bottom: 50px; transform: translateX(-50%); font-size: 14px; }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 50px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 50px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
-        @media (max-width: 480px) {
-            body { padding: 15px; }
-            .quote-container { border-radius: 20px; }
-            .quote-header, .quote-body { padding: 30px 20px; }
-            .total-box .amount { font-size: 28px; }
-        }
+        @media (max-width: 480px) { body { padding: 15px; } .quote-container { border-radius: 20px; } }
     </style>
 </head>
 <body>
 
 <div id="toast">복사되었습니다.</div>
 
-<div class="quote-container" id="quote-app">
+<div class="quote-container">
     <div class="quote-header">
         <img src="logo.png" alt="보라카이션">
         <h1>BORACAY_SEAN</h1>
@@ -96,41 +94,41 @@
             </div>
 
             <button class="btn-main" id="btn-show-form">
-                <span class="material-icons">touch_app</span> 입금하기
+                <span class="material-icons">edit_note</span> 예약 정보 입력
             </button>
 
             <div id="info-form-section" style="display:none; margin-top:40px; border-top:2px dashed #eee; padding-top:40px;">
-                <div class="section-title">예약자 정보 입력</div>
+                <div class="section-title">예약자 기본 정보</div>
                 <div class="input-group">
                     <label>대표자 성함 (한글)<span>*</span></label>
                     <input type="text" id="cust-kor-name" placeholder="실명을 입력해 주세요">
                 </div>
                 <div class="input-group">
-                    <label>카카오톡 ID 또는 연락처<span>*</span></label>
-                    <input type="text" id="cust-contact" placeholder="안내 메시지를 받으실 수 있는 정보">
-                </div>
-                <div class="input-group">
                     <label>대표자 영문 이름 (여권과 동일)<span>*</span></label>
                     <input type="text" id="cust-eng-name" placeholder="예: HONG GILDONG">
+                </div>
+                <div class="input-group">
+                    <label>카카오톡 ID 또는 연락처<span>*</span></label>
+                    <input type="text" id="cust-contact" placeholder="안내 메시지를 받으실 수 있는 정보">
                 </div>
 
                 <div id="dynamic-product-fields"></div>
 
                 <div class="section-title">결제 및 확정 안내</div>
                 <div class="bank-card">
-                    <h3>입금 계좌 정보</h3>
-                    <div class="acc" id="bank-acc">국민은행 058137-04-003860</div>
-                    <div class="owner">예금주: 윤오현 (보라카이션)</div>
-                    <div class="copy-chip" onclick="copyText('058137-04-003860')">계좌번호 복사</div>
+                    <div style="font-size:14px; color:#666; margin-bottom:5px;">입금 계좌 정보</div>
+                    <div class="acc">국민은행 058137-04-003860</div>
+                    <div style="font-size:15px; color:#888; margin-top:5px;">예금주: 윤오현 (보라카이션)</div>
+                    <div class="copy-btn" onclick="copyText('058137-04-003860')">계좌번호 복사</div>
                 </div>
 
                 <div style="margin-top:30px;">
                     <button class="btn-main" id="btn-final-submit" style="background:#111;">
                         <span class="material-icons">check_circle</span> 입금 완료 및 예약 신청
                     </button>
-                    <div style="text-align:center; font-size:13px; color:#666; margin-top:20px; line-height:1.6; word-break:keep-all;">
+                    <div style="text-align:center; font-size:13px; color:#666; margin-top:20px; line-height:1.6;">
                         정보를 모두 입력하신 후 '입금 완료' 버튼을 눌러주세요.<br>
-                        <b style="color:var(--primary);">그리고 보라카이션 카카오채널로 대표자분 성함 꼭 보내주세요!</b>
+                        <b style="color:var(--primary);">그리고 보라카이 션 카카오채널로 대표자분 성함 꼭 보내주세요!</b>
                     </div>
                 </div>
             </div>
@@ -138,15 +136,13 @@
     </div>
 </div>
 
-<div id="success-overlay" class="success-overlay">
+<div id="success-overlay" class="success-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.98); flex-direction:column; align-items:center; justify-content:center; z-index:3000; text-align:center;">
     <span class="material-icons" style="font-size:80px; color:#00c73c; margin-bottom:20px;">check_circle</span>
     <div style="font-size:26px; font-weight:900; margin-bottom:15px;">예약 신청 완료!</div>
-    <div style="color:#666; line-height:1.7; font-size:16px; margin-bottom:30px;">
-        소중한 예약 감사합니다.<br>
-        관리자가 입금을 확인하는 즉시<br>
-        <strong>카카오톡으로 확정 바우처</strong>를 보내드립니다.
+    <div style="color:#666; line-height:1.7; font-size:16px; margin-bottom:30px; padding:0 20px;">
+        소중한 예약 감사합니다.<br>관리자가 입금을 확인하는 즉시 바우처를 보내드립니다.
     </div>
-    <button class="btn-main" onclick="window.open('http://pf.kakao.com/_zBArM/chat', '_blank')" style="width:240px;">
+    <button class="btn-main" onclick="window.open('http://pf.kakao.com/_zBArM/chat', '_blank')" style="width:260px;">
         카카오톡으로 성함 보내기
     </button>
 </div>

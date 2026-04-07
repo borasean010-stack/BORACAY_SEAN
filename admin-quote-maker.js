@@ -13,49 +13,64 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- 📦 상세 상품 및 옵션 데이터 ---
+// --- 📦 상세 상품 및 옵션 데이터 (순서 및 종류 최적화) ---
 const PRODUCT_DATA = {
+    "보라카이 왕복 픽업샌딩": [
+        { name: "왕복 이용권 (조인/단독)", price: 54900 }
+    ],
+    "블랙펄 요트호핑투어": [
+        { name: "점심 불포함 (13:30 미팅)", price: 85000 }
+    ],
+    "시크릿 가든 말룸파티": [
+        { name: "일반 투어 (09:40 미팅)", price: 99000 },
+        { name: "샌딩팩 (09:00 미팅)", price: 110000 }
+    ],
+    "액티비티 (Activity)": [
+        { name: "체험 다이빙", price: 55000 },
+        { name: "파라세일링", price: 55000 },
+        { name: "제트스키", price: 55000 },
+        { name: "헬멧 다이빙", price: 44000 },
+        { name: "프리다이빙 체험", price: 112500 },
+        { name: "보라카이 랜드투어", price: 45000 },
+        { name: "JL 스냅사진 촬영", price: 300000 },
+        { name: "페어웨이 골프클럽", price: 192000 }
+    ],
     "에스파 (S-SPA)": [
-        { name: "태반/스톤/오일", price: 55000 },
+        { name: "퓨어오일 마사지", price: 55000 },
+        { name: "태반 마사지", price: 55000 },
+        { name: "스톤 마사지", price: 55000 },
         { name: "힐롯 마사지", price: 70000 },
         { name: "포핸드 마사지", price: 84000 },
-        { name: "성장 마사지", price: 42000 }
+        { name: "성장 마사지 (1시간)", price: 42000 },
+        { name: "성장 마사지 (2시간)", price: 55000 }
     ],
     "보라스파": [
-        { name: "꿀/진주/태반", price: 55000 }
+        { name: "꿀 마사지", price: 55000 },
+        { name: "진주 마사지", price: 55000 },
+        { name: "태반 마사지", price: 55000 }
     ],
     "루나스파": [
-        { name: "스톤/노니/태반", price: 55000 }
+        { name: "스톤 마사지", price: 55000 },
+        { name: "노니 마사지", price: 55000 },
+        { name: "태반 마사지", price: 55000 }
     ],
     "마리스 스파": [
-        { name: "기본 패키지", price: 91000 }
+        { name: "기본 이용", price: 91000 }
     ],
     "포세이돈 스파": [
-        { name: "기본 패키지", price: 105000 }
+        { name: "기본 이용", price: 105000 }
+    ],
+    "헬리오스 스파": [
+        { name: "기본 이용", price: 91000 }
     ],
     "카바얀 스파": [
         { name: "전신 마사지", price: 49000 }
     ],
-    "블랙펄 요트호핑": [
-        { name: "기본 투어 (점심별도)", price: 85000 }
-    ],
-    "시크릿가든 말룸파티": [
-        { name: "일반 투어", price: 99000 }
-    ],
-    "보라카이 왕복 픽업샌딩": [
-        { name: "단독/조인 통합", price: 54900 }
-    ],
-    "체험 다이빙": [
-        { name: "기본 체험", price: 55000 }
-    ],
-    "파라세일링": [
+    "아유르베다 스파": [
         { name: "기본 이용", price: 55000 }
     ],
-    "제트스키": [
-        { name: "기본 이용", price: 55000 }
-    ],
-    "기타(직접입력)": [
-        { name: "일반 옵션", price: 0 }
+    "기타(수동입력)": [
+        { name: "직접 입력 옵션", price: 0 }
     ]
 };
 
@@ -67,13 +82,13 @@ window.addItemRow = () => {
     const productOptions = Object.keys(PRODUCT_DATA).map(name => `<option value="${name}">${name}</option>`).join('');
     
     row.innerHTML = `
-        <td><select class="item-select" onchange="onProductChange(this)">
-            <option value="">선택하세요</option>
+        <td><select class="item-select" onchange="onProductChange(this)" style="font-weight:700;">
+            <option value="">상품 선택</option>
             ${productOptions}
         </select></td>
-        <td><input type="number" class="item-count" value="1" min="1" oninput="calculateRow(this)"></td>
-        <td><select class="item-type" onchange="onTypeChange(this)">
-            <option value="">상품 먼저 선택</option>
+        <td><input type="number" class="item-count" value="1" min="1" oninput="calculateRow(this)" style="text-align:center;"></td>
+        <td><select class="item-type" onchange="onTypeChange(this)" style="color:#007aff; font-weight:600;">
+            <option value="">종류/옵션 선택</option>
         </select></td>
         <td><input type="text" class="item-subtotal" value="₩ 0" readonly style="background:#f9fafb; border:none; text-align:right; font-weight:800; color:#ff6a00;"></td>
         <td><button class="btn-remove" onclick="removeRow(this)">✕</button></td>
@@ -88,7 +103,7 @@ window.onProductChange = (select) => {
     const productName = select.value;
     
     if (!productName) {
-        typeSelect.innerHTML = '<option value="">선택하세요</option>';
+        typeSelect.innerHTML = '<option value="">종류 선택</option>';
         return;
     }
 
@@ -146,7 +161,7 @@ window.submitQuote = async () => {
         
         if (productName && typeName) {
             items.push({ 
-                name: `${productName} (${typeName})`, 
+                name: `${productName} - ${typeName}`, 
                 date: "-", 
                 count: count, 
                 price: price 
@@ -155,7 +170,7 @@ window.submitQuote = async () => {
         }
     });
 
-    if (items.length === 0) { alert('상품을 완성해 주세요.'); return; }
+    if (items.length === 0) { alert('상품 구성을 완료해 주세요.'); return; }
 
     try {
         const docRef = await addDoc(collection(db, "reservations"), {
@@ -169,7 +184,7 @@ window.submitQuote = async () => {
 
         const url = `${window.location.origin}/quote.html?id=${docRef.id}`;
         await navigator.clipboard.writeText(url);
-        alert('견적 링크가 생성되었습니다!\n상품명과 옵션이 정확히 포함되었습니다.');
+        alert('견적 링크가 생성되어 복사되었습니다!');
         window.close();
     } catch (e) { console.error(e); }
 };

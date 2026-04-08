@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>보홀션 예약 확인서 - BOHOL SEAN</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary-color: #009688; }
+        body { font-family: 'Pretendard', sans-serif; background: #f0f4f3; margin: 0; padding: 40px 20px; color: #333; line-height: 1.6; }
+        .voucher-container { max-width: 800px; margin: 0 auto; background: #fff; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.1); }
+        .voucher-header { background: var(--primary-color); color: #fff; padding: 40px; text-align: center; }
+        .voucher-header img { height: 60px; margin-bottom: 15px; }
+        .voucher-header h1 { margin: 0; font-size: 28px; font-weight: 900; letter-spacing: 2px; }
+        .voucher-header p { margin: 10px 0 0 0; opacity: 0.7; font-size: 14px; }
+        
+        .voucher-body { padding: 40px; }
+        .section-title { font-size: 18px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; color: var(--primary-color); }
+        .section-title::before { content: ''; width: 4px; height: 18px; background: var(--primary-color); border-radius: 2px; }
+        
+        .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; background: #f9fafb; padding: 25px; border-radius: 20px; margin-bottom: 40px; }
+        .info-item label { display: block; font-size: 12px; color: #888; margin-bottom: 5px; font-weight: 600; }
+        .info-item span { display: block; font-size: 16px; font-weight: 700; color: #111; }
+        
+        .item-card { border: 1px solid #eee; border-radius: 20px; padding: 25px; margin-bottom: 20px; transition: 0.3s; }
+        .item-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .item-name { font-size: 18px; font-weight: 800; color: #111; }
+        .item-status { background: #e6f4f1; color: var(--primary-color); font-size: 12px; font-weight: 800; padding: 6px 12px; border-radius: 50px; }
+        
+        .item-details { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 15px; }
+        .detail-point { font-size: 14px; color: #666; display: flex; align-items: center; gap: 8px; }
+        .detail-point .material-icons { font-size: 18px; color: var(--primary-color); }
+        .detail-point b { color: #111; margin-right: 4px; }
+
+        .guidance-box { font-size: 14px; color: #555; line-height: 1.7; white-space: pre-wrap; margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 12px; border-left: 4px solid var(--primary-color); }
+        
+        .notice-box { background: #fff8e6; border-radius: 20px; padding: 25px; border: 1px solid #ffeeba; margin-top: 40px; }
+        .notice-box h4 { margin: 0 0 10px 0; font-size: 15px; font-weight: 800; color: #856404; }
+        .notice-box ul { margin: 0; padding-left: 20px; font-size: 13px; color: #856404; }
+        
+        .print-btn { position: fixed; bottom: 30px; right: 30px; background: var(--primary-color); color: #fff; border: none; padding: 15px 30px; border-radius: 50px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 30px rgba(0,150,136,0.3); transition: 0.3s; z-index: 1000; }
+        
+        @media print { .print-btn { display: none; } .voucher-container { box-shadow: none; border-radius: 0; } }
+    </style>
+</head>
+<body>
+
+<div class="voucher-container">
+    <div class="voucher-header">
+        <img src="boholsean logo.png" alt="보홀션">
+        <h1>BOHOL_SEAN</h1>
+        <p>BOHOL GUEST RESERVATION VOUCHER</p>
+    </div>
+
+    <div class="voucher-body">
+        <div class="section-title">예약자 정보</div>
+        <div class="info-grid">
+            <div class="info-item"><label>대표자명</label><span id="v-name">-</span></div>
+            <div class="info-item"><label>연락처</label><span id="v-contact">-</span></div>
+            <div class="info-item"><label>픽업장소</label><span id="v-pickup">-</span></div>
+            <div class="info-item"><label>인원정보</label><span id="v-pax">-</span></div>
+        </div>
+
+        <div class="section-title">투어 및 액티비티 일정</div>
+        <div id="item-list">
+            <div id="loading" style="text-align:center; padding:40px; color:#999;">데이터를 불러오는 중...</div>
+        </div>
+
+        <div class="notice-box">
+            <h4>보홀션 안내 및 유의사항</h4>
+            <ul>
+                <li>모든 일정은 현지 기상 상황 및 업체 사정에 의해 다소 변경될 수 있습니다.</li>
+                <li>픽업 시간 10분 전까지 리조트 로비에서 대기해 주시기 바랍니다.</li>
+                <li>투어 당일 노쇼(No-Show) 발생 시 환불이 불가합니다.</li>
+                <li>문의 사항은 보홀션 카카오톡 채널을 이용해 주세요.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<button class="print-btn" onclick="window.print()">인쇄하기</button>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDkDjmGKQDF-0Vu2S_qtI6W5Hf2-j4tKcM",
+        authDomain: "boracaysean-69b4a.firebaseapp.com",
+        projectId: "boracaysean-69b4a",
+        storageBucket: "boracaysean-69b4a.firebasestorage.app",
+        messagingSenderId: "806585874771",
+        appId: "1:806585874771:web:64a094d241730ca38109a6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // --- 🏝️ 투어별 보홀 전용 상세 안내문 생성기 ---
+    function getBoholTourGuidance(name) {
+        const n = name.toUpperCase();
+        if (n.includes('파밀라칸')) {
+            return `★★ 주의 사항 및 준비물 ★★\n- 젖어도 되는 복장\n- 쪼리등 슬리퍼 비추천, 긴옷 추천\n- 매너팁 1인 100페소 (성인, 소인 동일)`;
+        }
+        if (n.includes('오슬롭') || n.includes('고래상어')) {
+            return `★★ 주의 사항 및 준비물 ★★\n- 젖어도 되는 복장\n- 쪼리등 슬리퍼 비추천, 긴옷 추천\n- 매너팁 1인 100페소 (성인, 소인 동일)\n- 고래상어 와칭 시 선크림 등 화장품 사용 금지`;
+        }
+        if (n.includes('호핑')) {
+            return `★★ 주의 사항 및 준비물 ★★\n- 편한 물놀이 복장, 타월인당 1개\n- 쪼리등 슬리퍼 비추천, 긴옷 추천\n- 매너팁 1인 100페소 (성인, 소인 동일)\n- 해파리 출몰로 인한 긴팔, 긴바지 래쉬가드 추천`;
+        }
+        if (n.includes('육상투어')) {
+            return `★★ 주의 사항 및 준비물 ★★\n- 편한 복장\n- 쪼리등 슬리퍼 비추천, 긴옷 추천 (바클라욘 성당 입장 제한)\n- 매너팁 1인 100페소 (성인, 소인 동일)`;
+        }
+        if (n.includes('나팔링')) {
+            return `★★ 주의 사항 및 준비물 ★★\n- 편한 물놀이 복장, 타월인당 1개\n- 매너팁 1인 100페소 (성인, 소인 동일)`;
+        }
+        if (n.includes('반딧불')) {
+            return `★★ 주의 사항 및 준비물 ★★\n- 편한 복장\n- 매너팁 1인 100페소 (성인, 소인 동일)`;
+        }
+        return "";
+    }
+
+    async function loadVoucher() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const resId = urlParams.get('id');
+        const type = urlParams.get('type') || 'quick';
+        
+        if (!resId) return;
+        try {
+            // 보홀 전용 컬렉션 확인 (bohol_quick_vouchers 또는 bohol_reservations)
+            const collectionName = (type === 'quick') ? "bohol_quick_vouchers" : "bohol_reservations";
+            const docSnap = await getDoc(doc(db, collectionName, resId));
+            
+            if (docSnap.exists()) {
+                const res = docSnap.data();
+                document.getElementById('v-name').innerText = res.customerKorName || '-';
+                document.getElementById('v-contact').innerText = res.contact || '-';
+                document.getElementById('v-pickup').innerText = res.pickupResort || '-';
+                document.getElementById('v-pax').innerText = res.paxInfo || (res.items?.[0]?.count ? `${res.items[0].count}명` : '-');
+
+                const list = document.getElementById('item-list');
+                list.innerHTML = (res.items || []).map(item => `
+                    <div class="item-card">
+                        <div class="item-header">
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-status">확정</div>
+                        </div>
+                        <div class="item-details">
+                            <div class="detail-point"><span class="material-icons">calendar_today</span><b>날짜</b>${item.date || '-'}</div>
+                            <div class="detail-point"><span class="material-icons">access_time</span><b>시간</b>${item.time || '-'}</div>
+                            <div class="detail-point"><span class="material-icons">people</span><b>인원</b>${item.count || '-'}명</div>
+                        </div>
+                        <div class="guidance-box">${getBoholTourGuidance(item.name)}</div>
+                    </div>
+                `).join('');
+                document.getElementById('loading').style.display = 'none';
+            }
+        } catch (e) { console.error(e); }
+    }
+    loadVoucher();
+</script>
+</body>
+</html>

@@ -451,7 +451,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.copyVoucherLink = (id, idx) => { const url = `${window.location.origin}/reservation-schedule.html?id=${id}${idx !== null ? `&itemIndex=${idx}` : ''}`; navigator.clipboard.writeText(url).then(() => alert('바우처 링크가 복사되었습니다.')); };
     window.copyCombinedVoucherLink = (contact) => { navigator.clipboard.writeText(`${window.location.origin}/reservation-schedule.html?contact=${encodeURIComponent(contact)}`).then(() => alert('통합 일정표 링크 복사 완료!')); };
-    window.copyGuidance = (id) => { const res = allReservations.find(r => r.id === id); if (!res) return; let msg = `[보라카이션 예약 확정 안내]\n\n대표자: ${res.customerKorName}\n투어내역:\n${res.items.map(i => `- ${i.name} (${i.date} ${i.time || ''}) / ${i.count}명`).join('\n')}\n\n감사합니다.`; navigator.clipboard.writeText(msg).then(() => alert('안내문이 복사되었습니다.')); };
+    window.copyGuidance = (id) => { 
+        const res = allReservations.find(r => r.id === id); 
+        if (!res) return; 
+        
+        let msg = `[보라카이션 예약 확정 안내]\n\n대표자: ${res.customerKorName}\n투어내역:\n${res.items.map(i => `- ${i.name} (${i.date} ${i.time || ''}) / ${i.count}명`).join('\n')}`;
+        
+        // 보라아재 호핑투어 포함 시 전용 안내문 추가
+        const hasBoraAjae = res.items.some(i => i.name.includes('보라아재') || i.name.includes('카라바오'));
+        if (hasBoraAjae) {
+            msg += `\n\n------------------\n🚨📢 8시 (08:00) / 각반 선착장 미팅😊💜\n보라카이가 제주도라면, 카라바오는 우도라고 생각하시면 이해가 편하십니다. 보라카이에서 배를 타고 1시간정도 이동, 카라바오 섬에 도착하여 아재호핑 전용공간으로 안내해드립니다. 해당 장소에서 진행하는 온종일 투어입니다. 아재투어의 전용공간은 보라아재에서 준비한 다양한 액티비티 및 사진 포인트가 많이 있는 매력적인 장소입니다. 넉넉한 시간으로 편안하고 즐거운 시간이 되시길 바랍니다.\n\n✅ 미팅 시간 및 장소\n🔺현지시각 오전 8시 까지 각반 선착장 도착\n** 미팅시간 10분 전 도착 권장. 미팅 시간내 미 도착시 노쇼처리, 환불불가합니다 **\n🔺각반(CAGBAN PORT) 선착장 세븐일레븐 앞 보라아재 피켓 든 직원을 찾아주세요! 👍\n주의!!! 각반선착장 입니다. E-트라이크(툭툭이) 탑승 후 각반 혹은 각반포트 말씀해주시면 됩니다. \n디몰출발을 기준으로 시간은 15분 내외, 비용은 한 대당 150페소~200페소 정도이니 참고해주세요.\n\n✅ 포함 사항\n씨푸드런치, 무제한 음료+맥주+물, 라면간식, 선상 사진촬영, 수중 사진촬영, vip 밀착케어, 스노클 장비 무상 대여(구명조끼, 스노클마스크), 스노클링, 스킨다이빙, 슬라이드, 포토스팟, 줄낚시, 클리프다이빙 등등\n\n✅ 필수 준비물\n래쉬가드, 선크림, 비치타올, 아쿠아슈즈, 불포함 매너팁 인당 200페소(유아 포함)\n\n✅ 안내 및 주의사항\n* 투어 당일 출발시 날씨에 따라 호핑투어 진행 동선 및 장소, 내용 등등이 변경되어 진행될 수 있습니다.\n* 미팅 후 다른 분들과 함께 조인으로 액티비티가 진행됩니다. 서로 피해가 없도록, 약속시간은 꼭 지켜주세요.\n* 고가의 귀중품, 많은 현금, 여권은 필히 리조트에 두고 오세요!\n* 식사 불포함인 36개월 이하의 아이들의 식사는 따로 준비가 되어 있지 않습니다. (흰 쌀밥은 제공)\n* 맥주와 음료를 무제한으로 제공 해드리고 있지만, 테이크 아웃은 엄격히 금하고 있습니다!\n* 수중사진은 서비스 품목으로 현지 사정상 제공 불가일 수 있는 점 양해 부탁드립니다.\n* 지나친 음주로 물놀이가 안전하지 않다 판단되는 경우 제재를 받으실 수도 있습니다.\n\n📌 우천 시 안내\n보라카이는 스콜성 비가 자주 내리는 지역입니다. 비가 내리더라도 별도의 안내가 없는 경우, 호핑투어는 정상적으로 진행됩니다. 😊`;
+        }
+        
+        msg += `\n\n감사합니다.`;
+        navigator.clipboard.writeText(msg).then(() => alert('안내문이 복사되었습니다.')); 
+    };
     window.showInputArea = (type) => { 
         if (type === 'quote') {
             window.open('admin-quote-maker.html', '_blank');
@@ -771,7 +785,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     else if (lowerLine.includes('maris') || lowerLine.includes('마리스')) itemName = '마리스 스파';
                     else if (lowerLine.includes('helios') || lowerLine.includes('헬리오스')) itemName = '헬리오스 스파';
                     else if (lowerLine.includes('land') || lowerLine.includes('랜드')) { itemName = '보라카이 랜드투어'; if(!actualTimeMatch) itemTime = "10:30"; }
-                    else if (lowerLine.includes('hopping') || lowerLine.includes('호핑')) { if (lowerLine.includes('(j)') || lowerLine.includes('점보')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!actualTimeMatch) itemTime = "12:30"; } else { itemName = '블랙펄 선셋 호핑투어'; if(!actualTimeMatch) itemTime = "13:30"; } }
+                    else if (lowerLine.includes('hopping') || lowerLine.includes('호핑')) { 
+                        if (lowerLine.includes('보라아재') || lowerLine.includes('카라바오')) { itemName = '보라아재 호핑투어'; if(!actualTimeMatch) itemTime = "08:00"; }
+                        else if (lowerLine.includes('(j)') || lowerLine.includes('점보')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!actualTimeMatch) itemTime = "12:30"; } 
+                        else { itemName = '블랙펄 선셋 호핑투어'; if(!actualTimeMatch) itemTime = "13:30"; } 
+                    }
                     else if (lowerLine.includes('malum') || lowerLine.includes('말룸')) { itemName = '시크릿가든 말룸파티'; if(!actualTimeMatch) itemTime = "09:40"; }
                     else if (lowerLine.includes('jetski') || lowerLine.includes('zetski') || lowerLine.includes('제트스키')) itemName = '제트스키';
                     else if (lowerLine.includes('helmet') || lowerLine.includes('헬멧')) itemName = '헬멧다이빙';

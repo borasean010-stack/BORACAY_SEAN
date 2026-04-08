@@ -20,6 +20,16 @@ BORACAY SEAN is a comprehensive travel service website for Boracay, Philippines.
 - **AI Counselor:** A specialized AI agent ('Sean') provides travel advice and product recommendations using Firebase Cloud Functions and Gemini.
 - **Pricing Management:** Prices are centralized in `main.js` and mirrored in individual HTML files and backend logic for consistency.
 
+## Recently Implemented Changes (April 8, 2026)
+
+### Bora-Ajae Hopping Tour Information Update
+Updated the "보라아재 호핑투어" (Bora-Ajae Hopping Tour) information across the entire system based on the latest operational details.
+- **Website Schedule & Info**: Updated `bora-ajae-hopping.html` with new tour introduction, meeting time (08:00 at Cagban Port), detailed service procedures, updated inclusion list (Seafood lunch, unlimited drinks/beer), and comprehensive notice/caution sections.
+- **Digital Voucher Guidance**: Enhanced the `getTourGuidance` function in `reservation-schedule.html` to display detailed meeting instructions and preparation lists specifically for "보라아재 호핑" or "카라바오" tours.
+- **Quick Voucher Logic**: Updated the parsing logic in `admin.js` (`makeQuickVoucher`) to correctly identify Bora-Ajae Hopping Tour from external data and set the default meeting time to 08:00.
+- **Reservation Notification messages**: Modified the `copyGuidance` function in `admin.js` to automatically append the full Bora-Ajae meeting guidance (including port instructions and preparation list) when the tour is included in a reservation.
+- **Quote Maker Integration**: Added "보라아재 카라바오 투어" to the admin quote maker (`admin-quote-maker.js`) with adult (180,000 KRW) and child (135,000 KRW) pricing options.
+
 ## Recently Implemented Changes (April 1, 2026)
 
 ### Admin UI & Consistency Updates

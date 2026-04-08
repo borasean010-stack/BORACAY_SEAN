@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>보홀션 파트너 센터 - BOHOL SEAN</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* 🚀 보라카이션 관리자와 동일한 레이아웃 스타일 */
+        .main-tool-grid { display: grid; grid-template-columns: repeat(3, 1fr) 0.7fr; gap: 10px; margin-bottom: 25px; }
+        .tool-box { background: #fff; border-radius: 12px; padding: 15px 10px; border-top: 5px solid #ff6a00; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; cursor: pointer; transition: transform 0.2s; }
+        .tool-box:hover { transform: translateY(-3px); }
+        .tool-box.active { background: #fffaf5; border-color: #ff6a00; box-shadow: 0 0 15px rgba(255, 106, 0, 0.2); transform: translateY(-3px); }
+        .tool-box.active h4 { color: #ff6a00; font-weight: 800; }
+        .tool-box h4 { margin: 0; font-size: 13px; color: #666; font-weight: 600; white-space: nowrap; }
+        .tool-box .date-val { margin-top: 8px; font-size: 16px; font-weight: 800; color: #333; }
+        .tool-box.system-box { border-top-color: #00c73c; }
+
+        .timeline-section { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .timeline-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .timeline-title { font-size: 16px; font-weight: 900; color: #111; display: flex; align-items: center; gap: 8px; }
+        .timeline-title span { color: #ff6a00; }
+        
+        .timeline-content { display: flex; gap: 15px; overflow-x: auto; padding: 10px 0; min-height: 150px; }
+
+        .input-area-card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 25px; border: 2px solid #ff6a00; display: none; }
+        .input-area-card.system-border { border-color: #00c73c; }
+        .tool-textarea { width: 100%; height: 120px; border: 1px solid #ddd; border-radius: 8px; padding: 12px; font-size: 12px; resize: none; margin-bottom: 10px; box-sizing: border-box; }
+        
+        /* 보홀션 전용 포인트 컬러 (선택사항: 주황색 유지 요청하셔서 주황색으로 갑니다) */
+    </style>
+</head>
+<body class="smartstore-admin">
+    <!-- Login -->
+    <div id="login-container" class="admin-login-wrapper">
+        <div class="admin-login-card">
+            <div class="admin-login-header">
+                <div class="admin-logo-box"><img src="boholsean logo.png" alt="Bohol Sean Logo"></div>
+                <h1>BOHOL SEAN</h1>
+                <h2>보홀 파트너 센터</h2>
+            </div>
+            <form id="login-form">
+                <div class="admin-form-group"><label>아이디</label><input type="text" id="username" required></div>
+                <div class="admin-form-group"><label>비밀번호</label><input type="password" id="password" required></div>
+                <button type="submit" class="btn-admin-login">로그인</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="admin-container" class="admin-full-layout" style="display: none;">
+        <aside class="ss-sidebar">
+            <div class="ss-sidebar-brand">
+                <img src="boholsean logo.png" alt="Logo" class="ss-logo" style="height:35px;">
+                <span class="ss-brand-name" style="margin-left:10px;">보홀 관리자</span>
+            </div>
+            <nav class="ss-nav">
+                <div class="ss-nav-group">
+                    <button class="ss-nav-item active" onclick="location.reload()"><span class="material-icons">dashboard</span> 대시보드</button>
+                </div>
+                <div class="ss-nav-group">
+                    <p class="ss-nav-label">보홀 전용 도구</p>
+                    <button class="ss-nav-item" onclick="showInputArea('quick')"><span class="material-icons">confirmation_number</span> 퀵바우처 생성</button>
+                    <button class="ss-nav-item" onclick="showInputArea('reg')"><span class="material-icons">upload_file</span> 스케줄 등록</button>
+                </div>
+            </nav>
+            <div class="ss-sidebar-footer"><button id="logout-btn"><span class="material-icons">logout</span> 로그아웃</button></div>
+        </aside>
+
+        <div class="ss-main">
+            <header class="ss-top-header">
+                <div class="ss-header-left"><span class="ss-breadcrumb">보홀 관리자 > <b id="breadcrumb-active">대시보드</b></span></div>
+                <div class="ss-header-right"><span id="display-admin-id">Admin</span>님 반갑습니다.</div>
+            </header>
+
+            <div class="ss-content">
+                <!-- 상단 도구 그리드 -->
+                <div class="main-tool-grid">
+                    <div id="tool-box-today" class="tool-box active" onclick="switchScheduleDay('today')">
+                        <h4>보홀 오늘 일정</h4>
+                        <div id="box-date-today" class="date-val">-</div>
+                    </div>
+                    <div id="tool-box-tomorrow" class="tool-box" onclick="switchScheduleDay('tomorrow')">
+                        <h4>보홀 내일 일정</h4>
+                        <div id="box-date-tomorrow" class="date-val">-</div>
+                    </div>
+                    <div class="tool-box system-box" onclick="showInputArea('quick')">
+                        <h4>보홀 퀵바우처</h4>
+                        <div class="date-val" style="font-size:12px;">새 링크 생성</div>
+                    </div>
+                    <div class="tool-box system-box" style="border-top-color: #00c73c;" onclick="showInputArea('reg')">
+                        <h4>스케줄 일괄등록</h4>
+                        <div class="date-val" style="font-size:12px;">Q열 데이터</div>
+                    </div>
+                </div>
+
+                <!-- 🎫 퀵바우처 입력창 -->
+                <div id="input-area-quick" class="input-area-card">
+                    <h3 style="margin:0 0 15px 0; color:#ff6a00; font-size:15px;">🎫 보홀 퀵바우처 생성 (엑셀 붙여넣기)</h3>
+                    <textarea id="quick-voucher-input" class="tool-textarea" placeholder="보홀 엑셀 데이터를 여기에 붙여넣으세요..."></textarea>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-action-received" style="flex:1; height:45px;" onclick="makeQuickVoucher()">바우처 생성 및 링크 복사</button>
+                        <button class="btn-action-outline" style="height:45px;" onclick="hideInputArea()">닫기</button>
+                    </div>
+                </div>
+
+                <!-- 📤 스케줄 등록창 -->
+                <div id="input-area-reg" class="input-area-card system-border">
+                    <h3 style="margin:0 0 15px 0; color:#00c73c; font-size:15px;">📤 보홀 스케줄 일괄 등록 (Q열 포함 전체)</h3>
+                    <textarea id="schedule-reg-input" class="tool-textarea" placeholder="보홀 전체 데이터를 여기에 붙여넣으세요..."></textarea>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-action-received" style="flex:1; background:#00c73c; height:45px; border-color:#00c73c;" onclick="registerBulkSchedule()">스케줄 업데이트</button>
+                        <button class="btn-action-danger" style="height:45px;" onclick="handleClearSchedules()">
+                            <span class="material-icons">delete_sweep</span> 일정 초기화
+                        </button>
+                        <button class="btn-action-outline" style="height:45px;" onclick="hideInputArea()">닫기</button>
+                    </div>
+                </div>
+
+                <!-- 📅 보홀 일정 타임라인 -->
+                <div class="timeline-section">
+                    <div class="timeline-header">
+                        <div class="timeline-title"><span class="material-icons">calendar_today</span> <span id="schedule-title-date">-</span> 보홀 통합 일정</div>
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn-action-received" style="height:32px; font-size:12px; background:#333; border-color:#333;" onclick="openSchedulePopup('pickup')">픽업 명단</button>
+                            <button class="btn-action-received" style="height:32px; font-size:12px;" onclick="openSchedulePopup('activity')">액티비티 명단</button>
+                        </div>
+                    </div>
+                    <div id="active-timeline" class="timeline-content">
+                        <div class="sc-empty">데이터를 불러오는 중입니다...</div>
+                    </div>
+                </div>
+
+                <!-- 안내 문구 -->
+                <div style="background:#f9f9f9; padding:20px; border-radius:12px; color:#888; font-size:13px; line-height:1.6; border:1px dashed #ddd;">
+                    <p style="margin:0; font-weight:800; color:#666; margin-bottom:5px;">💡 보홀 관리자 안내</p>
+                    - 보홀 데이터는 시작 시간(07:00, 07:30 등)을 기준으로 자동 분류됩니다.<br>
+                    - 퀵바우처 생성 시 보홀 전용 안내문이 포함된 링크가 생성됩니다.<br>
+                    - 모든 데이터는 보홀 전용 데이터베이스에 안전하게 분리 저장됩니다.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 상세 모달 -->
+    <div id="res-detail-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header"><h3>보홀 예약 상세</h3><button onclick="closeModal()">✕</button></div>
+            <div class="modal-body" id="modal-body"></div>
+            <div class="modal-footer"><button class="btn-action-outline" onclick="closeModal()">닫기</button></div>
+        </div>
+    </div>
+
+    <script type="module" src="bohol-admin.js"></script>
+</body>
+</html>

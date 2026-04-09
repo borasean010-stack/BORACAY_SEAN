@@ -313,7 +313,11 @@
             if (meetingPlace.includes('페어웨이')) meetingPlace = '페어웨이 정문게이트';
             return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : ${meetingTime} / ${meetingPlace}</b>\n점심 포함 : 점보크랩\n\n★ 준비물\n편한 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품\n\n→ 불포함사항\n- 골프채, 골프공, 골프슈즈, 골프글로브\n- 개인음료(그늘집 있음)\n- 캐디팁 - 1인 100페소(18홀기준, 캐디에게 직접 페이)\n- 복귀 트라이시클비용(편도 약 150페소)</div>`;
         }
-        // 9. VIP 라운지
+        // 9. 점보크랩
+        if (name.includes('점보크랩')) {
+            return `<div class="guidance-box"><b>안내문 : 점보크랩 이동하셔서 카운터에 성함 말씀하시고 식사 하시면 됩니다 ^^</b>\n<a href="https://goo.gl/maps/d6tdF8tME3p16NtCA" class="map-btn" target="_blank">📍 점보크랩 구글맵 확인</a></div>`;
+        }
+        // 10. VIP 라운지
         if (name.includes('라운지') || name.includes('VIP')) {
             return `<div class="guidance-box"><b>VIP 라운지 (공항 내부)</b>\nVIP 라운지는 공항 내부에 있는 라운지 입니다.\n라운지에 입장 하기 위해서는 공항 입장 후 모든 출국절차를 끝내시고 마지막 이민국까지 통과를 하시고 이용 하실 수 있습니다.\n출국절차 완료 후 2층 라운지 가셔서 성함말씀 혹은 이 예약문자 보여주시고 이용하시면 됩니다.\n*선착순 예약 특성상 예약과 동시에 자리가 배정이 됩니다. 출국수속이 지체되어 라운지 도착 후 이용시간이 예상했던 시간보다 부족하여도 또는 이용을 못하신다 하더라도 당일 취소 및 환불은 불가 합니다.</div>`;
         }

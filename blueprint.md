@@ -22,10 +22,10 @@ BORACAY SEAN is a comprehensive travel service website for Boracay, Philippines.
 
 ## Recently Implemented Changes (April 15, 2026)
 
-### Reservation Data Correction (Customer: JEONGRAEUN)
-Manually corrected a specific reservation entry (ID: `ZcN9vCGtHr7DEgXRoXd6`) to accurately reflect the guest's actual schedule.
-- **Schedule Update**: Changed the 16:30 activity on 2026-06-21 from "✈️ 공항 픽업" (which was redundant with the 14:00 arrival) to **"에스파(S-SPA)"**.
-- **Data Integrity**: Verified that the change correctly triggers the SSPA guidance (Google Maps, preparation list) in the digital voucher view while keeping other items (Bora-Ajae Hopping, Land Tour, etc.) intact.
+### Quick Voucher Parsing Logic Improvement
+Enhanced the `makeQuickVoucher` function in `admin.js` to prevent misidentification of items when multiple keywords are present in a single line.
+- **Priority-Based Keyword Matching**: Reordered the parsing logic to prioritize specific activity keywords (e.g., "sspa", "luna", "hopping") over generic operational keywords like "pickup" or "meeting". This ensures that a line like "6/21 sspa (no pickup) 16:30" is correctly identified as **"에스파(S-SPA)"** instead of an airport pickup.
+- **Reservation Data Correction (Customer: JEONGRAEUN)**: Manually corrected a specific reservation entry (ID: `ZcN9vCGtHr7DEgXRoXd6` and `uhuGOCQ7ZuKumDNaIFmt`) to accurately reflect the guest's actual schedule.
 
 ## Recently Implemented Changes (April 9, 2026)
 

@@ -20,6 +20,13 @@ BORACAY SEAN is a comprehensive travel service website for Boracay, Philippines.
 - **AI Counselor:** A specialized AI agent ('Sean') provides travel advice and product recommendations using Firebase Cloud Functions and Gemini.
 - **Pricing Management:** Prices are centralized in `main.js` and mirrored in individual HTML files and backend logic for consistency.
 
+## Recently Implemented Changes (April 15, 2026)
+
+### Reservation Data Correction (Customer: JEONGRAEUN)
+Manually corrected a specific reservation entry (ID: `ZcN9vCGtHr7DEgXRoXd6`) to accurately reflect the guest's actual schedule.
+- **Schedule Update**: Changed the 16:30 activity on 2026-06-21 from "✈️ 공항 픽업" (which was redundant with the 14:00 arrival) to **"에스파(S-SPA)"**.
+- **Data Integrity**: Verified that the change correctly triggers the SSPA guidance (Google Maps, preparation list) in the digital voucher view while keeping other items (Bora-Ajae Hopping, Land Tour, etc.) intact.
+
 ## Recently Implemented Changes (April 9, 2026)
 
 ### Jumbo Crab (점보크랩) Schedule & Guidance Update

@@ -369,7 +369,16 @@ document.addEventListener('DOMContentLoaded', () => {
         filtered.forEach((res, index) => {
             const tr = document.createElement('tr');
             const status = res.status || '대기';
-            const firstItem = (res.items?.[0]?.name || '-') + (res.items?.length > 1 ? ` 외 ${res.items.length-1}건` : '');
+            
+            // 🏨 리조트 견적일 경우 날짜 표시 강화
+            let firstItem = (res.items?.[0]?.name || '-');
+            if (firstItem.includes('리조트 견적')) {
+                const checkin = res.resortCheckin || (res.items?.[0]?.details?.checkin) || '';
+                const checkout = res.resortCheckout || (res.items?.[0]?.details?.checkout) || '';
+                if (checkin) firstItem += ` <br><small style="color:#666;">📅 ${checkin} ~ ${checkout}</small>`;
+            }
+            if (res.items?.length > 1) firstItem += ` 외 ${res.items.length-1}건`;
+
             let actionButtons = `<button class="btn-action-received" style="background:#ff6a00; border-color:#ff6a00;" onclick="showDetail('${res.id}', 'reservation')"><span class="material-icons">visibility</span>상세</button><button class="btn-action-outline" onclick="copyCombinedVoucherLink('${res.contact}')"><span class="material-icons">content_copy</span>일정표</button>`;
             
             if (status === '입금확인요청') {
@@ -441,7 +450,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const isQuote = res.status === '견적' || res.status === '견적완료';
         const totalVoucherBtn = isQuote ? '' : `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;"><button onclick="copyCombinedVoucherLink('${res.contact}')" style="padding:12px; background:#00c73c; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;"><span class="material-icons" style="font-size:18px;">people</span> 통합 링크</button><button onclick="copyVoucherLink('${res.id}', null)" style="padding:12px; background:#ff6a00; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;"><span class="material-icons" style="font-size:18px;">share</span> 주문 일정</button></div>`;
-        const itemsHtml = (res.items || []).map((item, idx) => `<div style="padding:12px; background:#f8f9fa; border:1px solid #eee; border-radius:8px; margin-bottom:8px;"><div style="display:flex; justify-content:space-between;"><div style="font-size:15px; font-weight:800;">${item.name}</div><div style="font-size:14px; font-weight:800; color:#ff6a00;">${item.count}명</div></div><div style="margin-top:6px; font-size:13px; color:#666;">📅 ${item.date} ${item.time || ''}</div>${!isQuote ? `<div style="margin-top:10px; display:flex; gap:5px;"><a href="reservation-schedule.html?id=${res.id}&itemIndex=${idx}" target="_blank" style="flex:1; text-align:center; padding:6px; background:#fff; border:1px solid #ddd; border-radius:4px; font-size:11px; text-decoration:none; color:#333;">바우처</a><button onclick="copyVoucherLink('${res.id}', ${idx})" style="flex:1; padding:6px; background:#ff6a00; color:white; border:none; border-radius:4px; font-size:11px; cursor:pointer;">복사</button></div>` : ''}</div>`).join('');
+        const itemsHtml = (res.items || []).map((item, idx) => {
+            let dateStr = item.date || '-';
+            if (item.name.includes('리조트 견적')) {
+                const checkin = item.details?.checkin || res.resortCheckin;
+                const checkout = item.details?.checkout || res.resortCheckout;
+                if (checkin) dateStr = `${checkin} ~ ${checkout}`;
+            }
+            return `<div style="padding:12px; background:#f8f9fa; border:1px solid #eee; border-radius:8px; margin-bottom:8px;"><div style="display:flex; justify-content:space-between;"><div style="font-size:15px; font-weight:800;">${item.name}</div><div style="font-size:14px; font-weight:800; color:#ff6a00;">${item.count}명</div></div><div style="margin-top:6px; font-size:13px; color:#666;">📅 ${dateStr} ${item.time || ''}</div>${!isQuote ? `<div style="margin-top:10px; display:flex; gap:5px;"><a href="reservation-schedule.html?id=${res.id}&itemIndex=${idx}" target="_blank" style="flex:1; text-align:center; padding:6px; background:#fff; border:1px solid #ddd; border-radius:4px; font-size:11px; text-decoration:none; color:#333;">바우처</a><button onclick="copyVoucherLink('${res.id}', ${idx})" style="flex:1; padding:6px; background:#ff6a00; color:white; border:none; border-radius:4px; font-size:11px; cursor:pointer;">복사</button></div>` : ''}</div>`;
+        }).join('');
         const displayEngName = res.engName || '-';
         const displayExchange = res.exchangeAmount || '-';
         const displayPax = res.paxInfo || (res.items?.[0]?.count ? `${res.items[0].count}명` : '-');

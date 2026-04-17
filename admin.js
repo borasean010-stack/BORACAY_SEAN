@@ -806,7 +806,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     else if (lowerLine.includes('hopping') || lowerLine.includes('호핑')) { 
                         if (lowerLine.includes('보라아재') || lowerLine.includes('카라바오')) { itemName = '보라아재 호핑투어'; if(!actualTimeMatch) itemTime = "08:00"; }
                         else if (lowerLine.includes('(j)') || lowerLine.includes('점보')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!actualTimeMatch) itemTime = "12:30"; } 
-                        else { itemName = '블랙펄 선셋 호핑투어'; if(!actualTimeMatch) itemTime = "13:30"; } 
+                        else { itemName = '블랙펄 요트호핑투어'; if(!actualTimeMatch) itemTime = "13:30"; } 
                     }
                     else if (lowerLine.includes('malum') || lowerLine.includes('말룸')) { itemName = '시크릿가든 말룸파티'; if(!actualTimeMatch) itemTime = "09:40"; }
                     else if (lowerLine.includes('jetski') || lowerLine.includes('zetski') || lowerLine.includes('제트스키')) itemName = '제트스키';

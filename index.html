@@ -237,21 +237,17 @@
 </footer>
 
 <!-- 팝업 모달 -->
+<!-- 팝업 오버레이 (새 이미지 준비 전까지 비워둠) -->
 <div id="mainPopup" class="popup-overlay" style="display:none;">
     <div class="popup-content">
         <div class="popup-slider-container">
             <div class="popup-slider" id="popupSlider">
-                <div class="popup-slide" onclick="location.href='price-list.html'">
-                    <img src="main-popup1.png?v=20260322" alt="보라카이션 요금표 안내 팝업 - 보라카이 자유여행">
-                </div>
-                <div class="popup-slide" onclick="location.href='spa.html'">
-                    <img src="main-popup2.png?v=20260322" alt="보라카이 마사지 추천 팝업 - 보라카이션 스파">
-                </div>
+                <!-- 여기에 500x700 새 팝업 이미지가 추가될 예정입니다 -->
             </div>
             <!-- ◀️▶️ Popup Navigation Arrows -->
             <div class="popup-arrow popup-arrow-left" onclick="movePopupSlide(-1); event.stopPropagation();">❮</div>
             <div class="popup-arrow popup-arrow-right" onclick="movePopupSlide(1); event.stopPropagation();">❯</div>
-            
+
             <div class="popup-controls">
                 <div class="popup-dots" id="popupDots"></div>
             </div>
@@ -262,7 +258,6 @@
         </div>
     </div>
 </div>
-
 <script src="main.js?v=1.2"></script>
 </body>
 </html>

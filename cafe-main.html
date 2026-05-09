@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>네이버 카페 대문 미리보기</title>
+    <!-- 최신식 Pretendard 폰트 불러오기 -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+    <style>
+        /* 네이버 카페 대문 스타일 시뮬레이션 */
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+        }
+
+        /* 대문 메인 컨테이너 (네이버 카페 폭 820px 기준) */
+        .cafe-gate-container {
+            width: 820px;
+            position: relative;
+            background-color: #fff;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            line-height: 1.4;
+        }
+
+        /* 배경 이미지 */
+        .bg-image {
+            width: 100%;
+            display: block;
+        }
+
+        /* 유튜브 영상 영역 (우측 상단) */
+        .youtube-box {
+            position: absolute;
+            top: 30px; /* 위치 조정 가능 */
+            right: 30px; /* 위치 조정 가능 */
+            width: 320px; /* 영상 너비 (조절 가능) */
+            height: 180px; /* 16:9 비율 */
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            background: #000;
+            z-index: 10;
+        }
+
+        /* 텍스트 워딩 영역 */
+        .wording-area {
+            position: absolute;
+            top: 50px;
+            left: 40px;
+            color: #fff; /* 배경색에 따라 변경 필요 */
+            z-index: 5;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .wording-area h1 {
+            font-size: 48px;
+            font-weight: 900;
+            margin: 0;
+            letter-spacing: -2px;
+            line-height: 1.1;
+        }
+
+        .wording-area p {
+            font-size: 18px;
+            font-weight: 400;
+            margin-top: 15px;
+            opacity: 0.9;
+        }
+
+        /* 버튼 영역 (필요시) */
+        .link-buttons {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: #ff6a00;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255,106,0,0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 이 영역이 실제 카페 [HTML] 모드에 들어갈 코드입니다 -->
+    <div class="cafe-gate-container">
+        <!-- 배경 이미지 (카페에 업로드한 이미지 주소로 교체 필요) -->
+        <img src="보션투어 카페 대문.png" alt="카페 대문 배경" class="bg-image">
+
+        <!-- 우측 상단 유튜브 영상 -->
+        <div class="youtube-box">
+            <iframe 
+                width="100%" 
+                height="100%" 
+                src="https://www.youtube.com/embed/Z6NYI9ScAks?autoplay=1&mute=1&loop=1&playlist=Z6NYI9ScAks&controls=0&modestbranding=1" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+            </iframe>
+        </div>
+
+        <!-- 메인 워딩 (이 부분을 수정하여 사용하세요) -->
+        <div class="wording-area">
+            <h1>보라카이 여행,<br>보션투어가 정답</h1>
+            <p>가장 완벽한 보라카이 자유여행의 시작.<br>지금 바로 보션투어와 함께하세요!</p>
+        </div>
+
+        <!-- 하단 바로가기 버튼들 -->
+        <div class="link-buttons">
+            <a href="https://cafe.naver.com/jesupblue" class="btn">카카오톡 상담하기</a>
+            <a href="https://cafe.naver.com/jesupblue" class="btn">투어 예약하기</a>
+            <a href="https://cafe.naver.com/jesupblue" class="btn">여행 후기보기</a>
+        </div>
+    </div>
+
+</body>
+</html>

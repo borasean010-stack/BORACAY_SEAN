@@ -20,6 +20,19 @@ BORACAY SEAN is a comprehensive travel service website for Boracay, Philippines.
 - **AI Counselor:** A specialized AI agent ('Sean') provides travel advice and product recommendations using Firebase Cloud Functions and Gemini.
 - **Pricing Management:** Prices are centralized in `main.js` and mirrored in individual HTML files and backend logic for consistency.
 
+## Recently Implemented Changes (May 9, 2026)
+
+### System-wide SEO Optimization
+Implemented a comprehensive SEO strategy across all public-facing HTML pages (approx. 40+ files) to improve search engine visibility and social media presence.
+- **Automated Metadata Management**: Developed and executed a batch update script (`seo_update.py`) to standardize and optimize meta tags across the platform.
+- **Customized Page Titles & Descriptions**: Each major page (Main, Activities, Spas, Resorts, Pickup) now features unique, keyword-rich `<title>` and `<meta name="description">` tags tailored to its specific content.
+- **Canonical URL Implementation**: Added `<link rel="canonical">` tags to every page to prevent duplicate content issues and ensure search engines index the preferred URL (including root URL mapping for `index.html`).
+- **Social Media Optimization (Open Graph & Twitter Cards)**:
+    - Added comprehensive Open Graph (`og:*`) tags for optimal sharing on KakaoTalk, Instagram, and Facebook.
+    - Added Twitter Card metadata for enhanced visibility on Twitter.
+    - Standardized social sharing images and descriptions to ensure a premium brand image across all platforms.
+- **Head Section Cleanup**: Streamlined the `<head>` section of HTML files by removing redundant or outdated SEO comments and ensuring proper meta tag ordering.
+
 ## Recently Implemented Changes (April 20, 2026)
 
 ### Homepage Content Update

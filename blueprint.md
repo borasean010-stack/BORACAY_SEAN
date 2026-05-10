@@ -20,6 +20,13 @@ BORACAY SEAN is a comprehensive travel service website for Boracay, Philippines.
 - **AI Counselor:** A specialized AI agent ('Sean') provides travel advice and product recommendations using Firebase Cloud Functions and Gemini.
 - **Pricing Management:** Prices are centralized in `main.js` and mirrored in individual HTML files and backend logic for consistency.
 
+## Recently Implemented Changes (May 10, 2026)
+
+### Resort Mapping Correction
+Corrected the resort mapping logic to accurately reflect the change for 'gray' resort.
+- **Mapping Update**: Changed the mapping for `gray` from "세븐스톤" to **"그레이호텔"** in both `admin.js` (`translateResort` function) and `reservation-schedule.html` (`resortMap` object).
+- **Voucher Consistency**: Ensured that both the admin panel and the digital voucher view consistently display "그레이호텔" when the input contains "gray".
+
 ## Recently Implemented Changes (May 9, 2026)
 
 ### System-wide SEO Optimization

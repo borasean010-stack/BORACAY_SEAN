@@ -32,32 +32,42 @@ document.addEventListener('DOMContentLoaded', () => {
     function translateResort(name) {
         if (!name || name === '-') return '-';
         const n = name.toLowerCase().replace(/\s/g, '').replace(/\./g, '').replace(/,/g, '');
+        
+        // 1. 헤난 계열 (가장 많음)
         if (n.includes('hgarden') || n.includes('henanngarden')) return '헤난 가든';
-        if (n.includes('asya')) return '아샤';
         if (n.includes('lagoon')) return '헤난 라군';
         if (n.includes('prime')) return '헤난 프라임';
-        if (n.includes('palm')) return '헤난 팜비치';
+        if (n.includes('palm')) return '헤난 팜 비치';
         if (n.includes('park')) return '헤난 파크';
-        if (n.includes('crystal') || n.includes('sands')) return '헤난 크리스탈';
+        if (n.includes('crystal') || n.includes('sands')) return '헤난 크리스탈 샌즈';
         if (n.includes('regency')) return '헤난 리젠시';
+        
+        // 2. 만다린 계열 (구분 필수)
+        if (n.includes('mandarinbay') || n.includes('mbay')) return '만다린 베이';
+        if (n.includes('mandarinisland')) return '만다린 아일랜드';
+        if (n.includes('mandarin')) return '만다린'; // 기본값
+
+        // 3. 기타 주요 리조트
         if (n.includes('crimson')) return '크림슨';
+        if (n.includes('asya')) return '아샤';
         if (n.includes('savoy')) return '사보이';
         if (n.includes('belmont')) return '벨몬트';
         if (n.includes('hue')) return '휴 리조트';
         if (n.includes('fairway')) return '페어웨이';
-        if (n.includes('discovery')) return '디스커버리';
+        if (n.includes('discovery')) return '디스커버리 쇼어';
         if (n.includes('movenpick')) return '모벤픽';
         if (n.includes('shangri')) return '샹그릴라';
         if (n.includes('astoria')) return '아스토리아';
-        if (n.includes('mandarin') || n.includes('mbay') || n.includes('m,bay') || n === 'mbay' || n === 'm bay') return '만다린 베이';
+        if (n.includes('mandarin')) return '만다린 베이'; // Old logic fallback (redundant but safe)
         if (n.includes('lind')) return '더 린드';
         if (n.includes('feliz')) return '펠리즈';
         if (n.includes('coast')) return '코스트';
-        if (n.includes('gray')) return '세븐스톤';
-        if (n.includes('henann')) return '헤난';
-        if (n.includes('aqua')) return '아쿠아';
+        if (n.includes('aqua')) return '아쿠아 보라카이';
         if (n.includes('canyon')) return '캐년';
         if (n.includes('lacarmela')) return '라카멜라';
+        if (n.includes('gray')) return '그레이호텔';
+        if (n.includes('henann')) return '헤난';
+        
         return name; 
     }
 

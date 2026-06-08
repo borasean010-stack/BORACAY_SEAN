@@ -9,7 +9,7 @@ admin.initializeApp();
 const geminiKey = defineSecret("GEMINI_KEY");
 
 const BORACAY_PRODUCTS = [
-  { id: "hopping", name: "블랙펄 요트 호핑투어", price: 50000, category: "tour", desc: "보라카이 최고급 요트 스노클링 및 선셋 파티", url: "/hopping-tour.html" },
+  { id: "hopping", name: "블랙펄 요트 호핑투어", price: 55000, category: "tour", desc: "보라카이 최고급 요트 스노클링 및 선셋 파티", url: "/hopping-tour.html" },
   { id: "malumpati", name: "시크릿가든 말룸파티", price: 99000, category: "tour", desc: "우리끼리 프라이빗하게 즐기고 신비로운 블루라군과 튜빙", url: "/malumpati.html" },
   { id: "pickup", name: "공항 왕복 픽업샌딩", price: 54900, category: "essential", desc: "공항에서 리조트까지 안전한 단독/조인 이동", url: "/pickup-sending.html" },
   { id: "poseidon", name: "포세이돈 스파", price: 105000, category: "massage", desc: "보라카이 최고의 럭셔리 스파 시설", url: "/poseidon.html" },

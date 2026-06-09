@@ -54,6 +54,7 @@
         top: 80px; 
         border: 1px solid #f0f0f0; 
         height: fit-content;
+        transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     }
 
     .option-label { display: block; font-weight: 800; font-size: 15px; margin-bottom: 15px; color: #333; }
@@ -103,6 +104,12 @@
     @media (max-device-width: 1024px) {
         .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
         .reservation-box { position: static; box-shadow: none; border: 1px solid #eee; margin-top: 30px; }
+        .mobile-bottom-bar { 
+            display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
+            background: white; padding: 12px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); 
+            z-index: 9000; align-items: center;
+        }
+        .m-btn-buy { flex: 1; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 17px; font-weight: 800; cursor: pointer; }
     }
 </style>
 </head>
@@ -240,6 +247,10 @@
     </div>
 </div>
 
+<div class="mobile-bottom-bar pc-only" id="mobile-bar" style="display: none;">
+    <button class="m-btn-buy" onclick="handleMobileClick()">구매하기</button>
+</div>
+
 <script src="main.js"></script>
 <script>
     let currentOption = 1;
@@ -277,6 +288,14 @@
         document.getElementById('total-price-display').innerText = BSUtils.formatPrice(total);
     }
 
+    function handleMobileClick() {
+        // 모바일 하단바 클릭 시 예약 박스(옵션 선택창)로 스크롤 이동
+        const box = document.getElementById('reservation-box');
+        if (box) {
+            window.scrollTo({ top: box.offsetTop - 100, behavior: 'smooth' });
+        }
+    }
+
     function handleBuy() {
         let optionName = "";
         if (currentOption === 1) optionName = "(픽샌 + 호핑)";
@@ -286,7 +305,7 @@
         const total = (adultCount * adultPrice) + (childCount * childPrice);
         const item = {
             name: `보라카이션 패키지 ${optionName}`,
-            price: total / (adultCount + childCount), // 평균가 (합계 계산용)
+            price: total / (adultCount + childCount), 
             totalPrice: total,
             count: adultCount + childCount,
             details: `성인 ${adultCount}, 소인 ${childCount}`,
@@ -294,13 +313,20 @@
             packageOption: currentOption
         };
 
-        // 하나의 객체로 저장 (배열이 아닌 단일 아이템)
         sessionStorage.setItem('directBuyItem', JSON.stringify(item));
         window.location.href = '/booking-form';
     }
 
     window.onload = () => {
         selectOption(1, 100000, 100000);
+        // 모바일 하단바 노출 여부 제어
+        if (window.innerWidth <= 1024) {
+            const mBar = document.getElementById('mobile-bar');
+            if (mBar) {
+                mBar.classList.remove('pc-only');
+                mBar.style.display = 'flex';
+            }
+        }
     };
 </script>
 </body>

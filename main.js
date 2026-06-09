@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 중앙 상품 데이터 정의 (설명글 통합 관리) ---
     const productData = {
         essential: [
-            { title: "보라카이션 패키지", img: "package-sean.png", url: "/package-sean", badge: "HOT", mdBadge: true, desc: "픽샌, 호핑, 말룸을 한번에! 가장 인기있는 핵심 투어만 모았습니다.", price: 100000 },
+            { title: "보라카이션 패키지", img: "package-sean.png", url: "/boracay-package", badge: "HOT", mdBadge: true, desc: "픽샌, 호핑, 말룸을 한번에! 가장 인기있는 핵심 투어만 모았습니다.", price: 100000 },
             { title: "보라카이 왕복 픽업샌딩", img: "pickup.jpg", url: "/pickup-sending", badge: "HOT", mdBadge: true, desc: "공항부터 숙소 앞까지 가장 안전하고 편안하게!", price: 54900 },
             { title: "블랙펄 요트호핑투어", img: "블랙펄 썸네일.jpg", url: "/hopping-tour", badge: "HOT", mdBadge: true, desc: "럭셔리 요트위에서 즐기는 보라카이 선셋과 신나는 음악과 파티가 함께하는 1등 선상 파티 호핑", price: 55000 },
             { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "/malumpati", badge: "HOT", mdBadge: true, desc: "우리끼리 프라이빗하게 즐기고 신비로운 블루라군과 튜빙", price: 99000 }

@@ -278,41 +278,24 @@
     }
 
     function handleBuy() {
-        const items = [];
-        const commonInfo = {
+        let optionName = "";
+        if (currentOption === 1) optionName = "(픽샌 + 호핑)";
+        else if (currentOption === 2) optionName = "(픽샌 + 말룸)";
+        else if (currentOption === 3) optionName = "(픽샌 + 호핑 + 말룸)";
+
+        const total = (adultCount * adultPrice) + (childCount * childPrice);
+        const item = {
+            name: `보라카이션 패키지 ${optionName}`,
+            price: total / (adultCount + childCount), // 평균가 (합계 계산용)
+            totalPrice: total,
             count: adultCount + childCount,
             details: `성인 ${adultCount}, 소인 ${childCount}`,
             isPackage: true,
             packageOption: currentOption
         };
 
-        const total = (adultCount * adultPrice) + (childCount * childPrice);
-        items.push({
-            ...commonInfo,
-            name: "보라카이션 패키지 (왕복 픽업샌딩)",
-            price: total,
-            totalPrice: total
-        });
-
-        if (currentOption === 1 || currentOption === 3) {
-            items.push({
-                ...commonInfo,
-                name: "보라카이션 패키지 (블랙펄 요트호핑)",
-                price: 0,
-                totalPrice: 0
-            });
-        }
-
-        if (currentOption === 2 || currentOption === 3) {
-            items.push({
-                ...commonInfo,
-                name: "보라카이션 패키지 (시크릿가든 말룸파티)",
-                price: 0,
-                totalPrice: 0
-            });
-        }
-
-        sessionStorage.setItem('directBuyItem', JSON.stringify(items));
+        // 하나의 객체로 저장 (배열이 아닌 단일 아이템)
+        sessionStorage.setItem('directBuyItem', JSON.stringify(item));
         window.location.href = '/booking-form';
     }
 

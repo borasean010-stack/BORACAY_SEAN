@@ -54,7 +54,6 @@
         top: 80px; 
         border: 1px solid #f0f0f0; 
         height: fit-content;
-        transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     }
 
     .option-label { display: block; font-weight: 800; font-size: 15px; margin-bottom: 15px; color: #333; }
@@ -75,12 +74,16 @@
     .option-card .price-tag { position: absolute; top: 15px; right: 15px; color: #ff6a00; font-weight: 900; font-size: 14px; }
 
     .person-selector { background:#f9f9f9; border-radius:20px; padding:18px; margin-bottom:20px; border: 1px solid #f0f0f0; }
-    .person-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .person-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
     .person-row:last-child { margin-bottom: 0; }
-    .person-row span { font-weight: 700; font-size: 15px; color: #444; }
     
-    .counter { display: flex; align-items: center; gap: 15px; background: white; padding: 6px 12px; border-radius: 12px; border: 1px solid #eee; }
-    .count-btn { width: 28px; height: 28px; border: none; background: #f0f0f0; border-radius: 8px; font-weight: 900; cursor: pointer; color: #666; transition: 0.2s; }
+    .person-label { display: flex; flex-direction: column; }
+    .person-label b { font-size: 15px; color: #333; }
+    .person-label span { font-size: 11px; color: #999; margin-top: 2px; }
+    .person-price { font-size: 13px; font-weight: 800; color: #ff6a00; margin-right: 10px; }
+
+    .counter { display: flex; align-items: center; gap: 12px; background: white; padding: 5px 10px; border-radius: 12px; border: 1px solid #eee; }
+    .count-btn { width: 28px; height: 28px; border: none; background: #f0f0f0; border-radius: 8px; font-weight: 900; cursor: pointer; color: #666; }
     .count-btn:hover { background: #ff6a00; color: white; }
 
     .total-summary { 
@@ -94,26 +97,12 @@
     .total-summary span { font-weight: 700; color: #888; }
     .total-summary b { font-size: 26px; font-weight: 900; color: #ff6a00; letter-spacing: -1px; }
 
-    .btn-buy { width: 100%; padding: 18px; background: #111; color: white; border: none; border-radius: 18px; font-size: 18px; font-weight: 900; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-    .btn-buy:hover { background: #ff6a00; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(255,106,0,0.2); }
-
-    /* Schedule Fields Section Style Consistency */
-    #schedule-section { display: none; }
-    .schedule-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; color: #ff6a00; }
-    .input-group { margin-bottom: 18px; }
-    .input-group label { display: block; font-size: 13px; font-weight: 800; color: #555; margin-bottom: 8px; }
-    .input-group input { width: 100%; padding: 14px; border: 1.5px solid #eee; border-radius: 12px; font-size: 15px; background: #fafafa; transition: 0.3s; font-family: inherit; }
-    .input-group input:focus { outline: none; border-color: #ff6a00; background: white; box-shadow: 0 0 0 4px rgba(255,106,0,0.05); }
+    .btn-buy { width: 100%; padding: 18px; background: #111; color: white; border: none; border-radius: 18px; font-size: 18px; font-weight: 900; cursor: pointer; transition: 0.3s; }
+    .btn-buy:hover { background: #ff6a00; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
 
     @media (max-device-width: 1024px) {
         .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
-        .reservation-box { position: static; box-shadow: none; border: 1px solid #eee; margin-top: 30px; padding: 20px; }
-        .mobile-bottom-bar { 
-            display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
-            background: white; padding: 12px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); 
-            z-index: 9000; align-items: center;
-        }
-        .m-btn-buy { flex: 1; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 17px; font-weight: 800; }
+        .reservation-box { position: static; box-shadow: none; border: 1px solid #eee; margin-top: 30px; }
     }
 </style>
 </head>
@@ -204,58 +193,43 @@
 
             <div class="person-selector">
                 <div class="person-row">
-                    <span>성인</span>
-                    <div class="counter">
-                        <button class="count-btn" onclick="updateCount('adult', -1)">-</button>
-                        <b id="adult-count">1</b>
-                        <button class="count-btn" onclick="updateCount('adult', 1)">+</button>
+                    <div class="person-label">
+                        <b>성인</b>
+                        <span>12세 이상</span>
+                    </div>
+                    <div style="display:flex; align-items:center;">
+                        <span class="person-price" id="adult-price-display">₩ 100,000</span>
+                        <div class="counter">
+                            <button class="count-btn" onclick="updateCount('adult', -1)">-</button>
+                            <b id="adult-count">1</b>
+                            <button class="count-btn" onclick="updateCount('adult', 1)">+</button>
+                        </div>
                     </div>
                 </div>
                 <div class="person-row">
-                    <span>소인</span>
-                    <div class="counter">
-                        <button class="count-btn" onclick="updateCount('child', -1)">-</button>
-                        <b id="child-count">0</b>
-                        <button class="count-btn" onclick="updateCount('child', 1)">+</button>
+                    <div class="person-label">
+                        <b>소인</b>
+                        <span>36개월~11세</span>
+                    </div>
+                    <div style="display:flex; align-items:center;">
+                        <span class="person-price" id="child-price-display">₩ 100,000</span>
+                        <div class="counter">
+                            <button class="count-btn" onclick="updateCount('child', -1)">-</button>
+                            <b id="child-count">0</b>
+                            <button class="count-btn" onclick="updateCount('child', 1)">+</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="total-summary">
-                <span>총 합계</span>
+                <span>총 합계 금액</span>
                 <b id="total-price-display">₩ 100,000</b>
             </div>
 
-            <button class="btn-buy" onclick="showSchedule()">구매하기</button>
-        </div>
-
-        <div id="schedule-section">
-            <div class="schedule-header">
-                <span class="material-icons" style="font-size:20px;">calendar_today</span>
-                <h3 style="font-size:18px; font-weight:900; margin:0;">상세 일정 입력</h3>
-            </div>
-            
-            <div class="input-group"><label>픽업 날짜</label><input type="date" id="pickup-date"></div>
-            <div class="input-group"><label>샌딩 날짜</label><input type="date" id="sending-date"></div>
-            
-            <div id="hopping-date-group" class="input-group">
-                <label>호핑투어 날짜</label><input type="date" id="hopping-date">
-            </div>
-            <div id="malum-date-group" class="input-group" style="display:none;">
-                <label>말룸파티 날짜</label><input type="date" id="malum-date">
-            </div>
-
-            <div class="input-group"><label>인천 출발 항공편 (예: TW125)</label><input type="text" id="pickup-flight" placeholder="정확히 기재해 주세요"></div>
-            <div class="input-group"><label>리조트명</label><input type="text" id="resort-name" placeholder="숙박하시는 리조트"></div>
-
-            <button class="btn-buy" onclick="handleBuy()" style="margin-top:10px;">구매하기 (정보 확인)</button>
-            <button onclick="hideSchedule()" style="width:100%; margin-top:15px; background:none; border:none; color:#bbb; font-weight:700; cursor:pointer; font-size:13px; text-decoration:underline;">이전 단계로 돌아가기</button>
+            <button class="btn-buy" onclick="handleBuy()">구매하기</button>
         </div>
     </div>
-</div>
-
-<div class="mobile-bottom-bar" id="mobile-bar">
-    <button class="m-btn-buy" onclick="handleMobileClick()">구매하기</button>
 </div>
 
 <script src="main.js"></script>
@@ -275,9 +249,8 @@
             c.classList.toggle('selected', i === opt - 1);
         });
 
-        // 일정 필드 제어
-        document.getElementById('hopping-date-group').style.display = (opt === 1 || opt === 3) ? 'block' : 'none';
-        document.getElementById('malum-date-group').style.display = (opt === 2 || opt === 3) ? 'block' : 'none';
+        document.getElementById('adult-price-display').innerText = BSUtils.formatPrice(ap);
+        document.getElementById('child-price-display').innerText = BSUtils.formatPrice(cp);
 
         updateTotal();
     }
@@ -296,53 +269,13 @@
         document.getElementById('total-price-display').innerText = BSUtils.formatPrice(total);
     }
 
-    function showSchedule() {
-        document.getElementById('step-1').style.display = 'none';
-        document.getElementById('schedule-section').style.display = 'block';
-        window.scrollTo({ top: document.getElementById('reservation-box').offsetTop - 100, behavior: 'smooth' });
-    }
-
-    function hideSchedule() {
-        document.getElementById('step-1').style.display = 'block';
-        document.getElementById('schedule-section').style.display = 'none';
-    }
-
-    function handleMobileClick() {
-        const box = document.getElementById('reservation-box');
-        if (getComputedStyle(document.getElementById('step-1')).display === 'none') {
-            handleBuy();
-        } else {
-            // 모바일에서 하단 바 클릭 시 예약 박스로 이동
-            window.scrollTo({ top: box.offsetTop - 100, behavior: 'smooth' });
-        }
-    }
-
     function handleBuy() {
-        const pickupDate = document.getElementById('pickup-date').value;
-        const sendingDate = document.getElementById('sending-date').value;
-        const hoppingDate = document.getElementById('hopping-date').value;
-        const malumDate = document.getElementById('malum-date').value;
-        const flight = document.getElementById('pickup-flight').value;
-        const resort = document.getElementById('resort-name').value;
-
-        if (document.getElementById('schedule-section').style.display === 'none') {
-            showSchedule();
-            return;
-        }
-
-        if (!pickupDate || !sendingDate || !flight || !resort) {
-            alert('필수 일정을 모두 입력해 주세요.'); return;
-        }
-
         const items = [];
         const commonInfo = {
-            date: pickupDate,
-            pickupDate: pickupDate,
-            sendingDate: sendingDate,
-            pickupFlight: flight,
-            pickupResort: resort,
             count: adultCount + childCount,
-            details: `성인 ${adultCount}, 소인 ${childCount}`
+            details: `성인 ${adultCount}, 소인 ${childCount}`,
+            isPackage: true,
+            packageOption: currentOption
         };
 
         const total = (adultCount * adultPrice) + (childCount * childPrice);
@@ -357,7 +290,6 @@
             items.push({
                 ...commonInfo,
                 name: "보라카이션 패키지 (블랙펄 요트호핑)",
-                date: hoppingDate || pickupDate,
                 price: 0,
                 totalPrice: 0
             });
@@ -367,7 +299,6 @@
             items.push({
                 ...commonInfo,
                 name: "보라카이션 패키지 (시크릿가든 말룸파티)",
-                date: malumDate || pickupDate,
                 price: 0,
                 totalPrice: 0
             });
@@ -377,7 +308,9 @@
         window.location.href = '/booking-form';
     }
 
-    window.onload = updateTotal;
+    window.onload = () => {
+        selectOption(1, 100000, 100000);
+    };
 </script>
 </body>
 </html>

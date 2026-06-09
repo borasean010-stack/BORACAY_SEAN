@@ -127,6 +127,40 @@
                     <input type="text" id="eng-name" placeholder="예: HONG GILDONG">
                 </div>
 
+                <!-- 📦 패키지 전용 일정 정보 -->
+                <div id="package-schedule-fields" class="conditional-fields" style="display: none;">
+                    <div class="section-subtitle" style="color:#ff6a00;">📅 패키지 상세 일정 입력</div>
+                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">패키지에 포함된 각 항목의 이용 날짜를 선택해 주세요.</p>
+                    
+                    <div class="input-group">
+                        <label>픽업 날짜 (공항 -> 보라카이)<span class="required-mark">*</span></label>
+                        <input type="date" id="pkg-pickup-date">
+                    </div>
+                    <div class="input-group">
+                        <label>샌딩 날짜 (보라카이 -> 공항)<span class="required-mark">*</span></label>
+                        <input type="date" id="pkg-sending-date">
+                    </div>
+                    
+                    <div id="pkg-hopping-group" class="input-group" style="display: none;">
+                        <label>블랙펄 호핑투어 이용일<span class="required-mark">*</span></label>
+                        <input type="date" id="pkg-hopping-date">
+                    </div>
+                    
+                    <div id="pkg-malum-group" class="input-group" style="display: none;">
+                        <label>시크릿가든 말룸파티 이용일<span class="required-mark">*</span></label>
+                        <input type="date" id="pkg-malum-date">
+                    </div>
+
+                    <div class="input-group">
+                        <label>인천 출발 항공편 (예: TW125)<span class="required-mark">*</span></label>
+                        <input type="text" id="pkg-pickup-flight" placeholder="항공편명을 정확히 입력해 주세요">
+                    </div>
+                    <div class="input-group">
+                        <label>숙박 리조트명<span class="required-mark">*</span></label>
+                        <input type="text" id="pkg-resort-name" placeholder="숙박하시는 리조트 이름">
+                    </div>
+                </div>
+
                 <div id="pickup-sending-fields" class="conditional-fields" style="display: none;">
                     <div class="section-subtitle" style="color:#ff6a00;">✈️ 픽업/샌딩 항공 및 호텔 정보</div>
                     <div class="input-group"><label>픽업 항공편명 (인천->칼리보)</label><input type="text" id="pickup-flight" placeholder="예: TW125"></div>
@@ -196,6 +230,7 @@
     let hasHopping = false;
     let isResortQuote = false;
     let hasActivityPickup = false;
+    let isPackage = false;
     let cartData = [];
     let selectedPayment = '무통장';
 
@@ -213,11 +248,11 @@
         const list = document.getElementById('summary-list');
         let totalSum = 0;
         cartData.forEach(item => {
-            if (item.name.includes('픽업샌딩') || item.name.includes('패키지')) hasPickup = true;
+            if (item.name.includes('픽업샌딩')) hasPickup = true;
             if (item.name.includes('호핑')) hasHopping = true;
             if (item.name.includes('리조트 견적')) isResortQuote = true;
+            if (item.isPackage) isPackage = true;
             
-            // 픽업이 필요한 상품 키워드 리스트
             const pickupRequiredKeywords = [
                 '체험 다이빙', '제트스키', '헬멧다이빙', '파라세일링', '프리다이빙 체험', '페어웨이 골프', 
                 '포세이돈', '아유르베다', '마리스', '헬리오스'
@@ -231,8 +266,8 @@
                 dateStr = `${item.pickupDate || '픽업일 미정'} ~ ${item.sendingDate || '샌딩일 미정'}`;
             } else if (item.name.includes('리조트 견적') && item.details && item.details.checkin) {
                 dateStr = `${item.details.checkin} ~ ${item.details.checkout}`;
-            } else if (item.name.includes('패키지')) {
-                dateStr = `픽업: ${item.pickupDate || '-'} / 샌딩: ${item.sendingDate || '-'}`;
+            } else if (item.isPackage) {
+                dateStr = "날짜 정보 별도 입력";
             }
 
             const timeStr = item.time ? ` | 시간: ${item.time}` : '';
@@ -253,15 +288,6 @@
                 </div>`;
         });
 
-        // --- 데이터 프리필 (패키지 등에서 넘어온 정보) ---
-        const firstWithInfo = cartData.find(i => i.pickupFlight || i.pickupResort);
-        if (firstWithInfo) {
-            if (document.getElementById('pickup-flight')) document.getElementById('pickup-flight').value = firstWithInfo.pickupFlight || '';
-            if (document.getElementById('pickup-resort')) document.getElementById('pickup-resort').value = firstWithInfo.pickupResort || '';
-            if (document.getElementById('sending-resort')) document.getElementById('sending-resort').value = firstWithInfo.pickupResort || ''; // 보통 동일
-        }
-
-        // 총 결제 예정 금액 표시 추가
         if (totalSum > 0) {
             list.innerHTML += `
                 <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #f8f8f8; display: flex; justify-content: space-between; align-items: center;">
@@ -271,24 +297,41 @@
         }
 
         // ✈️ 픽업샌딩 필드 노출
-        if (hasPickup) {
+        if (hasPickup && !isPackage) {
             document.getElementById('pickup-sending-fields').style.display = 'block';
             document.getElementById('eng-name-group').style.display = 'block';
             document.getElementById('eng-name').required = true;
         }
 
-        // ⛵ 호핑투어도 영문 이름 필요할 수 있음 (선택사항 또는 필요 시 강제)
-        if (hasHopping) {
+        if (hasHopping || isPackage) {
             document.getElementById('eng-name-group').style.display = 'block';
+            document.getElementById('eng-name').required = true;
         }
 
-        // 🏨 투어/스파 픽업 리조트 노출
         if (hasActivityPickup) {
             document.getElementById('activity-pickup-fields').style.display = 'block';
             document.getElementById('activity-pickup-resort').required = true;
         }
 
-        // 🏨 리조트 견적 전용 UI
+        // 📦 패키지 전용 일정 노출
+        if (isPackage) {
+            document.getElementById('package-schedule-fields').style.display = 'block';
+            document.getElementById('pkg-pickup-date').required = true;
+            document.getElementById('pkg-sending-date').required = true;
+            document.getElementById('pkg-pickup-flight').required = true;
+            document.getElementById('pkg-resort-name').required = true;
+
+            const pkg = cartData.find(i => i.isPackage);
+            if (pkg.packageOption === 1 || pkg.packageOption === 3) {
+                document.getElementById('pkg-hopping-group').style.display = 'block';
+                document.getElementById('pkg-hopping-date').required = true;
+            }
+            if (pkg.packageOption === 2 || pkg.packageOption === 3) {
+                document.getElementById('pkg-malum-group').style.display = 'block';
+                document.getElementById('pkg-malum-date').required = true;
+            }
+        }
+
         if (isResortQuote) {
             document.getElementById('form-main-title').innerText = '리조트 견적 신청';
             document.getElementById('form-main-desc').innerText = '견적 신청 정보를 입력하시면 상담원 확인 후 연락드립니다.';
@@ -302,11 +345,8 @@
 
     document.getElementById('info-form').onsubmit = function(e) {
         e.preventDefault();
-        
-        if (isResortQuote) {
-            selectedPayment = '견적요청';
-            submitFinal();
-        } else {
+        if (isResortQuote) { selectedPayment = '견적요청'; submitFinal(); } 
+        else {
             document.getElementById('info-section').style.display = 'none';
             document.getElementById('payment-section').style.display = 'block';
             document.getElementById('step2-bar').classList.add('active');
@@ -328,25 +368,34 @@
 
     window.submitFinal = async function() {
         if (!selectedPayment) { alert('결제 수단을 선택해 주세요.'); return; }
-        
         const btn = document.getElementById('pay-btn');
         const nextBtn = document.getElementById('next-step-btn');
-        
-        if (isResortQuote) {
-            nextBtn.innerText = '신청 중...';
-            nextBtn.disabled = true;
-        } else {
-            btn.innerText = '예약 처리 중...';
-            btn.disabled = true;
-        }
+        if (isResortQuote) { nextBtn.innerText = '신청 중...'; nextBtn.disabled = true; } 
+        else { btn.innerText = '예약 처리 중...'; btn.disabled = true; }
 
         const pickupItem = cartData.find(i => i.name.includes('픽업샌딩') || i.name.includes('공항'));
         const resortItem = cartData.find(i => i.name.includes('리조트 견적'));
-
-        // 예약번호 생성 (YYMMDD 형식)
-        const tourDate = pickupItem ? (pickupItem.pickupDate || pickupItem.date) : (cartData[0].date || new Date().toISOString().split('T')[0]);
-        const resNo = tourDate.replace(/-/g, '').slice(2, 8); 
         
+        let mainDate = "";
+        if (isPackage) mainDate = document.getElementById('pkg-pickup-date').value;
+        else mainDate = pickupItem ? (pickupItem.pickupDate || pickupItem.date) : (cartData[0].date || new Date().toISOString().split('T')[0]);
+        
+        const resNo = mainDate.replace(/-/g, '').slice(2, 8); 
+        
+        if (isPackage) {
+            const hDate = document.getElementById('pkg-hopping-date')?.value || '';
+            const mDate = document.getElementById('pkg-malum-date')?.value || '';
+            cartData.forEach(item => {
+                if (item.name.includes('왕복 픽업샌딩')) item.date = document.getElementById('pkg-pickup-date').value;
+                if (item.name.includes('요트호핑')) item.date = hDate;
+                if (item.name.includes('말룸파티')) item.date = mDate;
+                item.pickupDate = document.getElementById('pkg-pickup-date').value;
+                item.sendingDate = document.getElementById('pkg-sending-date').value;
+                item.pickupFlight = document.getElementById('pkg-pickup-flight').value;
+                item.pickupResort = document.getElementById('pkg-resort-name').value;
+            });
+        }
+
         const bookingData = {
             kakaoUserId: user.id,
             reservationNumber: resNo,
@@ -359,17 +408,16 @@
             status: isResortQuote ? '견적' : '예약접수',
             createdAt: serverTimestamp ? serverTimestamp() : new Date(),
             engName: document.getElementById('eng-name').value || '',
-            pickupDate: pickupItem ? (pickupItem.pickupDate || '') : '',
-            sendingDate: pickupItem ? (pickupItem.sendingDate || '') : '',
-            pickupFlight: document.getElementById('pickup-flight').value || '',
-            pickupResort: document.getElementById('pickup-resort').value || '',
+            pickupDate: isPackage ? document.getElementById('pkg-pickup-date').value : (pickupItem ? (pickupItem.pickupDate || '') : ''),
+            sendingDate: isPackage ? document.getElementById('pkg-sending-date').value : (pickupItem ? (pickupItem.sendingDate || '') : ''),
+            pickupFlight: isPackage ? document.getElementById('pkg-pickup-flight').value : (document.getElementById('pickup-flight').value || ''),
+            pickupResort: isPackage ? document.getElementById('pkg-resort-name').value : (document.getElementById('pickup-resort').value || ''),
             sendingFlight: document.getElementById('sending-flight').value || '',
             sendingResort: document.getElementById('sending-resort').value || '',
             activityPickupResort: document.getElementById('activity-pickup-resort') ? document.getElementById('activity-pickup-resort').value : '',
             exchangeAmount: document.getElementById('exchange-amount') ? document.getElementById('exchange-amount').value : '',
             resortCheckin: (resortItem && resortItem.details) ? resortItem.details.checkin : '',
             resortCheckout: (resortItem && resortItem.details) ? resortItem.details.checkout : '',
-            // Flag if any item has private transfer
             hasPrivateTransfer: cartData.some(i => i.privateTransfer === true)
         };
 
@@ -384,10 +432,7 @@
             if (!db) { finalize(); return; }
             await addDoc(collection(db, "reservations"), bookingData);
             finalize();
-        } catch (e) {
-            console.warn("DB 저장 지연 또는 오류:", e);
-            finalize();
-        }
+        } catch (e) { console.warn("DB 저장 지연 또는 오류:", e); finalize(); }
     };
 </script>
 </body>

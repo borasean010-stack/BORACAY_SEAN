@@ -213,7 +213,7 @@
         const list = document.getElementById('summary-list');
         let totalSum = 0;
         cartData.forEach(item => {
-            if (item.name.includes('픽업샌딩')) hasPickup = true;
+            if (item.name.includes('픽업샌딩') || item.name.includes('패키지')) hasPickup = true;
             if (item.name.includes('호핑')) hasHopping = true;
             if (item.name.includes('리조트 견적')) isResortQuote = true;
             
@@ -231,6 +231,8 @@
                 dateStr = `${item.pickupDate || '픽업일 미정'} ~ ${item.sendingDate || '샌딩일 미정'}`;
             } else if (item.name.includes('리조트 견적') && item.details && item.details.checkin) {
                 dateStr = `${item.details.checkin} ~ ${item.details.checkout}`;
+            } else if (item.name.includes('패키지')) {
+                dateStr = `픽업: ${item.pickupDate || '-'} / 샌딩: ${item.sendingDate || '-'}`;
             }
 
             const timeStr = item.time ? ` | 시간: ${item.time}` : '';
@@ -250,6 +252,14 @@
                     </div>
                 </div>`;
         });
+
+        // --- 데이터 프리필 (패키지 등에서 넘어온 정보) ---
+        const firstWithInfo = cartData.find(i => i.pickupFlight || i.pickupResort);
+        if (firstWithInfo) {
+            if (document.getElementById('pickup-flight')) document.getElementById('pickup-flight').value = firstWithInfo.pickupFlight || '';
+            if (document.getElementById('pickup-resort')) document.getElementById('pickup-resort').value = firstWithInfo.pickupResort || '';
+            if (document.getElementById('sending-resort')) document.getElementById('sending-resort').value = firstWithInfo.pickupResort || ''; // 보통 동일
+        }
 
         // 총 결제 예정 금액 표시 추가
         if (totalSum > 0) {

@@ -127,20 +127,36 @@
                     <input type="text" id="eng-name" placeholder="예: HONG GILDONG">
                 </div>
 
-                <!-- 📦 패키지 전용 일정 정보 -->
+                <!-- 📦 패키지 전용 일정 정보 (픽업샌딩 폼 스타일) -->
                 <div id="package-schedule-fields" class="conditional-fields" style="display: none;">
-                    <div class="section-subtitle" style="color:#ff6a00;">📅 패키지 상세 일정 입력</div>
-                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">패키지에 포함된 각 항목의 이용 날짜를 선택해 주세요.</p>
+                    <div class="section-subtitle" style="color:#ff6a00;">✈️ 픽업/샌딩 항공 및 호텔 정보 (패키지)</div>
                     
                     <div class="input-group">
                         <label>픽업 날짜 (공항 -> 보라카이)<span class="required-mark">*</span></label>
                         <input type="date" id="pkg-pickup-date">
                     </div>
                     <div class="input-group">
+                        <label>픽업 항공편명 (인천->칼리보)<span class="required-mark">*</span></label>
+                        <input type="text" id="pkg-pickup-flight" placeholder="예: TW125">
+                    </div>
+                    <div class="input-group">
+                        <label>픽업 리조트,호텔(첫날 리조트,호텔)<span class="required-mark">*</span></label>
+                        <input type="text" id="pkg-pickup-resort" placeholder="리조트명">
+                    </div>
+
+                    <div class="input-group">
                         <label>샌딩 날짜 (보라카이 -> 공항)<span class="required-mark">*</span></label>
                         <input type="date" id="pkg-sending-date">
                     </div>
-                    
+                    <div class="input-group">
+                        <label>샌딩 항공편명(칼리보->인천)<span class="required-mark">*</span></label>
+                        <input type="text" id="pkg-sending-flight" placeholder="예: TW126">
+                    </div>
+                    <div class="input-group">
+                        <label>샌딩 리조트,호텔(마지막날 리조트,호텔)<span class="required-mark">*</span></label>
+                        <input type="text" id="pkg-sending-resort" placeholder="리조트명">
+                    </div>
+
                     <div id="pkg-hopping-group" class="input-group" style="display: none;">
                         <label>블랙펄 호핑투어 이용일<span class="required-mark">*</span></label>
                         <input type="date" id="pkg-hopping-date">
@@ -152,15 +168,12 @@
                     </div>
 
                     <div class="input-group">
-                        <label>인천 출발 항공편 (예: TW125)<span class="required-mark">*</span></label>
-                        <input type="text" id="pkg-pickup-flight" placeholder="항공편명을 정확히 입력해 주세요">
-                    </div>
-                    <div class="input-group">
-                        <label>숙박 리조트명<span class="required-mark">*</span></label>
-                        <input type="text" id="pkg-resort-name" placeholder="숙박하시는 리조트 이름">
+                        <label>환전 요청 금액 (달러 ➔ 페소)</label>
+                        <input type="text" id="pkg-exchange-amount" placeholder="예: 100달러 (현지에서 페소로 전달해 드립니다)">
                     </div>
                 </div>
 
+                <!-- ✈️ 일반 픽업샌딩 전용 필드 -->
                 <div id="pickup-sending-fields" class="conditional-fields" style="display: none;">
                     <div class="section-subtitle" style="color:#ff6a00;">✈️ 픽업/샌딩 항공 및 호텔 정보</div>
                     <div class="input-group"><label>픽업 항공편명 (인천->칼리보)</label><input type="text" id="pickup-flight" placeholder="예: TW125"></div>
@@ -313,13 +326,15 @@
             document.getElementById('activity-pickup-resort').required = true;
         }
 
-        // 📦 패키지 전용 일정 노출
+        // 📦 패키지 전용 일정 노출 (요청하신 항공/리조트/환전 필드 포함)
         if (isPackage) {
             document.getElementById('package-schedule-fields').style.display = 'block';
             document.getElementById('pkg-pickup-date').required = true;
             document.getElementById('pkg-sending-date').required = true;
             document.getElementById('pkg-pickup-flight').required = true;
-            document.getElementById('pkg-resort-name').required = true;
+            document.getElementById('pkg-pickup-resort').required = true;
+            document.getElementById('pkg-sending-flight').required = true;
+            document.getElementById('pkg-sending-resort').required = true;
 
             const pkg = cartData.find(i => i.isPackage);
             if (pkg.packageOption === 1 || pkg.packageOption === 3) {
@@ -383,16 +398,26 @@
         const resNo = mainDate.replace(/-/g, '').slice(2, 8); 
         
         if (isPackage) {
+            const pDate = document.getElementById('pkg-pickup-date').value;
+            const sDate = document.getElementById('pkg-sending-date').value;
+            const pFlight = document.getElementById('pkg-pickup-flight').value;
+            const pResort = document.getElementById('pkg-pickup-resort').value;
+            const sFlight = document.getElementById('pkg-sending-flight').value;
+            const sResort = document.getElementById('pkg-sending-resort').value;
             const hDate = document.getElementById('pkg-hopping-date')?.value || '';
             const mDate = document.getElementById('pkg-malum-date')?.value || '';
+
             cartData.forEach(item => {
-                if (item.name.includes('왕복 픽업샌딩')) item.date = document.getElementById('pkg-pickup-date').value;
+                item.pickupDate = pDate;
+                item.sendingDate = sDate;
+                item.pickupFlight = pFlight;
+                item.pickupResort = pResort;
+                item.sendingFlight = sFlight;
+                item.sendingResort = sResort;
+                
+                if (item.name.includes('왕복 픽업샌딩')) item.date = pDate;
                 if (item.name.includes('요트호핑')) item.date = hDate;
                 if (item.name.includes('말룸파티')) item.date = mDate;
-                item.pickupDate = document.getElementById('pkg-pickup-date').value;
-                item.sendingDate = document.getElementById('pkg-sending-date').value;
-                item.pickupFlight = document.getElementById('pkg-pickup-flight').value;
-                item.pickupResort = document.getElementById('pkg-resort-name').value;
             });
         }
 
@@ -411,11 +436,11 @@
             pickupDate: isPackage ? document.getElementById('pkg-pickup-date').value : (pickupItem ? (pickupItem.pickupDate || '') : ''),
             sendingDate: isPackage ? document.getElementById('pkg-sending-date').value : (pickupItem ? (pickupItem.sendingDate || '') : ''),
             pickupFlight: isPackage ? document.getElementById('pkg-pickup-flight').value : (document.getElementById('pickup-flight').value || ''),
-            pickupResort: isPackage ? document.getElementById('pkg-resort-name').value : (document.getElementById('pickup-resort').value || ''),
-            sendingFlight: document.getElementById('sending-flight').value || '',
-            sendingResort: document.getElementById('sending-resort').value || '',
+            pickupResort: isPackage ? document.getElementById('pkg-pickup-resort').value : (document.getElementById('pickup-resort').value || ''),
+            sendingFlight: isPackage ? document.getElementById('pkg-sending-flight').value : (document.getElementById('sending-flight').value || ''),
+            sendingResort: isPackage ? document.getElementById('pkg-sending-resort').value : (document.getElementById('sending-resort').value || ''),
             activityPickupResort: document.getElementById('activity-pickup-resort') ? document.getElementById('activity-pickup-resort').value : '',
-            exchangeAmount: document.getElementById('exchange-amount') ? document.getElementById('exchange-amount').value : '',
+            exchangeAmount: isPackage ? document.getElementById('pkg-exchange-amount').value : (document.getElementById('exchange-amount') ? document.getElementById('exchange-amount').value : ''),
             resortCheckin: (resortItem && resortItem.details) ? resortItem.details.checkin : '',
             resortCheckout: (resortItem && resortItem.details) ? resortItem.details.checkout : '',
             hasPrivateTransfer: cartData.some(i => i.privateTransfer === true)

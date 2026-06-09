@@ -54,7 +54,7 @@
         top: 80px; 
         border: 1px solid #f0f0f0; 
         height: fit-content;
-        transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        z-index: 100;
     }
 
     .option-label { display: block; font-weight: 800; font-size: 15px; margin-bottom: 15px; color: #333; }
@@ -103,11 +103,18 @@
 
     @media (max-device-width: 1024px) {
         .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
-        .reservation-box { position: static; box-shadow: none; border: 1px solid #eee; margin-top: 30px; }
+        .reservation-box { 
+            position: fixed; bottom: -100%; left: 0; width: 100%; height: auto; 
+            max-height: 85vh; border-radius: 30px 30px 0 0; padding: 30px 20px; 
+            overflow-y: auto; display: block; z-index: 10001; 
+            box-shadow: 0 -15px 50px rgba(0,0,0,0.15); 
+            transition: bottom 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        .reservation-box.active { bottom: 0; }
         .mobile-bottom-bar { 
             display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
             background: white; padding: 12px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); 
-            z-index: 9000; align-items: center;
+            z-index: 9000; align-items: center; gap: 10px;
         }
         .m-btn-buy { flex: 1; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 17px; font-weight: 800; cursor: pointer; }
     }
@@ -186,69 +193,67 @@
     </div>
 
     <div class="reservation-box" id="reservation-box">
-        <div id="step-1">
-            <label class="option-label">패키지 옵션 선택</label>
-            <div class="option-select-box">
-                <div class="option-card selected" onclick="selectOption(1, 100000, 100000)">
-                    <h4>픽샌 + 호핑</h4>
-                    <p>공항 왕복 + 요트 호핑</p>
-                    <span class="price-tag">₩ 100,000</span>
-                </div>
-                <div class="option-card" onclick="selectOption(2, 150000, 141000)">
-                    <h4>픽샌 + 말룸</h4>
-                    <p>공항 왕복 + 말룸파티</p>
-                    <span class="price-tag">₩ 150,000~</span>
-                </div>
-                <div class="option-card" onclick="selectOption(3, 195000, 186000)">
-                    <h4>픽샌 + 호핑 + 말룸</h4>
-                    <p>보라카이 핵심 풀패키지</p>
-                    <span class="price-tag">₩ 195,000~</span>
-                </div>
+        <label class="option-label">패키지 옵션 선택</label>
+        <div class="option-select-box">
+            <div class="option-card selected" onclick="selectOption(1, 100000, 100000)">
+                <h4>픽샌 + 호핑</h4>
+                <p>공항 왕복 + 요트 호핑</p>
+                <span class="price-tag">₩ 100,000</span>
             </div>
-
-            <div class="person-selector">
-                <div class="person-row">
-                    <div class="person-label">
-                        <b>성인</b>
-                        <span>13세 이상 (중학생~)</span>
-                    </div>
-                    <div style="display:flex; align-items:center;">
-                        <span class="person-price" id="adult-price-display">₩ 100,000</span>
-                        <div class="counter">
-                            <button class="count-btn" onclick="updateCount('adult', -1)">-</button>
-                            <b id="adult-count">1</b>
-                            <button class="count-btn" onclick="updateCount('adult', 1)">+</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="person-row">
-                    <div class="person-label">
-                        <b>소인</b>
-                        <span>36개월~12세 (초등생)</span>
-                    </div>
-                    <div style="display:flex; align-items:center;">
-                        <span class="person-price" id="child-price-display">₩ 100,000</span>
-                        <div class="counter">
-                            <button class="count-btn" onclick="updateCount('child', -1)">-</button>
-                            <b id="child-count">0</b>
-                            <button class="count-btn" onclick="updateCount('child', 1)">+</button>
-                        </div>
-                    </div>
-                </div>
+            <div class="option-card" onclick="selectOption(2, 150000, 141000)">
+                <h4>픽샌 + 말룸</h4>
+                <p>공항 왕복 + 말룸파티</p>
+                <span class="price-tag">₩ 150,000~</span>
             </div>
-
-            <div class="total-summary">
-                <span>총 합계 금액</span>
-                <b id="total-price-display">₩ 100,000</b>
+            <div class="option-card" onclick="selectOption(3, 195000, 186000)">
+                <h4>픽샌 + 호핑 + 말룸</h4>
+                <p>보라카이 핵심 풀패키지</p>
+                <span class="price-tag">₩ 195,000~</span>
             </div>
-
-            <button class="btn-buy" onclick="handleBuy()">구매하기</button>
         </div>
+
+        <div class="person-selector">
+            <div class="person-row">
+                <div class="person-label">
+                    <b>성인</b>
+                    <span>13세 이상 (중학생~)</span>
+                </div>
+                <div style="display:flex; align-items:center;">
+                    <span class="person-price" id="adult-price-display">₩ 100,000</span>
+                    <div class="counter">
+                        <button class="count-btn" onclick="updateCount('adult', -1)">-</button>
+                        <b id="adult-count">1</b>
+                        <button class="count-btn" onclick="updateCount('adult', 1)">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="person-row">
+                <div class="person-label">
+                    <b>소인</b>
+                    <span>36개월~12세 (초등생)</span>
+                </div>
+                <div style="display:flex; align-items:center;">
+                    <span class="person-price" id="child-price-display">₩ 100,000</span>
+                    <div class="counter">
+                        <button class="count-btn" onclick="updateCount('child', -1)">-</button>
+                        <b id="child-count">0</b>
+                        <button class="count-btn" onclick="updateCount('child', 1)">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="total-summary">
+            <span>총 합계 금액</span>
+            <b id="total-price-display">₩ 100,000</b>
+        </div>
+
+        <button class="btn-buy" onclick="handleBuy()">구매하기</button>
     </div>
 </div>
 
-<div class="mobile-bottom-bar pc-only" id="mobile-bar" style="display: none;">
-    <button class="m-btn-buy" onclick="handleMobileClick()">구매하기</button>
+<div class="mobile-bottom-bar" id="mobile-bar">
+    <button class="m-btn-buy" onclick="window.openBookingDrawer()">구매하기</button>
 </div>
 
 <script src="main.js"></script>
@@ -288,14 +293,6 @@
         document.getElementById('total-price-display').innerText = BSUtils.formatPrice(total);
     }
 
-    function handleMobileClick() {
-        // 모바일 하단바 클릭 시 예약 박스(옵션 선택창)로 스크롤 이동
-        const box = document.getElementById('reservation-box');
-        if (box) {
-            window.scrollTo({ top: box.offsetTop - 100, behavior: 'smooth' });
-        }
-    }
-
     function handleBuy() {
         let optionName = "";
         if (currentOption === 1) optionName = "(픽샌 + 호핑)";
@@ -319,14 +316,6 @@
 
     window.onload = () => {
         selectOption(1, 100000, 100000);
-        // 모바일 하단바 노출 여부 제어
-        if (window.innerWidth <= 1024) {
-            const mBar = document.getElementById('mobile-bar');
-            if (mBar) {
-                mBar.classList.remove('pc-only');
-                mBar.style.display = 'flex';
-            }
-        }
     };
 </script>
 </body>

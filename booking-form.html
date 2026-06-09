@@ -505,10 +505,17 @@
             const sDate = document.getElementById('pkg-sending-date').value;
             const pFlight = document.getElementById('pkg-pickup-flight').value;
             const pResort = document.getElementById('pkg-pickup-resort').value;
-            const sFlight = document.getElementById('pkg-sending-flight').value;
+            const sFlight = document.getElementById('pkg-sending-flight').value.toUpperCase().trim();
             const sResort = document.getElementById('pkg-sending-resort').value;
             const hDate = document.getElementById('pkg-hopping-date')?.value || '';
             const mDate = document.getElementById('pkg-malum-date')?.value || '';
+
+            // --- 샌딩 시간 자동 결정 로직 (TW126 등) ---
+            let sTime = "21:00"; // 기본값
+            if (sFlight === 'TW126') sTime = "08:30";
+            else if (sFlight.startsWith('TW') || sFlight.startsWith('5J') || sFlight.startsWith('Z2') || sFlight.startsWith('DG') || (sFlight.startsWith('PR') && !['PR469', 'PR489'].includes(sFlight))) {
+                sTime = "전날 재안내";
+            }
 
             cartData.forEach(item => {
                 item.pickupDate = pDate;
@@ -517,7 +524,11 @@
                 item.pickupResort = pResort;
                 item.sendingFlight = sFlight;
                 item.sendingResort = sResort;
-                if (item.name.includes('왕복 픽업샌딩')) item.date = pDate;
+                
+                if (item.name.includes('왕복 픽업샌딩')) {
+                    item.date = pDate;
+                    item.time = sTime; // 샌딩 시간 반영
+                }
                 if (item.name.includes('요트호핑')) item.date = hDate;
                 if (item.name.includes('말룸파티')) item.date = mDate;
             });

@@ -31,12 +31,39 @@
         .step span { position: absolute; top: 12px; left: 0; font-size: 12px; font-weight: 800; color: #bbb; }
         .step.active span { color: #ff6a00; }
 
-        .input-group { margin-bottom: 25px; }
+        .input-group { margin-bottom: 25px; position: relative; }
         .input-group label { display: block; font-size: 15px; font-weight: 700; color: #444; margin-bottom: 10px; }
         .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 16px; border: 1.5px solid #eee; border-radius: 14px; font-family: inherit; font-size: 16px; transition: 0.3s; background: #fafafa; }
         .input-group input:focus, .input-group select:focus, .input-group textarea:focus { outline: none; border-color: #ff6a00; background: white; box-shadow: 0 0 0 4px rgba(255,106,0,0.1); }
         .input-group textarea { min-height: 120px; resize: vertical; }
-        
+
+        /* Calendar Picker Popup Style */
+        .calendar-picker {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 1000;
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 16px;
+            padding: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 320px;
+            margin-top: 10px;
+        }
+        .calendar-picker.active { display: block; }
+        .cp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 5px; }
+        .cp-header strong { font-size: 15px; font-weight: 800; color: #333; }
+        .cp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+        .cp-day-header { font-size: 10px; color: #bbb; font-weight: 700; padding-bottom: 8px; }
+        .cp-day { padding: 10px 0; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 8px; transition: 0.2s; }
+        .cp-day:hover:not(.empty):not(.disabled) { background: #fff1e6; color: #ff6a00; }
+        .cp-day.selected { background: #ff6a00 !important; color: white !important; font-weight: 800; }
+        .cp-day.disabled { color: #eee; cursor: default; }
+        .cp-day.today { border: 1px solid #ff6a00; color: #ff6a00; }
+
         .section-subtitle { font-size: 19px; font-weight: 800; color: #333; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
         .next-btn { width: 100%; padding: 22px; background: #ff6a00; color: white; border: none; border-radius: 18px; font-size: 19px; font-weight: 900; cursor: pointer; transition: 0.3s; margin-top: 20px; box-shadow: 0 10px 25px rgba(255,106,0,0.25); }
         .next-btn:hover { background: #e65f00; transform: translateY(-3px); }
@@ -127,13 +154,14 @@
                     <input type="text" id="eng-name" placeholder="예: HONG GILDONG">
                 </div>
 
-                <!-- 📦 패키지 전용 일정 정보 (픽업샌딩 폼 스타일) -->
+                <!-- 📦 패키지 전용 일정 정보 (커스텀 달력 적용) -->
                 <div id="package-schedule-fields" class="conditional-fields" style="display: none;">
                     <div class="section-subtitle" style="color:#ff6a00;">✈️ 픽업/샌딩 항공 및 호텔 정보 (패키지)</div>
                     
                     <div class="input-group">
                         <label>픽업 날짜 (공항 -> 보라카이)<span class="required-mark">*</span></label>
-                        <input type="date" id="pkg-pickup-date">
+                        <input type="text" id="pkg-pickup-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)">
+                        <div class="calendar-picker"></div>
                     </div>
                     <div class="input-group">
                         <label>픽업 항공편명 (인천->칼리보)<span class="required-mark">*</span></label>
@@ -146,7 +174,8 @@
 
                     <div class="input-group">
                         <label>샌딩 날짜 (보라카이 -> 공항)<span class="required-mark">*</span></label>
-                        <input type="date" id="pkg-sending-date">
+                        <input type="text" id="pkg-sending-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)">
+                        <div class="calendar-picker"></div>
                     </div>
                     <div class="input-group">
                         <label>샌딩 항공편명(칼리보->인천)<span class="required-mark">*</span></label>
@@ -159,12 +188,14 @@
 
                     <div id="pkg-hopping-group" class="input-group" style="display: none;">
                         <label>블랙펄 호핑투어 이용일<span class="required-mark">*</span></label>
-                        <input type="date" id="pkg-hopping-date">
+                        <input type="text" id="pkg-hopping-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)">
+                        <div class="calendar-picker"></div>
                     </div>
                     
                     <div id="pkg-malum-group" class="input-group" style="display: none;">
                         <label>시크릿가든 말룸파티 이용일<span class="required-mark">*</span></label>
-                        <input type="date" id="pkg-malum-date">
+                        <input type="text" id="pkg-malum-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)">
+                        <div class="calendar-picker"></div>
                     </div>
 
                     <div class="input-group">
@@ -247,6 +278,76 @@
     let cartData = [];
     let selectedPayment = '무통장';
 
+    // --- Custom Calendar Logic ---
+    let currentInput = null;
+    let viewDate = new Date();
+
+    window.openCalendar = function(input) {
+        document.querySelectorAll('.calendar-picker').forEach(p => p.classList.remove('active'));
+        currentInput = input;
+        const picker = input.nextElementSibling;
+        picker.classList.add('active');
+        renderCalendar(picker);
+    };
+
+    function renderCalendar(picker) {
+        const year = viewDate.getFullYear();
+        const month = viewDate.getMonth();
+        const todayStr = new Date().toISOString().split('T')[0];
+
+        let html = `
+            <div class="cp-header">
+                <button type="button" class="cp-prev" style="border:none; background:none; cursor:pointer; font-weight:800; color:#ff6a00;">&lt;</button>
+                <strong>${year}년 ${month + 1}월</strong>
+                <button type="button" class="cp-next" style="border:none; background:none; cursor:pointer; font-weight:800; color:#ff6a00;">&gt;</button>
+            </div>
+            <div class="cp-grid">
+                <div class="cp-day-header">일</div><div class="cp-day-header">월</div><div class="cp-day-header">화</div><div class="cp-day-header">수</div><div class="cp-day-header">목</div><div class="cp-day-header">금</div><div class="cp-day-header">토</div>
+        `;
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const lastDate = new Date(year, month + 1, 0).getDate();
+
+        for (let i = 0; i < firstDay; i++) html += `<div class="cp-day empty"></div>`;
+
+        for (let i = 1; i <= lastDate; i++) {
+            const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${i.toString().padStart(2, '0')}`;
+            let cls = "cp-day";
+            if (dateStr < todayStr) cls += " disabled";
+            else {
+                if (dateStr === todayStr) cls += " today";
+                if (dateStr === currentInput.value) cls += " selected";
+            }
+            html += `<div class="${cls}" data-date="${dateStr}">${i}</div>`;
+        }
+
+        html += `</div>`;
+        picker.innerHTML = html;
+
+        // Add event listeners
+        picker.querySelector('.cp-prev').onclick = (e) => { e.stopPropagation(); changeViewMonth(-1); };
+        picker.querySelector('.cp-next').onclick = (e) => { e.stopPropagation(); changeViewMonth(1); };
+        picker.querySelectorAll('.cp-day:not(.disabled):not(.empty)').forEach(day => {
+            day.onclick = (e) => {
+                e.stopPropagation();
+                const date = day.getAttribute('data-date');
+                currentInput.value = date;
+                picker.classList.remove('active');
+            };
+        });
+    }
+
+    function changeViewMonth(delta) {
+        viewDate.setMonth(viewDate.getMonth() + delta);
+        renderCalendar(currentInput.nextElementSibling);
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.input-group')) {
+            document.querySelectorAll('.calendar-picker').forEach(p => p.classList.remove('active'));
+        }
+    });
+
     document.addEventListener('DOMContentLoaded', function() {
         const directBuy = sessionStorage.getItem('directBuyItem');
         if (directBuy) {
@@ -309,7 +410,6 @@
                 </div>`;
         }
 
-        // ✈️ 픽업샌딩 필드 노출
         if (hasPickup && !isPackage) {
             document.getElementById('pickup-sending-fields').style.display = 'block';
             document.getElementById('eng-name-group').style.display = 'block';
@@ -326,7 +426,6 @@
             document.getElementById('activity-pickup-resort').required = true;
         }
 
-        // 📦 패키지 전용 일정 노출 (요청하신 항공/리조트/환전 필드 포함)
         if (isPackage) {
             document.getElementById('package-schedule-fields').style.display = 'block';
             document.getElementById('pkg-pickup-date').required = true;
@@ -337,6 +436,10 @@
             document.getElementById('pkg-sending-resort').required = true;
 
             const pkg = cartData.find(i => i.isPackage);
+            if (pkg.date) { 
+                document.getElementById('pkg-pickup-date').value = pkg.date; 
+            }
+
             if (pkg.packageOption === 1 || pkg.packageOption === 3) {
                 document.getElementById('pkg-hopping-group').style.display = 'block';
                 document.getElementById('pkg-hopping-date').required = true;
@@ -414,7 +517,6 @@
                 item.pickupResort = pResort;
                 item.sendingFlight = sFlight;
                 item.sendingResort = sResort;
-                
                 if (item.name.includes('왕복 픽업샌딩')) item.date = pDate;
                 if (item.name.includes('요트호핑')) item.date = hDate;
                 if (item.name.includes('말룸파티')) item.date = mDate;
@@ -437,8 +539,8 @@
             sendingDate: isPackage ? document.getElementById('pkg-sending-date').value : (pickupItem ? (pickupItem.sendingDate || '') : ''),
             pickupFlight: isPackage ? document.getElementById('pkg-pickup-flight').value : (document.getElementById('pickup-flight').value || ''),
             pickupResort: isPackage ? document.getElementById('pkg-pickup-resort').value : (document.getElementById('pickup-resort').value || ''),
-            sendingFlight: isPackage ? document.getElementById('pkg-sending-flight').value : (document.getElementById('sending-flight').value || ''),
-            sendingResort: isPackage ? document.getElementById('pkg-sending-resort').value : (document.getElementById('sending-resort').value || ''),
+            sendingFlight: document.getElementById('sending-flight').value || '',
+            sendingResort: document.getElementById('sending-resort').value || '',
             activityPickupResort: document.getElementById('activity-pickup-resort') ? document.getElementById('activity-pickup-resort').value : '',
             exchangeAmount: isPackage ? document.getElementById('pkg-exchange-amount').value : (document.getElementById('exchange-amount') ? document.getElementById('exchange-amount').value : ''),
             resortCheckin: (resortItem && resortItem.details) ? resortItem.details.checkin : '',

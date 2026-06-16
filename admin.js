@@ -473,7 +473,31 @@ document.addEventListener('DOMContentLoaded', () => {
         const displayEngName = res.engName || '-';
         const displayExchange = res.exchangeAmount || '-';
         const displayPax = res.paxInfo || (res.items?.[0]?.count ? `${res.items[0].count}명` : '-');
-        body.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:1px solid #eee;"><h3 style="margin:0;">예약 상세 정보</h3><button onclick="copyGuidance('${res.id}')" style="background:#ff6a00; color:white; border:none; padding:8px 14px; border-radius:6px; font-weight:bold; cursor:pointer;">👉 안내문 복사</button></div><div id="modal-scroll-area" style="max-height: 60vh; overflow-y: auto;"><div style="margin-bottom:20px;">${totalVoucherBtn}${itemsHtml}</div><div style="background:#fcfcfc; padding:15px; border-radius:10px; border:1px solid #f0f0f0; margin-bottom:20px;"><p style="margin:0;">이름 | <b>${res.customerKorName}</b> (${displayEngName})</p><p style="margin:5px 0 0 0;">연락처 | <b>${res.contact}</b></p><p style="margin:5px 0 0 0;">인원 | <b>${displayPax}</b></p></div>${!isQuote ? `<div style="background:#fff5eb; padding:15px; border-radius:10px; border:1px solid #ffe8cc; margin-bottom:20px;"><div style="font-weight:bold; margin-bottom:10px; color:#ff6a00;">✈️ 항공 및 환전 정보</div><p style="margin:5px 0; font-size:13px;"><b>픽업:</b> ${res.pickupDate || '-'} / ${res.pickupFlight || '-'} / ${res.pickupResort || '-'}</p><p style="margin:5px 0; font-size:13px;"><b>샌딩:</b> ${res.sendingDate || '-'} / ${res.sendingFlight || '-'} / ${res.sendingResort || '-'}</p><p style="margin-top:10px; padding-top:10px; border-top:1px dashed #ffd8a8;"><b>💰 환전:</b> <span style="font-size:15px; color:#e67e22; font-weight:800;">${displayExchange}</span></p></div>` : ''}<div style="padding:10px; background:#f8f9fa; border-radius:6px; font-size:13px; white-space:pre-wrap;"><b>[요청사항]</b>\n${res.requests || '없음'}</div></div><div style="display:flex; gap:10px; margin-top:20px; padding-top:15px; border-top:1px solid #eee;"><button id="edit-btn" onclick="toggleEditMode('${res.id}')" style="flex:1; padding:12px; background:#ff6a00; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">수정하기</button><button onclick="closeModal()" style="flex:1; padding:12px; background:#333; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">창 닫기</button></div>`;
+        const displayPrivate = res.hasPrivateTransfer ? '<span style="background:#ff4b4b; color:white; padding:2px 8px; border-radius:4px; font-size:11px; margin-left:10px; vertical-align:middle;">단독 차량</span>' : '';
+
+        body.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:1px solid #eee;"><h3 style="margin:0;">예약 상세 정보 ${displayPrivate}</h3><button onclick="copyGuidance('${res.id}')" style="background:#ff6a00; color:white; border:none; padding:8px 14px; border-radius:6px; font-weight:bold; cursor:pointer;">👉 안내문 복사</button></div>
+            <div id="modal-scroll-area" style="max-height: 60vh; overflow-y: auto;">
+                <div style="margin-bottom:20px;">${totalVoucherBtn}${itemsHtml}</div>
+                <div style="background:#fcfcfc; padding:15px; border-radius:10px; border:1px solid #f0f0f0; margin-bottom:20px;">
+                    <p style="margin:0;">이름 | <b>${res.customerKorName}</b> (${displayEngName})</p>
+                    <p style="margin:5px 0 0 0;">연락처 | <b>${res.contact}</b></p>
+                    <p style="margin:5px 0 0 0;">인원 | <b>${displayPax}</b></p>
+                </div>
+                ${!isQuote ? `<div style="background:#fff5eb; padding:15px; border-radius:10px; border:1px solid #ffe8cc; margin-bottom:20px;">
+                    <div style="font-weight:bold; margin-bottom:10px; color:#ff6a00;">✈️ 항공 및 일정 정보</div>
+                    <p style="margin:5px 0; font-size:13px;"><b>픽업:</b> ${res.pickupDate || '-'} / ${res.pickupFlight || '-'} / ${res.pickupResort || '-'}</p>
+                    <p style="margin:5px 0; font-size:13px;"><b>샌딩:</b> ${res.sendingDate || '-'} / ${res.sendingFlight || '-'} / ${res.sendingResort || '-'}</p>
+                    ${res.hoppingDate ? `<p style="margin:5px 0; font-size:13px;"><b>호핑:</b> ${res.hoppingDate}</p>` : ''}
+                    ${res.malumDate ? `<p style="margin:5px 0; font-size:13px;"><b>말룸:</b> ${res.malumDate}</p>` : ''}
+                    ${res.activityPickupResort ? `<p style="margin:5px 0; font-size:13px; color:#d35400;"><b>📍 활동 픽업:</b> ${res.activityPickupResort}</p>` : ''}
+                    <p style="margin-top:10px; padding-top:10px; border-top:1px dashed #ffd8a8;"><b>💰 환전:</b> <span style="font-size:15px; color:#e67e22; font-weight:800;">${displayExchange}</span></p>
+                </div>` : ''}
+                <div style="padding:10px; background:#f8f9fa; border-radius:6px; font-size:13px; white-space:pre-wrap;"><b>[요청사항]</b>\n${res.requests || '없음'}</div>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:20px; padding-top:15px; border-top:1px solid #eee;">
+                <button id="edit-btn" onclick="toggleEditMode('${res.id}')" style="flex:1; padding:12px; background:#ff6a00; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">수정하기</button>
+                <button onclick="closeModal()" style="flex:1; padding:12px; background:#333; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">창 닫기</button>
+            </div>`;
         modal.style.display = 'flex';
     };
 
@@ -708,9 +732,54 @@ document.addEventListener('DOMContentLoaded', () => {
         const scrollArea = document.getElementById('modal-scroll-area'); const editBtn = document.getElementById('edit-btn');
         if (editBtn.innerText === '수정하기') {
             editBtn.innerText = '저장하기';
-            scrollArea.innerHTML = `<div style="background:#f8f9fa; padding:15px; border-radius:12px;"><label style="font-size:11px; color:#999;">한글명</label><input type="text" id="edit-name" value="${res.customerKorName}" style="width:100%; padding:8px; margin-bottom:10px;"><label style="font-size:11px; color:#999;">연락처</label><input type="text" id="edit-contact" value="${res.contact}" style="width:100%; padding:8px; margin-bottom:10px;"><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><div><label style="font-size:11px; color:#999;">픽업일</label><input type="text" id="edit-p-date" value="${res.pickupDate || ''}" style="width:100%; padding:8px;"></div><div><label style="font-size:11px; color:#999;">픽업리조트</label><input type="text" id="edit-p-resort" value="${res.pickupResort || ''}" style="width:100%; padding:8px;"></div></div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;"><div><label style="font-size:11px; color:#999;">샌딩일</label><input type="text" id="edit-s-date" value="${res.sendingDate || ''}" style="width:100%; padding:8px;"></div><div><label style="font-size:11px; color:#999;">샌딩리조트</label><input type="text" id="edit-s-resort" value="${res.sendingResort || ''}" style="width:100%; padding:8px;"></div></div><label style="font-size:11px; color:#999; margin-top:10px; display:block;">총 금액</label><input type="number" id="edit-price" value="${res.totalPrice}" style="width:100%; padding:8px; margin-bottom:10px;"><label style="font-size:11px; color:#999;">요청사항</label><textarea id="edit-requests" style="width:100%; height:80px; padding:8px;">${res.requests || ''}</textarea></div>`;
+            scrollArea.innerHTML = `<div style="background:#f8f9fa; padding:15px; border-radius:12px;">
+                <label style="font-size:11px; color:#999;">한글명</label>
+                <input type="text" id="edit-name" value="${res.customerKorName}" style="width:100%; padding:8px; margin-bottom:10px;">
+                <label style="font-size:11px; color:#999;">연락처</label>
+                <input type="text" id="edit-contact" value="${res.contact}" style="width:100%; padding:8px; margin-bottom:10px;">
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <div><label style="font-size:11px; color:#999;">픽업일</label><input type="text" id="edit-p-date" value="${res.pickupDate || ''}" style="width:100%; padding:8px;"></div>
+                    <div><label style="font-size:11px; color:#999;">픽업 항공</label><input type="text" id="edit-p-flight" value="${res.pickupFlight || ''}" style="width:100%; padding:8px;"></div>
+                </div>
+                <div style="margin-top:10px;"><label style="font-size:11px; color:#999;">픽업 리조트</label><input type="text" id="edit-p-resort" value="${res.pickupResort || ''}" style="width:100%; padding:8px;"></div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+                    <div><label style="font-size:11px; color:#999;">샌딩일</label><input type="text" id="edit-s-date" value="${res.sendingDate || ''}" style="width:100%; padding:8px;"></div>
+                    <div><label style="font-size:11px; color:#999;">샌딩 항공</label><input type="text" id="edit-s-flight" value="${res.sendingFlight || ''}" style="width:100%; padding:8px;"></div>
+                </div>
+                <div style="margin-top:10px;"><label style="font-size:11px; color:#999;">샌딩 리조트</label><input type="text" id="edit-s-resort" value="${res.sendingResort || ''}" style="width:100%; padding:8px;"></div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+                    <div><label style="font-size:11px; color:#999;">호핑일</label><input type="text" id="edit-h-date" value="${res.hoppingDate || ''}" style="width:100%; padding:8px;"></div>
+                    <div><label style="font-size:11px; color:#999;">말룸일</label><input type="text" id="edit-m-date" value="${res.malumDate || ''}" style="width:100%; padding:8px;"></div>
+                </div>
+
+                <label style="font-size:11px; color:#999; margin-top:10px; display:block;">활동 픽업 리조트</label>
+                <input type="text" id="edit-activity-resort" value="${res.activityPickupResort || ''}" style="width:100%; padding:8px; margin-bottom:10px;">
+
+                <label style="font-size:11px; color:#999; margin-top:10px; display:block;">총 금액</label>
+                <input type="number" id="edit-price" value="${res.totalPrice}" style="width:100%; padding:8px; margin-bottom:10px;">
+                
+                <label style="font-size:11px; color:#999;">요청사항</label>
+                <textarea id="edit-requests" style="width:100%; height:80px; padding:8px;">${res.requests || ''}</textarea>
+            </div>`;
         } else {
-            const newData = { customerKorName: document.getElementById('edit-name').value, contact: document.getElementById('edit-contact').value, pickupDate: document.getElementById('edit-p-date').value, pickupResort: document.getElementById('edit-p-resort').value, sendingDate: document.getElementById('edit-s-date').value, sendingResort: document.getElementById('edit-s-resort').value, totalPrice: parseInt(document.getElementById('edit-price').value) || 0, requests: document.getElementById('edit-requests').value };
+            const newData = { 
+                customerKorName: document.getElementById('edit-name').value, 
+                contact: document.getElementById('edit-contact').value, 
+                pickupDate: document.getElementById('edit-p-date').value, 
+                pickupFlight: document.getElementById('edit-p-flight').value,
+                pickupResort: document.getElementById('edit-p-resort').value, 
+                sendingDate: document.getElementById('edit-s-date').value, 
+                sendingFlight: document.getElementById('edit-s-flight').value,
+                sendingResort: document.getElementById('edit-s-resort').value, 
+                hoppingDate: document.getElementById('edit-h-date').value,
+                malumDate: document.getElementById('edit-m-date').value,
+                activityPickupResort: document.getElementById('edit-activity-resort').value,
+                totalPrice: parseInt(document.getElementById('edit-price').value) || 0, 
+                requests: document.getElementById('edit-requests').value 
+            };
             updateDoc(doc(db, "reservations", id), newData).then(() => { alert("저장 완료!"); closeModal(); });
         }
     };

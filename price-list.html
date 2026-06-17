@@ -25,17 +25,33 @@
         body { background: #fcfcfc; }
         .price-container { max-width: 1000px; margin: 120px auto 100px; padding: 0 20px; }
         .price-title { font-size: 32px; font-weight: 900; color: #ff6a00; margin-bottom: 40px; text-align: center; }
-        .price-img-wrap { background: white; padding: 20px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); border: 1px solid #eee; margin-bottom: 30px; }
-        .price-img-wrap img { width: 100%; border-radius: 15px; display: block; height: auto; }
+        
+        .price-table-section { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); border: 1px solid #eee; margin-bottom: 30px; }
+        .price-category { margin-bottom: 40px; }
+        .price-category:last-child { margin-bottom: 0; }
+        .price-category h3 { font-size: 20px; font-weight: 900; color: #111; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .price-category h3::before { content: ''; width: 4px; height: 20px; background: #ff6a00; border-radius: 2px; }
+        
+        .price-row { display: flex; align-items: baseline; margin-bottom: 15px; font-size: 16px; font-weight: 600; color: #444; }
+        .price-name { white-space: nowrap; }
+        .price-dots { flex-grow: 1; border-bottom: 2px dotted #eee; margin: 0 10px; position: relative; top: -4px; }
+        .price-val { font-weight: 900; color: #111; white-space: nowrap; }
+        .price-val span { font-size: 14px; font-weight: 600; color: #999; margin-left: 2px; }
+
+        .price-img-wrap { margin-top: 50px; text-align: center; }
+        .price-img-wrap h4 { font-size: 16px; color: #999; margin-bottom: 20px; }
+        .price-img-wrap img { width: 100%; max-width: 800px; border-radius: 15px; border: 1px solid #eee; }
         
         .contact-banner { background: #fee500; color: #3c1e1e; padding: 30px; border-radius: 24px; text-align: center; margin-top: 50px; text-decoration: none; display: block; transition: 0.3s; }
         .contact-banner:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(254,229,0,0.3); }
         .contact-banner b { font-size: 20px; display: block; margin-bottom: 5px; }
 
-        @media (max-device-width: 768px) {
+        @media (max-width: 768px) {
             .price-container { margin-top: 90px; }
             .price-title { font-size: 24px; margin-bottom: 25px; }
-            .price-img-wrap { padding: 10px; }
+            .price-table-section { padding: 25px 20px; }
+            .price-row { font-size: 14px; }
+            .price-name { max-width: 60%; white-space: normal; line-height: 1.3; }
         }
     </style>
 </head>
@@ -84,12 +100,49 @@
 <div class="price-container">
     <h2 class="price-title">한눈에 요금표</h2>
     
-    <div class="price-img-wrap"><img src="price list.jpg" alt="한눈에 요금표"></div>
+    <div class="price-table-section">
+        <div class="price-category">
+            <h3>보라카이 필수 투어</h3>
+            <div class="price-row"><div class="price-name">보라카이션 패키지 (호핑+말룸)</div><div class="price-dots"></div><div class="price-val">100,000<span>원</span></div></div>
+            <div class="price-row"><div class="price-name">보라카이 왕복 픽업샌딩</div><div class="price-dots"></div><div class="price-val">54,900<span>원</span></div></div>
+            <div class="price-row"><div class="price-name">블랙펄 요트 호핑투어</div><div class="price-dots"></div><div class="price-val">55,000<span>원</span></div></div>
+            <div class="price-row"><div class="price-name">시크릿가든 말룸파티</div><div class="price-dots"></div><div class="price-val">99,000<span>원</span></div></div>
+        </div>
+
+        <div class="price-category">
+            <h3>해양 스포츠 & 액티비티</h3>
+            <div class="price-row"><div class="price-name">파라세일링</div><div class="price-dots"></div><div class="price-val">55,000<span>원</span></div></div>
+            <div class="price-row"><div class="price-name">체험 다이빙</div><div class="price-dots"></div><div class="price-val">55,000<span>원</span></div></div>
+            <div class="price-row"><div class="price-name">헬멧 다이빙</div><div class="price-dots"></div><div class="price-val">44,000<span>원</span></div></div>
+            <div class="price-row"><div class="price-name">제트스키 (15분)</div><div class="price-dots"></div><div class="price-val">55,000<span>원</span></div></div>
+            <div class="price-row"><div class="price-name">프리다이빙 체험</div><div class="price-dots"></div><div class="price-val">112,500<span>원</span></div></div>
+            <div class="price-row"><div class="price-name">보라카이 랜드투어</div><div class="price-dots"></div><div class="price-val">45,000<span>원</span></div></div>
+            <div class="price-row"><div class="price-name">페어웨이 골프 (18홀)</div><div class="price-dots"></div><div class="price-val">192,000<span>원</span></div></div>
+            <div class="price-row"><div class="price-name">JL 스냅 촬영</div><div class="price-dots"></div><div class="price-val">300,000<span>원</span></div></div>
+        </div>
+
+        <div class="price-category">
+            <h3>마사지 & 스파</h3>
+            <div class="price-row"><div class="price-name">에스파 (S-SPA)</div><div class="price-dots"></div><div class="price-val">55,000<span>원</span></div></div>
+            <div class="price-row"><div class="price-name">아유르베다 스파</div><div class="price-dots"></div><div class="price-val">55,000<span>원</span></div></div>
+            <div class="price-row"><div class="price-name">루나 스파</div><div class="price-dots"></div><div class="price-val">55,000<span>원</span></div></div>
+            <div class="price-row"><div class="price-name">보라 스파</div><div class="price-dots"></div><div class="price-val">55,000<span>원</span></div></div>
+            <div class="price-row"><div class="price-name">카바얀 마사지</div><div class="price-dots"></div><div class="price-val">49,000<span>원</span></div></div>
+            <div class="price-row"><div class="price-name">포세이돈 스파</div><div class="price-dots"></div><div class="price-val">105,000<span>원</span></div></div>
+            <div class="price-row"><div class="price-name">마리스 스파</div><div class="price-dots"></div><div class="price-val">91,000<span>원</span></div></div>
+            <div class="price-row"><div class="price-name">헬리오스 스파</div><div class="price-dots"></div><div class="price-val">91,000<span>원</span></div></div>
+        </div>
+    </div>
 
     <div style="text-align: center; margin-bottom: 40px;">
         <a href="/boracay-package" style="display: inline-block; padding: 20px 40px; background: #ff6a00; color: white; text-decoration: none; border-radius: 16px; font-weight: 900; font-size: 20px; box-shadow: 0 10px 30px rgba(255,106,0,0.2);">
-            ✨ 보라카이션 풀패키지 보러가기 ✨
+            ✨ 보라카이션 풀패키지 예약하기 ✨
         </a>
+    </div>
+
+    <div class="price-img-wrap">
+        <h4>상세 가격표 이미지 보기</h4>
+        <img src="price list.jpg" alt="한눈에 요금표 상세 이미지">
     </div>
 
     <a href="http://pf.kakao.com/_zBArM/chat" target="_blank" class="contact-banner">

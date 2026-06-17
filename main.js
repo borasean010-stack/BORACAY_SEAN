@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="img-container card-img-wrap"><img src="${p.img}" alt="보라카이 ${p.title.replace('<br>', ' ')} - 보라카이션 자유여행" loading="lazy"></div>
                 <div class="card-body">
                     <h3>${p.title}</h3>
-                    <p style="font-size:14px; color:#777; margin-top:10px; line-height:1.5; word-break:keep-all;">${p.desc}</p>
+                    <p>${p.desc}</p>
                     <div class="price-btn"><span class="price-from">From</span><span class="price-val">₩ ${p.price.toLocaleString()}</span></div>
                 </div>
             `;
@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="img-container card-img-wrap"><img src="${p.img}" alt="보라카이 ${p.title.replace('<br>', ' ')} - 보라카이션 자유여행" loading="lazy"></div>
                 <div class="card-body">
                     <h3>${p.title}</h3>
-                    <p style="font-size:14px; color:#777; margin-top:10px; line-height:1.5; word-break:keep-all;">${p.desc || ''}</p>
+                    <p>${p.desc || ''}</p>
                     ${p.price ? `<div class="price-btn"><span class="price-from">From</span><span class="price-val">₩ ${p.price.toLocaleString()}</span></div>` : `<div class="price-btn" style="background:#555;"><span class="price-val" style="font-size:14px;">View Details</span></div>`}
                 </div>
             `;

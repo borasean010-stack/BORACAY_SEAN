@@ -993,25 +993,26 @@ body {
 
 /* 💰 Sophisticated Price Button */
 .price-btn {
-    margin-top: auto; /* Pin to bottom */
+    margin-top: 20px; /* Increased spacing between description and button */
     display: inline-flex;
-    align-items: center; /* Centered */
-    justify-content: center; /* Centered */
+    align-items: center;
+    justify-content: center;
     gap: 5px;
     background: #111;
     color: white;
-    padding: 10px 20px; /* Uniform padding */
-    height: 40px; /* Fixed height */
+    padding: 6px 15px; /* Reduced padding for smaller height */
+    height: 32px; /* Reduced fixed height */
     border-radius: 45px;
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 9px 18px rgba(0,0,0,0.1);
-    width: 80%; /* Fixed width */
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    width: 70%; /* Reduced width */
     margin-left: auto;
     margin-right: auto;
+    margin-bottom: 5px; /* Added slight bottom margin for consistent alignment */
 }
 
 .price-btn .price-from {
-    font-size: 10px;
+    font-size: 9px; /* Smaller font */
     font-weight: 700;
     text-transform: uppercase;
     opacity: 0.7;
@@ -1019,7 +1020,7 @@ body {
 }
 
 .price-btn .price-val {
-    font-size: 15px;
+    font-size: 13px; /* Smaller font */
     font-weight: 900;
 }
 

@@ -512,7 +512,7 @@
 
             // --- 샌딩 시간 자동 결정 로직 (TW126 등) ---
             let sTime = "21:00"; // 기본값
-            if (sFlight === 'TW126') sTime = "08:30";
+            if (sFlight === 'TW126') sTime = "08:10";
             else if (sFlight.startsWith('TW') || sFlight.startsWith('5J') || sFlight.startsWith('Z2') || sFlight.startsWith('DG') || (sFlight.startsWith('PR') && !['PR469', 'PR489'].includes(sFlight))) {
                 sTime = "전날 재안내";
             }

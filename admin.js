@@ -604,7 +604,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (sDate && sendingFlight && sendingFlight !== '-') {
                     const fl = sendingFlight.toUpperCase().trim();
                     let sTime = "21:00";
-                    if (fl === 'TW126') sTime = "08:30";
+                    if (fl === 'TW126') sTime = "08:10";
                     else if (fl.startsWith('TW') || fl.startsWith('5J') || fl.startsWith('Z2') || fl.startsWith('DG') || (fl.startsWith('PR') && !['PR469', 'PR489'].includes(fl))) sTime = "전날 재안내";
                     
                     const docRef = doc(collection(db, "schedules"));
@@ -852,7 +852,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (row[3] && row[3].match(/[A-Z]{2}\d+/)) { 
                 const fl = row[3].toUpperCase().trim();
                 let sTime = "21:00";
-                if (fl === 'TW126') sTime = "08:30";
+                if (fl === 'TW126') sTime = "08:10";
                 else if (fl.startsWith('TW') || fl.startsWith('5J') || fl.startsWith('Z2') || fl.startsWith('DG') || (fl.startsWith('PR') && !['PR469', 'PR489'].includes(fl))) sTime = "전날 재안내";
                 allItems.push({ name: `✈️ 공항 샌딩 (${fl})`, date: formatDate(row[1]), time: sTime, count: totalPax }); 
             }

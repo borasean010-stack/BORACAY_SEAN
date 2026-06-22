@@ -352,7 +352,7 @@
                             let sandingTime = res.sendingTime || item.time;
                             if (!sandingTime || sandingTime.includes(':')) {
                                 if (flight === 'TW126') {
-                                    sandingTime = isStation10(res.sendingResort || res.pickupResort) ? "08:10" : "08:30";
+                                    sandingTime = isStation10(res.sendingResort || res.pickupResort) ? "08:10" : "08:10";
                                 } else if (flight.startsWith('TW') || flight.startsWith('5J') || flight.startsWith('Z2') || flight.startsWith('DG') || (flight.startsWith('PR') && !['PR469', 'PR489'].includes(flight))) {
                                     sandingTime = "전날 재안내";
                                 } else if (flight) {

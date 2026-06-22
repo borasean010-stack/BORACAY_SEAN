@@ -129,8 +129,10 @@ body {
     cursor: pointer;
     text-decoration: none;
     color: inherit;
-    display: block;
+    display: flex; /* Changed from block to flex */
+    flex-direction: column; /* Ensure vertical layout */
     position: relative;
+    height: 100%; /* Ensure full height of grid cell */
 }
 
 .tour-card:hover, .product:hover {
@@ -161,6 +163,9 @@ body {
 .card-body {
     padding: 14px 14px 18px;
     text-align: center;
+    display: flex; /* Added */
+    flex-direction: column; /* Added */
+    flex-grow: 1; /* Added to fill available space */
 }
 
 .card-body h3, .product h3 {
@@ -988,16 +993,21 @@ body {
 
 /* 💰 Sophisticated Price Button */
 .price-btn {
-    margin-top: 13px; /* 여백 축소 */
+    margin-top: auto; /* Pin to bottom */
     display: inline-flex;
-    align-items: baseline;
+    align-items: center; /* Centered */
+    justify-content: center; /* Centered */
     gap: 5px;
     background: #111;
     color: white;
-    padding: 7px 18px; /* 버튼 크기 살짝 축소 */
+    padding: 10px 20px; /* Uniform padding */
+    height: 40px; /* Fixed height */
     border-radius: 45px;
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     box-shadow: 0 9px 18px rgba(0,0,0,0.1);
+    width: 80%; /* Fixed width */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .price-btn .price-from {

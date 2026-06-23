@@ -512,8 +512,15 @@
 
             // --- 샌딩 시간 자동 결정 로직 (TW126 등) ---
             let sTime = "21:00"; // 기본값
-            if (sFlight === 'TW126') sTime = "08:10";
-            else if (sFlight.startsWith('TW') || sFlight.startsWith('5J') || sFlight.startsWith('Z2') || sFlight.startsWith('DG') || (sFlight.startsWith('PR') && !['PR469', 'PR489'].includes(sFlight))) {
+            if (sFlight === 'TW126') {
+                const isStation10 = (resort) => {
+                    if (!resort) return false;
+                    const low = resort.toLowerCase();
+                    const station10Keywords = ['crimson', 'movenpick', 'shangri-la', 'shangrila', 'discovery', 'the lind', 'lind', 'prime', 'aqua', 'two seasons', 'canyon', 'savoy', 'belmont', 'fairways'];
+                    return station10Keywords.some(kw => low.includes(kw));
+                };
+                sTime = isStation10(sResort) ? "08:10" : "08:30";
+            } else if (sFlight.startsWith('TW') || sFlight.startsWith('5J') || sFlight.startsWith('Z2') || sFlight.startsWith('DG') || (sFlight.startsWith('PR') && !['PR469', 'PR489'].includes(sFlight))) {
                 sTime = "전날 재안내";
             }
 

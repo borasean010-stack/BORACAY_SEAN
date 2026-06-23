@@ -604,7 +604,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (sDate && sendingFlight && sendingFlight !== '-') {
                     const fl = sendingFlight.toUpperCase().trim();
                     let sTime = "21:00";
-                    if (fl === 'TW126') sTime = "08:10";
+                    const isStation10 = (resort) => {
+                        if (!resort) return false;
+                        const low = resort.toLowerCase();
+                        const station10Keywords = ['crimson', 'movenpick', 'shangri-la', 'shangrila', 'discovery', 'the lind', 'lind', 'prime', 'aqua', 'two seasons', 'canyon', 'savoy', 'belmont', 'fairways'];
+                        return station10Keywords.some(kw => low.includes(kw));
+                    };
+
+                    if (fl === 'TW126') sTime = isStation10(resortRaw) ? "08:10" : "08:30";
                     else if (fl.startsWith('TW') || fl.startsWith('5J') || fl.startsWith('Z2') || fl.startsWith('DG') || (fl.startsWith('PR') && !['PR469', 'PR489'].includes(fl))) sTime = "전날 재안내";
                     
                     const docRef = doc(collection(db, "schedules"));

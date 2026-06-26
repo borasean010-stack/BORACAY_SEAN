@@ -244,14 +244,14 @@
             if (isSending) {
                 let meetingPlace = getKorResort(res.pickupResort) || '리조트 로비';
                 if (meetingPlace.includes('페어웨이')) meetingPlace = '페어웨이 정문게이트';
-                return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : 09:00 / ${meetingPlace}</b>\n\n★★ 주의 사항 및 준비물 ★★\n\n*주의 사항 - 미팅시간에서 10분이상 늦으시면 노쇼처리되며, 별도 연락 없이 출발합니다. 이 경우 환불 및 일정 변경 불가하오니 꼭 미리 체크아웃과 룸체크를 진행하고 기다려주세요\n\n편한 물놀이 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n튜빙 진행시 1인 350페소 준비해 주세요\n여권 정보면과 호텔 바우쳐 사진으로 폰에 저장(선택)\n그외 개인적으로 필요한 물품\n\n칼리보 공항 공항세 1인 784페소(공항 현지불 / 필수사항)\nBK라운지 샤워실 이용비용 1인 100페소(라운지 현지불)</div>`;
+                return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : 09:00 / ${meetingPlace}</b>\n\n★★ 주의 사항 및 준비물 ★★\n\n*주의 사항 - 미팅시간에서 10분이상 늦으시면 노쇼처리되며, 별도 연락 없이 출발합니다. 이 경우 환불 및 일정 변경 불가하오니 꼭 미리 체크아웃과 룸체크를 진행하고 기다려주세요\n\n편한 물놀이 복장\n매너팁 1인 200페소 (성인, 소인 동일)\n튜빙 진행시 1인 350페소 준비해 주세요\n여권 정보면과 호텔 바우쳐 사진으로 폰에 저장(선택)\n그외 개인적으로 필요한 물품\n\n칼리보 공항 공항세 1인 784페소(공항 현지불 / 필수사항)\nBK라운지 샤워실 이용비용 1인 100페소(라운지 현지불)</div>`;
             } else {
-                return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : 09:40 / 보라카이션 사무실</b>\n<a href="https://goo.gl/maps/pQkmCErHLjmQGRYM9" class="map-btn" target="_blank">📍 사무실 구글맵 확인</a>\n\n★★ 주의 사항 및 준비물 ★★\n\n*주의 사항 - 미팅시간에서 10분이상 늦으시면 노쇼처리되며, 별도 연락없이 출발합니다. 이 경우 환불 및 일정 변경 불가하오니 꼭 미팅시간을 지켜주세요\n\n편한 물놀이 복장, 비치타올1인 1장\n매너팁 1인 100페소 (성인, 소인 동일)\n튜빙 진행시 1인 350페소 준비해 주세요\n여권 정보면과 호텔 바우쳐 사진으로 폰에 저장(선택)\n그외 개인적으로 필요한 물품</div>`;
+                return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : 09:40 / 보라카이션 사무실</b>\n<a href="https://goo.gl/maps/pQkmCErHLjmQGRYM9" class="map-btn" target="_blank">📍 사무실 구글맵 확인</a>\n\n★★ 주의 사항 및 준비물 ★★\n\n*주의 사항 - 미팅시간에서 10분이상 늦으시면 노쇼처리되며, 별도 연락없이 출발합니다. 이 경우 환불 및 일정 변경 불가하오니 꼭 미팅시간을 지켜주세요\n\n편한 물놀이 복장, 비치타올1인 1장\n매너팁 1인 200페소 (성인, 소인 동일)\n튜빙 진행시 1인 350페소 준비해 주세요\n여권 정보면과 호텔 바우쳐 사진으로 폰에 저장(선택)\n그외 개인적으로 필요한 물품</div>`;
             }
         }
         // 5. 아이랜드/랜드투어
         if (name.includes('랜드투어') || name.includes('아이랜드')) {
-            return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : 10:30 / 보라카이션 사무실</b>\n<a href="https://goo.gl/maps/pQkmCErHLjmQGRYM9" class="map-btn" target="_blank">📍 사무실 구글맵 확인</a>\n\n★ 준비물\n편한 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품</div>`;
+            return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : 10:30 / 보라카이션 사무실</b>\n<a href="https://goo.gl/maps/pQkmCErHLjmQGRYM9" class="map-btn" target="_blank">📍 사무실 구글맵 확인</a>\n\n★ 준비물\n편한 복장\n매너팁 1인 200페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품</div>`;
         }
         // 6. 마사지
         if (name.includes('에스파') || name.includes('루나') || name.includes('보라스파') || name.includes('카바얀') || name.includes('힐롯') || name.includes('포세이돈') || name.includes('마리스') || name.includes('헬리오스')) {
@@ -270,21 +270,21 @@
                 else if (name.includes('힐롯')) meetingPlace = (item.time || '12:30') + " / 메인로드 졸리비";
             }
             const mapBtn = mapLink ? `\n<a href="${mapLink}" class="map-btn" target="_blank">📍 마사지샵 위치 구글맵 확인</a>` : "";
-            return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : ${meetingPlace}</b>${mapBtn}\n\n★ 준비물\n편한 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품</div>`;
+            return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : ${meetingPlace}</b>${mapBtn}\n\n★ 준비물\n편한 복장\n매너팁 1인 200페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품</div>`;
         }
         // 7. 액티비티
         if (name.includes('파라세일링') || name.includes('다이빙') || name.includes('헬멧') || name.includes('어드벤처') || name.includes('제트스키')) {
             const meetingTime = item.time || "10:00";
             let meetingPlace = getKorResort(res.pickupResort) || "리조트 로비";
             if (meetingPlace.includes('페어웨이')) meetingPlace = '페어웨이 정문게이트';
-            return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : ${meetingTime} / ${meetingPlace}</b>\n\n★ 준비물\n편한 물놀이 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품</div>`;
+            return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : ${meetingTime} / ${meetingPlace}</b>\n\n★ 준비물\n편한 물놀이 복장\n매너팁 1인 200페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품</div>`;
         }
         // 8. 골프
         if (name.includes('골프')) {
             const meetingTime = item.time || "07:40";
             let meetingPlace = getKorResort(res.pickupResort) || "헤난 샌드";
             if (meetingPlace.includes('페어웨이')) meetingPlace = '페어웨이 정문게이트';
-            return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : ${meetingTime} / ${meetingPlace}</b>\n점심 포함 : 점보크랩\n\n★ 준비물\n편한 복장\n매너팁 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품\n\n→ 불포함사항\n- 골프채, 골프공, 골프슈즈, 골프글로브\n- 개인음료(그늘집 있음)\n- 캐디팁 - 1인 100페소(18홀기준, 캐디에게 직접 페이)\n- 복귀 트라이시클비용(편도 약 150페소)</div>`;
+            return `<div class="guidance-box"><b>투어 미팅 시간 / 장소 : ${meetingTime} / ${meetingPlace}</b>\n점심 포함 : 점보크랩\n\n★ 준비물\n편한 복장\n매너팁 1인 200페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품\n\n→ 불포함사항\n- 골프채, 골프공, 골프슈즈, 골프글로브\n- 개인음료(그늘집 있음)\n- 캐디팁 - 1인 100페소(18홀기준, 캐디에게 직접 페이)\n- 복귀 트라이시클비용(편도 약 150페소)</div>`;
         }
         // 9. 점보크랩
         if (name.includes('점보크랩')) {

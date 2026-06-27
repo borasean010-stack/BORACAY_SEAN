@@ -82,6 +82,37 @@
         .opt-card-item:hover { border-color: #ff6a00; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
 
         @media (max-device-width: 600px) { .form-card { padding: 30px 20px; } .booking-container { margin-top: 80px; } }
+        
+        .opt-field-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 12px;
+            position: relative;
+        }
+        .opt-field-group label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .opt-field-input, .opt-field-select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #eee;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: 0.3s;
+            background: #fafafa;
+            color: #333;
+            box-sizing: border-box;
+        }
+        .opt-field-input:focus, .opt-field-select:focus {
+            outline: none;
+            border-color: #ff6a00;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(255,106,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -264,23 +295,23 @@
                             </div>
                             <div id="opt-jetski-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">이용일</label>
-                                        <input type="text" id="opt-jetski-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>이용일</label>
+                                        <input type="text" id="opt-jetski-date" class="opt-field-input" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)">
                                         <div class="calendar-picker"></div>
                                     </div>
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">수량</label>
-                                        <select id="opt-jetski-qty" onchange="updateTotalPrice()" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>수량</label>
+                                        <select id="opt-jetski-qty" class="opt-field-select" onchange="updateTotalPrice()">
                                             <option value="1">1대</option>
                                             <option value="2">2대</option>
                                             <option value="3">3대</option>
                                         </select>
                                     </div>
                                 </div>
-                                <div>
-                                    <label style="font-size: 12px; font-weight: 700; color: #666;">픽업 리조트명</label>
-                                    <input type="text" id="opt-jetski-resort" placeholder="픽업받으실 숙소명 입력" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                <div class="opt-field-group">
+                                    <label>픽업 리조트명</label>
+                                    <input type="text" id="opt-jetski-resort" class="opt-field-input" placeholder="픽업받으실 숙소명 입력">
                                 </div>
                             </div>
                         </div>
@@ -296,14 +327,14 @@
                             </div>
                             <div id="opt-para-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">이용일</label>
-                                        <input type="text" id="opt-para-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>이용일</label>
+                                        <input type="text" id="opt-para-date" class="opt-field-input" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)">
                                         <div class="calendar-picker"></div>
                                     </div>
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">인원</label>
-                                        <select id="opt-para-qty" onchange="updateTotalPrice()" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>인원</label>
+                                        <select id="opt-para-qty" class="opt-field-select" onchange="updateTotalPrice()">
                                             <option value="1">1명</option>
                                             <option value="2">2명</option>
                                             <option value="3">3명</option>
@@ -312,9 +343,9 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div>
-                                    <label style="font-size: 12px; font-weight: 700; color: #666;">픽업 리조트명</label>
-                                    <input type="text" id="opt-para-resort" placeholder="픽업받으실 숙소명 입력" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                <div class="opt-field-group">
+                                    <label>픽업 리조트명</label>
+                                    <input type="text" id="opt-para-resort" class="opt-field-input" placeholder="픽업받으실 숙소명 입력">
                                 </div>
                             </div>
                         </div>
@@ -330,14 +361,14 @@
                             </div>
                             <div id="opt-diving-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">이용일</label>
-                                        <input type="text" id="opt-diving-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>이용일</label>
+                                        <input type="text" id="opt-diving-date" class="opt-field-input" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)">
                                         <div class="calendar-picker"></div>
                                     </div>
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">인원</label>
-                                        <select id="opt-diving-qty" onchange="updateTotalPrice()" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>인원</label>
+                                        <select id="opt-diving-qty" class="opt-field-select" onchange="updateTotalPrice()">
                                             <option value="1">1명</option>
                                             <option value="2">2명</option>
                                             <option value="3">3명</option>
@@ -346,9 +377,9 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div>
-                                    <label style="font-size: 12px; font-weight: 700; color: #666;">픽업 리조트명</label>
-                                    <input type="text" id="opt-diving-resort" placeholder="픽업받으실 숙소명 입력" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                <div class="opt-field-group">
+                                    <label>픽업 리조트명</label>
+                                    <input type="text" id="opt-diving-resort" class="opt-field-input" placeholder="픽업받으실 숙소명 입력">
                                 </div>
                             </div>
                         </div>
@@ -366,15 +397,27 @@
                                 <b style="color: #ff6a00;">₩ 55,000</b>
                             </div>
                             <div id="opt-sspa-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
+                                <div class="opt-field-group" style="margin-bottom: 12px;">
+                                    <label>마사지 종류 선택</label>
+                                    <select id="opt-sspa-type" class="opt-field-select" onchange="updateMassagePrice('sspa')">
+                                        <option value="퓨어오일 마사지" data-price="55000">퓨어오일 마사지 (₩ 55,000)</option>
+                                        <option value="태반 마사지" data-price="55000">태반 마사지 (₩ 55,000)</option>
+                                        <option value="스톤 마사지" data-price="55000">스톤 마사지 (₩ 55,000)</option>
+                                        <option value="힐롯 마사지" data-price="70000">힐롯 마사지 (₩ 70,000)</option>
+                                        <option value="포핸드 마사지" data-price="84000">포핸드 마사지 (₩ 84,000)</option>
+                                        <option value="성장 마사지 (1시간)" data-price="42000">성장 마사지 (1시간) (₩ 42,000)</option>
+                                        <option value="성장 마사지 (2시간)" data-price="55000">성장 마사지 (2시간) (₩ 55,000)</option>
+                                    </select>
+                                </div>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">이용일</label>
-                                        <input type="text" id="opt-sspa-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>이용일</label>
+                                        <input type="text" id="opt-sspa-date" class="opt-field-input" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)">
                                         <div class="calendar-picker"></div>
                                     </div>
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">시간</label>
-                                        <select id="opt-sspa-time" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>시간</label>
+                                        <select id="opt-sspa-time" class="opt-field-select">
                                             <option value="13:00">13:00</option>
                                             <option value="14:00">14:00</option>
                                             <option value="15:30">15:30</option>
@@ -383,9 +426,9 @@
                                             <option value="20:00">20:00</option>
                                         </select>
                                     </div>
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">인원</label>
-                                        <select id="opt-sspa-qty" onchange="updateTotalPrice()" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>인원</label>
+                                        <select id="opt-sspa-qty" class="opt-field-select" onchange="updateTotalPrice()">
                                             <option value="1">1명</option>
                                             <option value="2">2명</option>
                                             <option value="3">3명</option>
@@ -407,15 +450,26 @@
                                 <b style="color: #ff6a00;">₩ 55,000</b>
                             </div>
                             <div id="opt-ayur-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
+                                <div class="opt-field-group" style="margin-bottom: 12px;">
+                                    <label>마사지 종류 선택</label>
+                                    <select id="opt-ayur-type" class="opt-field-select" onchange="updateMassagePrice('ayur')">
+                                        <option value="태반 마사지" data-price="55000">태반 마사지 (₩ 55,000)</option>
+                                        <option value="스톤 마사지" data-price="55000">스톤 마사지 (₩ 55,000)</option>
+                                        <option value="골든링 마사지" data-price="77000">골든링 마사지 (₩ 77,000)</option>
+                                        <option value="아유르베다 스파" data-price="91000">아유르베다 스파 (₩ 91,000)</option>
+                                        <option value="성장 마사지 (1시간)" data-price="42000">성장 마사지 (1시간) (₩ 42,000)</option>
+                                        <option value="성장 마사지 (2시간)" data-price="55000">성장 마사지 (2시간) (₩ 55,000)</option>
+                                    </select>
+                                </div>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">이용일</label>
-                                        <input type="text" id="opt-ayur-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>이용일</label>
+                                        <input type="text" id="opt-ayur-date" class="opt-field-input" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)">
                                         <div class="calendar-picker"></div>
                                     </div>
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">시간</label>
-                                        <select id="opt-ayur-time" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>시간</label>
+                                        <select id="opt-ayur-time" class="opt-field-select">
                                             <option value="13:00">13:00</option>
                                             <option value="14:00">14:00</option>
                                             <option value="16:00">16:00</option>
@@ -423,9 +477,9 @@
                                             <option value="20:00">20:00</option>
                                         </select>
                                     </div>
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">인원</label>
-                                        <select id="opt-ayur-qty" onchange="updateTotalPrice()" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>인원</label>
+                                        <select id="opt-ayur-qty" class="opt-field-select" onchange="updateTotalPrice()">
                                             <option value="1">1명</option>
                                             <option value="2">2명</option>
                                             <option value="3">3명</option>
@@ -434,9 +488,9 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div>
-                                    <label style="font-size: 12px; font-weight: 700; color: #666;">픽업 리조트명</label>
-                                    <input type="text" id="opt-ayur-resort" placeholder="픽업받으실 숙소명 입력" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                <div class="opt-field-group">
+                                    <label>픽업 리조트명</label>
+                                    <input type="text" id="opt-ayur-resort" class="opt-field-input" placeholder="픽업받으실 숙소명 입력">
                                 </div>
                             </div>
                         </div>
@@ -451,23 +505,32 @@
                                 <b style="color: #ff6a00;">₩ 105,000</b>
                             </div>
                             <div id="opt-poseidon-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
+                                <div class="opt-field-group" style="margin-bottom: 12px;">
+                                    <label>마사지 종류 선택</label>
+                                    <select id="opt-poseidon-type" class="opt-field-select" onchange="updateMassagePrice('poseidon')">
+                                        <option value="VIP" data-price="105000">VIP (₩ 105,000)</option>
+                                        <option value="VVIP" data-price="119000">VVIP (₩ 119,000)</option>
+                                        <option value="성장 마사지 (1시간)" data-price="42000">성장 마사지 (1시간) (₩ 42,000)</option>
+                                        <option value="성장 마사지 (2시간)" data-price="55000">성장 마사지 (2시간) (₩ 55,000)</option>
+                                    </select>
+                                </div>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">이용일</label>
-                                        <input type="text" id="opt-poseidon-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>이용일</label>
+                                        <input type="text" id="opt-poseidon-date" class="opt-field-input" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)">
                                         <div class="calendar-picker"></div>
                                     </div>
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">시간</label>
-                                        <select id="opt-poseidon-time" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>시간</label>
+                                        <select id="opt-poseidon-time" class="opt-field-select">
                                             <option value="13:00">13:00</option>
                                             <option value="16:00">16:00</option>
                                             <option value="19:30">19:30</option>
                                         </select>
                                     </div>
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">인원</label>
-                                        <select id="opt-poseidon-qty" onchange="updateTotalPrice()" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>인원</label>
+                                        <select id="opt-poseidon-qty" class="opt-field-select" onchange="updateTotalPrice()">
                                             <option value="1">1명</option>
                                             <option value="2">2명</option>
                                             <option value="3">3명</option>
@@ -476,9 +539,9 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div>
-                                    <label style="font-size: 12px; font-weight: 700; color: #666;">픽업 리조트명</label>
-                                    <input type="text" id="opt-poseidon-resort" placeholder="픽업받으실 숙소명 입력" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                <div class="opt-field-group">
+                                    <label>픽업 리조트명</label>
+                                    <input type="text" id="opt-poseidon-resort" class="opt-field-input" placeholder="픽업받으실 숙소명 입력">
                                 </div>
                             </div>
                         </div>
@@ -493,15 +556,24 @@
                                 <b style="color: #ff6a00;">₩ 91,000</b>
                             </div>
                             <div id="opt-maris-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
+                                <div class="opt-field-group" style="margin-bottom: 12px;">
+                                    <label>마사지 종류 선택</label>
+                                    <select id="opt-maris-type" class="opt-field-select" onchange="updateMassagePrice('maris')">
+                                        <option value="스파 (스크럽 불포함)" data-price="91000">스파 (스크럽 불포함) (₩ 91,000)</option>
+                                        <option value="스파 (스크럽 포함)" data-price="105000">스파 (스크럽 포함) (₩ 105,000)</option>
+                                        <option value="성장 마사지 (1시간)" data-price="42000">성장 마사지 (1시간) (₩ 42,000)</option>
+                                        <option value="성장 마사지 (2시간)" data-price="55000">성장 마사지 (2시간) (₩ 55,000)</option>
+                                    </select>
+                                </div>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">이용일</label>
-                                        <input type="text" id="opt-maris-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>이용일</label>
+                                        <input type="text" id="opt-maris-date" class="opt-field-input" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)">
                                         <div class="calendar-picker"></div>
                                     </div>
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">시간</label>
-                                        <select id="opt-maris-time" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>시간</label>
+                                        <select id="opt-maris-time" class="opt-field-select">
                                             <option value="12:00">12:00</option>
                                             <option value="14:00">14:00</option>
                                             <option value="16:00">16:00</option>
@@ -509,9 +581,9 @@
                                             <option value="20:00">20:00</option>
                                         </select>
                                     </div>
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">인원</label>
-                                        <select id="opt-maris-qty" onchange="updateTotalPrice()" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>인원</label>
+                                        <select id="opt-maris-qty" class="opt-field-select" onchange="updateTotalPrice()">
                                             <option value="1">1명</option>
                                             <option value="2">2명</option>
                                             <option value="3">3명</option>
@@ -520,9 +592,9 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div>
-                                    <label style="font-size: 12px; font-weight: 700; color: #666;">픽업 리조트명</label>
-                                    <input type="text" id="opt-maris-resort" placeholder="픽업받으실 숙소명 입력" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                <div class="opt-field-group">
+                                    <label>픽업 리조트명</label>
+                                    <input type="text" id="opt-maris-resort" class="opt-field-input" placeholder="픽업받으실 숙소명 입력">
                                 </div>
                             </div>
                         </div>
@@ -537,15 +609,23 @@
                                 <b style="color: #ff6a00;">₩ 49,000</b>
                             </div>
                             <div id="opt-kabayan-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
+                                <div class="opt-field-group" style="margin-bottom: 12px;">
+                                    <label>마사지 종류 선택</label>
+                                    <select id="opt-kabayan-type" class="opt-field-select" onchange="updateMassagePrice('kabayan')">
+                                        <option value="딥티슈마사지 (1시간40분)" data-price="49000">딥티슈마사지 (1시간40분) (₩ 49,000)</option>
+                                        <option value="성장 마사지 (1시간)" data-price="42000">성장 마사지 (1시간) (₩ 42,000)</option>
+                                        <option value="성장 마사지 (2시간)" data-price="55000">성장 마사지 (2시간) (₩ 55,000)</option>
+                                    </select>
+                                </div>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">이용일</label>
-                                        <input type="text" id="opt-kabayan-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>이용일</label>
+                                        <input type="text" id="opt-kabayan-date" class="opt-field-input" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)">
                                         <div class="calendar-picker"></div>
                                     </div>
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">시간</label>
-                                        <select id="opt-kabayan-time" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>시간</label>
+                                        <select id="opt-kabayan-time" class="opt-field-select">
                                             <option value="13:00">13:00</option>
                                             <option value="14:00">14:00</option>
                                             <option value="16:00">16:00</option>
@@ -553,9 +633,9 @@
                                             <option value="20:00">20:00</option>
                                         </select>
                                     </div>
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">인원</label>
-                                        <select id="opt-kabayan-qty" onchange="updateTotalPrice()" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>인원</label>
+                                        <select id="opt-kabayan-qty" class="opt-field-select" onchange="updateTotalPrice()">
                                             <option value="1">1명</option>
                                             <option value="2">2명</option>
                                             <option value="3">3명</option>
@@ -577,15 +657,26 @@
                                 <b style="color: #ff6a00;">₩ 55,000</b>
                             </div>
                             <div id="opt-luna-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
+                                <div class="opt-field-group" style="margin-bottom: 12px;">
+                                    <label>마사지 종류 선택</label>
+                                    <select id="opt-luna-type" class="opt-field-select" onchange="updateMassagePrice('luna')">
+                                        <option value="태반 마사지" data-price="55000">태반 마사지 (₩ 55,000)</option>
+                                        <option value="스톤 마사지" data-price="55000">스톤 마사지 (₩ 55,000)</option>
+                                        <option value="노니씨드 오일 마사지" data-price="70000">노니씨드 오일 마사지 (₩ 70,000)</option>
+                                        <option value="타이거 오일 마사지" data-price="77000">타이거 오일 마사지 (₩ 77,000)</option>
+                                        <option value="성장 마사지 (1시간)" data-price="42000">성장 마사지 (1시간) (₩ 42,000)</option>
+                                        <option value="성장 마사지 (2시간)" data-price="55000">성장 마사지 (2시간) (₩ 55,000)</option>
+                                    </select>
+                                </div>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">이용일</label>
-                                        <input type="text" id="opt-luna-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>이용일</label>
+                                        <input type="text" id="opt-luna-date" class="opt-field-input" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)">
                                         <div class="calendar-picker"></div>
                                     </div>
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">시간</label>
-                                        <select id="opt-luna-time" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>시간</label>
+                                        <select id="opt-luna-time" class="opt-field-select">
                                             <option value="13:00">13:00</option>
                                             <option value="14:00">14:00</option>
                                             <option value="16:00">16:00</option>
@@ -593,9 +684,9 @@
                                             <option value="20:00">20:00</option>
                                         </select>
                                     </div>
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">인원</label>
-                                        <select id="opt-luna-qty" onchange="updateTotalPrice()" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>인원</label>
+                                        <select id="opt-luna-qty" class="opt-field-select" onchange="updateTotalPrice()">
                                             <option value="1">1명</option>
                                             <option value="2">2명</option>
                                             <option value="3">3명</option>
@@ -617,15 +708,24 @@
                                 <b style="color: #ff6a00;">₩ 55,000</b>
                             </div>
                             <div id="opt-boraspa-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
+                                <div class="opt-field-group" style="margin-bottom: 12px;">
+                                    <label>마사지 종류 선택</label>
+                                    <select id="opt-boraspa-type" class="opt-field-select" onchange="updateMassagePrice('boraspa')">
+                                        <option value="꿀 마사지" data-price="55000">꿀 마사지 (₩ 55,000)</option>
+                                        <option value="태반 마사지" data-price="55000">태반 마사지 (₩ 55,000)</option>
+                                        <option value="성장 마사지 (1시간)" data-price="42000">성장 마사지 (1시간) (₩ 42,000)</option>
+                                        <option value="성장 마사지 (2시간)" data-price="55000">성장 마사지 (2시간) (₩ 55,000)</option>
+                                    </select>
+                                </div>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">이용일</label>
-                                        <input type="text" id="opt-boraspa-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>이용일</label>
+                                        <input type="text" id="opt-boraspa-date" class="opt-field-input" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)">
                                         <div class="calendar-picker"></div>
                                     </div>
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">시간</label>
-                                        <select id="opt-boraspa-time" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>시간</label>
+                                        <select id="opt-boraspa-time" class="opt-field-select">
                                             <option value="13:00">13:00</option>
                                             <option value="14:00">14:00</option>
                                             <option value="16:00">16:00</option>
@@ -633,9 +733,9 @@
                                             <option value="20:00">20:00</option>
                                         </select>
                                     </div>
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">인원</label>
-                                        <select id="opt-boraspa-qty" onchange="updateTotalPrice()" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>인원</label>
+                                        <select id="opt-boraspa-qty" class="opt-field-select" onchange="updateTotalPrice()">
                                             <option value="1">1명</option>
                                             <option value="2">2명</option>
                                             <option value="3">3명</option>
@@ -657,23 +757,33 @@
                                 <b style="color: #ff6a00;">₩ 91,000</b>
                             </div>
                             <div id="opt-helios-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
+                                <div class="opt-field-group" style="margin-bottom: 12px;">
+                                    <label>마사지 종류 선택</label>
+                                    <select id="opt-helios-type" class="opt-field-select" onchange="updateMassagePrice('helios')">
+                                        <option value="허니 스톤" data-price="91000">허니 스톤 (₩ 91,000)</option>
+                                        <option value="코코 스파" data-price="105000">코코 스파 (₩ 105,000)</option>
+                                        <option value="허니 스톤 + 코코 스파" data-price="119000">허니 스톤 + 코코 스파 (₩ 119,000)</option>
+                                        <option value="성장 마사지 (1시간)" data-price="42000">성장 마사지 (1시간) (₩ 42,000)</option>
+                                        <option value="성장 마사지 (2시간)" data-price="55000">성장 마사지 (2시간) (₩ 55,000)</option>
+                                    </select>
+                                </div>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">이용일</label>
-                                        <input type="text" id="opt-helios-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>이용일</label>
+                                        <input type="text" id="opt-helios-date" class="opt-field-input" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)">
                                         <div class="calendar-picker"></div>
                                     </div>
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">시간</label>
-                                        <select id="opt-helios-time" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>시간</label>
+                                        <select id="opt-helios-time" class="opt-field-select">
                                             <option value="13:00">13:00</option>
                                             <option value="16:00">16:00</option>
                                             <option value="19:30">19:30</option>
                                         </select>
                                     </div>
-                                    <div>
-                                        <label style="font-size: 12px; font-weight: 700; color: #666;">인원</label>
-                                        <select id="opt-helios-qty" onchange="updateTotalPrice()" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                    <div class="opt-field-group">
+                                        <label>인원</label>
+                                        <select id="opt-helios-qty" class="opt-field-select" onchange="updateTotalPrice()">
                                             <option value="1">1명</option>
                                             <option value="2">2명</option>
                                             <option value="3">3명</option>
@@ -682,9 +792,9 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div>
-                                    <label style="font-size: 12px; font-weight: 700; color: #666;">픽업 리조트명</label>
-                                    <input type="text" id="opt-helios-resort" placeholder="픽업받으실 숙소명 입력" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                <div class="opt-field-group">
+                                    <label>픽업 리조트명</label>
+                                    <input type="text" id="opt-helios-resort" class="opt-field-input" placeholder="픽업받으실 숙소명 입력">
                                 </div>
                             </div>
                         </div>
@@ -860,6 +970,11 @@
             if (optTimeSelect) {
                 optTimeSelect.required = true;
             }
+            // Trigger massage price tag updates
+            const typeEl = document.getElementById(`opt-${name}-type`);
+            if (typeEl) {
+                updateMassagePrice(name);
+            }
         } else {
             fields.style.display = 'none';
             card.style.borderColor = '#eee';
@@ -867,6 +982,23 @@
             if (optDateInput) optDateInput.required = false;
             if (optResortInput) optResortInput.required = false;
             if (optTimeSelect) optTimeSelect.required = false;
+        }
+        updateTotalPrice();
+    };
+
+    window.updateMassagePrice = function(shopId) {
+        const typeEl = document.getElementById(`opt-${shopId}-type`);
+        if (!typeEl) return;
+        const selectedOpt = typeEl.options[typeEl.selectedIndex];
+        const price = parseInt(selectedOpt.getAttribute('data-price'), 10);
+        
+        const checkEl = document.getElementById(`opt-${shopId}-check`);
+        if (checkEl) {
+            const card = checkEl.closest('.opt-card-item');
+            const priceEl = card.querySelector('b');
+            if (priceEl) {
+                priceEl.innerText = `₩ ${price.toLocaleString()}`;
+            }
         }
         updateTotalPrice();
     };
@@ -895,7 +1027,17 @@
             if (check && check.checked) {
                 const qtyEl = document.getElementById(`opt-${opt.id}-qty`);
                 const qty = qtyEl ? parseInt(qtyEl.value, 10) : 1;
-                const cost = opt.price * qty;
+                
+                let price = opt.price;
+                let displayName = opt.name;
+                const typeEl = document.getElementById(`opt-${opt.id}-type`);
+                if (typeEl) {
+                    const selectedOpt = typeEl.options[typeEl.selectedIndex];
+                    price = parseInt(selectedOpt.getAttribute('data-price'), 10);
+                    displayName = `${opt.name} (${selectedOpt.value})`;
+                }
+                
+                const cost = price * qty;
                 optSum += cost;
                 
                 const dateEl = document.getElementById(`opt-${opt.id}-date`);
@@ -906,8 +1048,8 @@
                 const resortVal = resortEl ? resortEl.value : '';
 
                 optItems.push({
-                    name: `[옵션] ${opt.name}`,
-                    price: opt.price,
+                    name: `[옵션] ${displayName}`,
+                    price: price,
                     count: qty,
                     totalPrice: cost,
                     date: dateVal,

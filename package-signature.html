@@ -89,10 +89,24 @@
     .total-summary span { font-size: 16px; font-weight: 800; color: #111; }
     .total-summary b { font-size: 28px; font-weight: 900; color: #ff6a00; letter-spacing: -1px; }
 
-    .option-card { border: 2px solid #eee; padding: 12px; border-radius: 12px; margin-bottom: 8px; cursor: pointer; transition: 0.3s; }
-    .option-card.active { border-color: #ff6a00; background: #fffaf5; }
-    .option-card h4 { margin: 0; font-size: 14px; font-weight: 800; }
-    .option-card p { margin: 3px 0 0; font-size: 12px; color: #666; font-weight: 600; }
+    #option-select-dropdown {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #eee;
+        border-radius: 14px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #333;
+        background: white url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23ff6a00%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2%2Fsvg%3E') no-repeat right 16px center/12px auto;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        cursor: pointer;
+        outline: none;
+        transition: 0.3s;
+    }
+    #option-select-dropdown:hover { border-color: #ff6a00; }
+    #option-select-dropdown:focus { border-color: #ff6a00; box-shadow: 0 0 0 3px rgba(255,106,0,0.1); }
 
     @media (max-device-width: 1024px) {
         .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
@@ -162,34 +176,15 @@
     <div class="reservation-box">
         <div class="option-selector" style="margin-bottom:20px;">
             <label style="font-weight:800; font-size:14px; color:#333; display:block; margin-bottom:10px;">패키지 옵션 선택</label>
-            <div class="option-card active" onclick="selectOption('시그니처 패키지')">
-                <h4>시그니처 패키지</h4>
-                <p>픽샌 + 호핑 + 말룸 + 고래상어 (성인 320,000원 / 소인 310,000원)</p>
-            </div>
-            <div class="option-card" onclick="selectOption('패키지 A')">
-                <h4>패키지 A</h4>
-                <p>픽샌 + 말룸 + 고래상어 (성인 270,000원 / 소인 260,000원)</p>
-            </div>
-            <div class="option-card" onclick="selectOption('패키지 B')">
-                <h4>패키지 B</h4>
-                <p>픽샌 + 호핑 + 고래상어 (230,000원)</p>
-            </div>
-            <div class="option-card" onclick="selectOption('패키지 C')">
-                <h4>패키지 C</h4>
-                <p>픽샌 + 호핑 + 말룸 (성인 195,000원 / 소인 185,000원)</p>
-            </div>
-            <div class="option-card" onclick="selectOption('픽샌팩 A')">
-                <h4>픽샌팩 A</h4>
-                <p>픽샌 + 호핑 (100,000원)</p>
-            </div>
-            <div class="option-card" onclick="selectOption('픽샌팩 B')">
-                <h4>픽샌팩 B</h4>
-                <p>픽샌 + 고래상어 (175,000원)</p>
-            </div>
-            <div class="option-card" onclick="selectOption('픽샌팩 C')">
-                <h4>픽샌팩 C</h4>
-                <p>픽샌 + 말룸 (성인 150,000원 / 소인 141,000원)</p>
-            </div>
+            <select id="option-select-dropdown" onchange="selectOption(this.value)">
+                <option value="시그니처 패키지">시그니처 패키지 (성인 320,000원 / 소인 310,000원)</option>
+                <option value="패키지 A">패키지 A (성인 270,000원 / 소인 260,000원)</option>
+                <option value="패키지 B">패키지 B (성인/소인 230,000원)</option>
+                <option value="패키지 C">패키지 C (성인 195,000원 / 소인 185,000원)</option>
+                <option value="픽샌팩 A">픽샌팩 A (성인/소인 100,000원)</option>
+                <option value="픽샌팩 B">픽샌팩 B (성인/소인 175,000원)</option>
+                <option value="픽샌팩 C">픽샌팩 C (성인 150,000원 / 소인 141,000원)</option>
+            </select>
         </div>
 
         <div class="person-selector">
@@ -265,11 +260,10 @@
         selectedOptionKey = key;
         const option = OPTIONS[key];
         
-        document.querySelectorAll('.option-card').forEach(c => c.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-        
-        const priceVal = document.getElementById('current-price-val');
-        if (priceVal) priceVal.innerText = '₩ ' + option.adultPrice.toLocaleString();
+        const selectEl = document.getElementById('option-select-dropdown');
+        if (selectEl && selectEl.value !== key) {
+            selectEl.value = key;
+        }
         
         const childAgeDesc = document.getElementById('child-age-desc');
         if (childAgeDesc) {

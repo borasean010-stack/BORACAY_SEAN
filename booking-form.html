@@ -40,29 +40,40 @@
         /* Calendar Picker Popup Style */
         .calendar-picker {
             display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            z-index: 1000;
+            position: relative;
+            top: auto;
+            left: auto;
+            z-index: 100;
             background: white;
             border: 1px solid #eee;
             border-radius: 16px;
             padding: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
             width: 100%;
-            max-width: 320px;
+            max-width: 100%;
             margin-top: 10px;
+            box-sizing: border-box;
         }
         .calendar-picker.active { display: block; }
         .cp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 5px; }
         .cp-header strong { font-size: 15px; font-weight: 800; color: #333; }
+        .cp-nav-btn { background: none; border: none; font-size: 18px; cursor: pointer; color: #555; padding: 4px 10px; border-radius: 8px; transition: 0.2s; }
+        .cp-nav-btn:hover { background: #fff1e6; color: #ff6a00; }
         .cp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
-        .cp-day-header { font-size: 10px; color: #bbb; font-weight: 700; padding-bottom: 8px; }
+        .cp-day-header { font-size: 11px; color: #bbb; font-weight: 700; padding-bottom: 8px; }
         .cp-day { padding: 10px 0; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 8px; transition: 0.2s; }
         .cp-day:hover:not(.empty):not(.disabled) { background: #fff1e6; color: #ff6a00; }
         .cp-day.selected { background: #ff6a00 !important; color: white !important; font-weight: 800; }
-        .cp-day.disabled { color: #eee; cursor: default; }
-        .cp-day.today { border: 1px solid #ff6a00; color: #ff6a00; }
+        .cp-day.disabled { color: #ddd; cursor: default; }
+        .cp-day.today { border: 1.5px solid #ff6a00; color: #ff6a00; font-weight: 800; }
+        .cp-day.empty { cursor: default; }
+
+        @media (max-width: 600px) {
+            .cp-day { padding: 8px 0; font-size: 12px; }
+            .cp-day-header { font-size: 10px; }
+            .cp-header strong { font-size: 14px; }
+            .calendar-picker { padding: 12px; }
+        }
 
         .section-subtitle { font-size: 19px; font-weight: 800; color: #333; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
         .next-btn { width: 100%; padding: 22px; background: #ff6a00; color: white; border: none; border-radius: 18px; font-size: 19px; font-weight: 900; cursor: pointer; transition: 0.3s; margin-top: 20px; box-shadow: 0 10px 25px rgba(255,106,0,0.25); }

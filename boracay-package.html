@@ -27,7 +27,7 @@
         max-width: 1100px; 
         margin: 120px auto 50px; 
         display: grid; 
-        grid-template-columns: 1fr 360px; 
+        grid-template-columns: 1fr; 
         gap: 40px; 
         padding: 0 20px; 
     }
@@ -63,7 +63,7 @@
         position: sticky; 
         top: 100px; 
         border: 1px solid #f0f0f0; 
-        height: fit-content;
+        display:none;
     }
     
     .price-header { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #f8f8f8; }
@@ -187,106 +187,6 @@
 
         <div class="section-title">환불 규정</div>
         <img src="refund.png" alt="환불 규정" style="width:100%; border-radius:20px;">
-    </div>
-
-    <div class="reservation-box">
-        <div class="date-tabs">
-            <div class="date-tab active">예약 날짜 선택<span id="pc-date-display" class="date-display"></span></div>
-        </div>
-        <div class="calendar-wrap" style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 16px; padding: 10px;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <button onclick="changeMonth(-1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&lt;</button>
-                <strong id="pc-month"></strong>
-                <button onclick="changeMonth(1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&gt;</button>
-            </div>
-            <div class="calendar-grid" id="pc-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
-                     <div class="option-selector" style="margin-bottom:20px;">
-                         <div class="option-card" onclick="selectOption('시그니처 패키지')">
-                             <h4>시그니처 패키지</h4>
-                             <p>픽샌 + 호핑 + 말룸 + 고래상어</p>
-                         </div>
-                         <div class="option-card" onclick="selectOption('패키지 A')">
-                             <h4>패키지 A</h4>
-                             <p>픽샌 + 말룸 + 고래상어</p>
-                         </div>
-                         <div class="option-card" onclick="selectOption('패키지 B')">
-                             <h4>패키지 B</h4>
-                             <p>픽샌 + 호핑 + 고래상어</p>
-                         </div>
-                         <div class="option-card" onclick="selectOption('패키지 C')">
-                             <h4>패키지 C</h4>
-                             <p>픽샌 + 호핑 + 말룸</p>
-                         </div>
-                         <div class="option-card" onclick="selectOption('픽샌팩 A')">
-                             <h4>픽샌팩 A</h4>
-                             <p>픽샌 + 호핑</p>
-                         </div>
-                         <div class="option-card" onclick="selectOption('픽샌팩 B')">
-                             <h4>픽샌팩 B</h4>
-                             <p>픽샌 + 고래상어</p>
-                         </div>
-                         <div class="option-card" onclick="selectOption('픽샌팩 C')">
-                             <h4>픽샌팩 C</h4>
-                             <p>픽샌 + 말룸</p>
-                         </div>
-                         <div class="option-card" onclick="selectOption('콤보팩 A')">
-                             <h4>콤보팩 A</h4>
-                             <p>호핑 + 고래상어 + 말룸파티</p>
-                         </div>
-                         <div class="option-card" onclick="selectOption('콤보팩 B')">
-                             <h4>콤보팩 B</h4>
-                             <p>호핑 + 고래상어</p>
-                         </div>
-                         <div class="option-card" onclick="selectOption('콤보팩 C')">
-                             <h4>콤보팩 C</h4>
-                             <p>호핑 + 말룸파티</p>
-                         </div>
-                         <div class="option-card" onclick="selectOption('콤보팩 D')">
-                             <h4>콤보팩 D</h4>
-                             <p>말룸파티 + 고래상어</p>
-                         </div>
-                     </div>
-        </div>
-
-        <div class="person-selector">
-            <div class="person-row">
-                <div class="person-info">
-                    <span style="font-weight:800; font-size:15px;">성인 인원</span>
-                    <div class="counter" style="display: flex; align-items: center; background: #f8f9fa; border-radius: 5px; padding: 1px; border: 1px solid #eee;">
-                        <button class="count-btn" onclick="updateAdultCount(-1)" style="width: 25px; height: 25px; border: none; background: white; color: #111; border-radius: 4px; font-size: 14px; font-weight: 700; cursor: pointer;">-</button>
-                        <strong id="pc-adult-count" style="width:30px; text-align:center;">1</strong>
-                        <button class="count-btn" onclick="updateAdultCount(1)" style="width: 25px; height: 25px; border: none; background: white; color: #111; border-radius: 4px; font-size: 14px; font-weight: 700; cursor: pointer;">+</button>
-                    </div>
-                </div>
-                <div class="person-price-calc">
-                    ₩ <span id="adult-price-text">320,000</span> × <span id="adult-count-text">1</span> = <b id="adult-subtotal">₩ 320,000</b>
-                </div>
-            </div>
-            <div class="person-row" id="child-row" style="margin-top:15px; padding-top:15px; border-top:1px dashed #eee;">
-                <div class="person-info">
-                    <div>
-                        <span style="font-weight:800; font-size:15px;">소인 인원</span>
-                        <span id="child-age-desc" style="font-size:11px; color:#888; display:block; font-weight:500;">(만5세이상 ~ 초6)</span>
-                    </div>
-                    <div class="counter" style="display: flex; align-items: center; background: #f8f9fa; border-radius: 5px; padding: 1px; border: 1px solid #eee;">
-                        <button class="count-btn" onclick="updateChildCount(-1)" style="width: 25px; height: 25px; border: none; background: white; color: #111; border-radius: 4px; font-size: 14px; font-weight: 700; cursor: pointer;">-</button>
-                        <strong id="pc-child-count" style="width:30px; text-align:center;">0</strong>
-                        <button class="count-btn" onclick="updateChildCount(1)" style="width: 25px; height: 25px; border: none; background: white; color: #111; border-radius: 4px; font-size: 14px; font-weight: 700; cursor: pointer;">+</button>
-                    </div>
-                </div>
-                <div class="person-price-calc">
-                    ₩ <span id="child-price-text">310,000</span> × <span id="child-count-text">0</span> = <b id="child-subtotal">₩ 0</b>
-                </div>
-            </div>
-        </div>
-
-        <div class="total-summary">
-            <span>총 합계 금액</span>
-            <b id="display-total-price">₩ 320,000</b>
-        </div>
-
-        <button class="btn-buy" onclick="handleBuy()" id="buy-btn">구매하기</button>
-        <button class="btn-cart" onclick="addToCart()" style="margin-top:6px; width:100%;">장바구니 담기</button>
     </div>
 </div>
 

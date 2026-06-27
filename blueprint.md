@@ -32,12 +32,7 @@ Updated Open Graph (`og:image`) and Twitter (`twitter:image`) meta tags for 27 p
 Ported optimized metadata and standardized the site navigation to ensure consistency and improve SEO.
 - **Metadata Synchronization**: Ported optimized `<title>`, `<meta name="description">`, and Open Graph tags from the June 15 version to the current base.
 - **Menu Standardization**: Standardized the top and side navigation menus across all major pages to use extensionless URLs (matching Firebase Hosting `cleanUrls` config).
-- **Package Page Integration**: Ensured "보라카이 패키지" (Boracay Package) is consistently included in the main navigation.
-
-### Bohol Sean Expansion (Ongoing)
-Started the implementation of the Bohol branch management system.
-- **Dedicated Admin Panel**: Created `bohol-admin.html` and `bohol-admin.js` for managing Bohol-specific schedules.
-- **Voucher System**: Implemented `bohol-voucher.html` for digital voucher generation for Bohol services.
+### Package Page Integration: Ensured "보라카이 패키지" (Boracay Package) is consistently included in the main navigation.
 
 ## Recently Implemented Changes (June 9, 2026)
 
@@ -55,6 +50,5 @@ Updated the 'Price List' page (`price-list.html`) to reflect the new pricing str
 ## Current State & Next Steps
 - **Standardizing Site Navigation**: Complete the update of the menu structure across ALL 40+ HTML files to include the "보라카이 패키지" link and use extensionless URLs.
 - **SEO Validation**: Perform a final sweep to ensure all public pages have the correct canonical URLs and metadata.
-- **Bohol Expansion**: Finalize the Bohol admin system and integrate it with the main platform if required.
 - **Price Synchronization**: Ensure all prices in `main.js`, individual HTML files, and backend logic are fully synchronized.
 

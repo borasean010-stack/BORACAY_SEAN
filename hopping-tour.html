@@ -49,7 +49,7 @@
     }
     .itinerary-img { width: 100%; margin-bottom: 30px; }
     .itinerary-img img { width: 100%; border-radius: 20px; display: block; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-    
+
     .date-tabs { display: flex; gap: 5px; margin-bottom: 10px; background: #f8f9fa; padding: 5px; border-radius: 12px; }
     .date-tab { flex: 1; padding: 8px 5px; text-align: center; font-size: 12px; font-weight: 700; cursor: pointer; border-radius: 10px; transition: 0.2s; color: #888; border: 1px solid transparent; }
     .date-tab.active { background: white; color: #ff6a00; border-color: #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
@@ -57,18 +57,18 @@
 
     .reservation-box { 
         background: white; 
-        border-radius: 20px; 
-        padding: 15px; 
+        border-radius: 28px; 
+        padding: 24px; 
         box-shadow: 0 20px 50px rgba(0,0,0,0.08); 
         position: sticky; 
-        top: 80px; 
+        top: 100px; 
         border: 1px solid #f0f0f0; 
         height: fit-content;
     }
-    
-    .price-header { margin-bottom: 10px; padding-bottom: 15px; border-bottom: 1px solid #f8f8f8; }
+
+    .price-header { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #f8f8f8; }
     .price-label { font-size: 14px; color: #888; font-weight: 700; margin-bottom: 4px; display: block; }
-    .price-value { font-size: 24px; font-weight: 900; color: #ff6a00; letter-spacing: -1px; }
+    .price-value { font-size: 28px; font-weight: 900; color: #ff6a00; letter-spacing: -1px; }
 
     .day { padding: 10px 0; cursor: pointer; border-radius: 8px; font-size: 13px; font-weight: 600; }
     .day:hover { background: #fff1e6; }
@@ -78,12 +78,12 @@
     .day.selected-sending { background: #00c4ff !important; color: white !important; font-weight: 800; position: relative; }
     .day.selected-sending::after { content: '샌딩'; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-size: 8px; }
 
-    .btn-buy { width: 100%; padding: 14px; background: #111; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-    .btn-cart { width: 100%; padding: 12px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 12px; font-size: 14px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+    .btn-buy { width: 100%; padding: 18px; background: #111; color: white; border: none; border-radius: 18px; font-size: 17px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+    .btn-cart { width: 100%; padding: 16px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 18px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; }
     .btn-buy:hover { background: #ff6a00; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
     .btn-cart:hover { background: #fff5eb; }
 
-    .person-selector { background:#fcfcfc; border-radius:24px; border:1px solid #f0f0f0; padding:12px; margin-bottom:10px; }
+    .person-selector { background:#fcfcfc; border-radius:24px; border:1px solid #f0f0f0; padding:20px; margin-bottom:20px; }
     .person-row { margin-bottom: 15px; }
     .person-row:last-child { margin-bottom: 0; }
     .person-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
@@ -91,16 +91,16 @@
     .person-price-calc b { color: #333; }
 
     .total-summary { 
-        padding-top: 10px; 
+        padding-top: 20px; 
         border-top: 2px solid #f8f8f8; 
-        margin-top: 10px; 
+        margin-top: 20px; 
         display: flex; 
         justify-content: space-between; 
         align-items: center;
-        margin-bottom: 10px;
+        margin-bottom: 20px;
     }
     .total-summary span { font-size: 16px; font-weight: 800; color: #111; }
-    .total-summary b { font-size: 24px; font-weight: 900; color: #ff6a00; letter-spacing: -1px; }
+    .total-summary b { font-size: 28px; font-weight: 900; color: #ff6a00; letter-spacing: -1px; }
 
     @media (max-device-width: 1024px) {
             .total-summary { display: none !important; }
@@ -113,7 +113,7 @@
         }
         .m-btn-buy { flex: 1; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 17px; font-weight: 800; }
     }
-</style>
+    </style>
 </head>
 <body>
 <div class="side-menu-overlay" id="overlay"></div>
@@ -278,14 +278,14 @@
             <div class="calendar-grid" id="pc-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
         </div>
 
-        <div style="margin-bottom:12px; padding:15px; background:#fff5eb; border-radius:15px; border:1px solid #ffe0d1;">
-            <label style="font-weight:800; font-size:14px; color:#d35400; display:block; margin-bottom:10px;">추가 옵션 (현장지불)</label>
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:15px; font-weight:700;">점보크랩 런치 (1인 $30)</span>
-                <div class="counter">
-                    <button class="count-btn" onclick="updateJumboCount(-1)">-</button>
-                    <strong id="pc-jumbo-count">0</strong>
-                    <button class="count-btn" onclick="updateJumboCount(1)">+</button>
+        <div class="person-selector" style="margin-top:10px;">
+            <label style="font-weight:800; font-size:14px; color:#888; display:block; margin-bottom:10px;">추가 옵션 (현장지불)</label>
+            <div class="person-row" style="display: flex; justify-content: space-between; align-items: center; padding: 0;">
+                <span style="font-weight:800; font-size:15px;">점보크랩 런치 (1인 $30)</span>
+                <div class="counter" style="display: flex; align-items: center; background: #f8f9fa; border-radius: 12px; padding: 2px; border: 1px solid #eee;">
+                    <button class="count-btn" onclick="updateJumboCount(-1)" style="width: 30px; height: 30px; border: none; background: white; color: #111; border-radius: 10px; font-size: 14px; font-weight: 800; cursor: pointer;">-</button>
+                    <strong id="pc-jumbo-count" style="width:30px; text-align:center;">0</strong>
+                    <button class="count-btn" onclick="updateJumboCount(1)" style="width: 30px; height: 30px; border: none; background: white; color: #111; border-radius: 10px; font-size: 14px; font-weight: 800; cursor: pointer;">+</button>
                 </div>
             </div>
         </div>

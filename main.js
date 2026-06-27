@@ -32,11 +32,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 중앙 상품 데이터 정의 (설명글 통합 관리) ---
     const productData = {
         essential: [
-            { title: "보라카이션 시그니처 패키지", img: "package-sean.png", url: "/package-signature", badge: "HOT", mdBadge: true, desc: "보라카이 최고 프리미엄 조합", price: 100000 },
-            { title: "보라카이션 투어 패키지", img: "tourpack.png", url: "/package-tour", badge: "HOT", mdBadge: true, desc: "알뜰하게 즐기는 핵심 투어 조합", price: 150000 },
+            { title: "보라카이션 패키지", img: "package-sean.png", url: "/package-signature", badge: "HOT", mdBadge: true, desc: "보라카이 최고 프리미엄 조합", price: 100000 },
             { title: "보라카이 왕복 픽업샌딩", img: "pickup.jpg", url: "/pickup-sending", badge: "HOT", mdBadge: true, desc: "공항부터 숙소 앞까지 안전하고 편안하게!", price: 54900 },
             { title: "블랙펄 요트호핑투어", img: "블랙펄 썸네일.jpg", url: "/hopping-tour", badge: "HOT", mdBadge: true, desc: "럭셔리 요트위에서 즐기는 선셋 파티 호핑", price: 55000 },
-            { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "/malumpati", badge: "HOT", mdBadge: true, desc: "프라이빗하게 즐기는 블루라군과 튜빙", price: 99000 },
+            { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "/malumpati", badge: "HOT", mdBadge: true, desc: "프라이빗하게 즐기는 블루라군 and 튜빙", price: 99000 },
             { title: "리버타드 고래상어", img: "whale-shark.png", url: "/whale-shark-tour", badge: "NEW", mdBadge: true, desc: "거대하고 온순한 고래상어와의 만남", price: 128000 }
         ],
         activity: [
@@ -67,7 +66,14 @@ document.addEventListener('DOMContentLoaded', () => {
         ]
     };
 
-    const mdRecommendedTitles = ["보라카이션 투어 콤보팩", "블랙펄 요트호핑투어", "시크릿가든 말룸파티", "리버타드 고래상어", "에스파 (S-SPA)"];
+    const mdProductsData = [
+        { title: "투어팩 패키지", img: "tourpack.png", url: "/package-tour", badge: "HOT", mdBadge: true, desc: "알뜰하게 즐기는 핵심 투어 조합", price: 150000 },
+        { title: "블랙펄 요트호핑투어", img: "블랙펄 썸네일.jpg", url: "/hopping-tour", badge: "HOT", mdBadge: true, desc: "럭셔리 요트위에서 즐기는 선셋 파티 호핑", price: 55000 },
+        { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "/malumpati", badge: "HOT", mdBadge: true, desc: "프라이빗하게 즐기는 블루라군과 튜빙", price: 99000 },
+        { title: "리버타드 고래상어", img: "whale-shark.png", url: "/whale-shark-tour", badge: "NEW", mdBadge: true, desc: "거대하고 온순한 고래상어와의 만남", price: 128000 },
+        { title: "에스파 마사지", img: "spa1.jpg", url: "/spa", badge: "HOT", mdBadge: true, desc: "보라카이 최초 포핸드 마사지 런칭", price: 55000 }
+    ];
+
     const productsContainer = document.querySelector('.products');
     const mdContainer = document.querySelector('.md-products');
     const bestTitle = document.querySelector('.best-title');
@@ -87,10 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderMDProducts() {
         if (!mdContainer) return;
         mdContainer.innerHTML = '';
-        const allProducts = [...productData.essential, ...productData.activity, ...productData.massage];
-        mdRecommendedTitles.forEach(title => {
-            const p = allProducts.find(item => item.title.replace('<br>', ' ') === title || item.title === title);
-            if (!p) return;
+        mdProductsData.forEach(p => {
             const div = document.createElement('div');
             div.className = 'product tour-card';
             div.onclick = () => { window.location.href = p.url; };

@@ -93,6 +93,19 @@
         .opt-card-item:hover { border-color: #ff6a00; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
 
         @media (max-device-width: 600px) { .form-card { padding: 30px 20px; } .booking-container { margin-top: 80px; } }
+
+        /* 다중 선택 체크박스 타입 */
+        .type-check-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+        .type-check-row { display: flex; align-items: center; justify-content: space-between; background: #fafafa; border: 1.5px solid #eee; border-radius: 10px; padding: 10px 14px; cursor: pointer; transition: 0.2s; }
+        .type-check-row:hover { border-color: #ff6a00; background: #fffaf5; }
+        .type-check-row.active { border-color: #ff6a00; background: #fff5eb; }
+        .type-check-row label { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; cursor: pointer; flex: 1; color: #333; }
+        .type-check-row input[type=checkbox] { width: 18px; height: 18px; accent-color: #ff6a00; flex-shrink: 0; }
+        .type-price-tag { font-size: 12px; font-weight: 800; color: #ff6a00; white-space: nowrap; }
+        .type-qty-wrap { display: none; align-items: center; gap: 8px; margin-top: 8px; padding: 8px 14px; background: #fff5eb; border-radius: 8px; }
+        .type-qty-wrap.show { display: flex; }
+        .type-qty-wrap label { font-size: 12px; font-weight: 700; color: #666; }
+        .type-qty-wrap select { font-size: 13px; font-weight: 700; border: 1.5px solid #eee; border-radius: 8px; padding: 6px 10px; font-family: inherit; color: #333; background: white; }
         
         .opt-field-group {
             display: flex;
@@ -409,16 +422,37 @@
                             </div>
                             <div id="opt-sspa-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
                                 <div class="opt-field-group" style="margin-bottom: 12px;">
-                                    <label>마사지 종류 선택</label>
-                                    <select id="opt-sspa-type" class="opt-field-select" onchange="updateMassagePrice('sspa')">
-                                        <option value="퓨어오일 마사지" data-price="55000">퓨어오일 마사지 (₩ 55,000)</option>
-                                        <option value="태반 마사지" data-price="55000">태반 마사지 (₩ 55,000)</option>
-                                        <option value="스톤 마사지" data-price="55000">스톤 마사지 (₩ 55,000)</option>
-                                        <option value="힐롯 마사지" data-price="70000">힐롯 마사지 (₩ 70,000)</option>
-                                        <option value="포핸드 마사지" data-price="84000">포핸드 마사지 (₩ 84,000)</option>
-                                        <option value="성장 마사지 (1시간)" data-price="42000">성장 마사지 (1시간) (₩ 42,000)</option>
-                                        <option value="성장 마사지 (2시간)" data-price="55000">성장 마사지 (2시간) (₩ 55,000)</option>
-                                    </select>
+                                    <label>마사지 종류 선택 <span style="font-size:11px;color:#ff6a00;font-weight:600;">(복수 선택 가능)</span></label>
+                                    <div class="type-check-list">
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)">
+                                            <label><input type="checkbox" data-price="55000" data-name="퓨어오일 마사지" data-spa="sspa" onchange="updateTotalPrice()"> 퓨어오일 마사지</label>
+                                            <span class="type-price-tag">₩55,000</span>
+                                        </div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)">
+                                            <label><input type="checkbox" data-price="55000" data-name="태반 마사지" data-spa="sspa" onchange="updateTotalPrice()"> 태반 마사지</label>
+                                            <span class="type-price-tag">₩55,000</span>
+                                        </div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)">
+                                            <label><input type="checkbox" data-price="55000" data-name="스톤 마사지" data-spa="sspa" onchange="updateTotalPrice()"> 스톤 마사지</label>
+                                            <span class="type-price-tag">₩55,000</span>
+                                        </div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)">
+                                            <label><input type="checkbox" data-price="70000" data-name="힐롯 마사지" data-spa="sspa" onchange="updateTotalPrice()"> 힐롯 마사지</label>
+                                            <span class="type-price-tag">₩70,000</span>
+                                        </div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)">
+                                            <label><input type="checkbox" data-price="84000" data-name="포핸드 마사지" data-spa="sspa" onchange="updateTotalPrice()"> 포핸드 마사지</label>
+                                            <span class="type-price-tag">₩84,000</span>
+                                        </div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)">
+                                            <label><input type="checkbox" data-price="42000" data-name="성장 마사지 1시간" data-spa="sspa" onchange="updateTotalPrice()"> 성장 마사지 (1시간)</label>
+                                            <span class="type-price-tag">₩42,000</span>
+                                        </div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)">
+                                            <label><input type="checkbox" data-price="55000" data-name="성장 마사지 2시간" data-spa="sspa" onchange="updateTotalPrice()"> 성장 마사지 (2시간)</label>
+                                            <span class="type-price-tag">₩55,000</span>
+                                        </div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                    </div>
                                 </div>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
                                     <div class="opt-field-group">
@@ -437,16 +471,7 @@
                                             <option value="20:00">20:00</option>
                                         </select>
                                     </div>
-                                    <div class="opt-field-group">
-                                        <label>인원</label>
-                                        <select id="opt-sspa-qty" class="opt-field-select" onchange="updateTotalPrice()">
-                                            <option value="1">1명</option>
-                                            <option value="2">2명</option>
-                                            <option value="3">3명</option>
-                                            <option value="4">4명</option>
-                                            <option value="5">5명 이상</option>
-                                        </select>
-                                    </div>
+                                    <div style="display:none" id="opt-sspa-qty-hidden"></div>
                                 </div>
                             </div>
                         </div>
@@ -462,15 +487,15 @@
                             </div>
                             <div id="opt-ayur-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
                                 <div class="opt-field-group" style="margin-bottom: 12px;">
-                                    <label>마사지 종류 선택</label>
-                                    <select id="opt-ayur-type" class="opt-field-select" onchange="updateMassagePrice('ayur')">
-                                        <option value="태반 마사지" data-price="55000">태반 마사지 (₩ 55,000)</option>
-                                        <option value="스톤 마사지" data-price="55000">스톤 마사지 (₩ 55,000)</option>
-                                        <option value="골든링 마사지" data-price="77000">골든링 마사지 (₩ 77,000)</option>
-                                        <option value="아유르베다 스파" data-price="91000">아유르베다 스파 (₩ 91,000)</option>
-                                        <option value="성장 마사지 (1시간)" data-price="42000">성장 마사지 (1시간) (₩ 42,000)</option>
-                                        <option value="성장 마사지 (2시간)" data-price="55000">성장 마사지 (2시간) (₩ 55,000)</option>
-                                    </select>
+                                    <label>마사지 종류 선택 <span style="font-size:11px;color:#ff6a00;font-weight:600;">(복수 선택 가능)</span></label>
+                                    <div class="type-check-list">
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="55000" data-name="태반 마사지" data-spa="ayur" onchange="updateTotalPrice()"> 태반 마사지</label><span class="type-price-tag">₩55,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="55000" data-name="스톤 마사지" data-spa="ayur" onchange="updateTotalPrice()"> 스톤 마사지</label><span class="type-price-tag">₩55,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="77000" data-name="골든링 마사지" data-spa="ayur" onchange="updateTotalPrice()"> 골든링 마사지</label><span class="type-price-tag">₩77,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="91000" data-name="아유르베다 스파" data-spa="ayur" onchange="updateTotalPrice()"> 아유르베다 스파</label><span class="type-price-tag">₩91,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="42000" data-name="성장 마사지 1시간" data-spa="ayur" onchange="updateTotalPrice()"> 성장 마사지 (1시간)</label><span class="type-price-tag">₩42,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="55000" data-name="성장 마사지 2시간" data-spa="ayur" onchange="updateTotalPrice()"> 성장 마사지 (2시간)</label><span class="type-price-tag">₩55,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                    </div>
                                 </div>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                                     <div class="opt-field-group">
@@ -488,16 +513,7 @@
                                             <option value="20:00">20:00</option>
                                         </select>
                                     </div>
-                                    <div class="opt-field-group">
-                                        <label>인원</label>
-                                        <select id="opt-ayur-qty" class="opt-field-select" onchange="updateTotalPrice()">
-                                            <option value="1">1명</option>
-                                            <option value="2">2명</option>
-                                            <option value="3">3명</option>
-                                            <option value="4">4명</option>
-                                            <option value="5">5명 이상</option>
-                                        </select>
-                                    </div>
+                                    <div style="display:none" id="opt-ayur-qty-hidden"></div>
                                 </div>
                                 <div class="opt-field-group">
                                     <label>픽업 리조트명</label>
@@ -517,13 +533,13 @@
                             </div>
                             <div id="opt-poseidon-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
                                 <div class="opt-field-group" style="margin-bottom: 12px;">
-                                    <label>마사지 종류 선택</label>
-                                    <select id="opt-poseidon-type" class="opt-field-select" onchange="updateMassagePrice('poseidon')">
-                                        <option value="VIP" data-price="105000">VIP (₩ 105,000)</option>
-                                        <option value="VVIP" data-price="119000">VVIP (₩ 119,000)</option>
-                                        <option value="성장 마사지 (1시간)" data-price="42000">성장 마사지 (1시간) (₩ 42,000)</option>
-                                        <option value="성장 마사지 (2시간)" data-price="55000">성장 마사지 (2시간) (₩ 55,000)</option>
-                                    </select>
+                                    <label>마사지 종류 선택 <span style="font-size:11px;color:#ff6a00;font-weight:600;">(복수 선택 가능)</span></label>
+                                    <div class="type-check-list">
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="105000" data-name="VIP" data-spa="poseidon" onchange="updateTotalPrice()"> VIP</label><span class="type-price-tag">₩105,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="119000" data-name="VVIP" data-spa="poseidon" onchange="updateTotalPrice()"> VVIP</label><span class="type-price-tag">₩119,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="42000" data-name="성장 마사지 1시간" data-spa="poseidon" onchange="updateTotalPrice()"> 성장 마사지 (1시간)</label><span class="type-price-tag">₩42,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="55000" data-name="성장 마사지 2시간" data-spa="poseidon" onchange="updateTotalPrice()"> 성장 마사지 (2시간)</label><span class="type-price-tag">₩55,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                    </div>
                                 </div>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                                     <div class="opt-field-group">
@@ -539,16 +555,7 @@
                                             <option value="19:30">19:30</option>
                                         </select>
                                     </div>
-                                    <div class="opt-field-group">
-                                        <label>인원</label>
-                                        <select id="opt-poseidon-qty" class="opt-field-select" onchange="updateTotalPrice()">
-                                            <option value="1">1명</option>
-                                            <option value="2">2명</option>
-                                            <option value="3">3명</option>
-                                            <option value="4">4명</option>
-                                            <option value="5">5명 이상</option>
-                                        </select>
-                                    </div>
+                                    <div style="display:none" id="opt-poseidon-qty-hidden"></div>
                                 </div>
                                 <div class="opt-field-group">
                                     <label>픽업 리조트명</label>
@@ -568,13 +575,13 @@
                             </div>
                             <div id="opt-maris-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
                                 <div class="opt-field-group" style="margin-bottom: 12px;">
-                                    <label>마사지 종류 선택</label>
-                                    <select id="opt-maris-type" class="opt-field-select" onchange="updateMassagePrice('maris')">
-                                        <option value="스파 (스크럽 불포함)" data-price="91000">스파 (스크럽 불포함) (₩ 91,000)</option>
-                                        <option value="스파 (스크럽 포함)" data-price="105000">스파 (스크럽 포함) (₩ 105,000)</option>
-                                        <option value="성장 마사지 (1시간)" data-price="42000">성장 마사지 (1시간) (₩ 42,000)</option>
-                                        <option value="성장 마사지 (2시간)" data-price="55000">성장 마사지 (2시간) (₩ 55,000)</option>
-                                    </select>
+                                    <label>마사지 종류 선택 <span style="font-size:11px;color:#ff6a00;font-weight:600;">(복수 선택 가능)</span></label>
+                                    <div class="type-check-list">
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="91000" data-name="스파(스크럽 불포함)" data-spa="maris" onchange="updateTotalPrice()"> 스파 (스크럽 불포함)</label><span class="type-price-tag">₩91,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="105000" data-name="스파(스크럽 포함)" data-spa="maris" onchange="updateTotalPrice()"> 스파 (스크럽 포함)</label><span class="type-price-tag">₩105,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="42000" data-name="성장 마사지 1시간" data-spa="maris" onchange="updateTotalPrice()"> 성장 마사지 (1시간)</label><span class="type-price-tag">₩42,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="55000" data-name="성장 마사지 2시간" data-spa="maris" onchange="updateTotalPrice()"> 성장 마사지 (2시간)</label><span class="type-price-tag">₩55,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                    </div>
                                 </div>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                                     <div class="opt-field-group">
@@ -592,16 +599,7 @@
                                             <option value="20:00">20:00</option>
                                         </select>
                                     </div>
-                                    <div class="opt-field-group">
-                                        <label>인원</label>
-                                        <select id="opt-maris-qty" class="opt-field-select" onchange="updateTotalPrice()">
-                                            <option value="1">1명</option>
-                                            <option value="2">2명</option>
-                                            <option value="3">3명</option>
-                                            <option value="4">4명</option>
-                                            <option value="5">5명 이상</option>
-                                        </select>
-                                    </div>
+                                    <div style="display:none" id="opt-maris-qty-hidden"></div>
                                 </div>
                                 <div class="opt-field-group">
                                     <label>픽업 리조트명</label>
@@ -621,12 +619,12 @@
                             </div>
                             <div id="opt-kabayan-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
                                 <div class="opt-field-group" style="margin-bottom: 12px;">
-                                    <label>마사지 종류 선택</label>
-                                    <select id="opt-kabayan-type" class="opt-field-select" onchange="updateMassagePrice('kabayan')">
-                                        <option value="딥티슈마사지 (1시간40분)" data-price="49000">딥티슈마사지 (1시간40분) (₩ 49,000)</option>
-                                        <option value="성장 마사지 (1시간)" data-price="42000">성장 마사지 (1시간) (₩ 42,000)</option>
-                                        <option value="성장 마사지 (2시간)" data-price="55000">성장 마사지 (2시간) (₩ 55,000)</option>
-                                    </select>
+                                    <label>마사지 종류 선택 <span style="font-size:11px;color:#ff6a00;font-weight:600;">(복수 선택 가능)</span></label>
+                                    <div class="type-check-list">
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="49000" data-name="딥티슈마사지 1시간40분" data-spa="kabayan" onchange="updateTotalPrice()"> 딥티슈마사지 (1시간40분)</label><span class="type-price-tag">₩49,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="42000" data-name="성장 마사지 1시간" data-spa="kabayan" onchange="updateTotalPrice()"> 성장 마사지 (1시간)</label><span class="type-price-tag">₩42,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="55000" data-name="성장 마사지 2시간" data-spa="kabayan" onchange="updateTotalPrice()"> 성장 마사지 (2시간)</label><span class="type-price-tag">₩55,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                    </div>
                                 </div>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
                                     <div class="opt-field-group">
@@ -644,16 +642,7 @@
                                             <option value="20:00">20:00</option>
                                         </select>
                                     </div>
-                                    <div class="opt-field-group">
-                                        <label>인원</label>
-                                        <select id="opt-kabayan-qty" class="opt-field-select" onchange="updateTotalPrice()">
-                                            <option value="1">1명</option>
-                                            <option value="2">2명</option>
-                                            <option value="3">3명</option>
-                                            <option value="4">4명</option>
-                                            <option value="5">5명 이상</option>
-                                        </select>
-                                    </div>
+                                    <div style="display:none" id="opt-kabayan-qty-hidden"></div>
                                 </div>
                             </div>
                         </div>
@@ -669,15 +658,15 @@
                             </div>
                             <div id="opt-luna-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
                                 <div class="opt-field-group" style="margin-bottom: 12px;">
-                                    <label>마사지 종류 선택</label>
-                                    <select id="opt-luna-type" class="opt-field-select" onchange="updateMassagePrice('luna')">
-                                        <option value="태반 마사지" data-price="55000">태반 마사지 (₩ 55,000)</option>
-                                        <option value="스톤 마사지" data-price="55000">스톤 마사지 (₩ 55,000)</option>
-                                        <option value="노니씨드 오일 마사지" data-price="70000">노니씨드 오일 마사지 (₩ 70,000)</option>
-                                        <option value="타이거 오일 마사지" data-price="77000">타이거 오일 마사지 (₩ 77,000)</option>
-                                        <option value="성장 마사지 (1시간)" data-price="42000">성장 마사지 (1시간) (₩ 42,000)</option>
-                                        <option value="성장 마사지 (2시간)" data-price="55000">성장 마사지 (2시간) (₩ 55,000)</option>
-                                    </select>
+                                    <label>마사지 종류 선택 <span style="font-size:11px;color:#ff6a00;font-weight:600;">(복수 선택 가능)</span></label>
+                                    <div class="type-check-list">
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="55000" data-name="태반 마사지" data-spa="luna" onchange="updateTotalPrice()"> 태반 마사지</label><span class="type-price-tag">₩55,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="55000" data-name="스톤 마사지" data-spa="luna" onchange="updateTotalPrice()"> 스톤 마사지</label><span class="type-price-tag">₩55,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="70000" data-name="노니씨드 오일 마사지" data-spa="luna" onchange="updateTotalPrice()"> 노니씨드 오일 마사지</label><span class="type-price-tag">₩70,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="77000" data-name="타이거 오일 마사지" data-spa="luna" onchange="updateTotalPrice()"> 타이거 오일 마사지</label><span class="type-price-tag">₩77,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="42000" data-name="성장 마사지 1시간" data-spa="luna" onchange="updateTotalPrice()"> 성장 마사지 (1시간)</label><span class="type-price-tag">₩42,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="55000" data-name="성장 마사지 2시간" data-spa="luna" onchange="updateTotalPrice()"> 성장 마사지 (2시간)</label><span class="type-price-tag">₩55,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                    </div>
                                 </div>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
                                     <div class="opt-field-group">
@@ -695,16 +684,7 @@
                                             <option value="20:00">20:00</option>
                                         </select>
                                     </div>
-                                    <div class="opt-field-group">
-                                        <label>인원</label>
-                                        <select id="opt-luna-qty" class="opt-field-select" onchange="updateTotalPrice()">
-                                            <option value="1">1명</option>
-                                            <option value="2">2명</option>
-                                            <option value="3">3명</option>
-                                            <option value="4">4명</option>
-                                            <option value="5">5명 이상</option>
-                                        </select>
-                                    </div>
+                                    <div style="display:none" id="opt-luna-qty-hidden"></div>
                                 </div>
                             </div>
                         </div>
@@ -720,13 +700,13 @@
                             </div>
                             <div id="opt-boraspa-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
                                 <div class="opt-field-group" style="margin-bottom: 12px;">
-                                    <label>마사지 종류 선택</label>
-                                    <select id="opt-boraspa-type" class="opt-field-select" onchange="updateMassagePrice('boraspa')">
-                                        <option value="꿀 마사지" data-price="55000">꿀 마사지 (₩ 55,000)</option>
-                                        <option value="태반 마사지" data-price="55000">태반 마사지 (₩ 55,000)</option>
-                                        <option value="성장 마사지 (1시간)" data-price="42000">성장 마사지 (1시간) (₩ 42,000)</option>
-                                        <option value="성장 마사지 (2시간)" data-price="55000">성장 마사지 (2시간) (₩ 55,000)</option>
-                                    </select>
+                                    <label>마사지 종류 선택 <span style="font-size:11px;color:#ff6a00;font-weight:600;">(복수 선택 가능)</span></label>
+                                    <div class="type-check-list">
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="55000" data-name="꿀 마사지" data-spa="boraspa" onchange="updateTotalPrice()"> 꿀 마사지</label><span class="type-price-tag">₩55,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="55000" data-name="태반 마사지" data-spa="boraspa" onchange="updateTotalPrice()"> 태반 마사지</label><span class="type-price-tag">₩55,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="42000" data-name="성장 마사지 1시간" data-spa="boraspa" onchange="updateTotalPrice()"> 성장 마사지 (1시간)</label><span class="type-price-tag">₩42,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="55000" data-name="성장 마사지 2시간" data-spa="boraspa" onchange="updateTotalPrice()"> 성장 마사지 (2시간)</label><span class="type-price-tag">₩55,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                    </div>
                                 </div>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
                                     <div class="opt-field-group">
@@ -744,16 +724,7 @@
                                             <option value="20:00">20:00</option>
                                         </select>
                                     </div>
-                                    <div class="opt-field-group">
-                                        <label>인원</label>
-                                        <select id="opt-boraspa-qty" class="opt-field-select" onchange="updateTotalPrice()">
-                                            <option value="1">1명</option>
-                                            <option value="2">2명</option>
-                                            <option value="3">3명</option>
-                                            <option value="4">4명</option>
-                                            <option value="5">5명 이상</option>
-                                        </select>
-                                    </div>
+                                    <div style="display:none" id="opt-boraspa-qty-hidden"></div>
                                 </div>
                             </div>
                         </div>
@@ -769,14 +740,14 @@
                             </div>
                             <div id="opt-helios-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
                                 <div class="opt-field-group" style="margin-bottom: 12px;">
-                                    <label>마사지 종류 선택</label>
-                                    <select id="opt-helios-type" class="opt-field-select" onchange="updateMassagePrice('helios')">
-                                        <option value="허니 스톤" data-price="91000">허니 스톤 (₩ 91,000)</option>
-                                        <option value="코코 스파" data-price="105000">코코 스파 (₩ 105,000)</option>
-                                        <option value="허니 스톤 + 코코 스파" data-price="119000">허니 스톤 + 코코 스파 (₩ 119,000)</option>
-                                        <option value="성장 마사지 (1시간)" data-price="42000">성장 마사지 (1시간) (₩ 42,000)</option>
-                                        <option value="성장 마사지 (2시간)" data-price="55000">성장 마사지 (2시간) (₩ 55,000)</option>
-                                    </select>
+                                    <label>마사지 종류 선택 <span style="font-size:11px;color:#ff6a00;font-weight:600;">(복수 선택 가능)</span></label>
+                                    <div class="type-check-list">
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="91000" data-name="허니 스톤" data-spa="helios" onchange="updateTotalPrice()"> 허니 스톤</label><span class="type-price-tag">₩91,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="105000" data-name="코코 스파" data-spa="helios" onchange="updateTotalPrice()"> 코코 스파</label><span class="type-price-tag">₩105,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="119000" data-name="허니 스톤+코코 스파" data-spa="helios" onchange="updateTotalPrice()"> 허니 스톤 + 코코 스파</label><span class="type-price-tag">₩119,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="42000" data-name="성장 마사지 1시간" data-spa="helios" onchange="updateTotalPrice()"> 성장 마사지 (1시간)</label><span class="type-price-tag">₩42,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                        <div class="type-check-row" onclick="toggleTypeCheck(this)"><label><input type="checkbox" data-price="55000" data-name="성장 마사지 2시간" data-spa="helios" onchange="updateTotalPrice()"> 성장 마사지 (2시간)</label><span class="type-price-tag">₩55,000</span></div><div class="type-qty-wrap"><label>인원</label><select onchange="updateTotalPrice()"><option>1명</option><option>2명</option><option>3명</option><option>4명</option><option>5명</option></select></div>
+                                    </div>
                                 </div>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                                     <div class="opt-field-group">
@@ -792,16 +763,7 @@
                                             <option value="19:30">19:30</option>
                                         </select>
                                     </div>
-                                    <div class="opt-field-group">
-                                        <label>인원</label>
-                                        <select id="opt-helios-qty" class="opt-field-select" onchange="updateTotalPrice()">
-                                            <option value="1">1명</option>
-                                            <option value="2">2명</option>
-                                            <option value="3">3명</option>
-                                            <option value="4">4명</option>
-                                            <option value="5">5명 이상</option>
-                                        </select>
-                                    </div>
+                                    <div style="display:none" id="opt-helios-qty-hidden"></div>
                                 </div>
                                 <div class="opt-field-group">
                                     <label>픽업 리조트명</label>
@@ -940,6 +902,24 @@
             document.querySelectorAll('.calendar-picker').forEach(p => p.classList.remove('active'));
         }
     });
+
+    // 마사지 다중 타입 체크박스 토글
+    window.toggleTypeCheck = function(row) {
+        const cb = row.querySelector('input[type=checkbox]');
+        if (!cb) return;
+        // 체크박스 토글 (클릭 이벤트가 label 내부 체크박스를 직접 바꾸므로 nextTick 대기)
+        setTimeout(() => {
+            const qtyWrap = row.nextElementSibling;
+            if (cb.checked) {
+                row.classList.add('active');
+                if (qtyWrap && qtyWrap.classList.contains('type-qty-wrap')) qtyWrap.classList.add('show');
+            } else {
+                row.classList.remove('active');
+                if (qtyWrap && qtyWrap.classList.contains('type-qty-wrap')) qtyWrap.classList.remove('show');
+            }
+            updateTotalPrice();
+        }, 0);
+    };
 
     window.switchOptTab = function(tabName) {
         document.querySelectorAll('.opt-tab').forEach(b => {

@@ -134,18 +134,39 @@
     .btn-buy:hover { background: #ff6a00; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
     .btn-cart:hover { background: #fff5eb; }
 
+    /* 모바일 드로어 */
+    .drawer-overlay {
+        display: none; position: fixed; inset: 0;
+        background: rgba(0,0,0,0.45); z-index: 9900;
+    }
+    .drawer-overlay.active { display: block; }
+    .booking-drawer {
+        position: fixed; bottom: 0; left: 0; width: 100%;
+        background: white; border-radius: 28px 28px 0 0;
+        padding: 24px 20px 36px; z-index: 9999;
+        max-height: 88vh; overflow-y: auto;
+        transform: translateY(100%);
+        transition: transform 0.35s cubic-bezier(0.32,0.72,0,1);
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
+    }
+    .booking-drawer.active { transform: translateY(0); }
+    .drawer-handle { width: 40px; height: 4px; background: #ddd; border-radius: 4px; margin: 0 auto 20px; }
+    .drawer-title { font-size: 18px; font-weight: 900; color: #111; margin-bottom: 16px; letter-spacing: -0.5px; }
+    .drawer-close { position: absolute; top: 20px; right: 20px; font-size: 22px; cursor: pointer; color: #aaa; background: none; border: none; }
+
     @media (max-width: 1024px) {
         .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
         .reservation-box { display: none; }
         .mobile-bottom-bar {
             display: flex; position: fixed; bottom: 0; left: 0; width: 100%;
             background: white; padding: 12px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.08);
-            z-index: 9000; align-items: center;
+            z-index: 8900; align-items: center;
         }
-        .m-btn-buy { flex: 1; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 17px; font-weight: 800; }
+        .m-btn-buy { flex: 1; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 17px; font-weight: 800; cursor: pointer; }
     }
     @media (min-width: 1025px) {
         .mobile-bottom-bar { display: none; }
+        .drawer-overlay, .booking-drawer { display: none !important; }
     }
     </style>
 </head>
@@ -323,8 +344,86 @@
     </div>
 </footer>
 
+<!-- 모바일 드로어 오버레이 -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeBookingDrawer()"></div>
+
+<!-- 모바일 옵션 선택 드로어 -->
+<div class="booking-drawer" id="bookingDrawer">
+    <div class="drawer-handle"></div>
+    <button class="drawer-close" onclick="closeBookingDrawer()">✕</button>
+    <div class="drawer-title">패키지 옵션 선택</div>
+
+    <!-- 시그니처 -->
+    <div class="option-section-label">⭐ 추천</div>
+    <div class="option-grid-container">
+        <div class="option-card full-width" id="d-opt-시그니처 패키지" onclick="selectDrawerOption('시그니처 패키지', this)">
+            <h4>시그니처 패키지</h4>
+            <p>픽샌 + 호핑 + 말룸 + 리버타드 고래상어</p>
+        </div>
+    </div>
+
+    <!-- 패키지 A~C -->
+    <div class="option-section-label">패키지</div>
+    <div class="option-grid-container">
+        <div class="option-card" id="d-opt-패키지 A" onclick="selectDrawerOption('패키지 A', this)"><h4>패키지 A</h4><p>픽샌 + 말룸 + 리버타드 고래상어</p></div>
+        <div class="option-card" id="d-opt-패키지 B" onclick="selectDrawerOption('패키지 B', this)"><h4>패키지 B</h4><p>픽샌 + 호핑 + 리버타드 고래상어</p></div>
+        <div class="option-card" id="d-opt-패키지 C" onclick="selectDrawerOption('패키지 C', this)"><h4>패키지 C</h4><p>픽샌 + 호핑 + 말룸</p></div>
+    </div>
+
+    <!-- 픽샌팩 A~C -->
+    <div class="option-section-label">픽샌팩</div>
+    <div class="option-grid-container">
+        <div class="option-card" id="d-opt-픽샌팩 A" onclick="selectDrawerOption('픽샌팩 A', this)"><h4>픽샌팩 A</h4><p>픽샌 + 호핑</p></div>
+        <div class="option-card" id="d-opt-픽샌팩 B" onclick="selectDrawerOption('픽샌팩 B', this)"><h4>픽샌팩 B</h4><p>픽샌 + 리버타드 고래상어</p></div>
+        <div class="option-card" id="d-opt-픽샌팩 C" onclick="selectDrawerOption('픽샌팩 C', this)"><h4>픽샌팩 C</h4><p>픽샌 + 말룸</p></div>
+    </div>
+
+    <!-- 콤보팩 A~D -->
+    <div class="option-section-label">콤보팩</div>
+    <div class="option-grid-container">
+        <div class="option-card" id="d-opt-콤보팩 A" onclick="selectDrawerOption('콤보팩 A', this)"><h4>콤보팩 A</h4><p>호핑 + 리버타드 고래상어 + 말룸파티</p></div>
+        <div class="option-card" id="d-opt-콤보팩 B" onclick="selectDrawerOption('콤보팩 B', this)"><h4>콤보팩 B</h4><p>호핑 + 리버타드 고래상어</p></div>
+        <div class="option-card" id="d-opt-콤보팩 C" onclick="selectDrawerOption('콤보팩 C', this)"><h4>콤보팩 C</h4><p>호핑 + 말룸파티</p></div>
+        <div class="option-card" id="d-opt-콤보팩 D" onclick="selectDrawerOption('콤보팩 D', this)"><h4>콤보팩 D</h4><p>말룸파티 + 리버타드 고래상어</p></div>
+    </div>
+
+    <!-- 인원 -->
+    <div class="person-selector" style="margin-top:16px;">
+        <div class="person-row">
+            <div class="person-info">
+                <div><div class="person-label">성인 인원</div></div>
+                <div class="counter-wrap">
+                    <button class="counter-btn" onclick="updateAdultCount(-1)">−</button>
+                    <span class="counter-num" id="d-adult-count">1</span>
+                    <button class="counter-btn" onclick="updateAdultCount(1)">+</button>
+                </div>
+            </div>
+            <div class="person-price-calc">₩ <span id="d-adult-price">320,000</span> × <span id="d-adult-count-text">1</span> = <b id="d-adult-subtotal">₩ 320,000</b></div>
+        </div>
+        <div class="person-row">
+            <div class="person-info">
+                <div><div class="person-label">소인 인원</div><div class="person-age" id="d-child-age-desc">(만5세이상 ~ 초6)</div></div>
+                <div class="counter-wrap">
+                    <button class="counter-btn" onclick="updateChildCount(-1)">−</button>
+                    <span class="counter-num" id="d-child-count">0</span>
+                    <button class="counter-btn" onclick="updateChildCount(1)">+</button>
+                </div>
+            </div>
+            <div class="person-price-calc">₩ <span id="d-child-price">310,000</span> × <span id="d-child-count-text">0</span> = <b id="d-child-subtotal">₩ 0</b></div>
+        </div>
+    </div>
+
+    <!-- 합계 + 버튼 -->
+    <div class="total-summary">
+        <span>총 합계 금액</span>
+        <b id="d-total-price">₩ 320,000</b>
+    </div>
+    <button class="btn-buy" id="d-buy-btn" onclick="handleBuy()">₩ 320,000 구매하기</button>
+    <button class="btn-cart" style="margin-top:10px;" onclick="addToCart()">장바구니 담기</button>
+</div>
+
 <div class="mobile-bottom-bar">
-    <button class="m-btn-buy" onclick="handleBuy()">구매하기</button>
+    <button class="m-btn-buy" onclick="openBookingDrawer()">구매하기</button>
 </div>
 
 <script src="main.js"></script>
@@ -425,6 +524,60 @@
         } else {
             alert('장바구니 기능을 사용할 수 없습니다.');
         }
+    }
+
+    /* 드로어 전용 업데이트 (PC용 ID와 별도 관리) */
+    function updateDrawerPrice() {
+        const option = OPTIONS[selectedOptionKey];
+        const adultSubtotal = adultCount * option.adultPrice;
+        const childSubtotal = childCount * option.childPrice;
+        const total = adultSubtotal + childSubtotal;
+
+        const set = (id, val) => { const el = document.getElementById(id); if(el) el.innerText = val; };
+        set('d-adult-price', option.adultPrice.toLocaleString());
+        set('d-child-price', option.childPrice.toLocaleString());
+        set('d-adult-count', adultCount);
+        set('d-adult-count-text', adultCount);
+        set('d-adult-subtotal', '₩ ' + adultSubtotal.toLocaleString());
+        set('d-child-count', childCount);
+        set('d-child-count-text', childCount);
+        set('d-child-subtotal', '₩ ' + childSubtotal.toLocaleString());
+        set('d-total-price', '₩ ' + total.toLocaleString());
+        set('d-child-age-desc', option.childDesc);
+        const dBuyBtn = document.getElementById('d-buy-btn');
+        if (dBuyBtn) dBuyBtn.innerText = '₩ ' + total.toLocaleString() + ' 구매하기';
+    }
+
+    /* 드로어 옵션 선택 */
+    function selectDrawerOption(key, el) {
+        selectedOptionKey = key;
+        document.querySelectorAll('#bookingDrawer .option-card').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        updateDrawerPrice();
+    }
+
+    /* 드로어 열기/닫기 */
+    function openBookingDrawer() {
+        // 드로어 옵션도 현재 선택된 키와 동기화
+        document.querySelectorAll('#bookingDrawer .option-card').forEach(c => c.classList.remove('active'));
+        const activeCard = document.getElementById('d-opt-' + selectedOptionKey);
+        if (activeCard) activeCard.classList.add('active');
+        else {
+            // 기본: 시그니처 패키지
+            selectedOptionKey = '시그니처 패키지';
+            const sig = document.getElementById('d-opt-시그니처 패키지');
+            if (sig) sig.classList.add('active');
+        }
+        updateDrawerPrice();
+        document.getElementById('drawerOverlay').classList.add('active');
+        document.getElementById('bookingDrawer').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeBookingDrawer() {
+        document.getElementById('drawerOverlay').classList.remove('active');
+        document.getElementById('bookingDrawer').classList.remove('active');
+        document.body.style.overflow = '';
     }
 
     window.onload = () => { updateTotalPrice(); };

@@ -48,8 +48,8 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: "JL 스냅사진 촬영", img: "jl1.jpg", url: "/jl-snap", desc: "보라카이의 아름다운 풍경과 함께 인생샷을 남겨보세요.", price: 300000 },
             { title: "보라아재 호핑투어", img: "bora1.jpg", url: "/bora-ajae-hopping", desc: "카라바오 섬에서 즐기는 호핑투어", price: 180000 },
             { title: "파라세일링", img: "para1.jpg", url: "/parasailing", desc: "하늘 높이 날아올라 보라카이 전경을 한눈에 담아보세요.", price: 55000 },
-            { title: "보라카이 리버타드 고래상어 투어", img: "whale-shark.png", url: "/whale-shark-tour", desc: "리버타드에서 만나는 거대하고 온순한 고래상어와의 신비로운 만남.", price: 128000 },
-            { title: "체험 다이빙", img: "diving1.jpg", url: "/scuba-diving", mdBadge: true, desc: "전문 강사와 함께하는 환상적인 수중 세계 탐험.", price: 55000 },
+            { title: "보라카이 리버타드 고래상어 투어", img: "whale-shark.png", url: "/whale-shark-tour", mdBadge: true, desc: "리버타드에서 만나는 거대하고 온순한 고래상어와의 신비로운 만남.", price: 128000 },
+            { title: "체험 다이빙", img: "diving1.jpg", url: "/scuba-diving", desc: "전문 강사와 함께하는 환상적인 수중 세계 탐험.", price: 55000 },
             { title: "헬멧 다이빙", img: "he1.jpg", url: "/helmet-diving", desc: "머리 젖지 않고 바다 속을 걷는 신비로운 경험.", price: 44000 },
             { title: "제트스키", img: "ze1.jpg", url: "/jetski", desc: "보라카이 바다 위를 시원하게 질주하는 짜릿한 속도감.", price: 55000 },
             { title: "페어웨이 골프클럽", img: "Golf1.jpg", url: "/golf", badge: "NEW", desc: "보라카이 유일의 18홀 골프 코스에서 즐기는 환상적인 라운딩.", price: 192000 }

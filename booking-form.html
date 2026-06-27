@@ -704,6 +704,10 @@
         <div id="payment-section">
             <h2>결제 방식 확인</h2>
             <p class="desc">현재 무통장 입금 결제만 가능합니다.</p>
+
+            <div id="payment-price-summary" style="background: #fffcf9; border: 1.5px solid #fff1e6; padding: 25px; border-radius: 20px; margin-bottom: 25px;">
+                <!-- Dynamically filled by JS -->
+            </div>
             
             <div class="payment-methods" style="grid-template-columns: 1fr;">
                 <div class="method-card selected" onclick="selectMethod(this, '무통장')">
@@ -836,20 +840,33 @@
         const fields = document.getElementById(`opt-${name}-fields`);
         if (!checkbox || !fields) return;
         const card = checkbox.closest('.opt-card-item');
+        const optDateInput = document.getElementById(`opt-${name}-date`);
+        const optResortInput = document.getElementById(`opt-${name}-resort`);
+        const optTimeSelect = document.getElementById(`opt-${name}-time`);
+        
         if (checkbox.checked) {
             fields.style.display = 'block';
             card.style.borderColor = '#ff6a00';
             card.style.background = '#fffaf5';
             
             const pickupDateVal = document.getElementById('pkg-pickup-date')?.value || '';
-            const optDateInput = document.getElementById(`opt-${name}-date`);
-            if (optDateInput && !optDateInput.value) {
-                optDateInput.value = pickupDateVal;
+            if (optDateInput) {
+                if (!optDateInput.value) optDateInput.value = pickupDateVal;
+                optDateInput.required = true;
+            }
+            if (optResortInput) {
+                optResortInput.required = true;
+            }
+            if (optTimeSelect) {
+                optTimeSelect.required = true;
             }
         } else {
             fields.style.display = 'none';
             card.style.borderColor = '#eee';
             card.style.background = 'white';
+            if (optDateInput) optDateInput.required = false;
+            if (optResortInput) optResortInput.required = false;
+            if (optTimeSelect) optTimeSelect.required = false;
         }
         updateTotalPrice();
     };
@@ -1025,33 +1042,33 @@
             document.getElementById('pkg-whale-group').style.display = 'none';
             document.getElementById('pkg-whale-date').required = false;
 
-            const details = pkg.details || '';
+            const textToSearch = (pkg.name || '') + ' ' + (pkg.details || '');
             
-            if (details.includes('시그니처 패키지') || details.includes('콤보팩 A')) {
+            if (textToSearch.includes('시그니처') || textToSearch.includes('콤보팩 A')) {
                 document.getElementById('pkg-hopping-group').style.display = 'block';
                 document.getElementById('pkg-hopping-date').required = true;
                 document.getElementById('pkg-oneday-group').style.display = 'block';
                 document.getElementById('pkg-oneday-date').required = true;
-            } else if (details.includes('패키지 A') || details.includes('콤보팩 D')) {
+            } else if (textToSearch.includes('패키지 A') || textToSearch.includes('콤보팩 D')) {
                 document.getElementById('pkg-oneday-group').style.display = 'block';
                 document.getElementById('pkg-oneday-date').required = true;
-            } else if (details.includes('패키지 B') || details.includes('콤보팩 B')) {
+            } else if (textToSearch.includes('패키지 B') || textToSearch.includes('콤보팩 B')) {
                 document.getElementById('pkg-hopping-group').style.display = 'block';
                 document.getElementById('pkg-hopping-date').required = true;
                 document.getElementById('pkg-whale-group').style.display = 'block';
                 document.getElementById('pkg-whale-date').required = true;
-            } else if (details.includes('패키지 C') || details.includes('콤보팩 C')) {
+            } else if (textToSearch.includes('패키지 C') || textToSearch.includes('콤보팩 C')) {
                 document.getElementById('pkg-hopping-group').style.display = 'block';
                 document.getElementById('pkg-hopping-date').required = true;
                 document.getElementById('pkg-malum-group').style.display = 'block';
                 document.getElementById('pkg-malum-date').required = true;
-            } else if (details.includes('픽샌팩 A')) {
+            } else if (textToSearch.includes('픽샌팩 A')) {
                 document.getElementById('pkg-hopping-group').style.display = 'block';
                 document.getElementById('pkg-hopping-date').required = true;
-            } else if (details.includes('픽샌팩 B')) {
+            } else if (textToSearch.includes('픽샌팩 B')) {
                 document.getElementById('pkg-whale-group').style.display = 'block';
                 document.getElementById('pkg-whale-date').required = true;
-            } else if (details.includes('픽샌팩 C')) {
+            } else if (textToSearch.includes('픽샌팩 C')) {
                 document.getElementById('pkg-malum-group').style.display = 'block';
                 document.getElementById('pkg-malum-date').required = true;
             }
@@ -1068,6 +1085,53 @@
         }
     });
 
+    window.renderPaymentSummary = function() {
+        let baseSum = cartData.reduce((acc, curr) => acc + (curr.totalPrice || (curr.price * curr.count)), 0);
+        let optSum = 0;
+        let optHtml = '';
+        
+        const selectedOpts = window.selectedOptionsTemp || [];
+        selectedOpts.forEach(item => {
+            optSum += item.totalPrice;
+            optHtml += `<div style="display: flex; justify-content: space-between; font-size: 14px; color: #555; margin-bottom: 6px;">
+                <span>➕ ${item.name} (x${item.count})</span>
+                <span>₩ ${item.totalPrice.toLocaleString()}</span>
+            </div>`;
+        });
+
+        const totalSum = baseSum + optSum;
+        const summaryContainer = document.getElementById('payment-price-summary');
+        if (!summaryContainer) return;
+
+        let packageHtml = cartData.map(item => {
+            const itemPrice = item.totalPrice || (item.price * item.count);
+            return `<div style="display: flex; justify-content: space-between; font-size: 15px; font-weight: 700; color: #333; margin-bottom: 8px;">
+                <span>📦 ${item.name} (${item.count}명)</span>
+                <span>₩ ${itemPrice.toLocaleString()}</span>
+            </div>`;
+        }).join('');
+
+        summaryContainer.innerHTML = `
+            <div style="font-size: 17px; font-weight: 800; color: #ff6a00; margin-bottom: 15px; border-bottom: 1.5px solid #fff1e6; padding-bottom: 10px;">💵 결제 금액 확인</div>
+            ${packageHtml}
+            ${optHtml ? `<div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ffd8a8; margin-bottom: 10px;">${optHtml}</div>` : ''}
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #fff1e6; display: flex; flex-direction: column; gap: 8px; font-size: 15px; color: #666;">
+                <div style="display: flex; justify-content: space-between;">
+                    <span>기본 상품 합계:</span>
+                    <span>₩ ${baseSum.toLocaleString()}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>추가 옵션 합계:</span>
+                    <span>₩ ${optSum.toLocaleString()}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 20px; font-weight: 900; color: #ff6a00; margin-top: 5px;">
+                    <span>최종 결제 금액:</span>
+                    <span>₩ ${totalSum.toLocaleString()}</span>
+                </div>
+            </div>
+        `;
+    };
+
     document.getElementById('info-form').onsubmit = function(e) {
         e.preventDefault();
         if (isResortQuote) { selectedPayment = '견적요청'; submitFinal(); } 
@@ -1075,6 +1139,7 @@
             document.getElementById('info-section').style.display = 'none';
             document.getElementById('payment-section').style.display = 'block';
             document.getElementById('step2-bar').classList.add('active');
+            renderPaymentSummary();
             window.scrollTo(0, 0);
         }
     };

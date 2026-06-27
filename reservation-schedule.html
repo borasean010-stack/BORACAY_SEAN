@@ -238,6 +238,11 @@
                 return `<div class="guidance-box"><b>📍 투어 미팅 시간 / 장소 : 13:30 / ${meetingPlace}</b>\n<a href="${mapLink}" class="map-btn" target="_blank">📍 미팅장소 구글맵 확인</a>\n\n-트라이씨클로 미팅장소 이동 시-\n\n트라이씨클 기사에게 ${triCycleTarget} 라고 꼭 말해주세요! \n내리신 후 비치로 이동하셔서 좌측편으로 미팅장소 확인 가능합니다.\n\n★★ 주의 사항 및 준비물 ★★\n\n*주의 사항 - 미팅시간에서 10분이상 늦으시면 노쇼처리되며, 별도 연락없이 출항합니다. 이 경우 환불 및 일정 변경 불가하오니 꼭 미팅시간을 지켜주세요\n\n편한 물놀이 복장, 비치타올 1인 1장\n스노클 마스크(보유시)\n환경세 1인 100페소 (성인, 소인 동일)\n그외 개인적으로 필요한 물품\n\n블랙펄 요트호핑 기념일 이벤트 안내\n호핑투어 중 생일, 결혼기념일, 프로포즈, 기념일 축하가 있으시면 저희 블랙펄에서 작게 축하 이벤트를 진행해드립니다!\n👉 해당되는 경우 미팅 전까지 카카오톡으로 알려주세요! 사전 요청 필수 / 무료 서비스\n\n*미팅시간 10분 이상 늦으실 경우 노쇼 처리 될 수 있습니다</div>`;
             }
         }
+        // 고래상어 투어
+        if (name.includes('고래상어') || lowerName.includes('whaleshark')) {
+            const meetingTime = item.time || "07:00";
+            return `<div class="guidance-box"><b>📍 투어 미팅 시간 / 장소 : ${meetingTime} / 메인로드 졸리비</b>\n<a href="https://maps.app.goo.gl/xgty5kLRCpBrwzvL7" class="map-btn" target="_blank">📍 미팅장소 구글맵 확인</a>\n\n★★ 주의 사항 및 준비물 ★★\n-편한 물놀이 복장, 비치타올 1인 1장\n-스노클 마스크(보유시)\n- 매너팁 1인 100페소 (성인, 소인 동일)\n- 자외선 차단제 불가능\n\n*미팅시간 5분 이상 늦으실 경우 노쇼 처리 될 수 있습니다</div>`;
+        }
         // 4. 말룸파티
         if (name.includes('말룸파티') || name.toLowerCase().includes('malum')) {
             const isSending = name.includes('샌딩') || details.includes('샌딩');
@@ -336,7 +341,77 @@
                 const rawItems = res.items || [];
                 rawItems.forEach(item => {
                     const itemName = item.name || '';
-                    if (itemName.includes('픽업샌딩') || itemName.includes('픽업') || itemName.includes('샌딩')) {
+                    if (item.isPackage) {
+                        if (res.pickupDate) {
+                            const pFlight = (res.pickupFlight || '').toUpperCase().trim();
+                            allItems.push({
+                                name: pFlight ? `✈️ 공항 픽업 (${pFlight})` : `✈️ 공항 픽업`,
+                                date: res.pickupDate,
+                                time: "14:00",
+                                count: item.count,
+                                details: item.details
+                            });
+                        }
+                        if (res.sendingDate) {
+                            let flight = (res.sendingFlight || '').toUpperCase().trim();
+                            let sandingTime = "21:00";
+                            if (flight === 'TW126') {
+                                sandingTime = isStation10(res.sendingResort || res.pickupResort) ? "08:10" : "08:30";
+                            } else if (flight.startsWith('TW') || flight.startsWith('5J') || flight.startsWith('Z2') || flight.startsWith('DG') || (flight.startsWith('PR') && !['PR469', 'PR489'].includes(flight))) {
+                                sandingTime = "전날 재안내";
+                            }
+                            allItems.push({
+                                name: flight ? `✈️ 공항 샌딩 (${flight})` : `✈️ 공항 샌딩`,
+                                date: res.sendingDate,
+                                time: sandingTime,
+                                count: item.count,
+                                details: item.details
+                            });
+                        }
+                        if (res.hoppingDate) {
+                            allItems.push({
+                                name: "블랙펄 요트호핑투어",
+                                date: res.hoppingDate,
+                                time: "13:30",
+                                count: item.count,
+                                details: item.details
+                            });
+                        }
+                        if (res.malumDate) {
+                            allItems.push({
+                                name: "시크릿가든 말룸파티",
+                                date: res.malumDate,
+                                time: "09:40",
+                                count: item.count,
+                                details: item.details
+                            });
+                        }
+                        if (res.oneDayDate) {
+                            allItems.push({
+                                name: "리버타드 고래상어",
+                                date: res.oneDayDate,
+                                time: "07:00",
+                                count: item.count,
+                                details: item.details
+                            });
+                            allItems.push({
+                                name: "시크릿가든 말룸파티",
+                                date: res.oneDayDate,
+                                time: "09:40",
+                                count: item.count,
+                                details: item.details
+                            });
+                        }
+                        if (res.whaleDate) {
+                            allItems.push({
+                                name: "리버타드 고래상어",
+                                date: res.whaleDate,
+                                time: "07:00",
+                                count: item.count,
+                                details: item.details
+                            });
+                        }
+                    } else if (itemName.includes('픽업샌딩') || itemName.includes('픽업') || itemName.includes('샌딩')) {
                         if (itemName.includes('픽업샌딩') || itemName.includes('픽업') || itemName.toLowerCase().includes('meeting')) {
                             const pFlight = (res.pickupFlight || '').toUpperCase().trim();
                             allItems.push({

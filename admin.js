@@ -468,7 +468,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (checkin) dateStr = `${checkin} ~ ${checkout}`;
             }
             const detailStr = (item.details && typeof item.details === 'string') ? `<div style="margin-top:4px; font-size:12px; color:#999;">${item.details}</div>` : '';
-            return `<div style="padding:12px; background:#f8f9fa; border:1px solid #eee; border-radius:8px; margin-bottom:8px;"><div style="display:flex; justify-content:space-between;"><div style="font-size:15px; font-weight:800;">${item.name}</div><div style="font-size:14px; font-weight:800; color:#ff6a00;">${item.count}명</div></div><div style="margin-top:6px; font-size:13px; color:#666;">📅 ${dateStr} ${item.time || ''}</div>${detailStr}${!isQuote ? `<div style="margin-top:10px; display:flex; gap:5px;"><a href="reservation-schedule.html?id=${res.id}&itemIndex=${idx}" target="_blank" style="flex:1; text-align:center; padding:6px; background:#fff; border:1px solid #ddd; border-radius:4px; font-size:11px; text-decoration:none; color:#333;">바우처</a><button onclick="copyVoucherLink('${res.id}', ${idx})" style="flex:1; padding:6px; background:#ff6a00; color:white; border:none; border-radius:4px; font-size:11px; cursor:pointer;">복사</button></div>` : ''}</div>`;
+            
+            let subToursHtml = '';
+            if (item.isPackage) {
+                let subTours = [];
+                if (res.pickupDate) subTours.push(`✈️ 공항 픽업: ${res.pickupDate} (${res.pickupFlight || '-'})`);
+                if (res.sendingDate) subTours.push(`✈️ 공항 샌딩: ${res.sendingDate} (${res.sendingFlight || '-'})`);
+                if (res.hoppingDate) subTours.push(`⛵ 블랙펄 호핑: ${res.hoppingDate}`);
+                if (res.malumDate) subTours.push(`🌳 말룸파티: ${res.malumDate}`);
+                if (res.oneDayDate) subTours.push(`🌊 원데이(말룸+고래): ${res.oneDayDate}`);
+                if (res.whaleDate) subTours.push(`🐋 고래상어: ${res.whaleDate}`);
+                
+                if (subTours.length > 0) {
+                    subToursHtml = `<div style="margin-top:10px; padding:10px; background:#fff; border:1px dashed #ffd8a8; border-radius:6px; font-size:13px;">
+                        <b style="color:#ff6a00;">📦 패키지 포함 투어 일정:</b>
+                        ${subTours.map(t => `<div style="margin-top:4px; color:#444;">${t}</div>`).join('')}
+                    </div>`;
+                }
+            }
+
+            return `<div style="padding:12px; background:#f8f9fa; border:1px solid #eee; border-radius:8px; margin-bottom:8px;"><div style="display:flex; justify-content:space-between;"><div style="font-size:15px; font-weight:800;">${item.name}</div><div style="font-size:14px; font-weight:800; color:#ff6a00;">${item.count}명</div></div><div style="margin-top:6px; font-size:13px; color:#666;">📅 ${dateStr} ${item.time || ''}</div>${detailStr}${subToursHtml}${!isQuote ? `<div style="margin-top:10px; display:flex; gap:5px;"><a href="reservation-schedule.html?id=${res.id}&itemIndex=${idx}" target="_blank" style="flex:1; text-align:center; padding:6px; background:#fff; border:1px solid #ddd; border-radius:4px; font-size:11px; text-decoration:none; color:#333;">바우처</a><button onclick="copyVoucherLink('${res.id}', ${idx})" style="flex:1; padding:6px; background:#ff6a00; color:white; border:none; border-radius:4px; font-size:11px; cursor:pointer;">복사</button></div>` : ''}</div>`;
         }).join('');
         const displayEngName = res.engName || '-';
         const displayExchange = res.exchangeAmount || '-';
@@ -489,6 +508,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p style="margin:5px 0; font-size:13px;"><b>샌딩:</b> ${res.sendingDate || '-'} / ${res.sendingFlight || '-'} / ${res.sendingResort || '-'}</p>
                     ${res.hoppingDate ? `<p style="margin:5px 0; font-size:13px;"><b>호핑:</b> ${res.hoppingDate}</p>` : ''}
                     ${res.malumDate ? `<p style="margin:5px 0; font-size:13px;"><b>말룸:</b> ${res.malumDate}</p>` : ''}
+                    ${res.oneDayDate ? `<p style="margin:5px 0; font-size:13px;"><b>원데이(말룸+고래):</b> ${res.oneDayDate}</p>` : ''}
+                    ${res.whaleDate ? `<p style="margin:5px 0; font-size:13px;"><b>고래상어:</b> ${res.whaleDate}</p>` : ''}
                     ${res.activityPickupResort ? `<p style="margin:5px 0; font-size:13px; color:#d35400;"><b>📍 활동 픽업:</b> ${res.activityPickupResort}</p>` : ''}
                     <p style="margin-top:10px; padding-top:10px; border-top:1px dashed #ffd8a8;"><b>💰 환전:</b> <span style="font-size:15px; color:#e67e22; font-weight:800;">${displayExchange}</span></p>
                 </div>` : ''}
@@ -503,16 +524,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.copyVoucherLink = (id, idx) => { const url = `${window.location.origin}/reservation-schedule.html?id=${id}${idx !== null ? `&itemIndex=${idx}` : ''}`; navigator.clipboard.writeText(url).then(() => alert('바우처 링크가 복사되었습니다.')); };
     window.copyCombinedVoucherLink = (contact) => { navigator.clipboard.writeText(`${window.location.origin}/reservation-schedule.html?contact=${encodeURIComponent(contact)}`).then(() => alert('통합 일정표 링크 복사 완료!')); };
+
     window.copyGuidance = (id) => { 
         const res = allReservations.find(r => r.id === id); 
         if (!res) return; 
         
-        let msg = `[보라카이션 예약 확정 안내]\n\n대표자: ${res.customerKorName}\n투어내역:\n${res.items.map(i => `- ${i.name} (${i.date} ${i.time || ''}) / ${i.count}명`).join('\n')}`;
+        let itemsDesc = [];
+        res.items.forEach(i => {
+            if (i.isPackage) {
+                itemsDesc.push(`- ${i.name} (패키지 상품) / ${i.count}명`);
+                if (res.pickupDate) itemsDesc.push(`  ✈️ 공항 픽업: ${res.pickupDate} (${res.pickupFlight || '-'})`);
+                if (res.sendingDate) itemsDesc.push(`  ✈️ 공항 샌딩: ${res.sendingDate} (${res.sendingFlight || '-'})`);
+                if (res.hoppingDate) itemsDesc.push(`  ⛵ 블랙펄 호핑: ${res.hoppingDate}`);
+                if (res.malumDate) itemsDesc.push(`  🌳 말룸파티: ${res.malumDate}`);
+                if (res.oneDayDate) itemsDesc.push(`  🌊 원데이(말룸+고래): ${res.oneDayDate}`);
+                if (res.whaleDate) itemsDesc.push(`  🐋 고래상어: ${res.whaleDate}`);
+            } else {
+                itemsDesc.push(`- ${i.name} (${i.date} ${i.time || ''}) / ${i.count}명`);
+            }
+        });
+
+        let msg = `[보라카이션 예약 확정 안내]\n\n대표자: ${res.customerKorName}\n투어내역:\n${itemsDesc.join('\n')}`;
         
         // 보라아재 호핑투어 포함 시 전용 안내문 추가
         const hasBoraAjae = res.items.some(i => i.name.includes('보라아재') || i.name.includes('카라바오'));
         if (hasBoraAjae) {
             msg += `\n\n------------------\n🚨📢 8시 (08:00) / 각반 선착장 미팅😊💜\n보라카이가 제주도라면, 카라바오는 우도라고 생각하시면 이해가 편하십니다. 보라카이에서 배를 타고 1시간정도 이동, 카라바오 섬에 도착하여 아재호핑 전용공간으로 안내해드립니다. 해당 장소에서 진행하는 온종일 투어입니다. 아재투어의 전용공간은 보라아재에서 준비한 다양한 액티비티 및 사진 포인트가 많이 있는 매력적인 장소입니다. 넉넉한 시간으로 편안하고 즐거운 시간이 되시길 바랍니다.\n\n✅ 미팅 시간 및 장소\n🔺현지시각 오전 8시 까지 각반 선착장 도착\n** 미팅시간 10분 전 도착 권장. 미팅 시간내 미 도착시 노쇼처리, 환불불가합니다 **\n🔺각반(CAGBAN PORT) 선착장 세븐일레븐 앞 보라아재 피켓 든 직원을 찾아주세요! 👍\n주의!!! 각반선착장 입니다. E-트라이크(툭툭이) 탑승 후 각반 혹은 각반포트 말씀해주시면 됩니다. \n디몰출발을 기준으로 시간은 15분 내외, 비용은 한 대당 150페소~200페소 정도이니 참고해주세요.\n\n✅ 포함 사항\n씨푸드런치, 무제한 음료+맥주+물, 라면간식, 선상 사진촬영, 수중 사진촬영, vip 밀착케어, 스노클 장비 무상 대여(구명조끼, 스노클마스크), 스노클링, 스킨다이빙, 슬라이드, 포토스팟, 줄낚시, 클리프다이빙 등등\n\n✅ 필수 준비물\n래쉬가드, 선크림, 비치타올, 아쿠아슈즈, 불포함 매너팁 인당 100페소(유아 포함)\n\n✅ 안내 및 주의사항\n* 투어 당일 출발시 날씨에 따라 호핑투어 진행 동선 및 장소, 내용 등등이 변경되어 진행될 수 있습니다.\n* 미팅 후 다른 분들과 함께 조인으로 액티비티가 진행됩니다. 서로 피해가 없도록, 약속시간은 꼭 지켜주세요.\n* 고가의 귀중품, 많은 현금, 여권은 필히 리조트에 두고 오세요!\n* 식사 불포함인 36개월 이하의 아이들의 식사는 따로 준비가 되어 있지 않습니다. (흰 쌀밥은 제공)\n* 맥주와 음료를 무제한으로 제공 해드리고 있지만, 테이크 아웃은 엄격히 금하고 있습니다!\n* 수중사진은 서비스 품목으로 현지 사정상 제공 불가일 수 있는 점 양해 부탁드립니다.\n* 지나친 음주로 물놀이가 안전하지 않다 판단되는 경우 제재를 받으실 수도 있습니다.\n\n📌 우천 시 안내\n보라카이는 스콜성 비가 자주 내리는 지역입니다. 비가 내리더라도 별도의 안내가 없는 경우, 호핑투어는 정상적으로 진행됩니다. 😊`;
+        }
+
+        // 리버타드 고래상어 투어 포함 시 전용 안내문 추가
+        const hasWhaleShark = res.items.some(i => i.name.includes('고래상어') || i.name.toLowerCase().includes('whaleshark')) || res.oneDayDate || res.whaleDate;
+        if (hasWhaleShark) {
+            msg += `\n\n------------------\n🚨📢 리버타드 고래상어 투어 안내\n미팅 시간: 07:00\n미팅 장소: 메인로드 졸리비\n구글맵 주소: https://maps.app.goo.gl/xgty5kLRCpBrwzvL7\n\n★★ 주의 사항 및 준비물 ★★\n-편한 물놀이 복장, 비치타올 1인 1장\n-스노클 마스크(보유시)\n- 매너팁 1인 100페소 (성인, 소인 동일)\n- 자외선 차단제 불가능\n\n*미팅시간 5분 이상 늦으실 경우 노쇼 처리 될 수 있습니다`;
         }
         
         msg += `\n\n감사합니다.`;
@@ -654,6 +697,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             itemName = "시크릿가든 말룸파티";
                             if (!timeMatch) itemTime = "09:40";
                         }
+                        else if (lowerLine.includes('whaleshark') || lowerLine.includes('고래상어')) {
+                            itemName = "리버타드 고래상어";
+                            if (!timeMatch) itemTime = "07:00";
+                        }
                         else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = "루나스파";
                         else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = "보라스파";
                         else if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = "에스파(SSPA)";
@@ -762,6 +809,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div><label style="font-size:11px; color:#999;">말룸일</label><input type="text" id="edit-m-date" value="${res.malumDate || ''}" style="width:100%; padding:8px;"></div>
                 </div>
 
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+                    <div><label style="font-size:11px; color:#999;">원데이투어일</label><input type="text" id="edit-o-date" value="${res.oneDayDate || ''}" style="width:100%; padding:8px;"></div>
+                    <div><label style="font-size:11px; color:#999;">고래상어일</label><input type="text" id="edit-w-date" value="${res.whaleDate || ''}" style="width:100%; padding:8px;"></div>
+                </div>
+
                 <label style="font-size:11px; color:#999; margin-top:10px; display:block;">활동 픽업 리조트</label>
                 <input type="text" id="edit-activity-resort" value="${res.activityPickupResort || ''}" style="width:100%; padding:8px; margin-bottom:10px;">
 
@@ -783,6 +835,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 sendingResort: document.getElementById('edit-s-resort').value, 
                 hoppingDate: document.getElementById('edit-h-date').value,
                 malumDate: document.getElementById('edit-m-date').value,
+                oneDayDate: document.getElementById('edit-o-date').value,
+                whaleDate: document.getElementById('edit-w-date').value,
                 activityPickupResort: document.getElementById('edit-activity-resort').value,
                 totalPrice: parseInt(document.getElementById('edit-price').value) || 0, 
                 requests: document.getElementById('edit-requests').value 
@@ -896,6 +950,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         else { itemName = '블랙펄 요트호핑투어'; if(!actualTimeMatch) itemTime = "13:30"; } 
                     }
                     else if (lowerLine.includes('malum') || lowerLine.includes('말룸')) { itemName = '시크릿가든 말룸파티'; if(!actualTimeMatch) itemTime = "09:40"; }
+                    else if (lowerLine.includes('whaleshark') || lowerLine.includes('고래상어')) { itemName = '리버타드 고래상어'; if(!actualTimeMatch) itemTime = "07:00"; }
                     else if (lowerLine.includes('jetski') || lowerLine.includes('zetski') || lowerLine.includes('제트스키')) itemName = '제트스키';
                     else if (lowerLine.includes('helmet') || lowerLine.includes('헬멧')) itemName = '헬멧다이빙';
                     else if (lowerLine.includes('para') || lowerLine.includes('파라')) itemName = '파라세일링';

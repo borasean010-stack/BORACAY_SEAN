@@ -98,10 +98,27 @@
     .total-summary span { font-size: 16px; font-weight: 800; color: #111; }
     .total-summary b { font-size: 28px; font-weight: 900; color: #ff6a00; letter-spacing: -1px; }
 
-    .option-card { border: 2px solid #eee; padding: 12px; border-radius: 12px; margin-bottom: 8px; cursor: pointer; transition: 0.3s; }
+    .option-grid-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    .option-card {
+        border: 2px solid #eee;
+        padding: 8px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: 0.3s;
+        text-align: center;
+        background: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
     .option-card.active { border-color: #ff6a00; background: #fffaf5; }
-    .option-card h4 { margin: 0; font-size: 14px; font-weight: 800; }
-    .option-card p { margin: 3px 0 0; font-size: 12px; color: #666; font-weight: 600; }
+    .option-card h4 { margin: 0; font-size: 13px; font-weight: 800; color: #111; line-height: 1.2; }
+    .option-card p { margin: 4px 0 0; font-size: 10px; color: #666; font-weight: 600; line-height: 1.3; word-break: keep-all; }
 
     @media (max-device-width: 1024px) {
         .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
@@ -182,21 +199,23 @@
 
         <div class="option-selector" style="margin-bottom:20px;">
             <label style="font-weight:800; font-size:14px; color:#333; display:block; margin-bottom:10px;">콤보팩 옵션 선택</label>
-            <div class="option-card active" onclick="selectOption('콤보팩 A')">
-                <h4>콤보팩 A</h4>
-                <p>호핑 + 고래상어 + 말룸파티 (성인 270,000원 / 소인 260,000원)</p>
-            </div>
-            <div class="option-card" onclick="selectOption('콤보팩 B')">
-                <h4>콤보팩 B</h4>
-                <p>호핑 + 고래상어 (175,000원)</p>
-            </div>
-            <div class="option-card" onclick="selectOption('콤보팩 C')">
-                <h4>콤보팩 C</h4>
-                <p>호핑 + 말룸파티 (성인 150,000원 / 소인 141,000원)</p>
-            </div>
-            <div class="option-card" onclick="selectOption('콤보팩 D')">
-                <h4>콤보팩 D</h4>
-                <p>말룸파티 + 고래상어 (성인 220,000원 / 소인 210,000원)</p>
+            <div class="option-grid-container">
+                <div class="option-card active" onclick="selectOption('콤보팩 A')">
+                    <h4>콤보팩 A</h4>
+                    <p>호핑 + 고래상어 + 말룸파티</p>
+                </div>
+                <div class="option-card" onclick="selectOption('콤보팩 B')">
+                    <h4>콤보팩 B</h4>
+                    <p>호핑 + 고래상어</p>
+                </div>
+                <div class="option-card" onclick="selectOption('콤보팩 C')">
+                    <h4>콤보팩 C</h4>
+                    <p>호핑 + 말룸파티</p>
+                </div>
+                <div class="option-card" onclick="selectOption('콤보팩 D')">
+                    <h4>콤보팩 D</h4>
+                    <p>말룸파티 + 고래상어</p>
+                </div>
             </div>
         </div>
 

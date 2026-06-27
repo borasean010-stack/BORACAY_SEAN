@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>보라카이션 시그니처 패키지 - 보라카이 최고 프리미엄 조합</title>
+    <meta name="description" content="보라카이의 모든 것을 하나로! 픽업샌딩, 호핑, 말룸파티, 고래상어 투어까지 포함된 보라카이션 시그니처 패키지.">
+    <link rel="canonical" href="https://www.boracaysean.com/package-signature">
+    <meta property="og:title" content="보라카이션 시그니처 패키지 - 보라카이 최고 프리미엄 조합">
+    <meta property="og:description" content="보라카이의 모든 것을 하나로! 픽업샌딩, 호핑, 말룸파티, 고래상어 투어까지 포함된 보라카이션 시그니처 패키지.">
+    <meta property="og:image" content="https://www.boracaysean.com/package1.png">
+    <meta property="og:url" content="https://www.boracaysean.com/package-signature">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="보라카이션 시그니처 패키지 - 보라카이 최고 프리미엄 조합">
+    <meta name="twitter:description" content="보라카이의 모든 것을 하나로! 픽업샌딩, 호핑, 말룸파티, 고래상어 투어까지 포함된 보라카이션 시그니처 패키지.">
+    <meta name="twitter:image" content="https://www.boracaysean.com/package1.png">
+
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+    body { background: #fdfdfd; padding-bottom: 100px; }
+    .tour-detail-container { 
+        max-width: 1100px; 
+        margin: 120px auto 50px; 
+        display: grid; 
+        grid-template-columns: 1fr 360px; 
+        gap: 40px; 
+        padding: 0 20px; 
+    }
+    .tour-content { 
+        background: white; 
+        padding: 40px; 
+        border-radius: 28px; 
+        box-shadow: 0 15px 40px rgba(0,0,0,0.03); 
+        border: 1px solid #f5f5f5;
+    }
+    .tour-content h1 { font-size: 32px; font-weight: 900; margin-bottom: 30px; letter-spacing: -1.5px; }
+    .section-title { 
+        font-size: 20px; 
+        font-weight: 800; 
+        margin: 40px 0 20px; 
+        padding-bottom: 12px; 
+        border-bottom: 2px solid #fff5eb; 
+        color: #ff6a00; 
+    }
+    .itinerary-img { width: 100%; margin-bottom: 30px; }
+    .itinerary-img img { width: 100%; border-radius: 20px; display: block; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+    
+    .reservation-box { 
+        background: white; 
+        border-radius: 28px; 
+        padding: 24px; 
+        box-shadow: 0 20px 50px rgba(0,0,0,0.08); 
+        position: sticky; 
+        top: 100px; 
+        border: 1px solid #f0f0f0; 
+        height: fit-content;
+    }
+    
+    .price-header { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #f8f8f8; }
+    .price-label { font-size: 14px; color: #888; font-weight: 700; margin-bottom: 4px; display: block; }
+    .price-value { font-size: 28px; font-weight: 900; color: #ff6a00; letter-spacing: -1px; }
+
+    .btn-buy { width: 100%; padding: 18px; background: #111; color: white; border: none; border-radius: 18px; font-size: 17px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+    .btn-cart { width: 100%; padding: 16px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 18px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+    .btn-buy:hover { background: #ff6a00; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
+    .btn-cart:hover { background: #fff5eb; }
+
+    .person-selector { background:#fcfcfc; border-radius:24px; border:1px solid #f0f0f0; padding:20px; margin-bottom:20px; }
+    .person-row { margin-bottom: 15px; }
+    .person-row:last-child { margin-bottom: 0; }
+    .person-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .person-price-calc { text-align: right; font-size: 13px; color: #888; font-weight: 600; }
+    .person-price-calc b { color: #333; }
+
+    .total-summary { 
+        padding-top: 20px; 
+        border-top: 2px solid #f8f8f8; 
+        margin-top: 20px; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .total-summary span { font-size: 16px; font-weight: 800; color: #111; }
+    .total-summary b { font-size: 28px; font-weight: 900; color: #ff6a00; letter-spacing: -1px; }
+
+    @media (max-device-width: 1024px) {
+            .total-summary { display: none !important; }
+        .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
+        .reservation-box { display: none; }
+        .mobile-bottom-bar { 
+            display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
+            background: white; padding: 12px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); 
+            z-index: 9000; align-items: center;
+        }
+        .m-btn-buy { flex: 1; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 17px; font-weight: 800; }
+    }
+</style>
+</head>
+<body>
+<div class="side-menu-overlay" id="overlay"></div>
+<div class="side-menu" id="sideMenu">
+    <div class="side-menu-header">
+        <div class="side-logo">BORACAY SEAN</div>
+        <div class="side-close" id="sideClose">✕</div>
+    </div>
+            <div class="side-menu-list">
+        <a href="/essential-tours">보라카이 필수투어</a>
+        <a href="/activities">액티비티</a>
+        <a href="/massage">마사지</a>
+        <a href="/boracay-package">보라카이 패키지</a>
+        <a href="/price-list">한눈에 요금표</a>
+        <a href="/resort-quote">리조트 견적</a>
+        <a href="/cart">장바구니</a>
+        <a href="/mypage" style="margin-top:20px; font-size:14px; opacity:0.6;">마이페이지 (예약확인)</a>
+    </div>
+</div>
+
+<div class="top-bar">
+    <div class="header-left">
+        <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
+        <div class="logo">
+            <a href="/">
+                <img src="logo.png" class="logo-img" alt="보라카이션 로고 - 보라카이 자유여행 No.1"><span class="logo-text">BORACAY SEAN</span></a>
+        </div>
+    </div>
+
+            <div class="menu pc-only">
+        <a href="/essential-tours" class="tab-link active" data-category="essential">보라카이 필수투어</a>
+        <a href="/activities" class="tab-link" data-category="activity">액티비티</a>
+        <a href="/massage" class="tab-link" data-category="massage">마사지</a>
+        <a href="/boracay-package" class="tab-link">보라카이 패키지</a>
+        <a href="/price-list" class="tab-link">한눈에 요금표</a>
+        <a href="/resort-quote" class="tab-link">리조트 견적</a>
+        <a href="/cart" class="tab-link">장바구니</a>
+    </div>
+
+    <div class="header-right"></div>
+</div>
+<div class="tour-detail-container">
+    <div class="tour-content">
+        <h1>보라카이션 시그니처 패키지</h1>
+        <div class="section-title">패키지 상세</div>
+        <div class="itinerary">
+            <div class="itinerary-img"><img src="package1.png" alt="보라카이션 시그니처 패키지 1"></div>
+            <div class="itinerary-img"><img src="package2.png" alt="보라카이션 시그니처 패키지 2"></div>
+        </div>
+
+        <div class="section-title">환불 규정</div>
+        <img src="refund.png" alt="환불 규정" style="width:100%; border-radius:20px;">
+    </div>
+
+    <div class="reservation-box">
+        <div class="price-header">
+            <span class="price-label">패키지 금액</span>
+            <span class="price-value">₩ 320,000</span>
+        </div>
+
+        <div class="person-selector">
+            <div class="person-row">
+                <div class="person-info">
+                    <span style="font-weight:800; font-size:15px;">인원 선택</span>
+                    <div class="counter" style="display: flex; align-items: center; background: #f8f9fa; border-radius: 5px; padding: 1px; border: 1px solid #eee;">
+                        <button class="count-btn" onclick="updateAdultCount(-1)" style="width: 25px; height: 25px; border: none; background: white; color: #111; border-radius: 4px; font-size: 14px; font-weight: 700; cursor: pointer;">-</button>
+                        <strong id="pc-adult-count" style="width:30px; text-align:center;">1</strong>
+                        <button class="count-btn" onclick="updateAdultCount(1)" style="width: 25px; height: 25px; border: none; background: white; color: #111; border-radius: 4px; font-size: 14px; font-weight: 700; cursor: pointer;">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="total-summary">
+            <span>총 합계 금액</span>
+            <b id="display-total-price">₩ 320,000</b>
+        </div>
+
+        <button class="btn-buy" onclick="handleBuy()" id="buy-btn">구매하기</button>
+        <button class="btn-cart" onclick="addToCart()" style="margin-top:6px; width:100%;">장바구니 담기</button>
+    </div>
+</div>
+
+<footer class="footer" style="background: #ff6a00; color: #fff; padding: 72px 50px; display: flex; justify-content: space-between; align-items: flex-end; gap: 36px; flex-wrap: wrap;">
+    <div class="footer-left">
+        <b class="important" style="font-size: 20px; display: inline-block; margin-bottom: 11px;">상호 : 보라카이션 | 대표 : 윤오현</b><br>
+        서울특별시 중랑구 상봉로 16길 25-3<br>
+        사업자번호 : 498-31-00593 | daemit@naver.com
+    </div>
+</footer>
+
+<div class="mobile-bottom-bar">
+    <button class="m-btn-buy" onclick="openBookingDrawer()">구매하기</button>
+</div>
+
+<script src="main.js"></script>
+<script>
+    let adultCount = 1;
+    const PRICE = 320000;
+
+    function updateTotalPrice() {
+        const total = adultCount * PRICE;
+        document.getElementById('pc-adult-count').innerText = adultCount;
+        const totalStr = '₩ ' + total.toLocaleString();
+        const totalDisp = document.getElementById('display-total-price');
+        if (totalDisp) totalDisp.innerText = totalStr;
+        
+        document.querySelectorAll('.btn-buy, .m-btn-buy').forEach(btn => {
+            if (btn.tagName === 'BUTTON' && btn.id === 'buy-btn') btn.innerText = totalStr + ' 구매하기';
+        });
+    }
+
+    function updateAdultCount(delta) {
+        adultCount = Math.max(1, adultCount + delta);
+        updateTotalPrice();
+    }
+    
+    function handleBuy() {
+        const total = adultCount * PRICE;
+        const item = { name: "보라카이션 시그니처 패키지", price: PRICE, count: adultCount, totalPrice: total, isPackage: true };
+        BSUtils.buyNow(item);
+    }
+
+    function addToCart() {
+        const total = adultCount * PRICE;
+        const item = { name: "보라카이션 시그니처 패키지", price: PRICE, count: adultCount, totalPrice: total, isPackage: true };
+        BSUtils.saveToCart(item);
+    }
+
+    window.onload = () => {
+        updateTotalPrice(); 
+    };
+</script>
+</body>
+</html>

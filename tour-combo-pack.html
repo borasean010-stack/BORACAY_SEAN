@@ -3,42 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <title>보라카이션 투어 콤보팩 - 인기 투어 묶음 할인</title>
+    <meta name="description" content="보라카이 인기 투어(호핑, 고래상어, 말룸파티)를 콤보로 저렴하게 즐기세요.">
+    <link rel="canonical" href="https://www.boracaysean.com/tour-combo-pack">
+    <meta property="og:title" content="보라카이션 투어 콤보팩 - 인기 투어 묶음 할인">
+    <meta property="og:description" content="보라카이 인기 투어(호핑, 고래상어, 말룸파티)를 콤보로 저렴하게 즐기세요.">
+    <meta property="og:image" content="https://www.boracaysean.com/tourpack.png">
+    <meta property="og:url" content="https://www.boracaysean.com/tour-combo-pack">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="logo.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
+        body { background: #fdfdfd; padding-bottom: 100px; }
         .tour-detail-container { max-width: 1100px; margin: 120px auto 50px; display: grid; grid-template-columns: 1fr 360px; gap: 40px; padding: 0 20px; }
-        .tour-content { background: white; padding: 40px; border-radius: 28px; box-shadow: 0 15px 40px rgba(0,0,0,0.03); }
-        .reservation-box { background: white; border-radius: 20px; padding: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.08); position: sticky; top: 80px; height: fit-content; border: 1px solid #f0f0f0; }
-        .combo-option { border: 2px solid #eee; padding: 15px; border-radius: 12px; margin-bottom: 10px; cursor: pointer; }
-        .combo-option.selected { border-color: #ff6a00; background: #fffaf5; }
+        .tour-content { background: white; padding: 40px; border-radius: 28px; box-shadow: 0 15px 40px rgba(0,0,0,0.03); border: 1px solid #f5f5f5; }
+        .tour-content h1 { font-size: 32px; font-weight: 900; margin-bottom: 30px; letter-spacing: -1.5px; }
+        .section-title { font-size: 20px; font-weight: 800; margin: 40px 0 20px; padding-bottom: 12px; border-bottom: 2px solid #fff5eb; color: #ff6a00; }
+        .itinerary-img { width: 100%; margin-bottom: 30px; }
+        .itinerary-img img { width: 100%; border-radius: 20px; display: block; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .reservation-box { background: white; border-radius: 20px; padding: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.08); position: sticky; top: 80px; border: 1px solid #f0f0f0; height: fit-content; }
+        .date-tabs { display: flex; gap: 5px; margin-bottom: 10px; background: #f8f9fa; padding: 5px; border-radius: 12px; }
+        .date-tab { flex: 1; padding: 8px 5px; text-align: center; font-size: 12px; font-weight: 700; cursor: pointer; border-radius: 10px; transition: 0.2s; color: #888; border: 1px solid transparent; }
+        .date-tab.active { background: white; color: #ff6a00; border-color: #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .date-display { font-size: 12px; display: block; margin-top: 4px; color: #ff6a00; font-weight: 800; }
+        .calendar-wrap { margin-bottom: 10px; border: 1px solid #eee; border-radius: 16px; padding: 8px; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+        .day { padding: 10px 0; cursor: pointer; border-radius: 8px; font-size: 13px; font-weight: 600; }
+        .day.selected { background: #ff6a00 !important; color: white !important; font-weight: 800; }
+        .counter { display: flex; align-items: center; background: #f8f9fa; border-radius: 5px; padding: 1px; border: 1px solid #eee; }
+        .count-btn { width: 25px; height: 25px; border: none; background: white; color: #111; border-radius: 4px; font-size: 14px; font-weight: 700; cursor: pointer; }
+        .option-selector { margin-bottom: 15px; }
+        .option-card { border: 2px solid #eee; padding: 12px; border-radius: 12px; margin-bottom: 8px; cursor: pointer; transition: 0.3s; }
+        .option-card.active { border-color: #ff6a00; background: #fffaf5; }
+        .option-card h4 { margin: 0; font-size: 14px; font-weight: 800; }
+        .option-card p { margin: 3px 0 0; font-size: 12px; color: #666; font-weight: 600; }
+        .total-summary { padding-top: 10px; border-top: 2px solid #f8f8f8; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .total-summary b { font-size: 24px; font-weight: 900; color: #ff6a00; }
+        .btn-buy { width: 100%; padding: 14px; background: #111; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 15px; }
+        .btn-buy:hover { background: #ff6a00; transform: translateY(-3px); }
+        @media (max-width: 1024px) {
+            .tour-detail-container { grid-template-columns: 1fr; }
+            .reservation-box { display: none; }
+            .mobile-bottom-bar { display: flex; position: fixed; bottom: 0; left: 0; width: 100%; background: white; padding: 12px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); z-index: 9000; align-items: center; }
+            .m-btn-buy { flex: 1; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 17px; font-weight: 800; }
+        }
     </style>
 </head>
 <body>
 <div class="tour-detail-container">
     <div class="tour-content">
         <h1>보라카이션 투어 콤보팩</h1>
-        <img src="tourpack.png" style="width:100%; border-radius:20px; margin-bottom:20px;">
-        <div class="section-title">콤보팩 옵션 선택</div>
-        <div id="combo-options">
-            <div class="combo-option" onclick="selectCombo('콤보팩 A', 220000)"><h4>콤보팩 A</h4><p>말룸파티 + 고래상어</p></div>
-            <div class="combo-option" onclick="selectCombo('콤보팩 B', 270000)"><h4>콤보팩 B</h4><p>호핑 + 고래상어 + 말룸파티</p></div>
+        <div class="itinerary">
+            <div class="itinerary-img"><img src="tourpack.png" alt="보라카이션 투어 콤보팩 1"></div>
+            <div class="itinerary-img"><img src="package3.png" alt="보라카이션 투어 콤보팩 2"></div>
         </div>
+        <div class="section-title">환불 규정</div>
+        <img src="refund.png" alt="환불 규정" style="width:100%; border-radius:20px;">
     </div>
+
     <div class="reservation-box">
-        <div id="total-price" style="font-size:24px; font-weight:900; color:#ff6a00; margin-bottom:20px;">₩ 220,000</div>
+        <div class="date-tabs">
+            <div class="date-tab active">예약 날짜 선택<span id="pc-date-display" class="date-display"></span></div>
+        </div>
+        <div class="calendar-wrap">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <button onclick="changeMonth(-1)">&lt;</button>
+                <strong id="pc-month"></strong>
+                <button onclick="changeMonth(1)">&gt;</button>
+            </div>
+            <div class="calendar-grid" id="pc-days"></div>
+        </div>
+
+        <div class="option-selector">
+            <label style="font-weight:800; font-size:14px; color:#333; display:block; margin-bottom:10px;">콤보팩 옵션 선택</label>
+            <div class="option-card active" onclick="selectOption('콤보팩 A', 220000)">
+                <h4>콤보팩 A</h4>
+                <p>말룸파티 + 고래상어 (220,000원)</p>
+            </div>
+            <div class="option-card" onclick="selectOption('콤보팩 B', 270000)">
+                <h4>콤보팩 B</h4>
+                <p>호핑 + 고래상어 + 말룸파티 (270,000원)</p>
+            </div>
+            <div class="option-card" onclick="selectOption('콤보팩 C', 180000)">
+                <h4>콤보팩 C</h4>
+                <p>호핑 + 고래상어 (180,000원)</p>
+            </div>
+            <div class="option-card" onclick="selectOption('콤보팩 D', 150000)">
+                <h4>콤보팩 D</h4>
+                <p>호핑 + 말룸파티 (150,000원)</p>
+            </div>
+        </div>
+
+        <div class="person-selector">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-weight:800;">인원 선택</span>
+                <div class="counter">
+                    <button class="count-btn" onclick="updateCount(-1)">-</button>
+                    <strong id="pc-count" style="width:30px; text-align:center;">1</strong>
+                    <button class="count-btn" onclick="updateCount(1)">+</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="total-summary">
+            <span>총 합계 금액</span>
+            <b id="display-total-price">₩ 220,000</b>
+        </div>
         <button class="btn-buy" onclick="handleBuy()">구매하기</button>
     </div>
 </div>
+
+<div class="mobile-bottom-bar">
+    <button class="m-btn-buy" onclick="handleBuy()">구매하기 (₩ 220,000)</button>
+</div>
+
+<script src="main.js"></script>
 <script>
-    let selectedCombo = { name: '콤보팩 A', price: 220000 };
-    function selectCombo(name, price) {
-        selectedCombo = { name, price };
-        document.querySelectorAll('.combo-option').forEach(el => el.classList.remove('selected'));
-        event.currentTarget.classList.add('selected');
-        document.getElementById('total-price').innerText = '₩ ' + price.toLocaleString();
+    let adultCount = 1;
+    let selectedOption = { name: "콤보팩 A", price: 220000 };
+    let selectedDate = new Date().toISOString().split('T')[0];
+    let currentMonth = new Date();
+
+    function selectOption(name, price) {
+        selectedOption = { name, price };
+        document.querySelectorAll('.option-card').forEach(c => c.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        updateTotalPrice();
     }
+
+    function updateCount(delta) {
+        adultCount = Math.max(1, adultCount + delta);
+        updateTotalPrice();
+    }
+
+    function updateTotalPrice() {
+        const total = adultCount * selectedOption.price;
+        document.getElementById('pc-count').innerText = adultCount;
+        document.getElementById('display-total-price').innerText = '₩ ' + total.toLocaleString();
+        document.querySelector('.m-btn-buy').innerText = '구매하기 (₩ ' + total.toLocaleString() + ')';
+    }
+
+    function renderCalendars() {
+        const grid = document.getElementById('pc-days');
+        grid.innerHTML = '';
+        const year = currentMonth.getFullYear();
+        const month = currentMonth.getMonth();
+        document.getElementById('pc-month').innerText = `${year}년 ${month + 1}월`;
+        const firstDay = new Date(year, month, 1).getDay();
+        const lastDate = new Date(year, month + 1, 0).getDate();
+        
+        ['일','월','화','수','목','금','토'].forEach(d => {
+            const el = document.createElement('div');
+            el.style.color = '#bbb'; el.style.fontSize = '10px'; el.style.fontWeight = '800';
+            el.innerText = d; grid.appendChild(el);
+        });
+
+        for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div'));
+        for (let i = 1; i <= lastDate; i++) {
+            const day = document.createElement('div');
+            day.className = 'day';
+            day.innerText = i;
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+            if (dateStr === selectedDate) day.classList.add('selected');
+            day.onclick = () => { selectedDate = dateStr; document.getElementById('pc-date-display').innerText = dateStr; renderCalendars(); };
+            grid.appendChild(day);
+        }
+    }
+    function changeMonth(delta) { currentMonth.setMonth(currentMonth.getMonth() + delta); renderCalendars(); }
+
+    window.onload = () => {
+        document.getElementById('pc-date-display').innerText = selectedDate;
+        renderCalendars();
+    };
+
     function handleBuy() {
-        sessionStorage.setItem('directBuyItem', JSON.stringify({ name: '보라카이션 콤보팩 - ' + selectedCombo.name, price: selectedCombo.price, count: 1 }));
+        const item = { name: "보라카이션 투어 콤보팩 - " + selectedOption.name, price: selectedOption.price, count: adultCount, date: selectedDate };
+        sessionStorage.setItem('directBuyItem', JSON.stringify(item));
         window.open('booking-form.html', '_blank');
     }
 </script>

@@ -182,6 +182,7 @@
         <div class="itinerary">
             <div class="itinerary-img"><img src="package1.png" alt="보라카이션 패키지 1"></div>
             <div class="itinerary-img"><img src="package2.png" alt="보라카이션 패키지 2"></div>
+            <div class="itinerary-img"><img src="package3.png" alt="보라카이션 패키지 3"></div>
         </div>
 
         <div class="section-title">환불 규정</div>
@@ -199,40 +200,52 @@
                 <button onclick="changeMonth(1)" style="border:none; background:none; color:#ff6a00; font-weight:800; cursor:pointer;">&gt;</button>
             </div>
             <div class="calendar-grid" id="pc-days" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center;"></div>
-        </div>
-
-        <div class="option-selector" style="margin-bottom:20px;">
-            <label style="font-weight:800; font-size:14px; color:#333; display:block; margin-bottom:10px;">패키지 옵션 선택</label>
-            <div class="option-grid-container">
-                <div class="option-card active full-width" onclick="selectOption('시그니처 패키지')">
-                    <h4>시그니처 패키지</h4>
-                    <p>픽샌 + 호핑 + 말룸 + 고래상어</p>
-                </div>
-                <div class="option-card" onclick="selectOption('패키지 A')">
-                    <h4>패키지 A</h4>
-                    <p>픽샌 + 말룸 + 고래상어</p>
-                </div>
-                <div class="option-card" onclick="selectOption('패키지 B')">
-                    <h4>패키지 B</h4>
-                    <p>픽샌 + 호핑 + 고래상어</p>
-                </div>
-                <div class="option-card" onclick="selectOption('패키지 C')">
-                    <h4>패키지 C</h4>
-                    <p>픽샌 + 호핑 + 말룸</p>
-                </div>
-                <div class="option-card" onclick="selectOption('픽샌팩 A')">
-                    <h4>픽샌팩 A</h4>
-                    <p>픽샌 + 호핑</p>
-                </div>
-                <div class="option-card" onclick="selectOption('픽샌팩 B')">
-                    <h4>픽샌팩 B</h4>
-                    <p>픽샌 + 고래상어</p>
-                </div>
-                <div class="option-card" onclick="selectOption('픽샌팩 C')">
-                    <h4>픽샌팩 C</h4>
-                    <p>픽샌 + 말룸</p>
-                </div>
-            </div>
+                     <div class="option-selector" style="margin-bottom:20px;">
+                         <div class="option-card" onclick="selectOption('시그니처 패키지')">
+                             <h4>시그니처 패키지</h4>
+                             <p>픽샌 + 호핑 + 말룸 + 고래상어</p>
+                         </div>
+                         <div class="option-card" onclick="selectOption('패키지 A')">
+                             <h4>패키지 A</h4>
+                             <p>픽샌 + 말룸 + 고래상어</p>
+                         </div>
+                         <div class="option-card" onclick="selectOption('패키지 B')">
+                             <h4>패키지 B</h4>
+                             <p>픽샌 + 호핑 + 고래상어</p>
+                         </div>
+                         <div class="option-card" onclick="selectOption('패키지 C')">
+                             <h4>패키지 C</h4>
+                             <p>픽샌 + 호핑 + 말룸</p>
+                         </div>
+                         <div class="option-card" onclick="selectOption('픽샌팩 A')">
+                             <h4>픽샌팩 A</h4>
+                             <p>픽샌 + 호핑</p>
+                         </div>
+                         <div class="option-card" onclick="selectOption('픽샌팩 B')">
+                             <h4>픽샌팩 B</h4>
+                             <p>픽샌 + 고래상어</p>
+                         </div>
+                         <div class="option-card" onclick="selectOption('픽샌팩 C')">
+                             <h4>픽샌팩 C</h4>
+                             <p>픽샌 + 말룸</p>
+                         </div>
+                         <div class="option-card" onclick="selectOption('콤보팩 A')">
+                             <h4>콤보팩 A</h4>
+                             <p>호핑 + 고래상어 + 말룸파티</p>
+                         </div>
+                         <div class="option-card" onclick="selectOption('콤보팩 B')">
+                             <h4>콤보팩 B</h4>
+                             <p>호핑 + 고래상어</p>
+                         </div>
+                         <div class="option-card" onclick="selectOption('콤보팩 C')">
+                             <h4>콤보팩 C</h4>
+                             <p>호핑 + 말룸파티</p>
+                         </div>
+                         <div class="option-card" onclick="selectOption('콤보팩 D')">
+                             <h4>콤보팩 D</h4>
+                             <p>말룸파티 + 고래상어</p>
+                         </div>
+                     </div>
         </div>
 
         <div class="person-selector">
@@ -298,11 +311,15 @@
         '패키지 C': { name: '패키지 C', desc: '픽샌 + 호핑 + 말룸', adultPrice: 195000, childPrice: 185000, childDesc: '(36개월 ~ 초6)' },
         '픽샌팩 A': { name: '픽샌팩 A', desc: '픽샌 + 호핑', adultPrice: 100000, childPrice: 100000, childDesc: '(성인 요금 동일)' },
         '픽샌팩 B': { name: '픽샌팩 B', desc: '픽샌 + 고래상어', adultPrice: 175000, childPrice: 175000, childDesc: '(성인 요금 동일)' },
-        '픽샌팩 C': { name: '픽샌팩 C', desc: '픽샌 + 말룸', adultPrice: 150000, childPrice: 141000, childDesc: '(36개월 ~ 초6)' }
+        '픽샌팩 C': { name: '픽샌팩 C', desc: '픽샌 + 말룸', adultPrice: 150000, childPrice: 141000, childDesc: '(36개월 ~ 초6)' },
+        '콤보팩 A': { name: '콤보팩 A', desc: '호핑 + 고래상어 + 말룸파티', adultPrice: 270000, childPrice: 260000, childDesc: '(만5세이상 ~ 초6)' },
+        '콤보팩 B': { name: '콤보팩 B', desc: '호핑 + 고래상어', adultPrice: 175000, childPrice: 175000, childDesc: '(성인 요금 동일)' },
+        '콤보팩 C': { name: '콤보팩 C', desc: '호핑 + 말룸파티', adultPrice: 150000, childPrice: 141000, childDesc: '(36개월 ~ 초6)' },
+        '콤보팩 D': { name: '콤보팩 D', desc: '말룸파티 + 고래상어', adultPrice: 220000, childPrice: 210000, childDesc: '(만5세이상 ~ 초6)' }
     };
     let adultCount = 1;
     let childCount = 0;
-    let selectedOptionKey = '시그니처 패키지';
+    let selectedOptionKey = '콤보팩 A';
 
     const now = new Date();
     let currentDate = new Date(now.getFullYear(), now.getMonth(), 1);

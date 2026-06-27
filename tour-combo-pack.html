@@ -104,7 +104,6 @@
     .option-card p { margin: 3px 0 0; font-size: 12px; color: #666; font-weight: 600; }
 
     @media (max-device-width: 1024px) {
-            .total-summary { display: none !important; }
         .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
         .reservation-box { display: none; }
         .mobile-bottom-bar { 
@@ -169,10 +168,6 @@
     </div>
 
     <div class="reservation-box">
-        <div class="price-header">
-            <span class="price-label">선택 옵션 금액</span>
-            <span class="price-value" id="current-price-val">₩ 270,000</span>
-        </div>
         <div class="date-tabs">
             <div class="date-tab active">예약 날짜 선택<span id="pc-date-display" class="date-display"></span></div>
         </div>
@@ -285,7 +280,8 @@
         document.querySelectorAll('.option-card').forEach(c => c.classList.remove('active'));
         event.currentTarget.classList.add('active');
         
-        document.getElementById('current-price-val').innerText = '₩ ' + option.adultPrice.toLocaleString();
+        const priceVal = document.getElementById('current-price-val');
+        if (priceVal) priceVal.innerText = '₩ ' + option.adultPrice.toLocaleString();
         
         const childAgeDesc = document.getElementById('child-age-desc');
         if (childAgeDesc) {

@@ -3,87 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <title>보라카이션 패키지 - 보라카이 핵심 투어 조합</title>
-    <meta name="description" content="보라카이 핵심 투어(픽샌, 호핑, 말룸, 고래상어)를 가장 알뜰하게 즐기는 보라카이션 패키지">
-    <link rel="canonical" href="https://www.boracaysean.com/boracay-package">
-    <link rel="icon" type="image/png" href="logo.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
-        body { background: #fdfdfd; padding-bottom: 100px; }
-        .container { max-width: 1100px; margin: 120px auto 50px; padding: 0 20px; }
-        .package-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
-        @media (max-width: 768px) { .package-grid { grid-template-columns: 1fr; } }
-        .option-card { border: 1.5px solid #eee; padding: 15px; border-radius: 15px; cursor: pointer; text-align: center; background: #fff; }
-        .option-card.selected { border-color: #ff6a00; background: #fffaf5; }
-        .option-card h4 { margin: 0 0 5px; }
-        .option-card p { font-size: 12px; color: #666; margin: 0; }
-        .btn-buy { width: 100%; padding: 15px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; }
+        .tour-detail-container { max-width: 1100px; margin: 120px auto 50px; display: grid; grid-template-columns: 1fr 360px; gap: 40px; padding: 0 20px; }
+        .tour-content { background: white; padding: 40px; border-radius: 28px; box-shadow: 0 15px 40px rgba(0,0,0,0.03); }
+        .reservation-box { background: white; border-radius: 20px; padding: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.08); position: sticky; top: 80px; height: fit-content; border: 1px solid #f0f0f0; }
+        .package-option { border: 2px solid #eee; padding: 15px; border-radius: 12px; margin-bottom: 10px; cursor: pointer; }
+        .package-option.selected { border-color: #ff6a00; background: #fffaf5; }
     </style>
 </head>
 <body>
-    <div class="container">
+<div class="tour-detail-container">
+    <div class="tour-content">
         <h1>보라카이션 패키지</h1>
-        <img src="package1.png" style="width:100%; border-radius:20px; margin-bottom:10px;">
-        <img src="package2.png" style="width:100%; border-radius:20px; margin-bottom:20px;">
-
-        <h3>시그니처 패키지</h3>
-        <div class="option-card" onclick="selectOption('시그니처', 320000, 310000)">
-            <h4>픽샌 + 호핑 + 말룸 + 고래상어</h4>
-            <p>성인 320,000원 / 소인 310,000원</p>
+        <img src="package1.png" style="width:100%; border-radius:20px; margin-bottom:20px;">
+        <div class="section-title">패키지 옵션 선택</div>
+        <div id="package-options">
+            <div class="package-option" onclick="selectPkg('시그니처', 320000)"><h4>시그니처 패키지</h4><p>픽샌 + 호핑 + 말룸 + 고래상어</p></div>
+            <div class="package-option" onclick="selectPkg('패키지 A', 270000)"><h4>패키지 A</h4><p>픽샌 + 말룸 + 고래상어</p></div>
         </div>
-
-        <h3>패키지 A, B, C</h3>
-        <div class="package-grid">
-            <div class="option-card" onclick="selectOption('패키지 A', 270000, 260000)">
-                <h4>패키지 A</h4>
-                <p>픽샌 + 말룸 + 고래상어</p>
-                <p>성인 270,000 / 소인 260,000</p>
-            </div>
-            <div class="option-card" onclick="selectOption('패키지 B', 230000, 230000)">
-                <h4>패키지 B</h4>
-                <p>픽샌 + 호핑 + 고래상어</p>
-                <p>성인/소인 230,000</p>
-            </div>
-            <div class="option-card" onclick="selectOption('패키지 C', 195000, 185000)">
-                <h4>패키지 C</h4>
-                <p>픽샌 + 호핑 + 말룸</p>
-                <p>성인 195,000 / 소인 185,000</p>
-            </div>
-        </div>
-
-        <h3>픽샌팩 A, B, C</h3>
-        <div class="package-grid">
-            <div class="option-card" onclick="selectOption('픽샌팩 A', 100000, 100000)">
-                <h4>픽샌팩 A</h4>
-                <p>픽샌 + 호핑</p>
-                <p>성인/소인 100,000</p>
-            </div>
-            <div class="option-card" onclick="selectOption('픽샌팩 B', 175000, 175000)">
-                <h4>픽샌팩 B</h4>
-                <p>픽샌 + 고래상어</p>
-                <p>성인/소인 175,000</p>
-            </div>
-            <div class="option-card" onclick="selectOption('픽샌팩 C', 150000, 141000)">
-                <h4>픽샌팩 C</h4>
-                <p>픽샌 + 말룸</p>
-                <p>성인 150,000 / 소인 141,000</p>
-            </div>
-        </div>
-
-        <button class="btn-buy" onclick="handleBuy()">예약하기</button>
     </div>
-    <script>
-        let selected = { name: '시그니처', priceA: 320000, priceC: 310000 };
-        function selectOption(name, a, c) {
-            selected = { name, priceA: a, priceC: c };
-            document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
-            event.currentTarget.classList.add('selected');
-        }
-        function handleBuy() {
-            sessionStorage.setItem('directBuyItem', JSON.stringify({ name: '보라카이션 패키지 - ' + selected.name, price: selected.priceA }));
-            window.location.href = '/booking-form';
-        }
-    </script>
+    <div class="reservation-box">
+        <div id="total-price" style="font-size:24px; font-weight:900; color:#ff6a00; margin-bottom:20px;">₩ 320,000</div>
+        <button class="btn-buy" onclick="handleBuy()">구매하기</button>
+    </div>
+</div>
+<script>
+    let selectedPkg = { name: '시그니처', price: 320000 };
+    function selectPkg(name, price) {
+        selectedPkg = { name, price };
+        document.querySelectorAll('.package-option').forEach(el => el.classList.remove('selected'));
+        event.currentTarget.classList.add('selected');
+        document.getElementById('total-price').innerText = '₩ ' + price.toLocaleString();
+    }
+    function handleBuy() {
+        sessionStorage.setItem('directBuyItem', JSON.stringify({ name: '보라카이션 패키지 - ' + selectedPkg.name, price: selectedPkg.price, count: 1, isPackage: true }));
+        window.open('booking-form.html', '_blank');
+    }
+</script>
 </body>
 </html>

@@ -3,57 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <title>보라카이션 투어 콤보팩 - 인기 투어 묶음 할인</title>
-    <meta name="description" content="보라카이 인기 투어(호핑, 고래상어, 말룸파티)를 콤보로 저렴하게 즐기세요.">
-    <link rel="canonical" href="https://www.boracaysean.com/tour-combo-pack">
-    <link rel="icon" type="image/png" href="logo.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
-        body { background: #fdfdfd; padding-bottom: 100px; }
-        .container { max-width: 800px; margin: 120px auto 50px; padding: 0 20px; }
-        .option-card { border: 1.5px solid #eee; padding: 20px; border-radius: 15px; cursor: pointer; margin-bottom: 15px; background: #fff; }
-        .option-card.selected { border-color: #ff6a00; background: #fffaf5; }
-        .option-card h4 { margin: 0 0 10px; }
-        .btn-buy { width: 100%; padding: 15px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; }
+        .tour-detail-container { max-width: 1100px; margin: 120px auto 50px; display: grid; grid-template-columns: 1fr 360px; gap: 40px; padding: 0 20px; }
+        .tour-content { background: white; padding: 40px; border-radius: 28px; box-shadow: 0 15px 40px rgba(0,0,0,0.03); }
+        .reservation-box { background: white; border-radius: 20px; padding: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.08); position: sticky; top: 80px; height: fit-content; border: 1px solid #f0f0f0; }
+        .combo-option { border: 2px solid #eee; padding: 15px; border-radius: 12px; margin-bottom: 10px; cursor: pointer; }
+        .combo-option.selected { border-color: #ff6a00; background: #fffaf5; }
     </style>
 </head>
 <body>
-    <div class="container">
+<div class="tour-detail-container">
+    <div class="tour-content">
         <h1>보라카이션 투어 콤보팩</h1>
         <img src="tourpack.png" style="width:100%; border-radius:20px; margin-bottom:20px;">
-        <img src="package3.png" style="width:100%; border-radius:20px; margin-bottom:20px;">
-
-        <div class="option-card" onclick="selectOption('콤보팩 A', 220000)">
-            <h4>콤보팩 A: 말룸파티 + 고래상어 (원데이 팩)</h4>
-            <p>220,000원</p>
+        <div class="section-title">콤보팩 옵션 선택</div>
+        <div id="combo-options">
+            <div class="combo-option" onclick="selectCombo('콤보팩 A', 220000)"><h4>콤보팩 A</h4><p>말룸파티 + 고래상어</p></div>
+            <div class="combo-option" onclick="selectCombo('콤보팩 B', 270000)"><h4>콤보팩 B</h4><p>호핑 + 고래상어 + 말룸파티</p></div>
         </div>
-        <div class="option-card" onclick="selectOption('콤보팩 B', 270000)">
-            <h4>콤보팩 B: 호핑 + 고래상어 + 말룸파티</h4>
-            <p>270,000원</p>
-        </div>
-        <div class="option-card" onclick="selectOption('콤보팩 C', 180000)">
-            <h4>콤보팩 C: 호핑 + 고래상어</h4>
-            <p>180,000원</p>
-        </div>
-        <div class="option-card" onclick="selectOption('콤보팩 D', 150000)">
-            <h4>콤보팩 D: 호핑 + 말룸파티</h4>
-            <p>150,000원</p>
-        </div>
-
-        <button class="btn-buy" onclick="handleBuy()">예약하기</button>
     </div>
-    <script>
-        let selected = { name: '콤보팩 A', price: 220000 };
-        function selectOption(name, p) {
-            selected = { name, price: p };
-            document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
-            event.currentTarget.classList.add('selected');
-        }
-        function handleBuy() {
-            sessionStorage.setItem('directBuyItem', JSON.stringify({ name: '보라카이션 콤보팩 - ' + selected.name, price: selected.price }));
-            window.location.href = '/booking-form';
-        }
-    </script>
+    <div class="reservation-box">
+        <div id="total-price" style="font-size:24px; font-weight:900; color:#ff6a00; margin-bottom:20px;">₩ 220,000</div>
+        <button class="btn-buy" onclick="handleBuy()">구매하기</button>
+    </div>
+</div>
+<script>
+    let selectedCombo = { name: '콤보팩 A', price: 220000 };
+    function selectCombo(name, price) {
+        selectedCombo = { name, price };
+        document.querySelectorAll('.combo-option').forEach(el => el.classList.remove('selected'));
+        event.currentTarget.classList.add('selected');
+        document.getElementById('total-price').innerText = '₩ ' + price.toLocaleString();
+    }
+    function handleBuy() {
+        sessionStorage.setItem('directBuyItem', JSON.stringify({ name: '보라카이션 콤보팩 - ' + selectedCombo.name, price: selectedCombo.price, count: 1 }));
+        window.open('booking-form.html', '_blank');
+    }
+</script>
 </body>
 </html>

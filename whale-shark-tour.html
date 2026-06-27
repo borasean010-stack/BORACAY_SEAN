@@ -3,14 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <title>보라카이 리버타드 고래상어 투어 - 경이로운 바다속 만남</title>
+    <meta name="description" content="보라카이에서 즐기는 특별한 경험! 리버타드에서 만나는 거대하고 온순한 고래상어와의 신비로운 만남.">
+    <link rel="canonical" href="https://www.boracaysean.com/whale-shark-tour">
+    <meta property="og:title" content="보라카이 리버타드 고래상어 투어 - 경이로운 바다속 만남">
+    <meta property="og:description" content="보라카이에서 즐기는 특별한 경험! 리버타드에서 만나는 거대하고 온순한 고래상어와의 신비로운 만남.">
     <meta property="og:image" content="https://www.boracaysean.com/whale-shark.png">
+    <meta property="og:url" content="https://www.boracaysean.com/whale-shark-tour">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <!-- 표준 디자인 스타일 시트 등 생략 -->
+    <style>
+    body { background: #fdfdfd; padding-bottom: 100px; }
+    .tour-detail-container { max-width: 1100px; margin: 120px auto 50px; display: grid; grid-template-columns: 1fr 360px; gap: 40px; padding: 0 20px; }
+    .tour-content { background: white; padding: 40px; border-radius: 28px; box-shadow: 0 15px 40px rgba(0,0,0,0.03); border: 1px solid #f5f5f5; }
+    .tour-content h1 { font-size: 32px; font-weight: 900; margin-bottom: 30px; }
+    .section-title { font-size: 20px; font-weight: 800; margin: 40px 0 20px; padding-bottom: 12px; border-bottom: 2px solid #fff5eb; color: #ff6a00; }
+    .itinerary-img { width: 100%; margin-bottom: 30px; }
+    .itinerary-img img { width: 100%; border-radius: 20px; display: block; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+    .reservation-box { background: white; border-radius: 20px; padding: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.08); position: sticky; top: 80px; border: 1px solid #f0f0f0; height: fit-content; }
+    .calendar-wrap { margin-bottom: 10px; border: 1px solid #eee; border-radius: 16px; padding: 8px; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+    .day { padding: 10px 0; cursor: pointer; border-radius: 8px; font-size: 13px; font-weight: 600; }
+    .day.selected { background: #ff6a00 !important; color: white !important; }
+    </style>
 </head>
 <body>
-    <!-- (이하 표준화된 투어 상세 페이지 구조) -->
-    <div class="itinerary-img"><img src="whale-shark1.png" alt="보라카이 리버타드 고래상어 투어 1"></div>
-    <div class="itinerary-img"><img src="whale-shark2.png" alt="보라카이 리버타드 고래상어 투어 2"></div>
-    <!-- ... 표준 달력 및 예약 로직 포함 ... -->
+<div class="tour-detail-container">
+    <div class="tour-content">
+        <h1>보라카이 리버타드 고래상어 투어</h1>
+        <div class="itinerary-img"><img src="whale-shark1.png" alt="고래상어 투어 1"></div>
+        <div class="itinerary-img"><img src="whale-shark2.png" alt="고래상어 투어 2"></div>
+    </div>
+    <div class="reservation-box">
+        <div class="calendar-wrap">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <button onclick="changeMonth(-1)">&lt;</button>
+                <strong id="pc-month"></strong>
+                <button onclick="changeMonth(1)">&gt;</button>
+            </div>
+            <div class="calendar-grid" id="pc-days"></div>
+        </div>
+        <button class="btn-buy" onclick="handleBuy()">구매하기</button>
+    </div>
+</div>
+<script>
+    let selectedDate = new Date().toISOString().split('T')[0];
+    let currentMonth = new Date();
+    function renderCalendars() {
+        const grid = document.getElementById('pc-days');
+        grid.innerHTML = '';
+        const year = currentMonth.getFullYear();
+        const month = currentMonth.getMonth();
+        document.getElementById('pc-month').innerText = `${year}년 ${month + 1}월`;
+        const firstDay = new Date(year, month, 1).getDay();
+        const lastDate = new Date(year, month + 1, 0).getDate();
+        for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div'));
+        for (let i = 1; i <= lastDate; i++) {
+            const day = document.createElement('div');
+            day.className = 'day';
+            day.innerText = i;
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+            if (dateStr === selectedDate) day.classList.add('selected');
+            day.onclick = () => { selectedDate = dateStr; renderCalendars(); };
+            grid.appendChild(day);
+        }
+    }
+    function changeMonth(delta) { currentMonth.setMonth(currentMonth.getMonth() + delta); renderCalendars(); }
+    window.onload = renderCalendars;
+    function handleBuy() {
+        const item = { name: "보라카이 리버타드 고래상어 투어", price: 128000, count: 1, date: selectedDate };
+        sessionStorage.setItem('directBuyItem', JSON.stringify(item));
+        window.open('booking-form.html', '_blank');
+    }
+</script>
 </body>
 </html>

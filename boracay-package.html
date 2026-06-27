@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>보라카이션 패키지 - 보라카이 핵심 투어 조합 예약 No.1</title>
-    <meta name="description" content="보라카이션 패키지. 픽업샌딩, 호핑투어, 말룸파티, 고래상어 투어까지 가장 알뜰하게 즐기는 방법.">
+    <meta name="description" content="보라카이션 패키지. 픽업샌딩, 호핑투어, 말룸파티, 리버타드 고래상어 투어까지 가장 알뜰하게 즐기는 방법.">
     <link rel="canonical" href="https://www.boracaysean.com/boracay-package">
     <meta property="og:title" content="보라카이션 패키지 - 보라카이 핵심 투어 조합 예약 No.1">
-    <meta property="og:description" content="보라카이션 패키지. 픽업샌딩, 호핑투어, 말룸파티, 고래상어 투어까지 가장 알뜰하게 즐기는 방법.">
+    <meta property="og:description" content="보라카이션 패키지. 픽업샌딩, 호핑투어, 말룸파티, 리버타드 고래상어 투어까지 가장 알뜰하게 즐기는 방법.">
     <meta property="og:image" content="https://www.boracaysean.com/package1.png">
     <meta property="og:url" content="https://www.boracaysean.com/boracay-package">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="보라카이션 패키지 - 보라카이 핵심 투어 조합 예약 No.1">
-    <meta name="twitter:description" content="보라카이션 패키지. 픽업샌딩, 호핑투어, 말룸파티, 고래상어 투어까지 가장 알뜰하게 즐기는 방법.">
+    <meta name="twitter:description" content="보라카이션 패키지. 픽업샌딩, 호핑투어, 말룸파티, 리버타드 고래상어 투어까지 가장 알뜰하게 즐기는 방법.">
     <meta name="twitter:image" content="https://www.boracaysean.com/package1.png">
 
     <link rel="icon" type="image/png" href="logo.png">
@@ -23,89 +23,65 @@
     <link rel="stylesheet" href="style.css">
     <style>
     body { background: #fdfdfd; padding-bottom: 100px; }
-    .tour-detail-container { 
-        max-width: 1100px; 
-        margin: 120px auto 50px; 
-        display: grid; 
-        grid-template-columns: 1fr; 
-        gap: 40px; 
-        padding: 0 20px; 
+    .tour-detail-container {
+        max-width: 1100px;
+        margin: 120px auto 50px;
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 40px;
+        padding: 0 20px;
     }
-    .tour-content { 
-        background: white; 
-        padding: 40px; 
-        border-radius: 28px; 
-        box-shadow: 0 15px 40px rgba(0,0,0,0.03); 
+    .tour-content {
+        background: white;
+        padding: 40px;
+        border-radius: 28px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.03);
         border: 1px solid #f5f5f5;
     }
     .tour-content h1 { font-size: 32px; font-weight: 900; margin-bottom: 30px; letter-spacing: -1.5px; }
-    .section-title { 
-        font-size: 20px; 
-        font-weight: 800; 
-        margin: 40px 0 20px; 
-        padding-bottom: 12px; 
-        border-bottom: 2px solid #fff5eb; 
-        color: #ff6a00; 
+    .section-title {
+        font-size: 20px;
+        font-weight: 800;
+        margin: 40px 0 20px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #fff5eb;
+        color: #ff6a00;
     }
     .itinerary-img { width: 100%; margin-bottom: 30px; }
     .itinerary-img img { width: 100%; border-radius: 20px; display: block; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-    
-    
 
-    .reservation-box { 
-        background: white; 
-        border-radius: 28px; 
-        padding: 24px; 
-        box-shadow: 0 20px 50px rgba(0,0,0,0.08); 
-        position: sticky; 
-        top: 100px; 
-        border: 1px solid #f0f0f0; 
-        display:block;
+    /* 예약 박스 */
+    .reservation-box {
+        background: white;
+        border-radius: 28px;
+        padding: 24px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+        position: sticky;
+        top: 100px;
+        border: 1px solid #f0f0f0;
     }
-    
-    .price-header { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #f8f8f8; }
-    .price-label { font-size: 14px; color: #888; font-weight: 700; margin-bottom: 4px; display: block; }
-    .price-value { font-size: 28px; font-weight: 900; color: #ff6a00; letter-spacing: -1px; }
 
-    .day { padding: 10px 0; cursor: pointer; border-radius: 8px; font-size: 13px; font-weight: 600; }
-    .day:hover { background: #fff1e6; }
-    .day.selected { background: #ff6a00 !important; color: white !important; font-weight: 800; }
-
-    .btn-buy { width: 100%; padding: 18px; background: #111; color: white; border: none; border-radius: 18px; font-size: 17px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-    .btn-cart { width: 100%; padding: 16px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 18px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-    .btn-buy:hover { background: #ff6a00; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
-    .btn-cart:hover { background: #fff5eb; }
-
-    .person-selector { background:#fcfcfc; border-radius:24px; border:1px solid #f0f0f0; padding:20px; margin-bottom:20px; }
-    .person-row { margin-bottom: 15px; }
-    .person-row:last-child { margin-bottom: 0; }
-    .person-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .person-price-calc { text-align: right; font-size: 13px; color: #888; font-weight: 600; }
-    .person-price-calc b { color: #333; }
-
-    .total-summary { 
-        padding-top: 20px; 
-        border-top: 2px solid #f8f8f8; 
-        margin-top: 20px; 
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center;
-        margin-bottom: 20px;
+    .reservation-box-title {
+        font-size: 18px;
+        font-weight: 900;
+        color: #111;
+        margin-bottom: 18px;
+        letter-spacing: -0.5px;
     }
-    .total-summary span { font-size: 16px; font-weight: 800; color: #111; }
-    .total-summary b { font-size: 28px; font-weight: 900; color: #ff6a00; letter-spacing: -1px; }
 
+    /* 옵션 그리드 */
     .option-grid-container {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 8px;
+        margin-bottom: 20px;
     }
     .option-card {
         border: 2px solid #eee;
-        padding: 8px;
+        padding: 10px 6px;
         border-radius: 12px;
         cursor: pointer;
-        transition: 0.3s;
+        transition: 0.25s;
         text-align: center;
         background: white;
         display: flex;
@@ -113,24 +89,65 @@
         justify-content: center;
         align-items: center;
     }
-    .option-card.full-width {
-        grid-column: span 3;
-    }
+    .option-card.full-width { grid-column: span 3; }
     .option-card.active { border-color: #ff6a00; background: #fffaf5; }
-    .option-card h4 { margin: 0; font-size: 13px; font-weight: 800; color: #111; line-height: 1.2; }
+    .option-card h4 { margin: 0; font-size: 12px; font-weight: 800; color: #111; line-height: 1.2; }
     .option-card p { margin: 4px 0 0; font-size: 10px; color: #666; font-weight: 600; line-height: 1.3; word-break: keep-all; }
+    .option-section-label {
+        font-size: 13px;
+        font-weight: 800;
+        color: #888;
+        margin: 14px 0 8px;
+        letter-spacing: -0.3px;
+    }
 
-    @media (max-device-width: 1024px) {
+    /* 인원 선택 */
+    .person-selector { background:#fcfcfc; border-radius:18px; border:1px solid #f0f0f0; padding:18px; margin-bottom:18px; }
+    .person-row { margin-bottom: 14px; }
+    .person-row:last-child { margin-bottom: 0; }
+    .person-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .person-label { font-size: 14px; font-weight: 700; color: #222; }
+    .person-age { font-size: 11px; color: #888; font-weight: 600; }
+    .person-price-calc { text-align: right; font-size: 13px; color: #888; font-weight: 600; }
+    .person-price-calc b { color: #333; }
+    .counter-wrap { display: flex; align-items: center; gap: 12px; }
+    .counter-btn { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #ddd; background: white; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #333; transition: 0.2s; }
+    .counter-btn:hover { border-color: #ff6a00; color: #ff6a00; }
+    .counter-num { font-size: 18px; font-weight: 900; color: #111; min-width: 24px; text-align: center; }
+
+    /* 합계 */
+    .total-summary {
+        padding-top: 18px;
+        border-top: 2px solid #f8f8f8;
+        margin-top: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+    }
+    .total-summary span { font-size: 15px; font-weight: 800; color: #111; }
+    .total-summary b { font-size: 26px; font-weight: 900; color: #ff6a00; letter-spacing: -1px; }
+
+    /* 버튼 */
+    .btn-buy { width: 100%; padding: 18px; background: #111; color: white; border: none; border-radius: 18px; font-size: 17px; font-weight: 800; cursor: pointer; transition: 0.3s; margin-bottom: 10px; }
+    .btn-cart { width: 100%; padding: 16px; background: white; color: #ff6a00; border: 2px solid #ff6a00; border-radius: 18px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+    .btn-buy:hover { background: #ff6a00; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255,106,0,0.2); }
+    .btn-cart:hover { background: #fff5eb; }
+
+    @media (max-width: 1024px) {
         .tour-detail-container { grid-template-columns: 1fr; margin-top: 90px; }
         .reservation-box { display: none; }
-        .mobile-bottom-bar { 
-            display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
-            background: white; padding: 12px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); 
+        .mobile-bottom-bar {
+            display: flex; position: fixed; bottom: 0; left: 0; width: 100%;
+            background: white; padding: 12px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.08);
             z-index: 9000; align-items: center;
         }
         .m-btn-buy { flex: 1; height: 55px; background: #ff6a00; color: white; border: none; border-radius: 15px; font-size: 17px; font-weight: 800; }
     }
-</style>
+    @media (min-width: 1025px) {
+        .mobile-bottom-bar { display: none; }
+    }
+    </style>
 </head>
 <body>
 <div class="side-menu-overlay" id="overlay"></div>
@@ -139,7 +156,7 @@
         <div class="side-logo">BORACAY SEAN</div>
         <div class="side-close" id="sideClose">✕</div>
     </div>
-            <div class="side-menu-list">
+    <div class="side-menu-list">
         <a href="/essential-tours">보라카이 필수투어</a>
         <a href="/activities">액티비티</a>
         <a href="/massage">마사지</a>
@@ -160,11 +177,11 @@
         </div>
     </div>
 
-            <div class="menu pc-only">
-        <a href="/essential-tours" class="tab-link active" data-category="essential">보라카이 필수투어</a>
+    <div class="menu pc-only">
+        <a href="/essential-tours" class="tab-link" data-category="essential">보라카이 필수투어</a>
         <a href="/activities" class="tab-link" data-category="activity">액티비티</a>
         <a href="/massage" class="tab-link" data-category="massage">마사지</a>
-        <a href="/boracay-package" class="tab-link">보라카이 패키지</a>
+        <a href="/boracay-package" class="tab-link active">보라카이 패키지</a>
         <a href="/price-list" class="tab-link">한눈에 요금표</a>
         <a href="/resort-quote" class="tab-link">리조트 견적</a>
         <a href="/cart" class="tab-link">장바구니</a>
@@ -172,7 +189,9 @@
 
     <div class="header-right"></div>
 </div>
+
 <div class="tour-detail-container">
+    <!-- 좌측: 패키지 이미지 + 환불규정 -->
     <div class="tour-content">
         <h1>보라카이션 패키지</h1>
         <div class="section-title">패키지 상세</div>
@@ -185,6 +204,94 @@
         <div class="section-title">환불 규정</div>
         <img src="refund.png" alt="환불 규정" style="width:100%; border-radius:20px;">
     </div>
+
+    <!-- 우측: 예약 박스 (달력 없음) -->
+    <div class="reservation-box">
+        <div class="reservation-box-title">패키지 옵션 선택</div>
+
+        <!-- 시그니처 -->
+        <div class="option-section-label">⭐ 추천</div>
+        <div class="option-grid-container">
+            <div class="option-card full-width active" onclick="selectOption('시그니처 패키지', this)">
+                <h4>시그니처 패키지</h4>
+                <p>픽샌 + 호핑 + 말룸 + 리버타드 고래상어</p>
+            </div>
+        </div>
+
+        <!-- 패키지 A~C -->
+        <div class="option-section-label">패키지</div>
+        <div class="option-grid-container">
+            <div class="option-card" onclick="selectOption('패키지 A', this)">
+                <h4>패키지 A</h4>
+                <p>픽샌 + 말룸 + 리버타드 고래상어</p>
+            </div>
+            <div class="option-card" onclick="selectOption('패키지 B', this)">
+                <h4>패키지 B</h4>
+                <p>픽샌 + 호핑 + 리버타드 고래상어</p>
+            </div>
+            <div class="option-card" onclick="selectOption('패키지 C', this)">
+                <h4>패키지 C</h4>
+                <p>픽샌 + 호핑 + 말룸</p>
+            </div>
+        </div>
+
+        <!-- 픽샌팩 A~C -->
+        <div class="option-section-label">픽샌팩</div>
+        <div class="option-grid-container">
+            <div class="option-card" onclick="selectOption('픽샌팩 A', this)">
+                <h4>픽샌팩 A</h4>
+                <p>픽샌 + 호핑</p>
+            </div>
+            <div class="option-card" onclick="selectOption('픽샌팩 B', this)">
+                <h4>픽샌팩 B</h4>
+                <p>픽샌 + 리버타드 고래상어</p>
+            </div>
+            <div class="option-card" onclick="selectOption('픽샌팩 C', this)">
+                <h4>픽샌팩 C</h4>
+                <p>픽샌 + 말룸</p>
+            </div>
+        </div>
+
+        <!-- 인원 선택 -->
+        <div class="person-selector">
+            <div class="person-row">
+                <div class="person-info">
+                    <div>
+                        <div class="person-label">성인 인원</div>
+                    </div>
+                    <div class="counter-wrap">
+                        <button class="counter-btn" onclick="updateAdultCount(-1)">−</button>
+                        <span class="counter-num" id="pc-adult-count">1</span>
+                        <button class="counter-btn" onclick="updateAdultCount(1)">+</button>
+                    </div>
+                </div>
+                <div class="person-price-calc">₩ <span id="adult-price-text">320,000</span> × <span id="adult-count-text">1</span> = <b id="adult-subtotal">₩ 320,000</b></div>
+            </div>
+            <div class="person-row">
+                <div class="person-info">
+                    <div>
+                        <div class="person-label">소인 인원</div>
+                        <div class="person-age" id="child-age-desc">(만5세이상 ~ 초6)</div>
+                    </div>
+                    <div class="counter-wrap">
+                        <button class="counter-btn" onclick="updateChildCount(-1)">−</button>
+                        <span class="counter-num" id="pc-child-count">0</span>
+                        <button class="counter-btn" onclick="updateChildCount(1)">+</button>
+                    </div>
+                </div>
+                <div class="person-price-calc">₩ <span id="child-price-text">310,000</span> × <span id="child-count-text">0</span> = <b id="child-subtotal">₩ 0</b></div>
+            </div>
+        </div>
+
+        <!-- 총합계 -->
+        <div class="total-summary">
+            <span>총 합계 금액</span>
+            <b id="display-total-price">₩ 320,000</b>
+        </div>
+
+        <button class="btn-buy" id="buy-btn" onclick="handleBuy()">₩ 320,000 구매하기</button>
+        <button class="btn-cart" onclick="addToCart()">장바구니 담기</button>
+    </div>
 </div>
 
 <footer class="footer" style="background: #ff6a00; color: #fff; padding: 72px 50px; display: flex; justify-content: space-between; align-items: flex-end; gap: 36px; flex-wrap: wrap;">
@@ -196,78 +303,55 @@
 </footer>
 
 <div class="mobile-bottom-bar">
-    <button class="m-btn-buy" onclick="openBookingDrawer()">구매하기</button>
+    <button class="m-btn-buy" onclick="handleBuy()">구매하기</button>
 </div>
 
 <script src="main.js"></script>
 <script>
     const OPTIONS = {
-        '시그니처 패키지': { name: '시그니처 패키지', desc: '픽샌 + 호핑 + 말룸 + 고래상어', adultPrice: 320000, childPrice: 310000, childDesc: '(만5세이상 ~ 초6)' },
-        '패키지 A': { name: '패키지 A', desc: '픽샌 + 말룸 + 고래상어', adultPrice: 270000, childPrice: 260000, childDesc: '(만5세이상 ~ 초6)' },
-        '패키지 B': { name: '패키지 B', desc: '픽샌 + 호핑 + 고래상어', adultPrice: 230000, childPrice: 230000, childDesc: '(성인 요금 동일)' },
-        '패키지 C': { name: '패키지 C', desc: '픽샌 + 호핑 + 말룸', adultPrice: 195000, childPrice: 185000, childDesc: '(36개월 ~ 초6)' },
-        '픽샌팩 A': { name: '픽샌팩 A', desc: '픽샌 + 호핑', adultPrice: 100000, childPrice: 100000, childDesc: '(성인 요금 동일)' },
-        '픽샌팩 B': { name: '픽샌팩 B', desc: '픽샌 + 고래상어', adultPrice: 175000, childPrice: 175000, childDesc: '(성인 요금 동일)' },
-        '픽샌팩 C': { name: '픽샌팩 C', desc: '픽샌 + 말룸', adultPrice: 150000, childPrice: 141000, childDesc: '(36개월 ~ 초6)' },
-        '콤보팩 A': { name: '콤보팩 A', desc: '호핑 + 고래상어 + 말룸파티', adultPrice: 270000, childPrice: 260000, childDesc: '(만5세이상 ~ 초6)' },
-        '콤보팩 B': { name: '콤보팩 B', desc: '호핑 + 고래상어', adultPrice: 175000, childPrice: 175000, childDesc: '(성인 요금 동일)' },
-        '콤보팩 C': { name: '콤보팩 C', desc: '호핑 + 말룸파티', adultPrice: 150000, childPrice: 141000, childDesc: '(36개월 ~ 초6)' },
-        '콤보팩 D': { name: '콤보팩 D', desc: '말룸파티 + 고래상어', adultPrice: 220000, childPrice: 210000, childDesc: '(만5세이상 ~ 초6)' }
+        '시그니처 패키지': { name: '시그니처 패키지', desc: '픽샌 + 호핑 + 말룸 + 리버타드 고래상어', adultPrice: 320000, childPrice: 310000, childDesc: '(만5세이상 ~ 초6)' },
+        '패키지 A':        { name: '패키지 A',        desc: '픽샌 + 말룸 + 리버타드 고래상어',        adultPrice: 270000, childPrice: 260000, childDesc: '(만5세이상 ~ 초6)' },
+        '패키지 B':        { name: '패키지 B',        desc: '픽샌 + 호핑 + 리버타드 고래상어',        adultPrice: 230000, childPrice: 230000, childDesc: '(성인 요금 동일)' },
+        '패키지 C':        { name: '패키지 C',        desc: '픽샌 + 호핑 + 말룸',                     adultPrice: 195000, childPrice: 185000, childDesc: '(36개월 ~ 초6)' },
+        '픽샌팩 A':        { name: '픽샌팩 A',        desc: '픽샌 + 호핑',                            adultPrice: 100000, childPrice: 100000, childDesc: '(성인 요금 동일)' },
+        '픽샌팩 B':        { name: '픽샌팩 B',        desc: '픽샌 + 리버타드 고래상어',               adultPrice: 175000, childPrice: 175000, childDesc: '(성인 요금 동일)' },
+        '픽샌팩 C':        { name: '픽샌팩 C',        desc: '픽샌 + 말룸',                            adultPrice: 150000, childPrice: 141000, childDesc: '(36개월 ~ 초6)' }
     };
+
     let adultCount = 1;
     let childCount = 0;
-    let selectedOptionKey = '콤보팩 A';
+    let selectedOptionKey = '시그니처 패키지';
 
-    const now = new Date();
-    let currentDate = new Date(now.getFullYear(), now.getMonth(), 1);
-    const yyyy = now.getFullYear();
-    const mm = String(now.getMonth() + 1).padStart(2, '0');
-    const dd = String(now.getDate()).padStart(2, '0');
-    let selectedDate = `${yyyy}-${mm}-${dd}`;
-
-    function selectOption(key) {
+    function selectOption(key, el) {
         selectedOptionKey = key;
         const option = OPTIONS[key];
-        
         document.querySelectorAll('.option-card').forEach(c => c.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-        
-        const priceVal = document.getElementById('current-price-val');
-        if (priceVal) priceVal.innerText = '₩ ' + option.adultPrice.toLocaleString();
-        
+        el.classList.add('active');
         const childAgeDesc = document.getElementById('child-age-desc');
-        if (childAgeDesc) {
-            childAgeDesc.innerText = option.childDesc;
-        }
-        
+        if (childAgeDesc) childAgeDesc.innerText = option.childDesc;
         updateTotalPrice();
     }
 
     function updateTotalPrice() {
         const option = OPTIONS[selectedOptionKey];
-        
-        if(document.getElementById('adult-price-text')) document.getElementById('adult-price-text').innerText = option.adultPrice.toLocaleString();
-        if(document.getElementById('child-price-text')) document.getElementById('child-price-text').innerText = option.childPrice.toLocaleString();
-        
         const adultSubtotal = adultCount * option.adultPrice;
         const childSubtotal = childCount * option.childPrice;
         const total = adultSubtotal + childSubtotal;
 
+        document.getElementById('adult-price-text').innerText = option.adultPrice.toLocaleString();
+        document.getElementById('child-price-text').innerText = option.childPrice.toLocaleString();
         document.getElementById('pc-adult-count').innerText = adultCount;
-        if(document.getElementById('adult-count-text')) document.getElementById('adult-count-text').innerText = adultCount;
-        if(document.getElementById('adult-subtotal')) document.getElementById('adult-subtotal').innerText = BSUtils.formatPrice(adultSubtotal);
-
+        document.getElementById('adult-count-text').innerText = adultCount;
+        document.getElementById('adult-subtotal').innerText = '₩ ' + adultSubtotal.toLocaleString();
         document.getElementById('pc-child-count').innerText = childCount;
-        if(document.getElementById('child-count-text')) document.getElementById('child-count-text').innerText = childCount;
-        if(document.getElementById('child-subtotal')) document.getElementById('child-subtotal').innerText = BSUtils.formatPrice(childSubtotal);
+        document.getElementById('child-count-text').innerText = childCount;
+        document.getElementById('child-subtotal').innerText = '₩ ' + childSubtotal.toLocaleString();
 
-        const totalStr = BSUtils.formatPrice(total);
+        const totalStr = '₩ ' + total.toLocaleString();
         const totalDisp = document.getElementById('display-total-price');
         if (totalDisp) totalDisp.innerText = totalStr;
-        
-        document.querySelectorAll('.btn-buy, .m-btn-buy').forEach(btn => {
-            if (btn.tagName === 'BUTTON' && btn.id === 'buy-btn') btn.innerText = totalStr + ' 구매하기';
-        });
+        const buyBtn = document.getElementById('buy-btn');
+        if (buyBtn) buyBtn.innerText = totalStr + ' 구매하기';
     }
 
     function updateAdultCount(delta) {
@@ -280,41 +364,45 @@
         updateTotalPrice();
     }
 
-    
-    
     function handleBuy() {
         const option = OPTIONS[selectedOptionKey];
         const total = (adultCount * option.adultPrice) + (childCount * option.childPrice);
-        const item = { 
-            name: "보라카이션 패키지 - " + option.name, 
-            price: total / (adultCount + childCount), 
-            count: adultCount + childCount, 
-            totalPrice: total, 
-            date: selectedDate, 
+        const totalPeople = adultCount + (childCount || 0);
+        const item = {
+            name: '보라카이션 패키지 - ' + option.name,
+            price: totalPeople > 0 ? Math.round(total / totalPeople) : option.adultPrice,
+            count: totalPeople,
+            totalPrice: total,
             isPackage: true,
             details: `성인 ${adultCount}, 소인 ${childCount}`
         };
-        BSUtils.buyNow(item);
+        if (typeof BSUtils !== 'undefined' && BSUtils.buyNow) {
+            BSUtils.buyNow(item);
+        } else {
+            alert('구매하기 기능을 사용할 수 없습니다.');
+        }
     }
 
     function addToCart() {
         const option = OPTIONS[selectedOptionKey];
         const total = (adultCount * option.adultPrice) + (childCount * option.childPrice);
-        const item = { 
-            name: "보라카이션 패키지 - " + option.name, 
-            price: total / (adultCount + childCount), 
-            count: adultCount + childCount, 
-            totalPrice: total, 
-            date: selectedDate, 
+        const totalPeople = adultCount + (childCount || 0);
+        const item = {
+            name: '보라카이션 패키지 - ' + option.name,
+            price: totalPeople > 0 ? Math.round(total / totalPeople) : option.adultPrice,
+            count: totalPeople,
+            totalPrice: total,
             isPackage: true,
             details: `성인 ${adultCount}, 소인 ${childCount}`
         };
-        BSUtils.saveToCart(item);
+        if (typeof BSUtils !== 'undefined' && BSUtils.saveToCart) {
+            BSUtils.saveToCart(item);
+        } else {
+            alert('장바구니 기능을 사용할 수 없습니다.');
+        }
     }
 
-    window.onload = () => {
-        updateTotalPrice();
-    };
+    window.onload = () => { updateTotalPrice(); };
 </script>
 </body>
 </html>

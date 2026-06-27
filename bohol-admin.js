@@ -228,6 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const resortRaw = row[9] || '-';
                 const remark = row[16] || '';
                 
+                // 호핑 스케줄 등록
                 if (remark.toUpperCase().includes('HOPPING') || remark.includes('호핑')) {
                     const docRef = doc(collection(db, "bohol_schedules"));
                     let time = "07:30";

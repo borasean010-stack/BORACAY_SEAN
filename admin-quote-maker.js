@@ -13,94 +13,52 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- 📦 상세 상품 및 옵션 데이터 (사용자 요청 가격 반영) ---
 const PRODUCT_DATA = {
     "보라카이션 패키지": [
-        { name: "픽샌 + 호핑 (성인)", price: 100000 },
-        { name: "픽샌 + 호핑 (소인)", price: 100000 },
-        { name: "픽샌 + 말룸 (성인)", price: 150000 },
-        { name: "픽샌 + 말룸 (소인)", price: 141000 },
-        { name: "픽샌 + 호핑 + 말룸 (성인)", price: 195000 },
-        { name: "픽샌 + 호핑 + 말룸 (소인)", price: 186000 }
+        { name: "시그니처 (성인)", price: 320000 },
+        { name: "시그니처 (소인)", price: 310000 },
+        { name: "패키지 A (성인)", price: 270000 },
+        { name: "패키지 A (소인)", price: 260000 },
+        { name: "패키지 B (성인/소인)", price: 230000 },
+        { name: "패키지 C (성인)", price: 195000 },
+        { name: "패키지 C (소인)", price: 185000 },
+        { name: "픽샌팩 A (성인/소인)", price: 100000 },
+        { name: "픽샌팩 B (성인/소인)", price: 175000 },
+        { name: "픽샌팩 C (성인)", price: 150000 },
+        { name: "픽샌팩 C (소인)", price: 141000 }
+    ],
+    "보라카이션 투어 콤보팩": [
+        { name: "콤보팩 A (말룸+고래상어)", price: 220000 },
+        { name: "콤보팩 B (호핑+고래상어+말룸파티)", price: 270000 },
+        { name: "콤보팩 C (호핑+고래상어)", price: 180000 },
+        { name: "콤보팩 D (호핑+말룸파티)", price: 150000 }
+    ],
+    "리버타드 고래상어 투어": [
+        { name: "성인 투어", price: 128000 }
     ],
     "보라카이 왕복 픽업샌딩": [
-        { name: "조인 픽업샌딩 ( Join )", price: 54900 },
-        { name: "단독 픽업샌딩 ( 팀당 현지불 $40 별도 )", price: 54900 }
-    ],
-    "보라아재 카라바오 투어": [
-        { name: "성인 투어 ( 08:00 )", price: 180000 },
-        { name: "소인 투어", price: 135000 }
+        { name: "조인 픽업샌딩", price: 54900 }
     ],
     "블랙펄 요트호핑투어": [
-        { name: "점심 불포함 ( 선셋호핑 )", price: 55000 },
-        { name: "점심 포함 ( 인당 현지불 $30 별도 )", price: 55000 }
+        { name: "성인 투어", price: 55000 }
     ],
     "시크릿 가든 말룸파티": [
-        { name: "일반 투어 ( 09:40 )", price: 99000 },
-        { name: "샌딩팩 투어 ( 09:00 )", price: 110000 },
-        { name: "소인 투어", price: 90000 }
+        { name: "일반 투어", price: 99000 }
     ],
-    "액티비티 (Activity)": [
-        { name: "체험 다이빙", price: 55000 },
-        { name: "파라세일링", price: 55000 },
-        { name: "제트스키", price: 55000 },
-        { name: "헬멧 다이빙", price: 44000 },
-        { name: "프리다이빙 체험", price: 112500 },
-        { name: "보라카이 랜드투어", price: 45000 },
-        { name: "JL 스냅사진 촬영", price: 300000 },
-        { name: "페어웨이 골프클럽", price: 192000 }
+    "해양스포츠": [
+        { name: "제트스키 (2인)", price: 55000 },
+        { name: "파라세일링 (1인)", price: 55000 },
+        { name: "체험 다이빙 (1인)", price: 55000 }
     ],
-    "에스파 (S-SPA)": [
-        { name: "퓨어오일 마사지", price: 55000 },
-        { name: "태반 마사지", price: 55000 },
-        { name: "스톤 마사지", price: 55000 },
-        { name: "힐롯 마사지", price: 70000 },
-        { name: "포핸드 마사지", price: 84000 },
-        { name: "성장 마사지 (1시간)", price: 42000 },
-        { name: "성장 마사지 (2시간)", price: 55000 }
-    ],
-    "보라스파": [
-        { name: "꿀 마사지", price: 55000 },
-        { name: "진주 마사지", price: 55000 },
-        { name: "태반 마사지", price: 55000 }
-    ],
-    "루나스파": [
-        { name: "스톤 마사지", price: 55000 },
-        { name: "노니 마사지", price: 55000 },
-        { name: "태반 마사지", price: 55000 }
-    ],
-    "마리스 스파": [
-        { name: "스파 (스크럽 불포함)", price: 91000 },
-        { name: "스파 (스크럽 포함)", price: 105000 },
-        { name: "성장 마사지 (1시간)", price: 42000 },
-        { name: "성장 마사지 (2시간)", price: 55000 }
-    ],
-    "포세이돈 스파": [
-        { name: "VIP 마사지", price: 105000 },
-        { name: "VVIP 마사지", price: 119000 },
-        { name: "성장 마사지 (1시간)", price: 42000 },
-        { name: "성장 마사지 (2시간)", price: 55000 }
-    ],
-    "헬리오스 스파": [
-        { name: "허니스톤 마사지", price: 91000 },
-        { name: "코코스파", price: 105000 },
-        { name: "허니스톤 + 코코스파", price: 119000 },
-        { name: "성장 마사지 (1시간)", price: 42000 },
-        { name: "성장 마사지 (2시간)", price: 55000 }
-    ],
-    "카바얀 스파": [
-        { name: "딥티슈 마사지", price: 49000 }
-    ],
-    "아유르베다": [
-        { name: "태반 마사지", price: 55000 },
-        { name: "스톤 마사지", price: 55000 },
-        { name: "골든링 마사지", price: 77000 },
-        { name: "아유르베다 스파", price: 91000 },
-        { name: "성장 마사지 (1시간)", price: 42000 },
-        { name: "성장 마사지 (2시간)", price: 55000 }
-    ],
-    "기타(수동입력)": [
-        { name: "직접 입력 옵션", price: 0 }
+    "마사지(샵별)": [
+        { name: "에스파", price: 55000 },
+        { name: "루나스파", price: 55000 },
+        { name: "보라스파", price: 55000 },
+        { name: "포세이돈 스파", price: 105000 },
+        { name: "마리스 스파", price: 91000 },
+        { name: "헬리오스 스파", price: 91000 },
+        { name: "카바얀 스파", price: 49000 },
+        { name: "아유르베다 스파", price: 55000 }
     ]
 };
 
@@ -108,7 +66,6 @@ window.addItemRow = () => {
     const tbody = document.getElementById('item-tbody');
     const row = document.createElement('tr');
     row.className = 'item-row';
-    
     const productOptions = Object.keys(PRODUCT_DATA).map(name => `<option value="${name}">${name}</option>`).join('');
     
     row.innerHTML = `

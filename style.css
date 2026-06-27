@@ -114,8 +114,8 @@ body {
     max-width: 1200px;
     margin: 0 auto 90px;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 27px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
     padding: 0 18px;
 }
 

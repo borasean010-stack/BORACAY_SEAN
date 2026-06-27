@@ -78,6 +78,9 @@
         .method-card.selected { border-color: #ff6a00; background: #fffaf5; box-shadow: 0 5px 15px rgba(255,106,0,0.1); }
         .method-card b { display: block; font-size: 15px; }
 
+        .opt-tab:hover { color: #ff6a00; }
+        .opt-card-item:hover { border-color: #ff6a00; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+
         @media (max-device-width: 600px) { .form-card { padding: 30px 20px; } .booking-container { margin-top: 80px; } }
     </style>
 </head>
@@ -238,6 +241,456 @@
                     </div>
                 </div>
 
+                <!-- ➕ 추가 옵션 선택 (선택 사항) -->
+                <div class="conditional-fields" style="margin-top: 30px; margin-bottom: 25px;">
+                    <div class="section-subtitle" style="color:#ff6a00; margin-bottom: 10px;">➕ 추가 옵션 선택 (선택 사항)</div>
+                    <p style="font-size: 13px; color: #666; margin-bottom: 20px;">패키지와 함께 예약하실 해양스포츠 및 마사지 옵션을 추가할 수 있습니다.</p>
+                    
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #eee;">
+                        <button type="button" class="opt-tab" id="tab-sports-btn" onclick="switchOptTab('sports')" style="padding: 10px 20px; background: none; border: none; font-weight: 800; font-size: 15px; cursor: pointer; color: #ff6a00; border-bottom: 3px solid #ff6a00; transition: 0.3s;">해양 스포츠</button>
+                        <button type="button" class="opt-tab" id="tab-massage-btn" onclick="switchOptTab('massage')" style="padding: 10px 20px; background: none; border: none; font-weight: 800; font-size: 15px; cursor: pointer; color: #bbb; border-bottom: 3px solid transparent; transition: 0.3s;">마사지</button>
+                    </div>
+
+                    <!-- 해양 스포츠 -->
+                    <div id="opt-sports-section" class="opt-content-sec">
+                        <!-- 제트스키 -->
+                        <div class="opt-card-item" style="background: white; border: 1.5px solid #eee; border-radius: 16px; padding: 16px; margin-bottom: 12px; transition: 0.3s;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label style="display: flex; align-items: center; gap: 10px; font-weight: 800; cursor: pointer; margin-bottom: 0;">
+                                    <input type="checkbox" id="opt-jetski-check" onchange="toggleOptFields('jetski')" style="width: 20px; height: 20px; accent-color: #ff6a00;">
+                                    제트스키 1대 (2인 가능)
+                                </label>
+                                <b style="color: #ff6a00;">₩ 55,000</b>
+                            </div>
+                            <div id="opt-jetski-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">이용일</label>
+                                        <input type="text" id="opt-jetski-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                        <div class="calendar-picker"></div>
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">수량</label>
+                                        <select id="opt-jetski-qty" onchange="updateTotalPrice()" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                            <option value="1">1대</option>
+                                            <option value="2">2대</option>
+                                            <option value="3">3대</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label style="font-size: 12px; font-weight: 700; color: #666;">픽업 리조트명</label>
+                                    <input type="text" id="opt-jetski-resort" placeholder="픽업받으실 숙소명 입력" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 파라세일링 -->
+                        <div class="opt-card-item" style="background: white; border: 1.5px solid #eee; border-radius: 16px; padding: 16px; margin-bottom: 12px; transition: 0.3s;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label style="display: flex; align-items: center; gap: 10px; font-weight: 800; cursor: pointer; margin-bottom: 0;">
+                                    <input type="checkbox" id="opt-para-check" onchange="toggleOptFields('para')" style="width: 20px; height: 20px; accent-color: #ff6a00;">
+                                    파라세일링 (1인)
+                                </label>
+                                <b style="color: #ff6a00;">₩ 55,000</b>
+                            </div>
+                            <div id="opt-para-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">이용일</label>
+                                        <input type="text" id="opt-para-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                        <div class="calendar-picker"></div>
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">인원</label>
+                                        <select id="opt-para-qty" onchange="updateTotalPrice()" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                            <option value="1">1명</option>
+                                            <option value="2">2명</option>
+                                            <option value="3">3명</option>
+                                            <option value="4">4명</option>
+                                            <option value="5">5명 이상</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label style="font-size: 12px; font-weight: 700; color: #666;">픽업 리조트명</label>
+                                    <input type="text" id="opt-para-resort" placeholder="픽업받으실 숙소명 입력" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 체험다이빙 -->
+                        <div class="opt-card-item" style="background: white; border: 1.5px solid #eee; border-radius: 16px; padding: 16px; margin-bottom: 12px; transition: 0.3s;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label style="display: flex; align-items: center; gap: 10px; font-weight: 800; cursor: pointer; margin-bottom: 0;">
+                                    <input type="checkbox" id="opt-diving-check" onchange="toggleOptFields('diving')" style="width: 20px; height: 20px; accent-color: #ff6a00;">
+                                    체험다이빙 (1인)
+                                </label>
+                                <b style="color: #ff6a00;">₩ 55,000</b>
+                            </div>
+                            <div id="opt-diving-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">이용일</label>
+                                        <input type="text" id="opt-diving-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                        <div class="calendar-picker"></div>
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">인원</label>
+                                        <select id="opt-diving-qty" onchange="updateTotalPrice()" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                            <option value="1">1명</option>
+                                            <option value="2">2명</option>
+                                            <option value="3">3명</option>
+                                            <option value="4">4명</option>
+                                            <option value="5">5명 이상</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label style="font-size: 12px; font-weight: 700; color: #666;">픽업 리조트명</label>
+                                    <input type="text" id="opt-diving-resort" placeholder="픽업받으실 숙소명 입력" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 마사지 -->
+                    <div id="opt-massage-section" class="opt-content-sec" style="display: none;">
+                        <!-- 에스파 -->
+                        <div class="opt-card-item" style="background: white; border: 1.5px solid #eee; border-radius: 16px; padding: 16px; margin-bottom: 12px; transition: 0.3s;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label style="display: flex; align-items: center; gap: 10px; font-weight: 800; cursor: pointer; margin-bottom: 0;">
+                                    <input type="checkbox" id="opt-sspa-check" onchange="toggleOptFields('sspa')" style="width: 20px; height: 20px; accent-color: #ff6a00;">
+                                    에스파 (S-SPA)
+                                </label>
+                                <b style="color: #ff6a00;">₩ 55,000</b>
+                            </div>
+                            <div id="opt-sspa-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">이용일</label>
+                                        <input type="text" id="opt-sspa-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                        <div class="calendar-picker"></div>
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">시간</label>
+                                        <select id="opt-sspa-time" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                            <option value="13:00">13:00</option>
+                                            <option value="14:00">14:00</option>
+                                            <option value="15:30">15:30</option>
+                                            <option value="16:30">16:30</option>
+                                            <option value="19:30">19:30</option>
+                                            <option value="20:00">20:00</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">인원</label>
+                                        <select id="opt-sspa-qty" onchange="updateTotalPrice()" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                            <option value="1">1명</option>
+                                            <option value="2">2명</option>
+                                            <option value="3">3명</option>
+                                            <option value="4">4명</option>
+                                            <option value="5">5명 이상</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 아유르베다 -->
+                        <div class="opt-card-item" style="background: white; border: 1.5px solid #eee; border-radius: 16px; padding: 16px; margin-bottom: 12px; transition: 0.3s;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label style="display: flex; align-items: center; gap: 10px; font-weight: 800; cursor: pointer; margin-bottom: 0;">
+                                    <input type="checkbox" id="opt-ayur-check" onchange="toggleOptFields('ayur')" style="width: 20px; height: 20px; accent-color: #ff6a00;">
+                                    아유르베다 스파
+                                </label>
+                                <b style="color: #ff6a00;">₩ 55,000</b>
+                            </div>
+                            <div id="opt-ayur-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">이용일</label>
+                                        <input type="text" id="opt-ayur-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                        <div class="calendar-picker"></div>
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">시간</label>
+                                        <select id="opt-ayur-time" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                            <option value="13:00">13:00</option>
+                                            <option value="14:00">14:00</option>
+                                            <option value="16:00">16:00</option>
+                                            <option value="19:00">19:00</option>
+                                            <option value="20:00">20:00</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">인원</label>
+                                        <select id="opt-ayur-qty" onchange="updateTotalPrice()" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                            <option value="1">1명</option>
+                                            <option value="2">2명</option>
+                                            <option value="3">3명</option>
+                                            <option value="4">4명</option>
+                                            <option value="5">5명 이상</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label style="font-size: 12px; font-weight: 700; color: #666;">픽업 리조트명</label>
+                                    <input type="text" id="opt-ayur-resort" placeholder="픽업받으실 숙소명 입력" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 포세이돈 -->
+                        <div class="opt-card-item" style="background: white; border: 1.5px solid #eee; border-radius: 16px; padding: 16px; margin-bottom: 12px; transition: 0.3s;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label style="display: flex; align-items: center; gap: 10px; font-weight: 800; cursor: pointer; margin-bottom: 0;">
+                                    <input type="checkbox" id="opt-poseidon-check" onchange="toggleOptFields('poseidon')" style="width: 20px; height: 20px; accent-color: #ff6a00;">
+                                    포세이돈 스파
+                                </label>
+                                <b style="color: #ff6a00;">₩ 105,000</b>
+                            </div>
+                            <div id="opt-poseidon-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">이용일</label>
+                                        <input type="text" id="opt-poseidon-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                        <div class="calendar-picker"></div>
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">시간</label>
+                                        <select id="opt-poseidon-time" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                            <option value="13:00">13:00</option>
+                                            <option value="16:00">16:00</option>
+                                            <option value="19:30">19:30</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">인원</label>
+                                        <select id="opt-poseidon-qty" onchange="updateTotalPrice()" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                            <option value="1">1명</option>
+                                            <option value="2">2명</option>
+                                            <option value="3">3명</option>
+                                            <option value="4">4명</option>
+                                            <option value="5">5명 이상</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label style="font-size: 12px; font-weight: 700; color: #666;">픽업 리조트명</label>
+                                    <input type="text" id="opt-poseidon-resort" placeholder="픽업받으실 숙소명 입력" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 마리스 -->
+                        <div class="opt-card-item" style="background: white; border: 1.5px solid #eee; border-radius: 16px; padding: 16px; margin-bottom: 12px; transition: 0.3s;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label style="display: flex; align-items: center; gap: 10px; font-weight: 800; cursor: pointer; margin-bottom: 0;">
+                                    <input type="checkbox" id="opt-maris-check" onchange="toggleOptFields('maris')" style="width: 20px; height: 20px; accent-color: #ff6a00;">
+                                    마리스 스파
+                                </label>
+                                <b style="color: #ff6a00;">₩ 91,000</b>
+                            </div>
+                            <div id="opt-maris-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">이용일</label>
+                                        <input type="text" id="opt-maris-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                        <div class="calendar-picker"></div>
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">시간</label>
+                                        <select id="opt-maris-time" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                            <option value="12:00">12:00</option>
+                                            <option value="14:00">14:00</option>
+                                            <option value="16:00">16:00</option>
+                                            <option value="18:00">18:00</option>
+                                            <option value="20:00">20:00</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">인원</label>
+                                        <select id="opt-maris-qty" onchange="updateTotalPrice()" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                            <option value="1">1명</option>
+                                            <option value="2">2명</option>
+                                            <option value="3">3명</option>
+                                            <option value="4">4명</option>
+                                            <option value="5">5명 이상</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label style="font-size: 12px; font-weight: 700; color: #666;">픽업 리조트명</label>
+                                    <input type="text" id="opt-maris-resort" placeholder="픽업받으실 숙소명 입력" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 카바얀 -->
+                        <div class="opt-card-item" style="background: white; border: 1.5px solid #eee; border-radius: 16px; padding: 16px; margin-bottom: 12px; transition: 0.3s;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label style="display: flex; align-items: center; gap: 10px; font-weight: 800; cursor: pointer; margin-bottom: 0;">
+                                    <input type="checkbox" id="opt-kabayan-check" onchange="toggleOptFields('kabayan')" style="width: 20px; height: 20px; accent-color: #ff6a00;">
+                                    카바얀 스파
+                                </label>
+                                <b style="color: #ff6a00;">₩ 49,000</b>
+                            </div>
+                            <div id="opt-kabayan-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">이용일</label>
+                                        <input type="text" id="opt-kabayan-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                        <div class="calendar-picker"></div>
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">시간</label>
+                                        <select id="opt-kabayan-time" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                            <option value="13:00">13:00</option>
+                                            <option value="14:00">14:00</option>
+                                            <option value="16:00">16:00</option>
+                                            <option value="19:00">19:00</option>
+                                            <option value="20:00">20:00</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">인원</label>
+                                        <select id="opt-kabayan-qty" onchange="updateTotalPrice()" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                            <option value="1">1명</option>
+                                            <option value="2">2명</option>
+                                            <option value="3">3명</option>
+                                            <option value="4">4명</option>
+                                            <option value="5">5명 이상</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 루나 -->
+                        <div class="opt-card-item" style="background: white; border: 1.5px solid #eee; border-radius: 16px; padding: 16px; margin-bottom: 12px; transition: 0.3s;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label style="display: flex; align-items: center; gap: 10px; font-weight: 800; cursor: pointer; margin-bottom: 0;">
+                                    <input type="checkbox" id="opt-luna-check" onchange="toggleOptFields('luna')" style="width: 20px; height: 20px; accent-color: #ff6a00;">
+                                    루나 스파
+                                </label>
+                                <b style="color: #ff6a00;">₩ 55,000</b>
+                            </div>
+                            <div id="opt-luna-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">이용일</label>
+                                        <input type="text" id="opt-luna-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                        <div class="calendar-picker"></div>
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">시간</label>
+                                        <select id="opt-luna-time" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                            <option value="13:00">13:00</option>
+                                            <option value="14:00">14:00</option>
+                                            <option value="16:00">16:00</option>
+                                            <option value="19:00">19:00</option>
+                                            <option value="20:00">20:00</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">인원</label>
+                                        <select id="opt-luna-qty" onchange="updateTotalPrice()" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                            <option value="1">1명</option>
+                                            <option value="2">2명</option>
+                                            <option value="3">3명</option>
+                                            <option value="4">4명</option>
+                                            <option value="5">5명 이상</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 보라스파 -->
+                        <div class="opt-card-item" style="background: white; border: 1.5px solid #eee; border-radius: 16px; padding: 16px; margin-bottom: 12px; transition: 0.3s;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label style="display: flex; align-items: center; gap: 10px; font-weight: 800; cursor: pointer; margin-bottom: 0;">
+                                    <input type="checkbox" id="opt-boraspa-check" onchange="toggleOptFields('boraspa')" style="width: 20px; height: 20px; accent-color: #ff6a00;">
+                                    보라스파
+                                </label>
+                                <b style="color: #ff6a00;">₩ 55,000</b>
+                            </div>
+                            <div id="opt-boraspa-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">이용일</label>
+                                        <input type="text" id="opt-boraspa-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                        <div class="calendar-picker"></div>
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">시간</label>
+                                        <select id="opt-boraspa-time" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                            <option value="13:00">13:00</option>
+                                            <option value="14:00">14:00</option>
+                                            <option value="16:00">16:00</option>
+                                            <option value="19:00">19:00</option>
+                                            <option value="20:00">20:00</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">인원</label>
+                                        <select id="opt-boraspa-qty" onchange="updateTotalPrice()" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                            <option value="1">1명</option>
+                                            <option value="2">2명</option>
+                                            <option value="3">3명</option>
+                                            <option value="4">4명</option>
+                                            <option value="5">5명 이상</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 헬리오스 -->
+                        <div class="opt-card-item" style="background: white; border: 1.5px solid #eee; border-radius: 16px; padding: 16px; margin-bottom: 12px; transition: 0.3s;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label style="display: flex; align-items: center; gap: 10px; font-weight: 800; cursor: pointer; margin-bottom: 0;">
+                                    <input type="checkbox" id="opt-helios-check" onchange="toggleOptFields('helios')" style="width: 20px; height: 20px; accent-color: #ff6a00;">
+                                    헬리오스 스파
+                                </label>
+                                <b style="color: #ff6a00;">₩ 91,000</b>
+                            </div>
+                            <div id="opt-helios-fields" style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">이용일</label>
+                                        <input type="text" id="opt-helios-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                        <div class="calendar-picker"></div>
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">시간</label>
+                                        <select id="opt-helios-time" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                            <option value="13:00">13:00</option>
+                                            <option value="16:00">16:00</option>
+                                            <option value="19:30">19:30</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 12px; font-weight: 700; color: #666;">인원</label>
+                                        <select id="opt-helios-qty" onchange="updateTotalPrice()" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                            <option value="1">1명</option>
+                                            <option value="2">2명</option>
+                                            <option value="3">3명</option>
+                                            <option value="4">4명</option>
+                                            <option value="5">5명 이상</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label style="font-size: 12px; font-weight: 700; color: #666;">픽업 리조트명</label>
+                                    <input type="text" id="opt-helios-resort" placeholder="픽업받으실 숙소명 입력" style="padding: 10px; font-size: 14px; margin-top: 5px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="input-group" id="requests-group">
                     <label id="requests-label">기타 요청사항</label>
                     <textarea id="requests" placeholder="추가 문의사항이나 요청하실 내용을 적어주세요."></textarea>
@@ -363,6 +816,148 @@
         }
     });
 
+    window.switchOptTab = function(tabName) {
+        document.querySelectorAll('.opt-tab').forEach(b => {
+            b.style.color = '#bbb';
+            b.style.borderBottomColor = 'transparent';
+        });
+        const activeBtn = document.getElementById(`tab-${tabName}-btn`);
+        if (activeBtn) {
+            activeBtn.style.color = '#ff6a00';
+            activeBtn.style.borderBottomColor = '#ff6a00';
+        }
+
+        document.querySelectorAll('.opt-content-sec').forEach(s => s.style.display = 'none');
+        document.getElementById(`opt-${tabName}-section`).style.display = 'block';
+    };
+
+    window.toggleOptFields = function(name) {
+        const checkbox = document.getElementById(`opt-${name}-check`);
+        const fields = document.getElementById(`opt-${name}-fields`);
+        if (!checkbox || !fields) return;
+        const card = checkbox.closest('.opt-card-item');
+        if (checkbox.checked) {
+            fields.style.display = 'block';
+            card.style.borderColor = '#ff6a00';
+            card.style.background = '#fffaf5';
+            
+            const pickupDateVal = document.getElementById('pkg-pickup-date')?.value || '';
+            const optDateInput = document.getElementById(`opt-${name}-date`);
+            if (optDateInput && !optDateInput.value) {
+                optDateInput.value = pickupDateVal;
+            }
+        } else {
+            fields.style.display = 'none';
+            card.style.borderColor = '#eee';
+            card.style.background = 'white';
+        }
+        updateTotalPrice();
+    };
+
+    window.updateTotalPrice = function() {
+        let baseSum = cartData.reduce((acc, curr) => acc + (curr.totalPrice || (curr.price * curr.count)), 0);
+        let optSum = 0;
+        let optItems = [];
+
+        const optionsList = [
+            { id: 'jetski', name: '제트스키 1대(2인 가능)', price: 55000 },
+            { id: 'para', name: '파라세일링', price: 55000 },
+            { id: 'diving', name: '체험다이빙', price: 55000 },
+            { id: 'sspa', name: '에스파 (S-SPA)', price: 55000 },
+            { id: 'ayur', name: '아유르베다 스파', price: 55000 },
+            { id: 'poseidon', name: '포세이돈 스파', price: 105000 },
+            { id: 'maris', name: '마리스 스파', price: 91000 },
+            { id: 'kabayan', name: '카바얀 스파', price: 49000 },
+            { id: 'luna', name: '루나 스파', price: 55000 },
+            { id: 'boraspa', name: '보라스파', price: 55000 },
+            { id: 'helios', name: '헬리오스 스파', price: 91000 }
+        ];
+
+        optionsList.forEach(opt => {
+            const check = document.getElementById(`opt-${opt.id}-check`);
+            if (check && check.checked) {
+                const qtyEl = document.getElementById(`opt-${opt.id}-qty`);
+                const qty = qtyEl ? parseInt(qtyEl.value, 10) : 1;
+                const cost = opt.price * qty;
+                optSum += cost;
+                
+                const dateEl = document.getElementById(`opt-${opt.id}-date`);
+                const dateVal = dateEl ? dateEl.value : '';
+                const timeEl = document.getElementById(`opt-${opt.id}-time`);
+                const timeVal = timeEl ? timeEl.value : '';
+                const resortEl = document.getElementById(`opt-${opt.id}-resort`);
+                const resortVal = resortEl ? resortEl.value : '';
+
+                optItems.push({
+                    name: `[옵션] ${opt.name}`,
+                    price: opt.price,
+                    count: qty,
+                    totalPrice: cost,
+                    date: dateVal,
+                    time: timeVal,
+                    resort: resortVal
+                });
+            }
+        });
+
+        const totalSum = baseSum + optSum;
+        const list = document.getElementById('summary-list');
+        if (!list) return;
+        list.innerHTML = '';
+
+        cartData.forEach(item => {
+            let dateStr = item.date || '날짜 미지정';
+            if (item.name.includes('픽업샌딩')) {
+                dateStr = `${item.pickupDate || '픽업일 미정'} ~ ${item.sendingDate || '샌딩일 미정'}`;
+            } else if (item.name.includes('리조트 견적') && item.details && item.details.checkin) {
+                dateStr = `${item.details.checkin} ~ ${item.details.checkout}`;
+            } else if (item.isPackage) {
+                dateStr = "날짜 정보 별도 입력";
+            }
+            const timeStr = item.time ? ` | 시간: ${item.time}` : '';
+            const countStr = ` | 인원: ${item.count}명`;
+            const detailStr = (item.details && typeof item.details === 'string') ? `<br><small style="color:#999;">(${item.details})</small>` : '';
+            const finalItemPrice = item.totalPrice || (item.price * item.count);
+
+            list.innerHTML += `
+                <div class="order-item" style="flex-direction: column; align-items: flex-start; padding: 12px 0;">
+                    <div style="display: flex; justify-content: space-between; width: 100%;">
+                        <span style="font-weight: 800;">${item.name}</span>
+                        <b>₩ ${finalItemPrice.toLocaleString()}</b>
+                    </div>
+                    <div style="font-size: 13px; color: #666; margin-top: 5px;">
+                        📅 ${dateStr}${timeStr}${countStr}${detailStr}
+                    </div>
+                </div>`;
+        });
+
+        if (optItems.length > 0) {
+            list.innerHTML += `<div style="font-weight: 800; font-size: 14px; margin-top: 15px; color:#ff6a00; border-top: 1.5px solid #eee; padding-top: 15px;">➕ 추가 선택 옵션</div>`;
+            optItems.forEach(item => {
+                const timeStr = item.time ? ` | 시간: ${item.time}` : '';
+                const resortStr = item.resort ? ` | 픽업지: ${item.resort}` : '';
+                list.innerHTML += `
+                    <div class="order-item" style="flex-direction: column; align-items: flex-start; padding: 8px 0; border-bottom: 1px dashed #eee;">
+                        <div style="display: flex; justify-content: space-between; width: 100%;">
+                            <span style="font-weight: 700; color:#555;">${item.name}</span>
+                            <b>₩ ${item.totalPrice.toLocaleString()}</b>
+                        </div>
+                        <div style="font-size: 12px; color: #777; margin-top: 3px;">
+                            📅 ${item.date || '날짜 미지정'}${timeStr} | 수량: ${item.count}${resortStr}
+                        </div>
+                    </div>`;
+            });
+        }
+
+        list.innerHTML += `
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #f8f8f8; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 16px; font-weight: 800; color: #111;">총 결제 예정 금액</span>
+                <b style="font-size: 24px; font-weight: 900; color: #ff6a00;">₩ ${totalSum.toLocaleString()}</b>
+            </div>`;
+            
+        window.selectedOptionsTemp = optItems;
+    };
+
     document.addEventListener('DOMContentLoaded', function() {
         const directBuy = sessionStorage.getItem('directBuyItem');
         if (directBuy) {
@@ -374,8 +969,6 @@
         
         if (cartData.length === 0) { alert('상품이 없습니다.'); return; }
 
-        const list = document.getElementById('summary-list');
-        let totalSum = 0;
         cartData.forEach(item => {
             if (item.name.includes('픽업샌딩')) hasPickup = true;
             if (item.name.includes('호핑')) hasHopping = true;
@@ -389,41 +982,9 @@
             if (pickupRequiredKeywords.some(kw => item.name.includes(kw))) {
                 hasActivityPickup = true;
             }
-            
-            let dateStr = item.date || '날짜 미지정';
-            if (item.name.includes('픽업샌딩')) {
-                dateStr = `${item.pickupDate || '픽업일 미정'} ~ ${item.sendingDate || '샌딩일 미정'}`;
-            } else if (item.name.includes('리조트 견적') && item.details && item.details.checkin) {
-                dateStr = `${item.details.checkin} ~ ${item.details.checkout}`;
-            } else if (item.isPackage) {
-                dateStr = "날짜 정보 별도 입력";
-            }
-
-            const timeStr = item.time ? ` | 시간: ${item.time}` : '';
-            const countStr = ` | 인원: ${item.count}명`;
-            const detailStr = (item.details && typeof item.details === 'string') ? `<br><small style="color:#999;">(${item.details})</small>` : '';
-            const finalItemPrice = item.totalPrice || (item.price * item.count);
-            totalSum += finalItemPrice;
-
-            list.innerHTML += `
-                <div class="order-item" style="flex-direction: column; align-items: flex-start;">
-                    <div style="display: flex; justify-content: space-between; width: 100%;">
-                        <span style="font-weight: 800;">${item.name}</span>
-                        <b>₩ ${finalItemPrice.toLocaleString()}</b>
-                    </div>
-                    <div style="font-size: 13px; color: #666; margin-top: 5px;">
-                        📅 ${dateStr}${timeStr}${countStr}${detailStr}
-                    </div>
-                </div>`;
         });
 
-        if (totalSum > 0) {
-            list.innerHTML += `
-                <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #f8f8f8; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 16px; font-weight: 800; color: #111;">총 결제 예정 금액</span>
-                    <b style="font-size: 24px; font-weight: 900; color: #ff6a00;">₩ ${totalSum.toLocaleString()}</b>
-                </div>`;
-        }
+        updateTotalPrice();
 
         if (hasPickup && !isPackage) {
             document.getElementById('pickup-sending-fields').style.display = 'block';
@@ -455,11 +1016,42 @@
                 document.getElementById('pkg-pickup-date').value = pkg.date; 
             }
 
-            if (pkg.packageOption === 1 || pkg.packageOption === 3) {
+            document.getElementById('pkg-oneday-group').style.display = 'none';
+            document.getElementById('pkg-oneday-date').required = false;
+            document.getElementById('pkg-hopping-group').style.display = 'none';
+            document.getElementById('pkg-hopping-date').required = false;
+            document.getElementById('pkg-malum-group').style.display = 'none';
+            document.getElementById('pkg-malum-date').required = false;
+            document.getElementById('pkg-whale-group').style.display = 'none';
+            document.getElementById('pkg-whale-date').required = false;
+
+            const details = pkg.details || '';
+            
+            if (details.includes('시그니처 패키지') || details.includes('콤보팩 A')) {
                 document.getElementById('pkg-hopping-group').style.display = 'block';
                 document.getElementById('pkg-hopping-date').required = true;
-            }
-            if (pkg.packageOption === 2 || pkg.packageOption === 3) {
+                document.getElementById('pkg-oneday-group').style.display = 'block';
+                document.getElementById('pkg-oneday-date').required = true;
+            } else if (details.includes('패키지 A') || details.includes('콤보팩 D')) {
+                document.getElementById('pkg-oneday-group').style.display = 'block';
+                document.getElementById('pkg-oneday-date').required = true;
+            } else if (details.includes('패키지 B') || details.includes('콤보팩 B')) {
+                document.getElementById('pkg-hopping-group').style.display = 'block';
+                document.getElementById('pkg-hopping-date').required = true;
+                document.getElementById('pkg-whale-group').style.display = 'block';
+                document.getElementById('pkg-whale-date').required = true;
+            } else if (details.includes('패키지 C') || details.includes('콤보팩 C')) {
+                document.getElementById('pkg-hopping-group').style.display = 'block';
+                document.getElementById('pkg-hopping-date').required = true;
+                document.getElementById('pkg-malum-group').style.display = 'block';
+                document.getElementById('pkg-malum-date').required = true;
+            } else if (details.includes('픽샌팩 A')) {
+                document.getElementById('pkg-hopping-group').style.display = 'block';
+                document.getElementById('pkg-hopping-date').required = true;
+            } else if (details.includes('픽샌팩 B')) {
+                document.getElementById('pkg-whale-group').style.display = 'block';
+                document.getElementById('pkg-whale-date').required = true;
+            } else if (details.includes('픽샌팩 C')) {
                 document.getElementById('pkg-malum-group').style.display = 'block';
                 document.getElementById('pkg-malum-date').required = true;
             }
@@ -524,6 +1116,8 @@
             const sResort = document.getElementById('pkg-sending-resort').value;
             const hDate = document.getElementById('pkg-hopping-date')?.value || '';
             const mDate = document.getElementById('pkg-malum-date')?.value || '';
+            const oDate = document.getElementById('pkg-oneday-date')?.value || '';
+            const wDate = document.getElementById('pkg-whale-date')?.value || '';
 
             // --- 샌딩 시간 자동 결정 로직 (TW126 등) ---
             let sTime = "21:00"; // 기본값
@@ -558,8 +1152,15 @@
                     item.date = pDate; 
                     if (hDate) item.hoppingDate = hDate;
                     if (mDate) item.malumDate = mDate;
+                    if (oDate) item.oneDayDate = oDate;
+                    if (wDate) item.whaleDate = wDate;
                 }
             });
+        }
+
+        let finalItems = [...cartData];
+        if (window.selectedOptionsTemp && window.selectedOptionsTemp.length > 0) {
+            finalItems = finalItems.concat(window.selectedOptionsTemp);
         }
 
         const bookingData = {
@@ -569,8 +1170,8 @@
             contact: document.getElementById('contact').value,
             requests: document.getElementById('requests').value,
             paymentMethod: selectedPayment,
-            items: cartData,
-            totalPrice: cartData.reduce((acc, curr) => acc + (curr.totalPrice || (curr.price * curr.count)), 0),
+            items: finalItems,
+            totalPrice: finalItems.reduce((acc, curr) => acc + (curr.totalPrice || (curr.price * curr.count)), 0),
             status: isResortQuote ? '견적' : '예약접수',
             createdAt: serverTimestamp ? serverTimestamp() : new Date(),
             engName: document.getElementById('eng-name').value || '',
@@ -578,6 +1179,8 @@
             sendingDate: isPackage ? document.getElementById('pkg-sending-date').value : (pickupItem ? (pickupItem.sendingDate || '') : ''),
             hoppingDate: isPackage ? (document.getElementById('pkg-hopping-date')?.value || '') : '',
             malumDate: isPackage ? (document.getElementById('pkg-malum-date')?.value || '') : '',
+            oneDayDate: isPackage ? (document.getElementById('pkg-oneday-date')?.value || '') : '',
+            whaleDate: isPackage ? (document.getElementById('pkg-whale-date')?.value || '') : '',
             pickupFlight: isPackage ? document.getElementById('pkg-pickup-flight').value : (document.getElementById('pickup-flight').value || ''),
             pickupResort: isPackage ? document.getElementById('pkg-pickup-resort').value : (document.getElementById('pickup-resort').value || ''),
             sendingFlight: isPackage ? document.getElementById('pkg-sending-flight').value : (document.getElementById('sending-flight').value || ''),

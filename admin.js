@@ -888,7 +888,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let isExNumeric = true;
 
         rows.forEach(row => {
-            if (row.length < 16) return;
+            if (row.length < 4) return;
             const p10 = (row[10] || '').trim();
             const p15 = (row[15] || '').trim().replace(/\n/g, ', ');
             const isP10Korean = /[가-힣]/.test(p10);
@@ -898,8 +898,8 @@ document.addEventListener('DOMContentLoaded', () => {
             else { engName = p10.toUpperCase(); korName = p15; }
             combinedKorNames.push(engName ? `${engName} (${korName || ''})`.replace(' ()', '') : (korName || '고객'));
 
-            if (!firstPickupFlight) firstPickupFlight = (row[2] || '').trim().toUpperCase();
-            if (!firstSendingFlight) firstSendingFlight = (row[3] || '').trim().toUpperCase();
+            if (!firstPickupFlight) firstPickupFlight = (row[2] || '').trim().toUpperCase().replace(/\s/g, '');
+            if (!firstSendingFlight) firstSendingFlight = (row[3] || '').trim().toUpperCase().replace(/\s/g, '');
 
             totalAdults += (parseInt(row[11]) || 0);
             totalChildren += (parseInt(row[12]) || 0);
@@ -921,11 +921,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const totalPax = (parseInt(row[11]) || 0) + (parseInt(row[12]) || 0) + (parseInt(row[13]) || 0);
             const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${currentYear}-${m}-${d}`; };
             
-            const fl2 = (row[2] || '').trim().toUpperCase();
+            const fl2 = (row[2] || '').trim().toUpperCase().replace(/\s/g, '');
             if (fl2 && (fl2.match(/[A-Z0-9]{2}\d+/) || fl2.includes('KLO') || fl2.includes('MPH'))) {
                 allItems.push({ name: `공항 픽업 (${fl2})`, date: formatDate(row[0]), time: "14:00", count: totalPax });
             }
-            const fl3 = (row[3] || '').trim().toUpperCase();
+            const fl3 = (row[3] || '').trim().toUpperCase().replace(/\s/g, '');
             if (fl3 && (fl3.match(/[A-Z0-9]{2}\d+/) || fl3.includes('KLO') || fl3.includes('MPH'))) { 
                 let sTime = "21:00";
                 if (fl3 === 'TW126') sTime = "08:10";

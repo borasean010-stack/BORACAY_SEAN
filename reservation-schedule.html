@@ -369,12 +369,13 @@
                             });
                         }
                         if (res.hoppingDate) {
+                            const isJumbo = res.hoppingJumbo || false;
                             allItems.push({
-                                name: "블랙펄 요트호핑투어",
+                                name: isJumbo ? "블랙펄 호핑투어 (+점보크랩 점심)" : "블랙펄 요트호핑투어",
                                 date: res.hoppingDate,
-                                time: "13:30",
+                                time: isJumbo ? "12:30" : "13:30",
                                 count: item.count,
-                                details: item.details
+                                details: isJumbo ? `점보크랩 ${res.jumboQty || item.count}명 추가 (현지 지불 인당 $30)` : item.details
                             });
                         }
                         if (res.malumDate) {

@@ -150,11 +150,34 @@
                             <div class="calendar-picker"></div>
                         </div>
                     </div>
-                    <div class="tour-date-card" id="pkg-hopping-card" style="display:none;">
-                        <label>⛵ 블랙펄 호핑투어 이용일</label>
-                        <div class="cal-wrap">
-                            <input type="text" id="pkg-hopping-date" placeholder="날짜 선택" readonly onclick="openCalendar(this)">
-                            <div class="calendar-picker"></div>
+                    <div class="tour-date-card" id="pkg-hopping-card" style="display:none; flex-direction:column; align-items:stretch; gap:10px;">
+                        <div style="display:flex; align-items:center; gap:14px; width:100%;">
+                            <label style="min-width: 220px; font-weight: 700; color: #444; padding-top:0;">⛵ 블랙펄 호핑투어 이용일</label>
+                            <div class="cal-wrap" style="flex:1;">
+                                <input type="text" id="pkg-hopping-date" placeholder="날짜 선택" readonly onclick="openCalendar(this)">
+                                <div class="calendar-picker"></div>
+                            </div>
+                        </div>
+                        <div id="pkg-jumbo-group" style="display: flex; align-items: center; gap: 15px; background: #fffcf0; border: 1.5px solid #ffe699; padding: 10px 14px; border-radius: 8px; margin-top: 5px; width: 100%; box-sizing: border-box;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: 800; cursor: pointer; margin-bottom: 0; min-width: auto; padding-top: 0; width: auto;">
+                                <input type="checkbox" id="pkg-jumbo-check" onchange="toggleJumboOption(this)" style="width: 18px; height: 18px; accent-color: #ff6a00;">
+                                <span>🦀 점보크랩 추가 <strong style="color: #ff6a00;">(현지불 $30/인)</strong></span>
+                            </label>
+                            <div id="pkg-jumbo-fields" style="display: none; align-items: center; gap: 8px; flex: 1;">
+                                <span style="font-size: 13px; color: #555;">인원:</span>
+                                <select id="pkg-jumbo-qty" style="padding: 6px 10px; border: 1.5px solid #eee; border-radius: 6px; font-size: 13px;">
+                                    <option value="1">1명</option>
+                                    <option value="2">2명</option>
+                                    <option value="3">3명</option>
+                                    <option value="4">4명</option>
+                                    <option value="5">5명</option>
+                                    <option value="6">6명</option>
+                                    <option value="7">7명</option>
+                                    <option value="8">8명</option>
+                                    <option value="9">9명</option>
+                                    <option value="10">10명 이상</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="tour-date-card" id="pkg-malum-card" style="display:none;">

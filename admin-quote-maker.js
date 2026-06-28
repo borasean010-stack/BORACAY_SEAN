@@ -266,7 +266,25 @@ function updatePackageSection() {
     show('pkg-hopping-card', needHopping && !needOneday);
     show('pkg-malum-card', needMalum && !needOneday);
     show('pkg-whale-card', needWhale && !needOneday);
+
+    // 호핑투어 안 들어가면 점보크랩 체크 해제
+    const hoppingCardVisible = (needHopping && !needOneday);
+    if (!hoppingCardVisible) {
+        const jumboCheck = document.getElementById('pkg-jumbo-check');
+        if (jumboCheck) jumboCheck.checked = false;
+        const jumboFields = document.getElementById('pkg-jumbo-fields');
+        if (jumboFields) jumboFields.style.display = 'none';
+    }
 }
+
+window.toggleJumboOption = function(cb) {
+    const fields = document.getElementById('pkg-jumbo-fields');
+    if (cb.checked) {
+        fields.style.display = 'flex';
+    } else {
+        fields.style.display = 'none';
+    }
+};
 
 // ===================== 견적서 제출 =====================
 window.submitQuote = async () => {
@@ -275,6 +293,9 @@ window.submitQuote = async () => {
 
     const rows = document.querySelectorAll('.item-row');
     if (rows.length === 0) { alert('상품을 추가해 주세요.'); return; }
+
+    const isJumboChecked = document.getElementById('pkg-jumbo-check') ? document.getElementById('pkg-jumbo-check').checked : false;
+    const jumboQtyVal = isJumboChecked ? parseInt(document.getElementById('pkg-jumbo-qty').value) : 0;
 
     const items = [];
     let totalPrice = 0;
@@ -286,12 +307,18 @@ window.submitQuote = async () => {
         const price = parseInt(row.querySelector('.item-price').value) || 0;
         
         if (productName && typeName) {
-            items.push({ 
+            const isPackage = productName === '보라카이션 패키지' || productName === '보라카이션 투어 콤보팩';
+            const itemObj = { 
                 name: `${productName} - ${typeName}`, 
                 date: "-", 
                 count: count, 
                 price: price 
-            });
+            };
+            if (isPackage && isJumboChecked) {
+                itemObj.hoppingJumbo = true;
+                itemObj.jumboQty = jumboQtyVal;
+            }
+            items.push(itemObj);
             totalPrice += (count * price);
         }
     });
@@ -314,6 +341,8 @@ window.submitQuote = async () => {
         schedData.malumDate     = g('pkg-malum-date');
         schedData.whaleDate     = g('pkg-whale-date');
         schedData.exchangeAmount= g('pkg-exchange-amount');
+        schedData.hoppingJumbo  = isJumboChecked;
+        schedData.jumboQty      = jumboQtyVal;
     }
 
     try {

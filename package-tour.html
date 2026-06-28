@@ -216,7 +216,7 @@
                 <div class="person-info">
                     <div>
                         <span style="font-weight:800; font-size:15px;">소인 인원</span>
-                        <span id="child-age-desc" style="font-size:11px; color:#888; display:block; font-weight:500;">(만5세이상 ~ 초6)</span>
+                        <span id="child-age-desc" style="font-size:11px; color:#888; display:block; font-weight:500;">(만6세이상 ~ 초6)</span>
                     </div>
                     <div class="counter" style="display: flex; align-items: center; background: #f8f9fa; border-radius: 5px; padding: 1px; border: 1px solid #eee;">
                         <button class="count-btn" onclick="updateChildCount(-1)" style="width: 25px; height: 25px; border: none; background: white; color: #111; border-radius: 4px; font-size: 14px; font-weight: 700; cursor: pointer;">-</button>
@@ -255,10 +255,10 @@
 <script src="main.js"></script>
 <script>
     const OPTIONS = {
-        '콤보팩 A': { name: '콤보팩 A', desc: '호핑 + 고래상어 + 말룸파티', adultPrice: 270000, childPrice: 260000, childDesc: '(만5세이상 ~ 초6)' },
-        '콤보팩 B': { name: '콤보팩 B', desc: '호핑 + 고래상어', adultPrice: 175000, childPrice: 175000, childDesc: '(성인 요금 동일)' },
+        '콤보팩 A': { name: '콤보팩 A', desc: '호핑 + 고래상어 + 말룸파티', adultPrice: 270000, childPrice: 260000, childDesc: '(만6세이상 ~ 초6)' },
+        '콤보팩 B': { name: '콤보팩 B', desc: '호핑 + 고래상어', adultPrice: 175000, childPrice: 175000, childDesc: '(만6세이상 / 성인 요금 동일)' },
         '콤보팩 C': { name: '콤보팩 C', desc: '호핑 + 말룸파티', adultPrice: 150000, childPrice: 141000, childDesc: '(36개월 ~ 초6)' },
-        '콤보팩 D': { name: '콤보팩 D', desc: '말룸파티 + 고래상어', adultPrice: 220000, childPrice: 210000, childDesc: '(만5세이상 ~ 초6)' }
+        '콤보팩 D': { name: '콤보팩 D', desc: '말룸파티 + 고래상어', adultPrice: 220000, childPrice: 210000, childDesc: '(만6세이상 ~ 초6)' }
     };
     let adultCount = 1;
     let childCount = 0;

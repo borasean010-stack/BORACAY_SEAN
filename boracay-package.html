@@ -316,7 +316,7 @@
                 <div class="person-info">
                     <div>
                         <div class="person-label">소인 인원</div>
-                        <div class="person-age" id="child-age-desc">(만5세이상 ~ 초6)</div>
+                        <div class="person-age" id="child-age-desc">(만6세이상 ~ 초6)</div>
                     </div>
                     <div class="counter-wrap">
                         <button class="counter-btn" onclick="updateChildCount(-1)">−</button>
@@ -405,7 +405,7 @@
         </div>
         <div class="person-row">
             <div class="person-info">
-                <div><div class="person-label">소인 인원</div><div class="person-age" id="d-child-age-desc">(만5세이상 ~ 초6)</div></div>
+                <div><div class="person-label">소인 인원</div><div class="person-age" id="d-child-age-desc">(만6세이상 ~ 초6)</div></div>
                 <div class="counter-wrap">
                     <button class="counter-btn" onclick="updateChildCount(-1)">−</button>
                     <span class="counter-num" id="d-child-count">0</span>
@@ -432,17 +432,17 @@
 <script src="main.js"></script>
 <script>
     const OPTIONS = {
-        '시그니처 패키지': { name: '시그니처 패키지', desc: '픽샌 + 호핑 + 말룸 + 리버타드 고래상어', adultPrice: 320000, childPrice: 310000, childDesc: '(만5세이상 ~ 초6)' },
-        '패키지 A':        { name: '패키지 A',        desc: '픽샌 + 말룸 + 리버타드 고래상어',        adultPrice: 270000, childPrice: 260000, childDesc: '(만5세이상 ~ 초6)' },
-        '패키지 B':        { name: '패키지 B',        desc: '픽샌 + 호핑 + 리버타드 고래상어',        adultPrice: 230000, childPrice: 230000, childDesc: '(성인 요금 동일)' },
+        '시그니처 패키지': { name: '시그니처 패키지', desc: '픽샌 + 호핑 + 말룸 + 리버타드 고래상어', adultPrice: 320000, childPrice: 310000, childDesc: '(만6세이상 ~ 초6)' },
+        '패키지 A':        { name: '패키지 A',        desc: '픽샌 + 말룸 + 리버타드 고래상어',        adultPrice: 270000, childPrice: 260000, childDesc: '(만6세이상 ~ 초6)' },
+        '패키지 B':        { name: '패키지 B',        desc: '픽샌 + 호핑 + 리버타드 고래상어',        adultPrice: 230000, childPrice: 230000, childDesc: '(만6세이상 / 성인 요금 동일)' },
         '패키지 C':        { name: '패키지 C',        desc: '픽샌 + 호핑 + 말룸',                     adultPrice: 195000, childPrice: 185000, childDesc: '(36개월 ~ 초6)' },
         '픽샌팩 A':        { name: '픽샌팩 A',        desc: '픽샌 + 호핑',                                        adultPrice: 100000, childPrice: 100000, childDesc: '(성인 요금 동일)' },
-        '픽샌팩 B':        { name: '픽샌팩 B',        desc: '픽샌 + 리버타드 고래상어',                           adultPrice: 175000, childPrice: 175000, childDesc: '(성인 요금 동일)' },
+        '픽샌팩 B':        { name: '픽샌팩 B',        desc: '픽샌 + 리버타드 고래상어',                           adultPrice: 175000, childPrice: 175000, childDesc: '(만6세이상 / 성인 요금 동일)' },
         '픽샌팩 C':        { name: '픽샌팩 C',        desc: '픽샌 + 말룸',                                        adultPrice: 150000, childPrice: 141000, childDesc: '(36개월 ~ 초6)' },
-        '콤보팩 A':        { name: '콤보팩 A',        desc: '호핑 + 리버타드 고래상어 + 말룸파티',                adultPrice: 270000, childPrice: 260000, childDesc: '(만5세이상 ~ 초6)' },
-        '콤보팩 B':        { name: '콤보팩 B',        desc: '호핑 + 리버타드 고래상어',                           adultPrice: 175000, childPrice: 175000, childDesc: '(성인 요금 동일)' },
+        '콤보팩 A':        { name: '콤보팩 A',        desc: '호핑 + 리버타드 고래상어 + 말룸파티',                adultPrice: 270000, childPrice: 260000, childDesc: '(만6세이상 ~ 초6)' },
+        '콤보팩 B':        { name: '콤보팩 B',        desc: '호핑 + 리버타드 고래상어',                           adultPrice: 175000, childPrice: 175000, childDesc: '(만6세이상 / 성인 요금 동일)' },
         '콤보팩 C':        { name: '콤보팩 C',        desc: '호핑 + 말룸파티',                                    adultPrice: 150000, childPrice: 141000, childDesc: '(36개월 ~ 초6)' },
-        '콤보팩 D':        { name: '콤보팩 D',        desc: '말룸파티 + 리버타드 고래상어',                       adultPrice: 220000, childPrice: 210000, childDesc: '(만5세이상 ~ 초6)' }
+        '콤보팩 D':        { name: '콤보팩 D',        desc: '말룸파티 + 리버타드 고래상어',                       adultPrice: 220000, childPrice: 210000, childDesc: '(만6세이상 ~ 초6)' }
     };
 
     let adultCount = 1;

@@ -535,7 +535,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 itemsDesc.push(`- ${i.name} (패키지 상품) / ${i.count}명`);
                 if (res.pickupDate) itemsDesc.push(`  ✈️ 공항 픽업: ${res.pickupDate} (${res.pickupFlight || '-'})`);
                 if (res.sendingDate) itemsDesc.push(`  ✈️ 공항 샌딩: ${res.sendingDate} (${res.sendingFlight || '-'})`);
-                if (res.hoppingDate) itemsDesc.push(`  ⛵ 블랙펄 호핑: ${res.hoppingDate}`);
+                if (res.hoppingDate) {
+                    if (res.hoppingJumbo) {
+                        itemsDesc.push(`  ⛵ 블랙펄 호핑 (+점보크랩 점심): ${res.hoppingDate} (12:30 미팅 / 점보크랩 추가 ${res.jumboQty || i.count}명 - 현지 지불 $30/인)`);
+                    } else {
+                        itemsDesc.push(`  ⛵ 블랙펄 호핑: ${res.hoppingDate}`);
+                    }
+                }
                 if (res.malumDate) itemsDesc.push(`  🌳 말룸파티: ${res.malumDate}`);
                 if (res.oneDayDate) itemsDesc.push(`  🌊 원데이(말룸+고래): ${res.oneDayDate}`);
                 if (res.whaleDate) itemsDesc.push(`  🐋 고래상어: ${res.whaleDate}`);

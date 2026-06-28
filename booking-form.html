@@ -259,6 +259,32 @@
                         <div class="calendar-picker"></div>
                     </div>
                     
+                    <!-- 점보크랩 추가 옵션 (호핑 포함 패키지 전용) -->
+                    <div id="pkg-jumbo-group" style="display: none; background: #fffcf0; border: 1.5px solid #ffe699; border-radius: 14px; padding: 16px; margin-bottom: 16px;">
+                        <label style="display: flex; align-items: center; gap: 10px; font-weight: 800; cursor: pointer; margin-bottom: 0;">
+                            <input type="checkbox" id="pkg-jumbo-check" onchange="toggleJumboOption(this)" style="width: 20px; height: 20px; accent-color: #ff6a00;">
+                            <span>🦀 점보크랩 추가 <strong style="color: #ff6a00; font-weight: 900;">(현지 지불 인당 $30)</strong></span>
+                        </label>
+                        <p style="font-size: 12px; color: #888; margin: 8px 0 0 30px;">호핑투어 당일 점심 점보크랩 식사 추가 옵션입니다. (식사 미팅 12:30 배정)</p>
+                        <div id="pkg-jumbo-fields" style="display: none; margin-top: 14px; border-top: 1px dashed #f0d080; padding-top: 14px;">
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label>점보크랩 추가 인원</label>
+                                <select id="pkg-jumbo-qty" style="padding: 11px 14px; border: 1.5px solid #eee; border-radius: 10px; font-size: 14px; font-family: inherit; width: 100%;">
+                                    <option value="1">1명</option>
+                                    <option value="2">2명</option>
+                                    <option value="3">3명</option>
+                                    <option value="4">4명</option>
+                                    <option value="5">5명</option>
+                                    <option value="6">6명</option>
+                                    <option value="7">7명</option>
+                                    <option value="8">8명</option>
+                                    <option value="9">9명</option>
+                                    <option value="10">10명 이상</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div id="pkg-malum-group" class="input-group" style="display: none;">
                         <label>시크릿가든 말룸파티 이용일<span class="required-mark">*</span></label>
                         <input type="text" id="pkg-malum-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)">
@@ -942,6 +968,15 @@
         }
     });
 
+    window.toggleJumboOption = function(cb) {
+        const fields = document.getElementById('pkg-jumbo-fields');
+        if (cb.checked) {
+            fields.style.display = 'block';
+        } else {
+            fields.style.display = 'none';
+        }
+    };
+
     // 마사지 다중 타입 체크박스 토글
     window.toggleTypeCheck = function(row) {
         const cb = row.querySelector('input[type=checkbox]');
@@ -1214,6 +1249,10 @@
             document.getElementById('pkg-whale-group').style.display = 'none';
             document.getElementById('pkg-whale-date').required = false;
 
+            document.getElementById('pkg-jumbo-group').style.display = 'none';
+            document.getElementById('pkg-jumbo-check').checked = false;
+            document.getElementById('pkg-jumbo-fields').style.display = 'none';
+
             const textToSearch = (pkg.name || '') + ' ' + (pkg.details || '');
             
             if (textToSearch.includes('시그니처') || textToSearch.includes('콤보팩 A')) {
@@ -1243,6 +1282,11 @@
             } else if (textToSearch.includes('픽샌팩 C')) {
                 document.getElementById('pkg-malum-group').style.display = 'block';
                 document.getElementById('pkg-malum-date').required = true;
+            }
+
+            // 호핑투어 포함된 패키지이면 점보크랩 추가 옵션 노출
+            if (document.getElementById('pkg-hopping-group').style.display === 'block') {
+                document.getElementById('pkg-jumbo-group').style.display = 'block';
             }
         }
 
@@ -1370,6 +1414,9 @@
                 sTime = "전날 재안내";
             }
 
+            const isJumboChecked = document.getElementById('pkg-jumbo-check') ? document.getElementById('pkg-jumbo-check').checked : false;
+            const jumboQtyVal = isJumboChecked ? parseInt(document.getElementById('pkg-jumbo-qty').value) : 0;
+
             cartData.forEach(item => {
                 item.pickupDate = pDate;
                 item.sendingDate = sDate;
@@ -1391,6 +1438,10 @@
                     if (mDate) item.malumDate = mDate;
                     if (oDate) item.oneDayDate = oDate;
                     if (wDate) item.whaleDate = wDate;
+                    if (isJumboChecked) {
+                        item.hoppingJumbo = true;
+                        item.jumboQty = jumboQtyVal;
+                    }
                 }
             });
         }
@@ -1399,6 +1450,9 @@
         if (window.selectedOptionsTemp && window.selectedOptionsTemp.length > 0) {
             finalItems = finalItems.concat(window.selectedOptionsTemp);
         }
+
+        const isJumboChecked = document.getElementById('pkg-jumbo-check') ? document.getElementById('pkg-jumbo-check').checked : false;
+        const jumboQtyVal = isJumboChecked ? parseInt(document.getElementById('pkg-jumbo-qty').value) : 0;
 
         const bookingData = {
             kakaoUserId: user.id,
@@ -1426,7 +1480,9 @@
             exchangeAmount: isPackage ? document.getElementById('pkg-exchange-amount').value : (document.getElementById('exchange-amount') ? document.getElementById('exchange-amount').value : ''),
             resortCheckin: (resortItem && resortItem.details) ? resortItem.details.checkin : '',
             resortCheckout: (resortItem && resortItem.details) ? resortItem.details.checkout : '',
-            hasPrivateTransfer: cartData.some(i => i.privateTransfer === true)
+            hasPrivateTransfer: cartData.some(i => i.privateTransfer === true),
+            hoppingJumbo: isJumboChecked,
+            jumboQty: jumboQtyVal
         };
 
         const finalize = () => {

@@ -1436,7 +1436,7 @@
                     return station10Keywords.some(kw => low.includes(kw));
                 };
                 sTime = isStation10(sResort) ? "08:10" : "08:30";
-            } else if (sFlight.startsWith('TW') || sFlight.startsWith('5J') || sFlight.startsWith('Z2') || sFlight.startsWith('DG') || (sFlight.startsWith('PR') && !['PR469', 'PR489'].includes(sFlight))) {
+            } else if (sFlight.startsWith('TW') || sFlight.startsWith('5J') || sFlight.startsWith('Z2') || sFlight.startsWith('DG') || (sFlight.startsWith('PR') && !['PR469', 'PR489'].includes(sFlight)) || sFlight.includes('KLO') || sFlight.includes('MPH') || sFlight.includes('국내선')) {
                 sTime = "전날 재안내";
             }
 

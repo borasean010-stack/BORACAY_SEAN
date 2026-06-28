@@ -357,7 +357,7 @@
                             let sandingTime = "21:00";
                             if (flight === 'TW126') {
                                 sandingTime = isStation10(res.sendingResort || res.pickupResort) ? "08:10" : "08:30";
-                            } else if (flight.startsWith('TW') || flight.startsWith('5J') || flight.startsWith('Z2') || flight.startsWith('DG') || (flight.startsWith('PR') && !['PR469', 'PR489'].includes(flight))) {
+                            } else if (flight.startsWith('TW') || flight.startsWith('5J') || flight.startsWith('Z2') || flight.startsWith('DG') || (flight.startsWith('PR') && !['PR469', 'PR489'].includes(flight)) || flight.includes('KLO') || flight.includes('MPH') || flight.includes('국내선')) {
                                 sandingTime = "전날 재안내";
                             }
                             allItems.push({
@@ -429,7 +429,7 @@
                             if (!sandingTime || sandingTime.includes(':')) {
                                 if (flight === 'TW126') {
                                     sandingTime = isStation10(res.sendingResort || res.pickupResort) ? "08:10" : "08:30";
-                                } else if (flight.startsWith('TW') || flight.startsWith('5J') || flight.startsWith('Z2') || flight.startsWith('DG') || (flight.startsWith('PR') && !['PR469', 'PR489'].includes(flight))) {
+                                } else if (flight.startsWith('TW') || flight.startsWith('5J') || flight.startsWith('Z2') || flight.startsWith('DG') || (flight.startsWith('PR') && !['PR469', 'PR489'].includes(flight)) || flight.includes('KLO') || flight.includes('MPH') || flight.includes('국내선')) {
                                     sandingTime = "전날 재안내";
                                 } else if (flight) {
                                     sandingTime = "21:00";

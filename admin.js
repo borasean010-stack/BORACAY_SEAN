@@ -667,7 +667,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     };
 
                     if (fl === 'TW126') sTime = isStation10(resortRaw) ? "08:10" : "08:30";
-                    else if (fl.startsWith('TW') || fl.startsWith('5J') || fl.startsWith('Z2') || fl.startsWith('DG') || (fl.startsWith('PR') && !['PR469', 'PR489'].includes(fl))) sTime = "전날 재안내";
+                    else if (fl.startsWith('TW') || fl.startsWith('5J') || fl.startsWith('Z2') || fl.startsWith('DG') || (fl.startsWith('PR') && !['PR469', 'PR489'].includes(fl)) || fl.includes('KLO') || fl.includes('MPH') || fl.includes('국내선')) sTime = "전날 재안내";
                     
                     const docRef = doc(collection(db, "schedules"));
                     batch.set(docRef, {
@@ -921,13 +921,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const totalPax = (parseInt(row[11]) || 0) + (parseInt(row[12]) || 0) + (parseInt(row[13]) || 0);
             const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${currentYear}-${m}-${d}`; };
             
-            if (row[2] && row[2].match(/[A-Z]{2}\d+/)) { allItems.push({ name: `✈️ 공항 픽업 (${row[2].toUpperCase()})`, date: formatDate(row[0]), time: "14:00", count: totalPax }); }
-            if (row[3] && row[3].match(/[A-Z]{2}\d+/)) { 
-                const fl = row[3].toUpperCase().trim();
+            const fl2 = (row[2] || '').trim().toUpperCase();
+            if (fl2 && (fl2.match(/[A-Z]{2}\d+/) || fl2.includes('KLO') || fl2.includes('MPH') || fl2.includes('국내선'))) {
+                allItems.push({ name: `공항 픽업 (${fl2})`, date: formatDate(row[0]), time: "14:00", count: totalPax });
+            }
+            const fl3 = (row[3] || '').trim().toUpperCase();
+            if (fl3 && (fl3.match(/[A-Z]{2}\d+/) || fl3.includes('KLO') || fl3.includes('MPH') || fl3.includes('국내선'))) { 
                 let sTime = "21:00";
-                if (fl === 'TW126') sTime = "08:10";
-                else if (fl.startsWith('TW') || fl.startsWith('5J') || fl.startsWith('Z2') || fl.startsWith('DG') || (fl.startsWith('PR') && !['PR469', 'PR489'].includes(fl))) sTime = "전날 재안내";
-                allItems.push({ name: `✈️ 공항 샌딩 (${fl})`, date: formatDate(row[1]), time: sTime, count: totalPax }); 
+                if (fl3 === 'TW126') sTime = "08:10";
+                else if (fl3.startsWith('TW') || fl3.startsWith('5J') || fl3.startsWith('Z2') || fl3.startsWith('DG') || (fl3.startsWith('PR') && !['PR469', 'PR489'].includes(fl3)) || fl3.includes('KLO') || fl3.includes('MPH') || fl3.includes('국내선')) sTime = "전날 재안내";
+                allItems.push({ name: `공항 샌딩 (${fl3})`, date: formatDate(row[1]), time: sTime, count: totalPax }); 
             }
 
             const remarkRaw = (row[16] || '').trim();

@@ -302,14 +302,14 @@
                     <p style="font-size: 13px; color: #666; margin-bottom: 20px;">패키지와 함께 예약하실 해양스포츠 및 마사지 옵션을 추가할 수 있습니다.</p>
                     
                     <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #eee;">
-                        <button type="button" class="opt-tab" id="tab-sports-btn" onclick="switchOptTab('sports')" style="padding: 10px 20px; background: none; border: none; font-weight: 800; font-size: 15px; cursor: pointer; color: #ff6a00; border-bottom: 3px solid #ff6a00; transition: 0.3s;">해양 스포츠</button>
+                        <button type="button" class="opt-tab" id="tab-jumbo-btn" onclick="switchOptTab('jumbo')" style="display: none; padding: 10px 20px; background: none; border: none; font-weight: 800; font-size: 15px; cursor: pointer; color: #bbb; border-bottom: 3px solid transparent; transition: 0.3s;">점보크랩</button>
+                        <button type="button" class="opt-tab" id="tab-sports-btn" onclick="switchOptTab('sports')" style="padding: 10px 20px; background: none; border: none; font-weight: 800; font-size: 15px; cursor: pointer; color: #bbb; border-bottom: 3px solid transparent; transition: 0.3s;">해양 스포츠</button>
                         <button type="button" class="opt-tab" id="tab-massage-btn" onclick="switchOptTab('massage')" style="padding: 10px 20px; background: none; border: none; font-weight: 800; font-size: 15px; cursor: pointer; color: #bbb; border-bottom: 3px solid transparent; transition: 0.3s;">마사지</button>
                     </div>
 
-                    <!-- 해양 스포츠 -->
-                    <div id="opt-sports-section" class="opt-content-sec">
-                        <!-- 점보크랩 (현지 지불) - 호핑 패키지 포함된 경우만 노출 -->
-                        <div id="opt-jumbo-card" class="opt-card-item" style="display: none; background: #fffcf0; border: 1.5px solid #ffe699; border-radius: 16px; padding: 16px; margin-bottom: 12px; transition: 0.3s;">
+                    <!-- 점보크랩 -->
+                    <div id="opt-jumbo-section" class="opt-content-sec" style="display: none;">
+                        <div class="opt-card-item" style="background: #fffcf0; border: 1.5px solid #ffe699; border-radius: 16px; padding: 16px; margin-bottom: 12px; transition: 0.3s;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <label style="display: flex; align-items: center; gap: 10px; font-weight: 800; cursor: pointer; margin-bottom: 0;">
                                     <input type="checkbox" id="opt-jumbo-check" onchange="toggleOptFields('jumbo')" style="width: 20px; height: 20px; accent-color: #ff6a00;">
@@ -342,7 +342,10 @@
                                 <p style="font-size: 12px; color: #888; margin: 5px 0 0 0; line-height: 1.4;">호핑투어 당일 점심으로 점보크랩 식사가 배정됩니다. (미팅 시간: 12:30)</p>
                             </div>
                         </div>
+                    </div>
 
+                    <!-- 해양 스포츠 -->
+                    <div id="opt-sports-section" class="opt-content-sec" style="display: none;">
                         <!-- 제트스키 -->
                         <div class="opt-card-item" style="background: white; border: 1.5px solid #eee; border-radius: 16px; padding: 16px; margin-bottom: 12px; transition: 0.3s;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -1237,8 +1240,11 @@
         }
 
         if (hasHopping) {
-            const jumboCard = document.getElementById('opt-jumbo-card');
-            if (jumboCard) jumboCard.style.display = 'block';
+            const jumboBtn = document.getElementById('tab-jumbo-btn');
+            if (jumboBtn) jumboBtn.style.display = 'block';
+            switchOptTab('jumbo');
+        } else {
+            switchOptTab('sports');
         }
 
         if (hasActivityPickup) {

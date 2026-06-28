@@ -555,7 +555,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 리버타드 고래상어 투어 포함 시 전용 안내문 추가
         const hasWhaleShark = res.items.some(i => i.name.includes('고래상어') || i.name.toLowerCase().includes('whaleshark')) || res.oneDayDate || res.whaleDate;
         if (hasWhaleShark) {
-            msg += `\n\n------------------\n🚨📢 리버타드 고래상어 투어 안내\n미팅 시간: 07:00\n미팅 장소: 메인로드 졸리비\n구글맵 주소: https://maps.app.goo.gl/xgty5kLRCpBrwzvL7\n\n★★ 주의 사항 및 준비물 ★★\n-편한 물놀이 복장, 비치타올 1인 1장\n-스노클 마스크(보유시)\n- 매너팁 1인 100페소 (성인, 소인 동일)\n- 자외선 차단제 불가능\n\n*미팅시간 5분 이상 늦으실 경우 노쇼 처리 될 수 있습니다`;
+            msg += `\n\n------------------\n🚨📢 리버타드 고래상어 투어 안내\n미팅 시간: 07:00\n미팅 장소: 메인로드 졸리비\n구글맵 주소: https://maps.app.goo.gl/xgty5kLRCpBrwzvL7\n\n★★ 주의 사항 및 준비물 ★★\n-편한 물놀이 복장, 비치타올 1인 1장\n-스노클 마스크(보유시)\n- 매너팁 1인 100페소 (성인, 소인 동일)\n- 자외선 차단제 불가능\n\n*미팅시간 5분 이상 늦으실 경우 노쇼 처리 될 수 있습니다\n\n🔴 ※ 고래상어 미출현 안내\n고래상어 서식 지역 도착 후 고래상어 미출현 시, 발생되는 이동/차량비 $40 중 보라카이션에서 $20(50%)를 부담하며, 고객 부담 $20을 제외한 금액은 환불됩니다`;
         }
         
         msg += `\n\n감사합니다.`;

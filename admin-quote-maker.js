@@ -16,26 +16,26 @@ const db = getFirestore(app);
 // ===================== 상품 데이터 =====================
 const PRODUCT_DATA = {
     "보라카이션 패키지": [
-        { name: "시그니처 (성인)", price: 320000 },
-        { name: "시그니처 (소인)", price: 310000 },
-        { name: "패키지 A (성인)", price: 270000 },
-        { name: "패키지 A (소인)", price: 260000 },
-        { name: "패키지 B (성인/소인)", price: 230000 },
-        { name: "패키지 C (성인)", price: 195000 },
-        { name: "패키지 C (소인)", price: 185000 },
-        { name: "픽샌팩 A (성인/소인)", price: 100000 },
-        { name: "픽샌팩 B (성인/소인)", price: 175000 },
-        { name: "픽샌팩 C (성인)", price: 150000 },
-        { name: "픽샌팩 C (소인)", price: 141000 }
+        { name: "시그니처 패키지 (성인) (픽샌 + 호핑 + 말룸 + 고래상어)", price: 320000 },
+        { name: "시그니처 패키지 (소인) (픽샌 + 호핑 + 말룸 + 고래상어)", price: 310000 },
+        { name: "패키지 A (성인) (픽샌 + 말룸 + 고래상어)", price: 270000 },
+        { name: "패키지 A (소인) (픽샌 + 말룸 + 고래상어)", price: 260000 },
+        { name: "패키지 B (성인/소인) (픽샌 + 호핑 + 고래상어)", price: 230000 },
+        { name: "패키지 C (성인) (픽샌 + 호핑 + 말룸파티)", price: 195000 },
+        { name: "패키지 C (소인) (픽샌 + 호핑 + 말룸파티)", price: 185000 },
+        { name: "픽샌팩 A (성인/소인) (단독 픽샌 + 라운지)", price: 100000 },
+        { name: "픽샌팩 B (성인/소인) (조인 픽샌 + 호핑 + 라운지)", price: 175000 },
+        { name: "픽샌팩 C (성인) (조인 픽샌 + 마사지)", price: 150000 },
+        { name: "픽샌팩 C (소인) (조인 픽샌 + 마사지)", price: 141000 }
     ],
     "보라카이션 투어 콤보팩": [
-        { name: "콤보팩 A (호핑+고래상어+말룸) (성인)", price: 270000 },
-        { name: "콤보팩 A (호핑+고래상어+말룸) (소인)", price: 260000 },
-        { name: "콤보팩 B (호핑+고래상어) (성인/소인)", price: 175000 },
-        { name: "콤보팩 C (호핑+말룸) (성인)", price: 150000 },
-        { name: "콤보팩 C (호핑+말룸) (소인)", price: 141000 },
-        { name: "콤보팩 D (말룸+고래상어) (성인)", price: 220000 },
-        { name: "콤보팩 D (말룸+고래상어) (소인)", price: 210000 }
+        { name: "콤보팩 A (성인) (호핑 + 원데이(말룸+고래상어))", price: 270000 },
+        { name: "콤보팩 A (소인) (호핑 + 원데이(말룸+고래상어))", price: 260000 },
+        { name: "콤보팩 B (성인/소인) (호핑 + 고래상어)", price: 175000 },
+        { name: "콤보팩 C (성인) (호핑 + 말룸파티)", price: 150000 },
+        { name: "콤보팩 C (소인) (호핑 + 말룸파티)", price: 141000 },
+        { name: "콤보팩 D (성인) (원데이(말룸+고래상어))", price: 220000 },
+        { name: "콤보팩 D (소인) (원데이(말룸+고래상어))", price: 210000 }
     ],
     "보라카이 왕복 픽업샌딩": [
         { name: "조인 픽업샌딩", price: 54900 }
@@ -68,17 +68,17 @@ const PRODUCT_DATA = {
 
 // 패키지 상품에 포함되는 투어 매핑
 const PKG_TOUR_MAP = {
-    "시그니처": { hopping: true, malum: true, whale: true },
-    "패키지 A": { oneday: true, hopping: true },   // 원데이(말룸+고래)
-    "패키지 B": { oneday: true, hopping: true },
-    "패키지 C": { hopping: true },
-    "픽샌팩 A": {},
-    "픽샌팩 B": { hopping: true },
-    "픽샌팩 C": { hopping: true },
-    "콤보팩 A": { hopping: true, malum: true, whale: true },
+    "시그니처": { hopping: true, oneday: true },
+    "콤보팩 A": { hopping: true, oneday: true },
+    "패키지 A": { oneday: true },
+    "콤보팩 D": { oneday: true },
+    "패키지 B": { hopping: true, whale: true },
     "콤보팩 B": { hopping: true, whale: true },
+    "패키지 C": { hopping: true, malum: true },
     "콤보팩 C": { hopping: true, malum: true },
-    "콤보팩 D": { malum: true, whale: true }
+    "픽샌팩 A": { hopping: true },
+    "픽샌팩 B": { whale: true },
+    "픽샌팩 C": { malum: true }
 };
 
 // ===================== 달력 로직 =====================
@@ -263,13 +263,12 @@ function updatePackageSection() {
         if (el) el.style.display = visible ? 'flex' : 'none';
     };
     show('pkg-oneday-card', needOneday);
-    show('pkg-hopping-card', needHopping && !needOneday);
-    show('pkg-malum-card', needMalum && !needOneday);
-    show('pkg-whale-card', needWhale && !needOneday);
+    show('pkg-hopping-card', needHopping);
+    show('pkg-malum-card', needMalum);
+    show('pkg-whale-card', needWhale);
 
     // 호핑투어 안 들어가면 점보크랩 체크 해제
-    const hoppingCardVisible = (needHopping && !needOneday);
-    if (!hoppingCardVisible) {
+    if (!needHopping) {
         const jumboCheck = document.getElementById('pkg-jumbo-check');
         if (jumboCheck) jumboCheck.checked = false;
         const jumboFields = document.getElementById('pkg-jumbo-fields');

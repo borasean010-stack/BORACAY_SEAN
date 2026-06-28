@@ -474,7 +474,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 let subTours = [];
                 if (res.pickupDate) subTours.push(`✈️ 공항 픽업: ${res.pickupDate} (${res.pickupFlight || '-'})`);
                 if (res.sendingDate) subTours.push(`✈️ 공항 샌딩: ${res.sendingDate} (${res.sendingFlight || '-'})`);
-                if (res.hoppingDate) subTours.push(`⛵ 블랙펄 호핑: ${res.hoppingDate}`);
+                if (res.hoppingDate) {
+                    if (res.hoppingJumbo) {
+                        subTours.push(`⛵ 블랙펄 호핑: ${res.hoppingDate} ➔ 🦀 점보크랩 추가 (${res.jumboQty || item.count}명 - 현지 지불 인당 $30)`);
+                    } else {
+                        subTours.push(`⛵ 블랙펄 호핑: ${res.hoppingDate}`);
+                    }
+                }
                 if (res.malumDate) subTours.push(`🌳 말룸파티: ${res.malumDate}`);
                 if (res.oneDayDate) subTours.push(`🌊 원데이(말룸+고래): ${res.oneDayDate}`);
                 if (res.whaleDate) subTours.push(`🐋 고래상어: ${res.whaleDate}`);

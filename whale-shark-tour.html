@@ -325,13 +325,13 @@
     
     function handleBuy() {
         const total = adultCount * ADULT_PRICE;
-        const item = { name: "보라카이 리버타드 고래상어 투어", price: ADULT_PRICE, count: adultCount, totalPrice: total, date: selectedDate, details: `성인 ${adultCount}` };
+        const item = { name: "리버타드 고래상어", price: ADULT_PRICE, count: adultCount, totalPrice: total, date: selectedDate, details: `성인 ${adultCount}` };
         BSUtils.buyNow(item);
     }
 
     function addToCart() {
         const total = adultCount * ADULT_PRICE;
-        const item = { name: "보라카이 리버타드 고래상어 투어", price: ADULT_PRICE, count: adultCount, totalPrice: total, date: selectedDate, details: `성인 ${adultCount}` };
+        const item = { name: "리버타드 고래상어", price: ADULT_PRICE, count: adultCount, totalPrice: total, date: selectedDate, details: `성인 ${adultCount}` };
         BSUtils.saveToCart(item);
     }
 

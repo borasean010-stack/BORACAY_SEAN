@@ -304,8 +304,8 @@
     let selectedType = 'A타입';
     let currentPrice = 750000;
     let adultCount = 1;
-    let pcDate = new Date(2026, 2, 1);
-    let mobileDate = new Date(2026, 2, 1);
+    const _now = new Date(); let pcDate = new Date(_now.getFullYear(), _now.getMonth(), 1);
+    let mobileDate = new Date(_now.getFullYear(), _now.getMonth(), 1);
     const now = new Date();
     let currentDate = new Date(now.getFullYear(), now.getMonth(), 1);
     const yyyy = now.getFullYear();

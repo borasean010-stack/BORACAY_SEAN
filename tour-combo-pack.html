@@ -399,6 +399,7 @@
             totalPrice: total, 
             date: selectedDate,
             isPackage: true,
+            noPickup: true,
             details: `성인 ${adultCount}, 소인 ${childCount} / ${option.desc}`
         };
         BSUtils.buyNow(item);
@@ -414,6 +415,7 @@
             totalPrice: total, 
             date: selectedDate,
             isPackage: true,
+            noPickup: true,
             details: `성인 ${adultCount}, 소인 ${childCount} / ${option.desc}`
         };
         BSUtils.saveToCart(item);

@@ -214,35 +214,39 @@
 
                 <!-- 📦 패키지 전용 일정 정보 (커스텀 달력 적용) -->
                 <div id="package-schedule-fields" class="conditional-fields" style="display: none;">
-                    <div class="section-subtitle" style="color:#ff6a00;">✈️ 항공 및 리조트 정보</div>
-                    
-                    <div class="input-group">
-                        <label>픽업 날짜 (공항➔보라카이)<span class="required-mark">*</span></label>
-                        <input type="text" id="pkg-pickup-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" required>
-                        <div class="calendar-picker"></div>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label>픽업 항공편명(인천➔칼리보)<span class="required-mark">*</span></label>
-                        <input type="text" id="pkg-pickup-flight" placeholder="예: TW125">
-                    </div>
-                    <div class="input-group">
-                        <label>픽업 리조트(첫날 숙소)<span class="required-mark">*</span></label>
-                        <input type="text" id="pkg-pickup-resort" placeholder="예: 헤난 가든">
-                    </div>
 
-                    <div class="input-group">
-                        <label>샌딩 날짜 (보라카이➔공항)<span class="required-mark">*</span></label>
-                        <input type="text" id="pkg-sending-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)" required>
-                        <div class="calendar-picker"></div>
-                    </div>
-                    <div class="input-group">
-                        <label>샌딩 항공편명(칼리보➔인천)<span class="required-mark">*</span></label>
-                        <input type="text" id="pkg-sending-flight" placeholder="예: TW126">
-                    </div>
-                    <div class="input-group">
-                        <label>샌딩 리조트(마지막 숙소)<span class="required-mark">*</span></label>
-                        <input type="text" id="pkg-sending-resort" placeholder="예: 헤난 가든">
+                    <!-- ✈️ 픽업/샌딩 포함 패키지 전용 (시그니처/패키지A/B/C, 픽샌팩A/B/C) -->
+                    <div id="pkg-pickup-sending-section">
+                        <div class="section-subtitle" style="color:#ff6a00;">✈️ 항공 및 리조트 정보</div>
+                        
+                        <div class="input-group">
+                            <label>픽업 날짜 (공항➔보라카이)<span class="required-mark">*</span></label>
+                            <input type="text" id="pkg-pickup-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)">
+                            <div class="calendar-picker"></div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>픽업 항공편명(인천➔칼리보)<span class="required-mark">*</span></label>
+                            <input type="text" id="pkg-pickup-flight" placeholder="예: TW125">
+                        </div>
+                        <div class="input-group">
+                            <label>픽업 리조트(첫날 숙소)<span class="required-mark">*</span></label>
+                            <input type="text" id="pkg-pickup-resort" placeholder="예: 헤난 가든">
+                        </div>
+
+                        <div class="input-group">
+                            <label>샌딩 날짜 (보라카이➔공항)<span class="required-mark">*</span></label>
+                            <input type="text" id="pkg-sending-date" placeholder="날짜 선택" readonly onclick="event.stopPropagation(); openCalendar(this)">
+                            <div class="calendar-picker"></div>
+                        </div>
+                        <div class="input-group">
+                            <label>샌딩 항공편명(칼리보➔인천)<span class="required-mark">*</span></label>
+                            <input type="text" id="pkg-sending-flight" placeholder="예: TW126">
+                        </div>
+                        <div class="input-group">
+                            <label>샌딩 리조트(마지막 숙소)<span class="required-mark">*</span></label>
+                            <input type="text" id="pkg-sending-resort" placeholder="예: 헤난 가든">
+                        </div>
                     </div>
 
                     <div class="section-subtitle" style="color:#ff6a00; margin-top:30px;">📅 투어 이용 날짜</div>
@@ -1254,18 +1258,28 @@
 
         if (isPackage) {
             document.getElementById('package-schedule-fields').style.display = 'block';
-            document.getElementById('pkg-pickup-date').required = true;
-            document.getElementById('pkg-sending-date').required = true;
-            document.getElementById('pkg-pickup-flight').required = true;
-            document.getElementById('pkg-pickup-resort').required = true;
-            document.getElementById('pkg-sending-flight').required = true;
-            document.getElementById('pkg-sending-resort').required = true;
 
             const pkg = cartData.find(i => i.isPackage);
-            if (pkg.date) { 
-                document.getElementById('pkg-pickup-date').value = pkg.date; 
+            const isNoPickup = pkg.noPickup === true; // 콤보팩 등 픽업/샌딩 없는 패키지
+
+            // 픽업/샌딩 섹션 표시 여부
+            const pickupSection = document.getElementById('pkg-pickup-sending-section');
+            if (isNoPickup) {
+                if (pickupSection) pickupSection.style.display = 'none';
+            } else {
+                if (pickupSection) pickupSection.style.display = 'block';
+                document.getElementById('pkg-pickup-date').required = true;
+                document.getElementById('pkg-sending-date').required = true;
+                document.getElementById('pkg-pickup-flight').required = true;
+                document.getElementById('pkg-pickup-resort').required = true;
+                document.getElementById('pkg-sending-flight').required = true;
+                document.getElementById('pkg-sending-resort').required = true;
+                if (pkg.date) {
+                    document.getElementById('pkg-pickup-date').value = pkg.date;
+                }
             }
 
+            // 투어 날짜 그룹 초기화
             document.getElementById('pkg-oneday-group').style.display = 'none';
             document.getElementById('pkg-oneday-date').required = false;
             document.getElementById('pkg-hopping-group').style.display = 'none';
@@ -1275,12 +1289,16 @@
             document.getElementById('pkg-whale-group').style.display = 'none';
             document.getElementById('pkg-whale-date').required = false;
 
-            document.getElementById('pkg-jumbo-group').style.display = 'none';
-            document.getElementById('pkg-jumbo-check').checked = false;
-            document.getElementById('pkg-jumbo-fields').style.display = 'none';
+            // 점보크랩 옵션 초기화 (null 안전 처리)
+            const jumboGroup = document.getElementById('pkg-jumbo-group');
+            const jumboCheck = document.getElementById('pkg-jumbo-check');
+            const jumboFields = document.getElementById('pkg-jumbo-fields');
+            if (jumboGroup) jumboGroup.style.display = 'none';
+            if (jumboCheck) jumboCheck.checked = false;
+            if (jumboFields) jumboFields.style.display = 'none';
 
             const textToSearch = (pkg.name || '') + ' ' + (pkg.details || '');
-            
+
             if (textToSearch.includes('시그니처') || textToSearch.includes('콤보팩 A')) {
                 document.getElementById('pkg-hopping-group').style.display = 'block';
                 document.getElementById('pkg-hopping-date').required = true;
@@ -1310,9 +1328,9 @@
                 document.getElementById('pkg-malum-date').required = true;
             }
 
-            // 호핑투어 포함된 패키지이면 점보크랩 추가 옵션 노출
+            // 호핑투어 포함 패키지이면 점보크랩 탭 노출
             if (document.getElementById('pkg-hopping-group').style.display === 'block') {
-                document.getElementById('pkg-jumbo-group').style.display = 'block';
+                if (jumboGroup) jumboGroup.style.display = 'block';
             }
         }
 

@@ -325,6 +325,7 @@
             count: adultCount + childCount, 
             totalPrice: total, 
             isPackage: true,
+            noPickup: true,
             details: `성인 ${adultCount}, 소인 ${childCount}`
         };
         BSUtils.buyNow(item);
@@ -339,6 +340,7 @@
             count: adultCount + childCount, 
             totalPrice: total, 
             isPackage: true,
+            noPickup: true,
             details: `성인 ${adultCount}, 소인 ${childCount}`
         };
         BSUtils.saveToCart(item);

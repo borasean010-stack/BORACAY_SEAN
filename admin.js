@@ -925,15 +925,30 @@ document.addEventListener('DOMContentLoaded', () => {
             if (fl2 && (fl2.match(/[A-Z0-9]{2}\d+/) || fl2.includes('KLO') || fl2.includes('MPH'))) {
                 allItems.push({ name: `공항 픽업 (${fl2})`, date: formatDate(row[0]), time: "14:00", count: totalPax });
             }
+
+            // 📌 국내선 샌딩: remark에서 "sending HH:MM" 시간 먼저 추출
+            const remarkRaw = (row[16] || '').trim();
+            const sendingDateStr = formatDate(row[1]);
+            let remarkSendingTime = null;
+            remarkRaw.split('\n').forEach(rLine => {
+                const rdm = rLine.trim().match(/^(\d{1,2})\/(\d{1,2})/);
+                if (!rdm) return;
+                if (formatDate(rdm[0]) !== sendingDateStr) return;
+                const rLower = rLine.toLowerCase();
+                if (rLower.includes('sending') || rLower.includes('샌딩')) {
+                    const tMatch = rLine.match(/(\d{1,2}):(\d{2})/);
+                    if (tMatch) remarkSendingTime = `${tMatch[1].padStart(2,'0')}:${tMatch[2]}`;
+                }
+            });
+
             const fl3 = (row[3] || '').trim().toUpperCase().replace(/\s/g, '');
             if (fl3 && (fl3.match(/[A-Z0-9]{2}\d+/) || fl3.includes('KLO') || fl3.includes('MPH'))) { 
-                let sTime = "21:00";
+                let sTime = remarkSendingTime || "21:00"; // 국내선: remark 지정 시간 우선
                 if (fl3 === 'TW126') sTime = "08:10";
                 else if (fl3.startsWith('TW') || fl3.startsWith('5J') || fl3.startsWith('Z2') || fl3.startsWith('DG') || (fl3.startsWith('PR') && !['PR469', 'PR489'].includes(fl3)) || fl3.includes('KLO') || fl3.includes('MPH')) sTime = "전날 재안내";
-                allItems.push({ name: `공항 샌딩 (${fl3})`, date: formatDate(row[1]), time: sTime, count: totalPax }); 
+                allItems.push({ name: `공항 샌딩 (${fl3})`, date: sendingDateStr, time: sTime, count: totalPax }); 
             }
 
-            const remarkRaw = (row[16] || '').trim();
             remarkRaw.split('\n').forEach(line => {
                 const dm = line.trim().match(/^(\d{1,2})\/(\d{1,2})/);
                 if (dm) {
@@ -957,7 +972,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     else if (lowerLine.includes('maris') || lowerLine.includes('마리스')) itemName = '마리스 스파';
                     else if (lowerLine.includes('helios') || lowerLine.includes('헬리오스')) itemName = '헬리오스 스파';
                     else if (lowerLine.includes('meeting') || lowerLine.includes('pickup') || lowerLine.includes('픽업')) itemName = '✈️ 공항 픽업';
-                    else if (lowerLine.includes('sending') || lowerLine.includes('샌딩')) itemName = '✈️ 공항 샌딩';
+                    else if (lowerLine.includes('sending') || lowerLine.includes('샌딩')) {
+                        // fl3 샌딩과 날짜가 겹치면 중복 생성 방지 (fl3에서 이미 remark 시간 적용됨)
+                        if (tDate === sendingDateStr && fl3) return;
+                        itemName = '✈️ 공항 샌딩';
+                    }
                     else if (lowerLine.includes('land') || lowerLine.includes('랜드')) { itemName = '보라카이 랜드투어'; if(!actualTimeMatch) itemTime = "10:30"; }
                     else if (lowerLine.includes('hopping') || lowerLine.includes('호핑')) { 
                         if (lowerLine.includes('보라아재') || lowerLine.includes('카라바오')) { itemName = '보라아재 호핑투어'; if(!actualTimeMatch) itemTime = "08:00"; }

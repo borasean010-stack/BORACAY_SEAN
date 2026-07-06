@@ -354,11 +354,15 @@
                         }
                         if (res.sendingDate) {
                             let flight = (res.sendingFlight || '').toUpperCase().trim();
-                            let sandingTime = "21:00";
+                            let sandingTime = res.sendingTime || '';
+                            // TW126: 항상 리조트 기반 시간
                             if (flight === 'TW126') {
                                 sandingTime = isStation10(res.sendingResort || res.pickupResort) ? "08:10" : "08:30";
                             } else if (flight.startsWith('TW') || flight.startsWith('5J') || flight.startsWith('Z2') || flight.startsWith('DG') || (flight.startsWith('PR') && !['PR469', 'PR489'].includes(flight)) || flight.includes('KLO') || flight.includes('MPH')) {
                                 sandingTime = "전날 재안내";
+                            } else if (!sandingTime) {
+                                // 국내선 등: 명시된 시간 없으면 21:00 기본
+                                sandingTime = flight ? "21:00" : "";
                             }
                             allItems.push({
                                 name: flight ? `공항 샌딩 (${flight})` : `공항 샌딩`,
@@ -425,16 +429,17 @@
                         }
                         if (itemName.includes('픽업샌딩') || itemName.includes('샌딩') || itemName.toLowerCase().includes('sending')) {
                             let flight = (res.sendingFlight || item.flight || '').toUpperCase().trim();
-                            let sandingTime = res.sendingTime || item.time;
-                            if (!sandingTime || sandingTime.includes(':')) {
-                                if (flight === 'TW126') {
-                                    sandingTime = isStation10(res.sendingResort || res.pickupResort) ? "08:10" : "08:30";
-                                } else if (flight.startsWith('TW') || flight.startsWith('5J') || flight.startsWith('Z2') || flight.startsWith('DG') || (flight.startsWith('PR') && !['PR469', 'PR489'].includes(flight)) || flight.includes('KLO') || flight.includes('MPH')) {
-                                    sandingTime = "전날 재안내";
-                                } else if (flight) {
-                                    sandingTime = "21:00";
-                                }
+                            let sandingTime = res.sendingTime || item.time || '';
+                            // TW126: 항상 리조트 기반 시간 (강제 오버라이드)
+                            if (flight === 'TW126') {
+                                sandingTime = isStation10(res.sendingResort || res.pickupResort) ? "08:10" : "08:30";
+                            } else if (flight.startsWith('TW') || flight.startsWith('5J') || flight.startsWith('Z2') || flight.startsWith('DG') || (flight.startsWith('PR') && !['PR469', 'PR489'].includes(flight)) || flight.includes('KLO') || flight.includes('MPH')) {
+                                sandingTime = "전날 재안내";
+                            } else if (!sandingTime || sandingTime === '21:00') {
+                                // 국내선: remark 시간 없으면 21:00 기본
+                                if (flight) sandingTime = "21:00";
                             }
+                            // 국내선이고 item.time에 remark 시간이 있으면 그대로 사용
                             allItems.push({
                                 name: flight ? `공항 샌딩 (${flight})` : `공항 샌딩`,
                                 date: item.sendingDate || res.sendingDate || item.date,

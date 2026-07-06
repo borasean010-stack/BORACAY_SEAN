@@ -943,9 +943,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const fl3 = (row[3] || '').trim().toUpperCase().replace(/\s/g, '');
             if (fl3 && (fl3.match(/[A-Z0-9]{2}\d+/) || fl3.includes('KLO') || fl3.includes('MPH'))) { 
-                let sTime = remarkSendingTime || "21:00"; // 국내선: remark 지정 시간 우선
-                if (fl3 === 'TW126') sTime = "08:10";
-                else if (fl3.startsWith('TW') || fl3.startsWith('5J') || fl3.startsWith('Z2') || fl3.startsWith('DG') || (fl3.startsWith('PR') && !['PR469', 'PR489'].includes(fl3)) || fl3.includes('KLO') || fl3.includes('MPH')) sTime = "전날 재안내";
+                let sTime;
+                if (fl3 === 'TW126') {
+                    // TW126: 리조트 기반 고정 시간 (바우쳐 표시 시 조정됨)
+                    sTime = "08:10";
+                } else if (fl3.startsWith('TW')) {
+                    // TW 다른 편: 항상 전날 재안내
+                    sTime = "전날 재안내";
+                } else if (remarkSendingTime) {
+                    // TW 제외 전체: remark에 sending HH:MM 있으면 그 시간 사용
+                    sTime = remarkSendingTime;
+                } else if (fl3.startsWith('5J') || fl3.startsWith('Z2') || fl3.startsWith('DG') || (fl3.startsWith('PR') && !['PR469', 'PR489'].includes(fl3)) || fl3.includes('KLO') || fl3.includes('MPH')) {
+                    // remark 없는 국제선
+                    sTime = "전날 재안내";
+                } else {
+                    // remark 없는 국내선 기본&#xA;
+                    sTime = "21:00";
+                }
                 allItems.push({ name: `공항 샌딩 (${fl3})`, date: sendingDateStr, time: sTime, count: totalPax }); 
             }
 

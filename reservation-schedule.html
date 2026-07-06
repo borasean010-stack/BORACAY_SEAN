@@ -179,27 +179,9 @@
         return station10Keywords.some(kw => low.includes(kw));
     }
 
-    // ✈️ 항공편명으로 공항 자동 판별 (칼리보 vs 카티클란)
+    // ✈️ 공항명 (항공편 구분 없이 "공항"으로 통일)
     function getAirportName(flight) {
-        if (!flight) return "칼리보 공항";
-        const fl = flight.toUpperCase().replace(/\s/g, '');
-        
-        // 1. 카티클란 (MPH) 국내선 대표 패턴 (매우 구체적으로 설정)
-        if (fl.startsWith('PR20') || fl.startsWith('5J8') || fl.startsWith('5J9') || 
-            fl.startsWith('DG') || fl.startsWith('Z22') || fl.includes('MPH')) {
-            return "카티클란 공항";
-        }
-        
-        // 2. 칼리보 (KLO) 패턴 (국제선 및 칼리보 국내선)
-        if (fl.startsWith('TW') || fl.startsWith('7C') || fl.startsWith('LJ') || fl.startsWith('BX') || 
-            fl.startsWith('ZE') || fl.startsWith('RS') || fl.startsWith('KE') || fl.startsWith('OZ') || 
-            fl.startsWith('PR4') || fl.startsWith('PR14') || fl.startsWith('5J1') || 
-            fl.startsWith('PR29') || fl.startsWith('Z27') || fl.includes('KLO')) {
-            return "칼리보 공항";
-        }
-        
-        // 3. 기본값 (알 수 없는 경우 카티클란으로 안내하여 안전성 확보)
-        return "카티클란 공항";
+        return "공항";
     }
 
     // --- 📅 투어별 상세 안내문 생성기 ---

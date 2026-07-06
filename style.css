@@ -626,8 +626,9 @@ body {
         overflow: hidden;
         font-size: 11px !important;
         margin-top: 5px !important;
+        margin-bottom: 10px !important;
         color: #888 !important;
-        line-height: 1.4 !important;
+        line-height: 1.5 !important;
         flex-grow: 1 !important;
         min-height: 0 !important; /* Let flexbox handle it */
     }    
@@ -659,8 +660,9 @@ body {
         overflow: hidden;
         font-size: 11px !important;
         margin-top: 4px !important;
+        margin-bottom: 10px !important;
         color: #888 !important;
-        line-height: 1.4 !important;
+        line-height: 1.5 !important;
         flex-grow: 1 !important;
     } 
     .price-tag { font-size: 13px !important; margin: auto auto 0 !important; display: block !important; text-align: center !important; }

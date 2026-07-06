@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const productData = {
         essential: [
             { title: "보라카이션 패키지", img: "package-sean.png", url: "/package-signature", badge: "HOT", mdBadge: true, desc: "보라카이 최고 프리미엄 조합", price: 100000 },
+            { title: "보라카이션 투어팩 패키지", img: "tourpack.png", url: "/package-tour", badge: "HOT", mdBadge: true, desc: "알뜰하게 즐기는 핵심 투어 조합", price: 150000, mobileOnly: true },
             { title: "보라카이 왕복 픽업샌딩", img: "pickup.jpg", url: "/pickup-sending", badge: "HOT", mdBadge: true, desc: "공항부터 숙소 앞까지 안전하고 편안하게!", price: 54900 },
             { title: "블랙펄 요트호핑투어", img: "블랙펄 썸네일.jpg", url: "/hopping-tour", badge: "HOT", mdBadge: true, desc: "럭셔리 요트위에서 즐기는 선셋 파티 호핑", price: 55000 },
             { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "/malumpati", badge: "HOT", mdBadge: true, desc: "프라이빗하게 즐기는 블루라군 and 튜빙", price: 99000 },
@@ -67,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const mdProductsData = [
+        { title: "보라카이션 패키지", img: "package-sean.png", url: "/package-signature", badge: "HOT", mdBadge: true, desc: "보라카이 최고 프리미엄 조합", price: 100000, mobileOnly: true },
         { title: "보라카이션 투어팩 패키지", img: "tourpack.png", url: "/package-tour", badge: "HOT", mdBadge: true, desc: "알뜰하게 즐기는 핵심 투어 조합", price: 150000 },
         { title: "블랙펄 요트호핑투어", img: "블랙펄 썸네일.jpg", url: "/hopping-tour", badge: "HOT", mdBadge: true, desc: "럭셔리 요트위에서 즐기는 선셋 파티 호핑", price: 55000 },
         { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "/malumpati", badge: "HOT", mdBadge: true, desc: "프라이빗하게 즐기는 블루라군과 튜빙", price: 99000 },
@@ -92,28 +94,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderMDProducts() {
         if (!mdContainer) return;
+        const isMobile = window.innerWidth <= 768;
         mdContainer.innerHTML = '';
-        mdProductsData.forEach(p => {
-            const div = document.createElement('div');
-            div.className = 'product tour-card';
-            div.onclick = () => { window.location.href = p.url; };
-            div.innerHTML = `
-                ${getBadgesHtml(p)}
-                <div class="img-container card-img-wrap"><img src="${p.img}" alt="보라카이 ${p.title.replace('<br>', ' ')} - 보라카이션 자유여행" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>${p.title}</h3>
-                    <p>${p.desc}</p>
-                    <div class="price-btn"><span class="price-from">From</span><span class="price-val">₩ ${p.price.toLocaleString()}</span></div>
-                </div>
-            `;
-            mdContainer.appendChild(div);
-        });
+        mdProductsData
+            .filter(p => !p.mobileOnly || isMobile)
+            .forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'product tour-card';
+                div.onclick = () => { window.location.href = p.url; };
+                div.innerHTML = `
+                    ${getBadgesHtml(p)}
+                    <div class="img-container card-img-wrap"><img src="${p.img}" alt="보라카이 ${p.title.replace('<br>', ' ')} - 보라카이션 자유여행" loading="lazy"></div>
+                    <div class="card-body">
+                        <h3>${p.title}</h3>
+                        <p>${p.desc}</p>
+                        <div class="price-btn"><span class="price-from">From</span><span class="price-val">₩ ${p.price.toLocaleString()}</span></div>
+                    </div>
+                `;
+                mdContainer.appendChild(div);
+            });
     }
 
     function renderProducts(category) {
         if (!productsContainer) return;
+        const isMobile = window.innerWidth <= 768;
         productsContainer.innerHTML = '';
-        let products = [...(productData[category] || [])];
+        let products = [...(productData[category] || [])]
+            .filter(p => !p.mobileOnly || isMobile);
         products.sort((a, b) => {
             const getPriority = p => (p.badge === 'HOT' ? 1 : p.mdBadge ? 2 : p.badge === 'NEW' ? 3 : 4);
             return getPriority(a) - getPriority(b);

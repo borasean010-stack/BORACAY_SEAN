@@ -284,6 +284,74 @@
         return "";
     }
 
+    // 📦 패키지 스케줄 아이템 생성 헬퍼
+    function buildPackageSchedule(res, count, allItems) {
+        if (res.pickupDate) {
+            const pFlight = (res.pickupFlight || '').toUpperCase().trim();
+            allItems.push({ name: pFlight ? `\uacf5\ud56d \ud53d\uc5c5 (${pFlight})` : `\uacf5\ud56d \ud53d\uc5c5`, date: res.pickupDate, time: "14:00", count, _res: res });
+        }
+        if (res.sendingDate) {
+            const flight = (res.sendingFlight || '').toUpperCase().trim();
+            let sandingTime;
+            if (flight === 'TW126') sandingTime = isStation10(res.sendingResort || res.pickupResort) ? "08:10" : "08:30";
+            else if (flight.startsWith('TW')) sandingTime = "\uc804\ub0a0 \uc7ac\uc548\ub0b4";
+            else if (res.sendingTime) sandingTime = res.sendingTime;
+            else if (flight.startsWith('5J') || flight.startsWith('Z2') || flight.startsWith('DG') || (flight.startsWith('PR') && !['PR469','PR489'].includes(flight)) || flight.includes('KLO') || flight.includes('MPH')) sandingTime = "\uc804\ub0a0 \uc7ac\uc548\ub0b4";
+            else sandingTime = flight ? "21:00" : "";
+            allItems.push({ name: flight ? `\uacf5\ud56d \uc0cc\ub529 (${flight})` : `\uacf5\ud56d \uc0cc\ub529`, date: res.sendingDate, time: sandingTime, count, _res: res });
+        }
+        if (res.hoppingDate) {
+            const isJumbo = res.hoppingJumbo || false;
+            allItems.push({ name: isJumbo ? "\ube14\ub799\ud384 \ud638\ud551\ud22c\uc5b4 (+\uc810\ubcf4\ud06c\ub7a9 \uc810\uc2ec)" : "\ube14\ub799\ud384 \uc694\ud2b8\ud638\ud551\ud22c\uc5b4", date: res.hoppingDate, time: isJumbo ? "12:30" : "13:30", count, details: isJumbo ? `\uc810\ubcf4\ud06c\ub7a9 ${res.jumboQty || count}\uba85 \ucd94\uac00 (\ud604\uc9c0 \uc9c0\ubd88 \uc778\ub2f9 $30)` : '', _res: res });
+        }
+        if (res.malumDate) {
+            allItems.push({ name: "\uc2dc\ud06c\ub9bf\uac00\ub4e0 \ub9d0\ub8f8\ud30c\ud2f0", date: res.malumDate, time: "09:40", count, _res: res });
+        }
+        if (res.oneDayDate) {
+            allItems.push({ name: "\ub9ac\ubc84\ud0c0\ub4dc \uace0\ub798\uc0c1\uc5b4", date: res.oneDayDate, time: "07:00", count, _res: res });
+            allItems.push({ name: "\uc2dc\ud06c\ub9bf\uac00\ub4e0 \ub9d0\ub8f8\ud30c\ud2f0", date: res.oneDayDate, time: "09:40", count, _res: res });
+        }
+        if (res.whaleDate) {
+            allItems.push({ name: "\ub9ac\ubc84\ud0c0\ub4dc \uace0\ub798\uc0c1\uc5b4", date: res.whaleDate, time: "07:00", count, _res: res });
+        }
+    }
+
+    // 📋 단일 예약 items 처리
+    function processResItems(res, allItems) {
+        const rawItems = res.items || [];
+        const defaultCount = rawItems[0]?.count || 1;
+        let packageAdded = false;
+
+        rawItems.forEach(item => {
+            const itemName = item.name || '';
+            if (item.isPackage) {
+                if (!packageAdded) { packageAdded = true; buildPackageSchedule(res, item.count, allItems); }
+            } else if (itemName.includes('\ud53d\uc5c5\uc0cc\ub529') || itemName.includes('\ud53d\uc5c5') || itemName.includes('\uc0cc\ub529')) {
+                if (itemName.includes('\ud53d\uc5c5\uc0cc\ub529') || itemName.includes('\ud53d\uc5c5') || itemName.toLowerCase().includes('meeting')) {
+                    const pFlight = (res.pickupFlight || '').toUpperCase().trim();
+                    allItems.push({ name: pFlight ? `\uacf5\ud56d \ud53d\uc5c5 (${pFlight})` : `\uacf5\ud56d \ud53d\uc5c5`, date: item.pickupDate || res.pickupDate || item.date, time: item.pickupTime || item.time || "14:00", count: item.count, details: item.details, _res: res });
+                }
+                if (itemName.includes('\ud53d\uc5c5\uc0cc\ub529') || itemName.includes('\uc0cc\ub529') || itemName.toLowerCase().includes('sending')) {
+                    const flight = (res.sendingFlight || item.flight || '').toUpperCase().trim();
+                    let sandingTime;
+                    if (flight === 'TW126') sandingTime = isStation10(res.sendingResort || res.pickupResort) ? "08:10" : "08:30";
+                    else if (flight.startsWith('TW')) sandingTime = "\uc804\ub0a0 \uc7ac\uc548\ub0b4";
+                    else if (res.sendingTime || (item.time && item.time !== '21:00')) sandingTime = res.sendingTime || item.time;
+                    else if (flight.startsWith('5J') || flight.startsWith('Z2') || flight.startsWith('DG') || (flight.startsWith('PR') && !['PR469','PR489'].includes(flight)) || flight.includes('KLO') || flight.includes('MPH')) sandingTime = "\uc804\ub0a0 \uc7ac\uc548\ub0b4";
+                    else sandingTime = flight ? "21:00" : "";
+                    allItems.push({ name: flight ? `\uacf5\ud56d \uc0cc\ub529 (${flight})` : `\uacf5\ud56d \uc0cc\ub529`, date: item.sendingDate || res.sendingDate || item.date, time: sandingTime, count: item.count, details: item.details, _res: res });
+                }
+            } else {
+                allItems.push({...item, _res: res});
+            }
+        });
+
+        // 🔧 isPackage 없어도 패키지 날짜 있으면 표시 (admin-quote-maker 등)
+        if (!packageAdded && (res.pickupDate || res.hoppingDate || res.malumDate || res.oneDayDate || res.whaleDate)) {
+            buildPackageSchedule(res, defaultCount, allItems);
+        }
+    }
+
     async function loadVoucher() {
         const urlParams = new URLSearchParams(window.location.search);
         const resId = urlParams.get('id');
@@ -291,190 +359,72 @@
         const contact = urlParams.get('contact');
         if (!resId && !contact) return;
         try {
-            let res = null;
+            let resList = [];
             if (contact) {
-                const q = query(collection(db, "reservations"), where("contact", "==", contact), where("status", "==", "예약확정"));
+                // ✅ 모든 예약확정 건 로드 (기존: snap.docs[0]만 → 버그)
+                const q = query(collection(db, "reservations"), where("contact", "==", contact), where("status", "==", "\uc608\uc57d\ud655\uc815"));
                 const snap = await getDocs(q);
-                if (!snap.empty) res = snap.docs[0].data();
+                resList = snap.docs.map(d => d.data());
             } else {
                 const collectionName = (type === 'quick') ? "quick_vouchers" : "reservations";
                 const docSnap = await getDoc(doc(db, collectionName, resId));
-                if (docSnap.exists()) res = docSnap.data();
+                if (docSnap.exists()) resList = [docSnap.data()];
+            }
+            if (resList.length === 0) return;
+
+            const res = resList[0];
+            const isQuick = (type === 'quick');
+            const korName = res.customerKorName || '-';
+            const engName = res.engName || '-';
+            document.getElementById('v-name').innerText = (isQuick && korName.includes('(')) ? korName : `${korName} (${engName})`;
+            document.getElementById('v-agency').innerText = res.contact || '-';
+            if (isQuick) {
+                document.getElementById('label-agency').innerText = '\uad6c\ub9e4\uccb4';
+                document.getElementById('v-exchange').innerText = res.exchangeAmount || '-';
+                document.getElementById('v-pax').innerText = res.paxInfo || '-';
+            } else {
+                document.getElementById('label-agency').innerText = '\uc5f0\ub77d\uc218';
+                document.getElementById('v-exchange').innerText = res.exchangeAmount || '-';
+                const totalPax = res.items && res.items[0] ? `${res.items[0].count}\uba85` : '-';
+                document.getElementById('v-pax').innerText = totalPax;
             }
 
-            if (res) {
-                const isQuick = (type === 'quick');
-                const korName = res.customerKorName || '-';
-                const engName = res.engName || '-';
-                document.getElementById('v-name').innerText = (isQuick && korName.includes('(')) ? korName : `${korName} (${engName})`;
-                document.getElementById('v-agency').innerText = res.contact || '-';
-                if (isQuick) {
-                    document.getElementById('label-agency').innerText = '구매처';
-                    document.getElementById('v-exchange').innerText = res.exchangeAmount || '-';
-                    document.getElementById('v-pax').innerText = res.paxInfo || '-';
-                } else {
-                    document.getElementById('label-agency').innerText = '연락처';
-                    document.getElementById('v-exchange').innerText = res.exchangeAmount || '-';
-                    const totalPax = res.items && res.items[0] ? `${res.items[0].count}명` : '-';
-                    document.getElementById('v-pax').innerText = totalPax;
+            let allItems = [];
+            resList.forEach(r => processResItems(r, allItems)); // ✅ 모든 예약 처리
+            allItems.sort((a, b) => (a.date || "").localeCompare(b.date || "") || (a.time || "00:00").localeCompare(b.time || "00:00"));
+
+            const list = document.getElementById('item-list');
+            list.innerHTML = allItems.map(item => {
+                const itemRes = item._res || res; // ✅ 각 아이템의 부모 예약 기준 안내문
+                const isPickupSending = item.name.includes('\ud53d\uc5c5') || item.name.includes('\uc0cc\ub529');
+                let displayName = item.name;
+                const lowName = displayName.toLowerCase();
+                if (lowName.includes('malum') || displayName.includes('\ub9d0\ub8f8\ud30c\ud2f0')) {
+                    displayName = "\uc2dc\ud06c\ub9bf\uac00\ub4e0 \ub9d0\ub8f8\ud30c\ud2f0";
+                } else if (lowName.includes('hopping')) {
+                    if (lowName.includes('\ubcf4\ub77c\uc544\uc7ac') || lowName.includes('\uce74\ub77c\ubc14\uc624')) displayName = "\ubcf4\ub77c\uc544\uc7ac \ud638\ud551\ud22c\uc5b4";
+                    else if (lowName.includes('\uc810\ubcf4') || lowName.includes('\uc810\uc2ec')) displayName = "\ube14\ub799\ud384 \ud638\ud551\ud22c\uc5b4 (+\uc810\ubcf4\ud06c\ub7a9 \uc810\uc2ec)";
+                    else displayName = "\ube14\ub799\ud384 \uc694\ud2b8\ud638\ud551\ud22c\uc5b4";
                 }
-
-                let allItems = [];
-                const rawItems = res.items || [];
-                rawItems.forEach(item => {
-                    const itemName = item.name || '';
-                    if (item.isPackage) {
-                        if (res.pickupDate) {
-                            const pFlight = (res.pickupFlight || '').toUpperCase().trim();
-                            allItems.push({
-                                name: pFlight ? `공항 픽업 (${pFlight})` : `공항 픽업`,
-                                date: res.pickupDate,
-                                time: "14:00",
-                                count: item.count,
-                                details: item.details
-                            });
-                        }
-                        if (res.sendingDate) {
-                            let flight = (res.sendingFlight || '').toUpperCase().trim();
-                            let sandingTime;
-                            if (flight === 'TW126') {
-                                sandingTime = isStation10(res.sendingResort || res.pickupResort) ? "08:10" : "08:30";
-                            } else if (flight.startsWith('TW')) {
-                                sandingTime = "전날 재안내";
-                            } else if (res.sendingTime) {
-                                sandingTime = res.sendingTime; // TW 제외: 명시 시간 우선
-                            } else if (flight.startsWith('5J') || flight.startsWith('Z2') || flight.startsWith('DG') || (flight.startsWith('PR') && !['PR469', 'PR489'].includes(flight)) || flight.includes('KLO') || flight.includes('MPH')) {
-                                sandingTime = "전날 재안내";
-                            } else {
-                                sandingTime = flight ? "21:00" : "";
-                            }
-                            allItems.push({
-                                name: flight ? `공항 샌딩 (${flight})` : `공항 샌딩`,
-                                date: res.sendingDate,
-                                time: sandingTime,
-                                count: item.count,
-                                details: item.details
-                            });
-                        }
-                        if (res.hoppingDate) {
-                            const isJumbo = res.hoppingJumbo || false;
-                            allItems.push({
-                                name: isJumbo ? "블랙펄 호핑투어 (+점보크랩 점심)" : "블랙펄 요트호핑투어",
-                                date: res.hoppingDate,
-                                time: isJumbo ? "12:30" : "13:30",
-                                count: item.count,
-                                details: isJumbo ? `점보크랩 ${res.jumboQty || item.count}명 추가 (현지 지불 인당 $30)` : item.details
-                            });
-                        }
-                        if (res.malumDate) {
-                            allItems.push({
-                                name: "시크릿가든 말룸파티",
-                                date: res.malumDate,
-                                time: "09:40",
-                                count: item.count,
-                                details: item.details
-                            });
-                        }
-                        if (res.oneDayDate) {
-                            allItems.push({
-                                name: "리버타드 고래상어",
-                                date: res.oneDayDate,
-                                time: "07:00",
-                                count: item.count,
-                                details: item.details
-                            });
-                            allItems.push({
-                                name: "시크릿가든 말룸파티",
-                                date: res.oneDayDate,
-                                time: "09:40",
-                                count: item.count,
-                                details: item.details
-                            });
-                        }
-                        if (res.whaleDate) {
-                            allItems.push({
-                                name: "리버타드 고래상어",
-                                date: res.whaleDate,
-                                time: "07:00",
-                                count: item.count,
-                                details: item.details
-                            });
-                        }
-                    } else if (itemName.includes('픽업샌딩') || itemName.includes('픽업') || itemName.includes('샌딩')) {
-                        if (itemName.includes('픽업샌딩') || itemName.includes('픽업') || itemName.toLowerCase().includes('meeting')) {
-                            const pFlight = (res.pickupFlight || '').toUpperCase().trim();
-                            allItems.push({
-                                name: pFlight ? `공항 픽업 (${pFlight})` : `공항 픽업`,
-                                date: item.pickupDate || res.pickupDate || item.date,
-                                time: item.pickupTime || item.time || "14:00",
-                                count: item.count,
-                                details: item.details
-                            });
-                        }
-                        if (itemName.includes('픽업샌딩') || itemName.includes('샌딩') || itemName.toLowerCase().includes('sending')) {
-                            let flight = (res.sendingFlight || item.flight || '').toUpperCase().trim();
-                            let sandingTime;
-                            if (flight === 'TW126') {
-                                // TW126: 리조트 기반 고정 시간
-                                sandingTime = isStation10(res.sendingResort || res.pickupResort) ? "08:10" : "08:30";
-                            } else if (flight.startsWith('TW')) {
-                                // TW 다른 편: 항상 전날 재안내
-                                sandingTime = "전날 재안내";
-                            } else if (res.sendingTime || (item.time && item.time !== '21:00')) {
-                                // TW 제외: remark에서 지정한 시간 있으면 사용
-                                sandingTime = res.sendingTime || item.time;
-                            } else if (flight.startsWith('5J') || flight.startsWith('Z2') || flight.startsWith('DG') || (flight.startsWith('PR') && !['PR469', 'PR489'].includes(flight)) || flight.includes('KLO') || flight.includes('MPH')) {
-                                // remark 없는 국제선
-                                sandingTime = "전날 재안내";
-                            } else {
-                                // remark 없는 국내선 기본
-                                sandingTime = flight ? "21:00" : "";
-                            }
-                            allItems.push({
-                                name: flight ? `공항 샌딩 (${flight})` : `공항 샌딩`,
-                                date: item.sendingDate || res.sendingDate || item.date,
-                                time: sandingTime,
-                                count: item.count,
-                                details: item.details
-                            });
-                        }
-                    } else {
-                        allItems.push(item);
-                    }
-                });
-                allItems.sort((a, b) => (a.date || "").localeCompare(b.date || "") || (a.time || "00:00").localeCompare(b.time || "00:00"));
-
-                const list = document.getElementById('item-list');
-                list.innerHTML = allItems.map(item => {
-                    const isPickupSending = item.name.includes('픽업') || item.name.includes('샌딩');
-                    let displayName = item.name;
-                    const lowName = displayName.toLowerCase();
-                    if (lowName.includes('malum') || displayName.includes('말룸파티')) {
-                        displayName = "시크릿가든 말룸파티";
-                    } else if (lowName.includes('hopping')) {
-                        if (lowName.includes('보라아재') || lowName.includes('카라바오')) displayName = "보라아재 호핑투어";
-                        else if (lowName.includes('점보') || lowName.includes('점심')) displayName = "블랙펄 호핑투어 (+점보크랩 점심)";
-                        else displayName = "블랙펄 요트호핑투어";
-                    }
-                    return `
-                    <div class="item-card">
-                        <div class="item-header">
-                            <div class="item-name">${displayName}</div>
-                            <div class="item-status">확정</div>
-                        </div>
-                        <div class="item-details">
-                            <div class="detail-point"><span class="material-icons">calendar_today</span><b>날짜</b>${item.date || '-'}</div>
-                            ${(!isPickupSending && item.time && item.time.trim()) ? `<div class="detail-point"><span class="material-icons">access_time</span><b>시간</b>${item.time}</div>` : ''}
-                            <div class="detail-point"><span class="material-icons">people</span><b>인원</b>${item.count || '-'}명</div>
-                        </div>
-                        ${getTourGuidance(displayName, item, res)}
+                return `
+                <div class="item-card">
+                    <div class="item-header">
+                        <div class="item-name">${displayName}</div>
+                        <div class="item-status">\ud655\uc815</div>
                     </div>
-                `;}).join('');
-                document.getElementById('loading').style.display = 'none';
-            }
+                    <div class="item-details">
+                        <div class="detail-point"><span class="material-icons">calendar_today</span><b>\ub0a0\uc9dc</b>${item.date || '-'}</div>
+                        ${(!isPickupSending && item.time && item.time.trim()) ? `<div class="detail-point"><span class="material-icons">access_time</span><b>\uc2dc\uac04</b>${item.time}</div>` : ''}
+                        <div class="detail-point"><span class="material-icons">people</span><b>\uc778\uc6d0</b>${item.count || '-'}\uba85</div>
+                    </div>
+                    ${getTourGuidance(displayName, item, itemRes)}
+                </div>
+            `;}).join('');
+            document.getElementById('loading').style.display = 'none';
         } catch (e) { console.error(e); }
     }
     loadVoucher();
+
 </script>
 </body>
 </html>

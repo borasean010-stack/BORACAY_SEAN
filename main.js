@@ -115,12 +115,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 
-    function renderProducts(category) {
+    function renderProducts(category, showMobileOnly = false) {
         if (!productsContainer) return;
         const isMobile = window.innerWidth <= 768;
         productsContainer.innerHTML = '';
         let products = [...(productData[category] || [])]
-            .filter(p => !p.mobileOnly || isMobile);
+            .filter(p => !p.mobileOnly || (isMobile && showMobileOnly));
         products.sort((a, b) => {
             const getPriority = p => (p.badge === 'HOT' ? 1 : p.mdBadge ? 2 : p.badge === 'NEW' ? 3 : 4);
             return getPriority(a) - getPriority(b);
@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const isHomePage = path === '/' || path === '' || path.endsWith('index') || path.endsWith('index.html');
     
     if (isHomePage) { 
-        renderProducts('essential'); 
+        renderProducts('essential', true);  // 홈에서만 mobileOnly 항목 표시
         renderMDProducts(); 
     } else if (productsContainer) {
         // 현재 경로에 맞는 카테고리 자동 렌더링

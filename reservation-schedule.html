@@ -309,7 +309,8 @@
         }
         if (res.oneDayDate) {
             allItems.push({ name: "\ub9ac\ubc84\ud0c0\ub4dc \uace0\ub798\uc0c1\uc5b4", date: res.oneDayDate, time: "07:00", count, _res: res });
-            allItems.push({ name: "\uc2dc\ud06c\ub9bf\uac00\ub4e0 \ub9d0\ub8f8\ud30c\ud2f0", date: res.oneDayDate, time: "09:40", count, _res: res });
+            // 원데이 말룸: 날짜/인원만 표시, 미팅 안내문 제거
+            allItems.push({ name: "\uc2dc\ud06c\ub9bf\uac00\ub4e0 \ub9d0\ub8f8\ud30c\ud2f0", date: res.oneDayDate, time: "09:40", count, _res: res, noGuidance: true });
         }
         if (res.whaleDate) {
             allItems.push({ name: "\ub9ac\ubc84\ud0c0\ub4dc \uace0\ub798\uc0c1\uc5b4", date: res.whaleDate, time: "07:00", count, _res: res });
@@ -342,7 +343,10 @@
                     allItems.push({ name: flight ? `\uacf5\ud56d \uc0cc\ub529 (${flight})` : `\uacf5\ud56d \uc0cc\ub529`, date: item.sendingDate || res.sendingDate || item.date, time: sandingTime, count: item.count, details: item.details, _res: res });
                 }
             } else {
-                allItems.push({...item, _res: res});
+                // 점보크랩 단독 아이템 제거 (호핑투어 카드에 이미 포함됨)
+                const isStandaloneJumbo = (itemName.includes('점보크랩') || itemName.toLowerCase().includes('jumbo'))
+                    && !itemName.includes('호핑') && !itemName.includes('블랙펄');
+                if (!isStandaloneJumbo) allItems.push({...item, _res: res});
             }
         });
 
@@ -417,7 +421,7 @@
                         ${(!isPickupSending && item.time && item.time.trim()) ? `<div class="detail-point"><span class="material-icons">access_time</span><b>\uc2dc\uac04</b>${item.time}</div>` : ''}
                         <div class="detail-point"><span class="material-icons">people</span><b>\uc778\uc6d0</b>${item.count || '-'}\uba85</div>
                     </div>
-                    ${getTourGuidance(displayName, item, itemRes)}
+                    ${item.noGuidance ? '' : getTourGuidance(displayName, item, itemRes)}
                 </div>
             `;}).join('');
             document.getElementById('loading').style.display = 'none';

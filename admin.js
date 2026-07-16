@@ -71,6 +71,26 @@ document.addEventListener('DOMContentLoaded', () => {
         return name; 
     }
 
+    function parsePaxFromLine(line, fallbackCount) {
+        if (!line) return fallbackCount;
+        let cleanLine = line.replace(/\d{1,2}\/\d{1,2}/g, ''); // 날짜 제거
+        cleanLine = cleanLine.replace(/\d{1,2}:\d{2}/g, '');   // 시간 제거
+        
+        const mCount = cleanLine.match(/\d+(?=명|인|태반|성장|스톤|오일|포쉘|진주)/g);
+        if (mCount) {
+            return mCount.reduce((a, b) => a + parseInt(b), 0);
+        }
+        
+        const remainingNumbers = cleanLine.match(/\d+/g);
+        if (remainingNumbers && remainingNumbers.length > 0) {
+            const firstNum = parseInt(remainingNumbers[0]);
+            if (firstNum > 0 && firstNum < 50) {
+                return firstNum;
+            }
+        }
+        return fallbackCount;
+    }
+
     function showAdminPanel() {
         if (!loginContainer || !adminContainer) return;
         loginContainer.style.display = 'none';
@@ -216,9 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const lines = (s.details || '').split('\n').filter(l => l.trim() !== '');
                 const displayLines = lines.length > 0 ? lines : [''];
                 displayLines.forEach(line => {
-                    const mCount = line.match(/\d+(?=명|인|태반|성장|스톤|오일|포쉘|진주)/g);
-                    let displayPax = s.count;
-                    if (mCount) displayPax = mCount.reduce((a, b) => a + parseInt(b), 0);
+                    let displayPax = parsePaxFromLine(line, s.count);
 
                     rawItems.push({ 
                         time: s.time || "09:00", 
@@ -731,10 +749,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         else if (lowerLine.includes('마사지') || lowerLine.includes('스파')) itemName = "마사지";
 
 
-                        // 세부 인원 (태반4 등)
-                        let itemPax = totalPax;
-                        const mCount = line.match(/\d+(?=명|인|태반|성장|스톤|오일|포쉘|진주)/g);
-                        if (mCount) itemPax = mCount.reduce((a, b) => a + parseInt(b), 0);
+                        // 세부 인원
+                        let itemPax = parsePaxFromLine(line, totalPax);
 
                         const docRef = doc(collection(db, "schedules"));
                         batch.set(docRef, {
@@ -969,12 +985,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const dm = line.trim().match(/^(\d{1,2})\/(\d{1,2})/);
                 if (dm) {
                     const tDate = formatDate(dm[0]);
-                    let itemName = line.replace(dm[0], '').trim(); let itemTime = "09:00"; let itemPax = totalPax;
-                    const mCount = line.match(/\d+(?=명|인|태반|성장|스톤|오일|포쉘|진주)/g);
-                    if ((line.includes('spa') || line.includes('스파')) && mCount) {
-                        const sum = mCount.filter(n => parseInt(n) < 15).reduce((a, b) => parseInt(a) + parseInt(b), 0);
-                        if (sum > 0) itemPax = sum;
-                    }
+                    let itemName = line.replace(dm[0], '').trim(); let itemTime = "09:00"; 
+                    let itemPax = parsePaxFromLine(line, totalPax);
                     const timeMatch = line.match(/(\d{1,2})\/(\d{1,2})/); // Prevent re-matching dates
                     const actualTimeMatch = line.match(/(\d{1,2}):(\d{2})/); if (actualTimeMatch) itemTime = `${actualTimeMatch[1].padStart(2,'0')}:${actualTimeMatch[2]}`;
                     const lowerLine = line.toLowerCase();
@@ -1062,9 +1074,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const lines = (s.details || '').split('\n').filter(l => l.trim() !== '');
                 const displayLines = lines.length > 0 ? lines : [''];
                 displayLines.forEach(line => {
-                    const mCount = line.match(/\d+(?=명|인|태반|성장|스톤|오일|포쉘|진주)/g);
-                    let displayPax = s.count;
-                    if (mCount) displayPax = mCount.reduce((a, b) => a + parseInt(b), 0);
+                    let displayPax = parsePaxFromLine(line, s.count);
                     rawItems.push({
                         time: s.time || "09:00",
                         name: s.name,

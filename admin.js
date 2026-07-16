@@ -189,6 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (combined.includes('hopping') || combined.includes('호핑')) return '호핑투어';
         if (combined.includes('land') || combined.includes('랜드')) return '랜드투어';
         if (combined.includes('malum') || combined.includes('말룸')) return '시크릿가든 말룸파티';
+        if (combined.includes('shark') || combined.includes('고래상어')) return '고래상어';
         return '액티비티';
     }
 
@@ -245,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let groupTitle = item.name;
             if (cat === '픽업/샌딩') {
                 groupTitle = (item.flight !== '-' && item.flight) ? item.flight : '기타 항공편';
-            } else if (cat === '호핑투어' || cat === '시크릿가든 말룸파티' || cat === '랜드투어') {
+            } else if (cat === '호핑투어' || cat === '시크릿가든 말룸파티' || cat === '랜드투어' || cat === '고래상어') {
                 groupTitle = cat;
             } else if (item.name.toLowerCase().includes('마사지') || item.name.toLowerCase().includes('스파')) {
                 groupTitle = item.name.replace(/마사지|스파|\(|\)/g, '').trim() || '마사지';
@@ -271,6 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (group.category === '호핑투어') { icon = "sailing"; catClass = "cat-hopping"; catLabel = "호핑투어"; }
             else if (group.category === '시크릿가든 말룸파티') { icon = "nature_people"; catClass = "cat-malum"; catLabel = "시크릿가든 말룸파티"; }
             else if (group.category === '랜드투어') { icon = "directions_car"; catClass = "cat-activity"; catLabel = "랜드투어"; }
+            else if (group.category === '고래상어') { icon = "waves"; catClass = "cat-whale"; catLabel = "고래상어"; }
             
             const isSpa = group.items.some(it => it.name.toLowerCase().includes('마사지') || it.name.toLowerCase().includes('스파'));
             if (isSpa) icon = "spa";

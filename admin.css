@@ -141,6 +141,7 @@ body.smartstore-admin { margin: 0; padding: 0; background: var(--ss-bg); font-fa
 .cat-hopping { background: #f6ffed; color: #52c41a; }
 .cat-malum { background: #e6fffb; color: #13c2c2; }
 .cat-activity { background: #fff7e6; color: #fa8c16; }
+.cat-whale { background: #f0f5ff; color: #2f54eb; }
 
 
 /* 📅 New Grouped Schedule Card Style (Horizontal Rectangle) */

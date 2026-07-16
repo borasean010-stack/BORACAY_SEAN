@@ -235,7 +235,7 @@
                 <div class="person-info">
                     <div>
                         <span style="font-weight:800; font-size:15px;">소인 인원</span>
-                        <span id="child-age-desc" style="font-size:11px; color:#888; display:block; font-weight:500;">(만6세이상 ~ 초6)</span>
+                        <span id="child-age-desc" style="font-size:11px; color:#888; display:block; font-weight:500;">(만5세이상 ~ 초6)</span>
                     </div>
                     <div class="counter" style="display: flex; align-items: center; background: #f8f9fa; border-radius: 5px; padding: 1px; border: 1px solid #eee;">
                         <button class="count-btn" onclick="updateChildCount(-1)" style="width: 25px; height: 25px; border: none; background: white; color: #111; border-radius: 4px; font-size: 14px; font-weight: 700; cursor: pointer;">-</button>
@@ -274,12 +274,12 @@
 <script src="main.js"></script>
 <script>
     const OPTIONS = {
-        '시그니처 패키지': { name: '시그니처 패키지', desc: '픽샌 + 호핑 + 말룸 + 고래상어', adultPrice: 310000, childPrice: 300000, childDesc: '(만6세이상 ~ 초6)' },
-        '패키지 A': { name: '패키지 A', desc: '픽샌 + 말룸 + 고래상어', adultPrice: 260000, childPrice: 250000, childDesc: '(만6세이상 ~ 초6)' },
-        '패키지 B': { name: '패키지 B', desc: '픽샌 + 호핑 + 고래상어', adultPrice: 220000, childPrice: 220000, childDesc: '(만6세이상 / 성인 요금 동일)' },
+        '시그니처 패키지': { name: '시그니처 패키지', desc: '픽샌 + 호핑 + 말룸 + 고래상어', adultPrice: 310000, childPrice: 300000, childDesc: '(만5세이상 ~ 초6)' },
+        '패키지 A': { name: '패키지 A', desc: '픽샌 + 말룸 + 고래상어', adultPrice: 260000, childPrice: 250000, childDesc: '(만5세이상 ~ 초6)' },
+        '패키지 B': { name: '패키지 B', desc: '픽샌 + 호핑 + 고래상어', adultPrice: 220000, childPrice: 220000, childDesc: '(만5세이상 / 성인 요금 동일)' },
         '패키지 C': { name: '패키지 C', desc: '픽샌 + 호핑 + 말룸', adultPrice: 195000, childPrice: 185000, childDesc: '(36개월 ~ 초6)' },
         '픽샌팩 A': { name: '픽샌팩 A', desc: '픽샌 + 호핑', adultPrice: 100000, childPrice: 100000, childDesc: '(성인 요금 동일)' },
-        '픽샌팩 B': { name: '픽샌팩 B', desc: '픽샌 + 고래상어', adultPrice: 165000, childPrice: 165000, childDesc: '(만6세이상 / 성인 요금 동일)' },
+        '픽샌팩 B': { name: '픽샌팩 B', desc: '픽샌 + 고래상어', adultPrice: 165000, childPrice: 165000, childDesc: '(만5세이상 / 성인 요금 동일)' },
         '픽샌팩 C': { name: '픽샌팩 C', desc: '픽샌 + 말룸', adultPrice: 150000, childPrice: 141000, childDesc: '(36개월 ~ 초6)' }
     };
     let adultCount = 1;

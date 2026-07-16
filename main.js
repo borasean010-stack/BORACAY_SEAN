@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: "보라카이 왕복 픽업샌딩", img: "pickup.jpg", url: "/pickup-sending", badge: "HOT", mdBadge: true, desc: "공항부터 숙소 앞까지 안전하고 편안하게!", price: 54900 },
             { title: "블랙펄 요트호핑투어", img: "블랙펄 썸네일.jpg", url: "/hopping-tour", badge: "HOT", mdBadge: true, desc: "럭셔리 요트위에서 즐기는 선셋 파티 호핑", price: 55000 },
             { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "/malumpati", badge: "HOT", mdBadge: true, desc: "프라이빗하게 즐기는 블루라군 and 튜빙", price: 99000 },
-            { title: "리버타드 고래상어", img: "whale-shark.png", url: "/whale-shark-tour", badge: "NEW", mdBadge: true, desc: "거대하고 온순한 고래상어와의 만남", price: 128000 }
+            { title: "리버타드 고래상어", img: "whale-shark.png", url: "/whale-shark-tour", badge: "NEW", mdBadge: true, desc: "거대하고 온순한 고래상어와의 만남", price: 123000 }
         ],
         activity: [
             { title: "보라카이 왕복 픽업샌딩", img: "pickup.jpg", url: "/pickup-sending", badge: "HOT", mdBadge: true, desc: "공항부터 숙소 앞까지 가장 안전하고 편안하게!", price: 54900 },
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: "JL 스냅사진 촬영", img: "jl1.jpg", url: "/jl-snap", desc: "보라카이의 아름다운 풍경과 함께 인생샷을 남겨보세요.", price: 300000 },
             { title: "보라아재 호핑투어", img: "bora1.jpg", url: "/bora-ajae-hopping", desc: "카라바오 섬에서 즐기는 호핑투어", price: 180000 },
             { title: "파라세일링", img: "para1.jpg", url: "/parasailing", desc: "하늘 높이 날아올라 보라카이 전경을 한눈에 담아보세요.", price: 55000 },
-            { title: "리버타드 고래상어 투어", img: "whale-shark.png", url: "/whale-shark-tour", mdBadge: true, desc: "리버타드에서 만나는 거대하고 온순한 고래상어와의 신비로운 만남.", price: 128000 },
+            { title: "리버타드 고래상어 투어", img: "whale-shark.png", url: "/whale-shark-tour", mdBadge: true, desc: "리버타드에서 만나는 거대하고 온순한 고래상어와의 신비로운 만남.", price: 123000 },
             { title: "체험 다이빙", img: "diving1.jpg", url: "/scuba-diving", desc: "전문 강사와 함께하는 환상적인 수중 세계 탐험.", price: 55000 },
             { title: "헬멧 다이빙", img: "he1.jpg", url: "/helmet-diving", desc: "머리 젖지 않고 바다 속을 걷는 신비로운 경험.", price: 44000 },
             { title: "제트스키", img: "ze1.jpg", url: "/jetski", desc: "보라카이 바다 위를 시원하게 질주하는 짜릿한 속도감.", price: 55000 },
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { title: "보라카이션 투어팩 패키지", img: "tourpack.png", url: "/package-tour", badge: "HOT", mdBadge: true, desc: "알뜰하게 즐기는 핵심 투어 조합", price: 150000 },
         { title: "블랙펄 요트호핑투어", img: "블랙펄 썸네일.jpg", url: "/hopping-tour", badge: "HOT", mdBadge: true, desc: "럭셔리 요트위에서 즐기는 선셋 파티 호핑", price: 55000 },
         { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "/malumpati", badge: "HOT", mdBadge: true, desc: "프라이빗하게 즐기는 블루라군과 튜빙", price: 99000 },
-        { title: "리버타드 고래상어", img: "whale-shark.png", url: "/whale-shark-tour", badge: "NEW", mdBadge: true, desc: "거대하고 온순한 고래상어와의 만남", price: 128000 },
+        { title: "리버타드 고래상어", img: "whale-shark.png", url: "/whale-shark-tour", badge: "NEW", mdBadge: true, desc: "거대하고 온순한 고래상어와의 만남", price: 123000 },
         { title: "에스파 마사지", img: "spa1.jpg", url: "/spa", badge: "HOT", mdBadge: true, desc: "보라카이 최초 포핸드 마사지 런칭", price: 55000 }
     ];
 

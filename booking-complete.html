@@ -13,97 +13,190 @@
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
-        body { background: #f8f9fa; color: #333; }
-        .complete-container { max-width: 600px; margin: 150px auto; padding: 0 20px; text-align: center; }
-        
-        /* 🔥 성공 로고 애니메이션 */
-        .success-logo-wrap {
-            margin-bottom: 30px;
+        body { 
+            background: linear-gradient(180deg, #fff5eb 0%, #f8f9fa 40%);
+            color: #333; 
+            min-height: 100vh;
+        }
+        .complete-container { 
+            max-width: 480px; 
+            margin: 0 auto; 
+            padding: 90px 16px 40px; 
+        }
+
+        /* 🎉 Success Animation */
+        .success-anim-wrap {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            margin-bottom: 28px;
         }
-        .success-logo {
-            width: 120px;
-            height: auto;
-            filter: drop-shadow(0 10px 20px rgba(255,106,0,0.2));
-            animation: logo-appear 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+        .success-circle {
+            width: 88px; height: 88px;
+            background: linear-gradient(135deg, #ff6a00, #ff9a44);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 12px 32px rgba(255,106,0,0.25);
+            animation: pop-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
         }
-        @keyframes logo-appear {
-            0% { opacity: 0; transform: scale(0.3) translateY(20px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
+        .success-circle svg {
+            width: 40px; height: 40px; fill: none; stroke: white; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round;
+            stroke-dasharray: 60; stroke-dashoffset: 60;
+            animation: draw-check 0.6s 0.4s ease forwards;
+        }
+        @keyframes pop-in {
+            0% { opacity:0; transform: scale(0.3); }
+            100% { opacity:1; transform: scale(1); }
+        }
+        @keyframes draw-check {
+            to { stroke-dashoffset: 0; }
         }
 
-        .complete-card { background: white; padding: 50px 40px; border-radius: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); border: 1px solid #eee; }
-        h1 { font-size: 32px; font-weight: 900; margin-bottom: 15px; letter-spacing: -1px; }
-        p.msg { color: #444; font-size: 17px; line-height: 1.7; margin-bottom: 40px; word-break: keep-all; }
-        .msg b { color: #ff6a00; font-weight: 900; }
-        
-        .booking-details { background: #f9f9f9; padding: 25px; border-radius: 20px; text-align: left; margin-bottom: 30px; }
-        .detail-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 15px; }
-        .detail-row:last-child { margin-bottom: 0; }
-        .detail-row span { color: #888; }
-        .detail-row b { color: #333; }
-
-        .bank-info-card { 
-            background: #fff5eb; border: 2px solid #ff6a00; padding: 30px 25px; border-radius: 24px; text-align: left; margin-bottom: 40px;
-            box-shadow: 0 10px 25px rgba(255,106,0,0.1);
+        .complete-title {
+            font-size: 24px; font-weight: 900; margin: 20px 0 8px; letter-spacing: -0.5px;
+            animation: fade-up 0.5s 0.3s both;
         }
-        .bank-info-card h3 { font-size: 18px; font-weight: 800; color: #ff6a00; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-        .bank-row { margin-bottom: 10px; font-size: 16px; display: flex; justify-content: space-between; align-items: center; }
-        .bank-row:last-child { margin-bottom: 0; }
-        .bank-row span { color: #666; font-weight: 600; }
-        .bank-row b { color: #111; font-weight: 900; font-size: 18px; }
-        
-        .copy-btn {
-            background: #ff6a00; color: white; border: none; padding: 6px 12px; border-radius: 8px; 
-            font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; margin-left: 10px;
+        .complete-subtitle {
+            font-size: 14px; color: #888; line-height: 1.7; text-align: center;
+            animation: fade-up 0.5s 0.4s both;
+        }
+        .complete-subtitle b { color: #ff6a00; font-weight: 800; }
+        @keyframes fade-up {
+            from { opacity:0; transform: translateY(12px); }
+            to { opacity:1; transform: translateY(0); }
+        }
+
+        /* 🏦 Bank Info Card */
+        .bank-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px 20px;
+            margin-bottom: 16px;
+            border: 1.5px solid #fff1e6;
+            box-shadow: 0 4px 20px rgba(255,106,0,0.06);
+            animation: fade-up 0.5s 0.5s both;
+        }
+        .bank-card-header {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 18px; padding-bottom: 14px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        .bank-card-header .bank-icon {
+            width: 36px; height: 36px; background: #fff5eb;
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+        }
+        .bank-card-header h3 {
+            font-size: 16px; font-weight: 800; color: #333; margin: 0;
+        }
+
+        .bank-info-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 0;
+        }
+        .bank-info-row + .bank-info-row { border-top: 1px dashed #f0f0f0; }
+        .bank-info-label { font-size: 13px; color: #999; font-weight: 600; }
+        .bank-info-value { font-size: 14px; font-weight: 800; color: #333; }
+        .bank-info-value.highlight { font-size: 15px; color: #ff6a00; }
+
+        .copy-account-btn {
             display: inline-flex; align-items: center; gap: 4px;
+            background: #ff6a00; color: white; border: none;
+            padding: 5px 12px; border-radius: 8px;
+            font-size: 11px; font-weight: 800; cursor: pointer;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
         }
-        .copy-btn:hover { background: #e65f00; transform: scale(1.05); }
-        .copy-btn:active { transform: scale(0.95); }
+        .copy-account-btn:active { transform: scale(0.93); opacity: 0.85; }
 
-        .res-no-highlight { background: #ff6a00; color: white; padding: 2px 8px; border-radius: 6px; font-weight: 900; }
+        .bank-total-row {
+            margin-top: 14px; padding-top: 14px;
+            border-top: 1.5px solid #fff1e6;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .bank-total-label { font-size: 14px; font-weight: 700; color: #666; }
+        .bank-total-value { font-size: 22px; font-weight: 900; color: #ff6a00; }
 
-        .btn-group { display: flex; flex-direction: column; gap: 15px; }
-        .kakao-confirm-btn { 
+        .bank-notice {
+            text-align: center; margin-top: 16px;
+            font-size: 13px; color: #d35400; font-weight: 700; line-height: 1.6;
+        }
+        .bank-notice .badge {
+            display: inline-block;
+            background: #ff6a00; color: white; padding: 2px 10px; border-radius: 6px;
+            font-weight: 900; font-size: 12px;
+        }
+
+        /* 📋 Booking Details Card */
+        .details-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid #f0f0f0;
+            animation: fade-up 0.5s 0.6s both;
+        }
+        .details-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 0;
+        }
+        .details-row + .details-row { border-top: 1px solid #f5f5f5; }
+        .details-label { font-size: 13px; color: #999; font-weight: 600; }
+        .details-value { font-size: 14px; font-weight: 800; color: #333; }
+        .details-value.price { color: #ff6a00; font-size: 16px; }
+
+        /* 🔘 Action Buttons */
+        .action-btns {
+            display: flex; flex-direction: column; gap: 12px;
+            margin-bottom: 20px;
+            animation: fade-up 0.5s 0.7s both;
+        }
+        .kakao-btn {
             display: flex; align-items: center; justify-content: center; gap: 10px;
-            width: 100%; padding: 22px; background: #fee500; color: #3c1e1e; 
-            border: none; border-radius: 18px; font-size: 19px; font-weight: 900; 
-            cursor: pointer; transition: 0.3s; text-decoration: none;
-            box-shadow: 0 5px 15px rgba(254,229,0,0.3);
+            width: 100%; padding: 18px; 
+            background: #fee500; color: #3c1e1e;
+            border: none; border-radius: 16px;
+            font-size: 16px; font-weight: 900;
+            cursor: pointer; text-decoration: none;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 4px 16px rgba(254,229,0,0.3);
         }
-        .kakao-confirm-btn:hover { background: #fada00; transform: translateY(-3px); }
-        .home-btn { 
-            width: 100%; padding: 18px; background: #eee; color: #666; 
-            border: none; border-radius: 18px; font-size: 16px; font-weight: 700; 
-            cursor: pointer; transition: 0.3s; text-decoration: none;
-        }
-        .home-btn:hover { background: #e5e5e5; }
-        
-        .notice-box { margin-top: 30px; font-size: 13px; color: #999; line-height: 1.6; word-break: keep-all; }
-        .strong-notice { color: #e63946; font-weight: 700; margin-top: 10px; display: block; }
+        .kakao-btn:active { transform: scale(0.97); }
+        .kakao-btn svg { width: 22px; height: 22px; }
 
-        /* Toast UI */
-        #toast {
-            visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center;
-            border-radius: 12px; padding: 16px; position: fixed; z-index: 10001; left: 50%; bottom: 30px;
-            transform: translateX(-50%); font-size: 14px; font-weight: 600;
+        .home-btn {
+            display: block; width: 100%; padding: 16px;
+            background: #f5f5f5; color: #888;
+            border: none; border-radius: 14px;
+            font-size: 14px; font-weight: 700;
+            cursor: pointer; text-decoration: none; text-align: center;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
         }
-        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
-        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        .home-btn:active { background: #eee; }
 
-        @media (max-device-width: 600px) {
-            .complete-card { padding: 40px 20px; }
-            h1 { font-size: 26px; }
-            p.msg { font-size: 15px; }
-            .bank-row b { font-size: 16px; }
+        /* ⚠️ Notice */
+        .notice-text {
+            font-size: 12px; color: #bbb; line-height: 1.7;
+            text-align: center; padding: 0 10px;
+            animation: fade-up 0.5s 0.8s both;
         }
+        .notice-text .warn { color: #e63946; font-weight: 700; display: block; margin-top: 6px; }
+
+        /* Toast */
+        .toast-msg {
+            position: fixed; bottom: -60px; left: 50%; transform: translateX(-50%);
+            background: #333; color: #fff; padding: 14px 28px; border-radius: 14px;
+            font-size: 13px; font-weight: 700; z-index: 10001;
+            transition: bottom 0.35s cubic-bezier(0.175,0.885,0.32,1.275);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        .toast-msg.show { bottom: 30px; }
     </style>
 </head>
 <body>
-<div id="toast">계좌번호가 복사되었습니다.</div>
+<div class="toast-msg" id="toast">계좌번호가 복사되었습니다</div>
 
 <div class="side-menu-overlay" id="overlay"></div>
 <div class="side-menu" id="sideMenu">
@@ -144,57 +237,81 @@
         <!-- main.js에서 동적으로 버튼들이 삽입됩니다 -->
     </div>
 </div>
+
 <div class="complete-container">
-    <div class="complete-card">
-        <!-- 🔥 변경된 부분: 체크 아이콘 대신 애니메이션 로고 적용 -->
-        <div class="success-logo-wrap">
-            <img src="logo.png" class="success-logo" alt="보라카이션 로고">
+    <!-- 🎉 Success Header -->
+    <div class="success-anim-wrap">
+        <div class="success-circle">
+            <svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"/></svg>
         </div>
-        <h1 id="complete-title">예약 신청 완료!</h1>
-        <p class="msg" id="complete-msg">
-            예약 신청이 정상적으로 접수되었습니다 😊<br><br>
+        <h1 class="complete-title" id="complete-title">예약 신청 완료!</h1>
+        <p class="complete-subtitle" id="complete-msg">
             아래 계좌로 입금 후,<br>
             <b>보라카이션 카카오채널</b>로 <b>대표자 한글 성함</b>을 보내주셔야<br>
             예약이 <b>최종 확정</b>됩니다.
         </p>
-        
-        <div class="bank-info-card" id="bank-info">
-            <h3>🏦 입금 계좌 안내</h3>
-            <div class="bank-row"><span>은행명</span><b>국민은행</b></div>
-            <div class="bank-row">
-                <span>계좌번호</span>
-                <div style="display: flex; align-items: center;">
-                    <b id="acc-num">058137-04-003860</b>
-                    <button class="copy-btn" onclick="copyAccount()">복사</button>
-                </div>
-            </div>
-            <div class="bank-row"><span>예금주</span><b>윤오현 (보라카이션)</b></div>
-            <div class="bank-row" style="margin-top:15px; padding-top:15px; border-top:1px dashed #ffd8a8;">
-                <span>총 입금 금액</span><b id="bank-total" style="color:#ff6a00; font-size:22px;">₩ 0</b>
-            </div>
-            <div style="margin-top:20px; font-size:14px; color:#d35400; font-weight:700; text-align:center; line-height:1.6;">
-                입금 시 입금자명을<br>
-                <span class="res-no-highlight">대표자 한글 성함</span>으로 보내주세요.
-            </div>
-        </div>
+    </div>
 
-        <div class="booking-details" id="booking-details">
-            <div class="detail-row"><span>예약번호</span><b id="res-no-val">-</b></div>
-            <div class="detail-row"><span>예약자명</span><b id="res-name">-</b></div>
-            <div class="detail-row" id="total-price-row"><span>신청 총액</span><b id="res-total" style="color:#ff6a00; font-size:18px;">₩ 0</b></div>
+    <!-- 🏦 Bank Info -->
+    <div class="bank-card" id="bank-info">
+        <div class="bank-card-header">
+            <div class="bank-icon">🏦</div>
+            <h3>입금 계좌 안내</h3>
         </div>
+        <div class="bank-info-row">
+            <span class="bank-info-label">은행명</span>
+            <span class="bank-info-value">국민은행</span>
+        </div>
+        <div class="bank-info-row">
+            <span class="bank-info-label">계좌번호</span>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span class="bank-info-value" id="acc-num">058137-04-003860</span>
+                <button class="copy-account-btn" onclick="copyAccount()">복사</button>
+            </div>
+        </div>
+        <div class="bank-info-row">
+            <span class="bank-info-label">예금주</span>
+            <span class="bank-info-value">윤오현 (보라카이션)</span>
+        </div>
+        <div class="bank-total-row">
+            <span class="bank-total-label">총 입금 금액</span>
+            <span class="bank-total-value" id="bank-total">₩ 0</span>
+        </div>
+        <div class="bank-notice">
+            입금 시 입금자명을<br>
+            <span class="badge">대표자 한글 성함</span> 으로 보내주세요.
+        </div>
+    </div>
 
-        <div class="btn-group">
-            <a href="http://pf.kakao.com/_zBArM/chat" target="_blank" class="kakao-confirm-btn" id="kakao-btn">
-                입금 확인 요청하기
-            </a>
-            <a href="/" class="home-btn">홈으로 돌아가기</a>
+    <!-- 📋 Booking Details -->
+    <div class="details-card" id="booking-details">
+        <div class="details-row">
+            <span class="details-label">예약번호</span>
+            <span class="details-value" id="res-no-val">-</span>
         </div>
+        <div class="details-row">
+            <span class="details-label">예약자명</span>
+            <span class="details-value" id="res-name">-</span>
+        </div>
+        <div class="details-row" id="total-price-row">
+            <span class="details-label">신청 총액</span>
+            <span class="details-value price" id="res-total">₩ 0</span>
+        </div>
+    </div>
 
-        <div class="notice-box" id="notice-box">
-            * 입금 확인 요청 버튼 클릭 시 보라카이션 카카오톡 채널로 연결됩니다.<br>
-            <span class="strong-notice">※ 입금만 하시고 카카오채널로 연락을 주지 않으면 예약이 확인되지 않을 수 있으니 반드시 연락 부탁드립니다.</span>
-        </div>
+    <!-- 🔘 Action Buttons -->
+    <div class="action-btns">
+        <a href="http://pf.kakao.com/_zBArM/chat" target="_blank" class="kakao-btn" id="kakao-btn">
+            <svg viewBox="0 0 24 24" fill="#3c1e1e"><path d="M12 3C6.48 3 2 6.58 2 10.94c0 2.8 1.86 5.27 4.66 6.68l-1.2 4.38 5.08-3.35c.47.05.96.08 1.46.08 5.52 0 10-3.58 10-7.79S17.52 3 12 3z"/></svg>
+            입금 확인 요청하기
+        </a>
+        <a href="/" class="home-btn">홈으로 돌아가기</a>
+    </div>
+
+    <!-- ⚠️ Notice -->
+    <div class="notice-text" id="notice-box">
+        * 입금 확인 요청 버튼 클릭 시 보라카이션 카카오톡 채널로 연결됩니다.
+        <span class="warn">※ 입금만 하시고 카카오채널로 연락을 주지 않으면 예약이 확인되지 않을 수 있으니 반드시 연락 부탁드립니다.</span>
     </div>
 </div>
 
@@ -202,24 +319,22 @@
     function showToast(message) {
         const toast = document.getElementById("toast");
         toast.innerText = message;
-        toast.className = "show";
-        setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2500);
     }
 
     function copyAccount() {
         const accNum = document.getElementById("acc-num").innerText;
         navigator.clipboard.writeText(accNum).then(() => {
-            showToast("계좌번호가 복사되었습니다.");
-        }).catch(err => {
-            console.error('Could not copy text: ', err);
-            // Fallback for older browsers
+            showToast("계좌번호가 복사되었습니다");
+        }).catch(() => {
             const textArea = document.createElement("textarea");
             textArea.value = accNum;
             document.body.appendChild(textArea);
             textArea.select();
             document.execCommand("copy");
             document.body.removeChild(textArea);
-            showToast("계좌번호가 복사되었습니다.");
+            showToast("계좌번호가 복사되었습니다");
         });
     }
 
@@ -243,9 +358,9 @@
                         <b>보라카이션 카카오채널</b>로 <b>대표자 한글 성함</b>을 보내주셔야<br>
                         정확한 <b>견적 금액 안내</b>가 가능합니다.`;
                     document.getElementById('bank-info').style.display = 'none';
-                    document.getElementById('total-price-row').style.display = 'none'; // 신청 총액 숨김
-                    document.getElementById('kakao-btn').innerText = '카카오톡 견적 상담하기';
-                    document.getElementById('notice-box').innerHTML = '* 버튼 클릭 시 보라카이션 카카오톡 채널로 연결됩니다.<br><span class="strong-notice">※ 반드시 카카오채널로 연락을 주셔야지 견적 확인 및 안내가 가능합니다.</span>';
+                    document.getElementById('total-price-row').style.display = 'none';
+                    document.getElementById('kakao-btn').innerHTML = '<svg viewBox="0 0 24 24" fill="#3c1e1e"><path d="M12 3C6.48 3 2 6.58 2 10.94c0 2.8 1.86 5.27 4.66 6.68l-1.2 4.38 5.08-3.35c.47.05.96.08 1.46.08 5.52 0 10-3.58 10-7.79S17.52 3 12 3z"/></svg> 카카오톡 견적 상담하기';
+                    document.getElementById('notice-box').innerHTML = '* 버튼 클릭 시 보라카이션 카카오톡 채널로 연결됩니다.<span class="warn">※ 반드시 카카오채널로 연락을 주셔야지 견적 확인 및 안내가 가능합니다.</span>';
                 }
             }
         } catch(e) {

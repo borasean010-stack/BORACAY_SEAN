@@ -136,7 +136,7 @@
         <div class="side-logo">BORACAY SEAN</div>
         <div class="side-close" id="sideClose">✕</div>
     </div>
-            <div class="side-menu-list">
+    <div class="side-menu-list">
         <a href="/essential-tours">보라카이 필수투어</a>
         <a href="/activities">액티비티</a>
         <a href="/massage">마사지</a>
@@ -157,7 +157,7 @@
         </div>
     </div>
 
-            <div class="menu pc-only">
+    <div class="menu pc-only">
         <a href="/essential-tours" class="tab-link active" data-category="essential">보라카이 필수투어</a>
         <a href="/activities" class="tab-link" data-category="activity">액티비티</a>
         <a href="/massage" class="tab-link" data-category="massage">마사지</a>
@@ -174,8 +174,7 @@
         <h1>보라카이션 시그니처 패키지</h1>
         <div class="section-title">패키지 상세</div>
         <div class="itinerary">
-            <div class="itinerary-img"><img src="Frame%2015.png" alt="보라카이션 시그니처 패키지 1"></div>
-            <div class="itinerary-img"><img src="Frame%2016.png" alt="보라카이션 시그니처 패키지 2"></div>
+            <div class="itinerary-img"><img src="7.png" alt="보라카이션 시그니처 패키지 상세 안내"></div>
         </div>
 
         <div class="section-title">환불 규정</div>
@@ -186,25 +185,9 @@
         <div class="option-selector" style="margin-bottom:20px;">
             <label style="font-weight:800; font-size:14px; color:#333; display:block; margin-bottom:10px;">패키지 옵션 선택</label>
             <div class="option-grid-container">
-                <div class="option-card active full-width" onclick="selectOption('시그니처 패키지')">
-                    <h4>시그니처 패키지</h4>
-                    <p>픽샌 + 호핑 + 말룸 + 고래상어</p>
-                </div>
-                <div class="option-card" onclick="selectOption('패키지 A')">
-                    <h4>패키지 A</h4>
-                    <p>픽샌 + 말룸 + 고래상어</p>
-                </div>
-                <div class="option-card" onclick="selectOption('패키지 B')">
-                    <h4>패키지 B</h4>
-                    <p>픽샌 + 호핑 + 고래상어</p>
-                </div>
-                <div class="option-card" onclick="selectOption('패키지 C')">
-                    <h4>패키지 C</h4>
-                    <p>픽샌 + 호핑 + 말룸</p>
-                </div>
                 <div class="option-card" onclick="selectOption('픽샌팩 A')">
                     <h4>픽샌팩 A</h4>
-                    <p>픽샌 + 호핑</p>
+                    <p>픽샌 + 요트호핑</p>
                 </div>
                 <div class="option-card" onclick="selectOption('픽샌팩 B')">
                     <h4>픽샌팩 B</h4>
@@ -212,7 +195,23 @@
                 </div>
                 <div class="option-card" onclick="selectOption('픽샌팩 C')">
                     <h4>픽샌팩 C</h4>
-                    <p>픽샌 + 말룸</p>
+                    <p>픽샌 + 말룸파티</p>
+                </div>
+                <div class="option-card" onclick="selectOption('패키지 A')">
+                    <h4>패키지 A</h4>
+                    <p>픽샌 + 요트호핑 + 고래상어</p>
+                </div>
+                <div class="option-card" onclick="selectOption('패키지 B')">
+                    <h4>패키지 B</h4>
+                    <p>픽샌 + 요트호핑 + 말룸파티</p>
+                </div>
+                <div class="option-card" onclick="selectOption('패키지 C')">
+                    <h4>패키지 C</h4>
+                    <p>픽샌 + 고래상어 + 말룸파티</p>
+                </div>
+                <div class="option-card active full-width" onclick="selectOption('시그니처 패키지')">
+                    <h4>시그니처 패키지</h4>
+                    <p>픽샌 + 호핑 + 말룸 + 고래상어</p>
                 </div>
             </div>
         </div>
@@ -228,7 +227,7 @@
                     </div>
                 </div>
                 <div class="person-price-calc">
-                    ₩ <span id="adult-price-text">310,000</span> × <span id="adult-count-text">1</span> = <b id="adult-subtotal">₩ 310,000</b>
+                    ₩ <span id="adult-price-text">280,000</span> × <span id="adult-count-text">1</span> = <b id="adult-subtotal">₩ 280,000</b>
                 </div>
             </div>
             <div class="person-row" id="child-row" style="margin-top:15px; padding-top:15px; border-top:1px dashed #eee;">
@@ -244,14 +243,14 @@
                     </div>
                 </div>
                 <div class="person-price-calc">
-                    ₩ <span id="child-price-text">300,000</span> × <span id="child-count-text">0</span> = <b id="child-subtotal">₩ 0</b>
+                    ₩ <span id="child-price-text">270,000</span> × <span id="child-count-text">0</span> = <b id="child-subtotal">₩ 0</b>
                 </div>
             </div>
         </div>
 
         <div class="price-header" style="margin-top:25px; margin-bottom: 20px; display:flex; justify-content:space-between; align-items:flex-end;">
             <span class="price-label" style="font-size:15px; font-weight:800; color:#333; margin:0;">총 결제 금액</span>
-            <b id="display-total-price" style="font-size: 28px; font-weight: 900; color: #ff6a00; letter-spacing: -1px;">₩ 310,000</b>
+            <b id="display-total-price" style="font-size: 28px; font-weight: 900; color: #ff6a00; letter-spacing: -1px;">₩ 280,000</b>
         </div>
 
         <button class="btn-buy" onclick="handleBuy()" id="buy-btn">구매하기</button>
@@ -274,13 +273,13 @@
 <script src="main.js"></script>
 <script>
     const OPTIONS = {
-        '시그니처 패키지': { name: '시그니처 패키지', desc: '픽샌 + 호핑 + 말룸 + 고래상어', adultPrice: 310000, childPrice: 300000, childDesc: '(만5세이상 ~ 초6)' },
-        '패키지 A': { name: '패키지 A', desc: '픽샌 + 말룸 + 고래상어', adultPrice: 260000, childPrice: 250000, childDesc: '(만5세이상 ~ 초6)' },
-        '패키지 B': { name: '패키지 B', desc: '픽샌 + 호핑 + 고래상어', adultPrice: 220000, childPrice: 220000, childDesc: '(만5세이상 / 성인 요금 동일)' },
-        '패키지 C': { name: '패키지 C', desc: '픽샌 + 호핑 + 말룸', adultPrice: 195000, childPrice: 185000, childDesc: '(36개월 ~ 초6)' },
-        '픽샌팩 A': { name: '픽샌팩 A', desc: '픽샌 + 호핑', adultPrice: 100000, childPrice: 100000, childDesc: '(성인 요금 동일)' },
-        '픽샌팩 B': { name: '픽샌팩 B', desc: '픽샌 + 고래상어', adultPrice: 165000, childPrice: 165000, childDesc: '(만5세이상 / 성인 요금 동일)' },
-        '픽샌팩 C': { name: '픽샌팩 C', desc: '픽샌 + 말룸', adultPrice: 150000, childPrice: 141000, childDesc: '(36개월 ~ 초6)' }
+        '픽샌팩 A': { name: '픽샌팩 A', desc: '픽샌 + 블랙펄요트호핑', adultPrice: 100000, childPrice: 100000, childDesc: '(성인 요금 동일)' },
+        '픽샌팩 B': { name: '픽샌팩 B', desc: '픽샌 + 고래상어', adultPrice: 135000, childPrice: 135000, childDesc: '(성인 요금 동일)' },
+        '픽샌팩 C': { name: '픽샌팩 C', desc: '픽샌 + 말룸파티', adultPrice: 150000, childPrice: 140000, childDesc: '(36개월 ~ 초6)' },
+        '패키지 A': { name: '패키지 A', desc: '픽샌 + 블랙펄요트호핑 + 고래상어', adultPrice: 190000, childPrice: 190000, childDesc: '(성인 요금 동일)' },
+        '패키지 B': { name: '패키지 B', desc: '픽샌 + 블랙펄요트호핑 + 말룸파티', adultPrice: 195000, childPrice: 185000, childDesc: '(만5세이상 ~ 초6)' },
+        '패키지 C': { name: '패키지 C', desc: '픽샌 + 고래상어 + 말룸파티', adultPrice: 230000, childPrice: 220000, childDesc: '(만5세이상 ~ 초6)' },
+        '시그니처 패키지': { name: '시그니처 패키지', desc: '픽샌 + 호핑 + 말룸 + 고래상어', adultPrice: 280000, childPrice: 270000, childDesc: '(만5세이상 ~ 초6)' }
     };
     let adultCount = 1;
     let childCount = 0;
@@ -291,7 +290,9 @@
         const option = OPTIONS[key];
         
         document.querySelectorAll('.option-card').forEach(c => c.classList.remove('active'));
-        event.currentTarget.classList.add('active');
+        if (event && event.currentTarget) {
+            event.currentTarget.classList.add('active');
+        }
         
         const childAgeDesc = document.getElementById('child-age-desc');
         if (childAgeDesc) {
@@ -343,11 +344,17 @@
         const total = (adultCount * option.adultPrice) + (childCount * option.childPrice);
         const item = { 
             name: "보라카이션 패키지 - " + option.name, 
+            packageName: option.name,
+            packageDesc: option.desc,
+            adultCount: adultCount,
+            childCount: childCount,
+            adultPrice: option.adultPrice,
+            childPrice: option.childPrice,
             price: total / (adultCount + childCount), 
             count: adultCount + childCount, 
             totalPrice: total, 
             isPackage: true,
-            details: `성인 ${adultCount}, 소인 ${childCount}`
+            details: `성인 ${adultCount}명, 소인 ${childCount}명`
         };
         BSUtils.buyNow(item);
     }
@@ -357,11 +364,17 @@
         const total = (adultCount * option.adultPrice) + (childCount * option.childPrice);
         const item = { 
             name: "보라카이션 패키지 - " + option.name, 
+            packageName: option.name,
+            packageDesc: option.desc,
+            adultCount: adultCount,
+            childCount: childCount,
+            adultPrice: option.adultPrice,
+            childPrice: option.childPrice,
             price: total / (adultCount + childCount), 
             count: adultCount + childCount, 
             totalPrice: total, 
             isPackage: true,
-            details: `성인 ${adultCount}, 소인 ${childCount}`
+            details: `성인 ${adultCount}명, 소인 ${childCount}명`
         };
         BSUtils.saveToCart(item);
     }

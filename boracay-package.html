@@ -244,67 +244,30 @@
         <div class="reservation-box-title">패키지 옵션 선택</div>
 
         <!-- 시그니처 -->
-        <div class="option-section-label">⭐ 추천</div>
+        <div class="option-section-label">⭐ 베스트셀러</div>
         <div class="option-grid-container">
             <div class="option-card full-width active" onclick="selectOption('시그니처 패키지', this)">
                 <h4>시그니처 패키지</h4>
-                <p>픽샌 + 호핑 + 말룸 + 리버타드 고래상어</p>
+                <p>픽샌 + 호핑 + 말룸 + 고래상어</p>
             </div>
         </div>
 
-        <!-- 패키지 A~C -->
-        <div class="option-section-label">패키지</div>
-        <div class="option-grid-container">
-            <div class="option-card" onclick="selectOption('패키지 A', this)">
-                <h4>패키지 A</h4>
-                <p>픽샌 + 말룸 + 리버타드 고래상어</p>
-            </div>
-            <div class="option-card" onclick="selectOption('패키지 B', this)">
-                <h4>패키지 B</h4>
-                <p>픽샌 + 호핑 + 리버타드 고래상어</p>
-            </div>
-            <div class="option-card" onclick="selectOption('패키지 C', this)">
-                <h4>패키지 C</h4>
-                <p>픽샌 + 호핑 + 말룸</p>
-            </div>
+        <!-- 고래팩 A~E -->
+        <div class="option-section-label">고래상어 패키지 (고래팩)</div>
+        <div class="option-grid-container" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="option-card" onclick="selectOption('고래팩 A', this)"><h4>고래팩 A</h4><p>고래상어 + 픽샌</p></div>
+            <div class="option-card" onclick="selectOption('고래팩 B', this)"><h4>고래팩 B</h4><p>고래상어 + 호핑</p></div>
+            <div class="option-card" onclick="selectOption('고래팩 C', this)"><h4>고래팩 C</h4><p>고래상어 + 말룸파티</p></div>
+            <div class="option-card" onclick="selectOption('고래팩 D', this)"><h4>고래팩 D</h4><p>고래상어 + 픽샌 + 호핑</p></div>
+            <div class="option-card full-width" onclick="selectOption('고래팩 E', this)"><h4>고래팩 E</h4><p>고래상어 + 말룸파티 + 픽샌</p></div>
         </div>
 
-        <!-- 픽샌팩 A~C -->
-        <div class="option-section-label">픽샌팩</div>
-        <div class="option-grid-container">
-            <div class="option-card" onclick="selectOption('픽샌팩 A', this)">
-                <h4>픽샌팩 A</h4>
-                <p>픽샌 + 호핑</p>
-            </div>
-            <div class="option-card" onclick="selectOption('픽샌팩 B', this)">
-                <h4>픽샌팩 B</h4>
-                <p>픽샌 + 리버타드 고래상어</p>
-            </div>
-            <div class="option-card" onclick="selectOption('픽샌팩 C', this)">
-                <h4>픽샌팩 C</h4>
-                <p>픽샌 + 말룸</p>
-            </div>
-        </div>
-
-        <!-- 콤보팩 A~D -->
-        <div class="option-section-label">콤보팩</div>
-        <div class="option-grid-container">
-            <div class="option-card" onclick="selectOption('콤보팩 A', this)">
-                <h4>콤보팩 A</h4>
-                <p>호핑 + 리버타드 고래상어 + 말룸파티</p>
-            </div>
-            <div class="option-card" onclick="selectOption('콤보팩 B', this)">
-                <h4>콤보팩 B</h4>
-                <p>호핑 + 리버타드 고래상어</p>
-            </div>
-            <div class="option-card" onclick="selectOption('콤보팩 C', this)">
-                <h4>콤보팩 C</h4>
-                <p>호핑 + 말룸파티</p>
-            </div>
-            <div class="option-card" onclick="selectOption('콤보팩 D', this)">
-                <h4>콤보팩 D</h4>
-                <p>말룸파티 + 리버타드 고래상어</p>
-            </div>
+        <!-- 일반 패키지 -->
+        <div class="option-section-label">일반 패키지</div>
+        <div class="option-grid-container" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="option-card" onclick="selectOption('픽샌팩 A', this)"><h4>픽샌팩 A</h4><p>픽샌 + 호핑</p></div>
+            <div class="option-card" onclick="selectOption('픽샌팩 C', this)"><h4>픽샌팩 C</h4><p>픽샌 + 말룸파티</p></div>
+            <div class="option-card full-width" onclick="selectOption('패키지 B', this)"><h4>패키지 B</h4><p>픽샌 + 호핑 + 말룸파티</p></div>
         </div>
 
         <!-- 인원 선택 -->
@@ -367,37 +330,30 @@
     <div class="drawer-title">패키지 옵션 선택</div>
 
     <!-- 시그니처 -->
-    <div class="option-section-label">⭐ 추천</div>
+    <div class="option-section-label">⭐ 베스트셀러</div>
     <div class="option-grid-container">
-        <div class="option-card full-width" id="d-opt-시그니처 패키지" onclick="selectDrawerOption('시그니처 패키지', this)">
+        <div class="option-card full-width active" id="d-opt-시그니처 패키지" onclick="selectDrawerOption('시그니처 패키지', this)">
             <h4>시그니처 패키지</h4>
-            <p>픽샌 + 호핑 + 말룸 + 리버타드 고래상어</p>
+            <p>픽샌 + 호핑 + 말룸 + 고래상어</p>
         </div>
     </div>
 
-    <!-- 패키지 A~C -->
-    <div class="option-section-label">패키지</div>
-    <div class="option-grid-container">
-        <div class="option-card" id="d-opt-패키지 A" onclick="selectDrawerOption('패키지 A', this)"><h4>패키지 A</h4><p>픽샌 + 말룸 + 리버타드 고래상어</p></div>
-        <div class="option-card" id="d-opt-패키지 B" onclick="selectDrawerOption('패키지 B', this)"><h4>패키지 B</h4><p>픽샌 + 호핑 + 리버타드 고래상어</p></div>
-        <div class="option-card" id="d-opt-패키지 C" onclick="selectDrawerOption('패키지 C', this)"><h4>패키지 C</h4><p>픽샌 + 호핑 + 말룸</p></div>
+    <!-- 고래팩 A~E -->
+    <div class="option-section-label">고래상어 패키지 (고래팩)</div>
+    <div class="option-grid-container" style="grid-template-columns: repeat(2, 1fr);">
+        <div class="option-card" id="d-opt-고래팩 A" onclick="selectDrawerOption('고래팩 A', this)"><h4>고래팩 A</h4><p>고래상어 + 픽샌</p></div>
+        <div class="option-card" id="d-opt-고래팩 B" onclick="selectDrawerOption('고래팩 B', this)"><h4>고래팩 B</h4><p>고래상어 + 호핑</p></div>
+        <div class="option-card" id="d-opt-고래팩 C" onclick="selectDrawerOption('고래팩 C', this)"><h4>고래팩 C</h4><p>고래상어 + 말룸파티</p></div>
+        <div class="option-card" id="d-opt-고래팩 D" onclick="selectDrawerOption('고래팩 D', this)"><h4>고래팩 D</h4><p>고래상어 + 픽샌 + 호핑</p></div>
+        <div class="option-card full-width" id="d-opt-고래팩 E" onclick="selectDrawerOption('고래팩 E', this)"><h4>고래팩 E</h4><p>고래상어 + 말룸파티 + 픽샌</p></div>
     </div>
 
-    <!-- 픽샌팩 A~C -->
-    <div class="option-section-label">픽샌팩</div>
-    <div class="option-grid-container">
+    <!-- 일반 패키지 -->
+    <div class="option-section-label">일반 패키지</div>
+    <div class="option-grid-container" style="grid-template-columns: repeat(2, 1fr);">
         <div class="option-card" id="d-opt-픽샌팩 A" onclick="selectDrawerOption('픽샌팩 A', this)"><h4>픽샌팩 A</h4><p>픽샌 + 호핑</p></div>
-        <div class="option-card" id="d-opt-픽샌팩 B" onclick="selectDrawerOption('픽샌팩 B', this)"><h4>픽샌팩 B</h4><p>픽샌 + 리버타드 고래상어</p></div>
-        <div class="option-card" id="d-opt-픽샌팩 C" onclick="selectDrawerOption('픽샌팩 C', this)"><h4>픽샌팩 C</h4><p>픽샌 + 말룸</p></div>
-    </div>
-
-    <!-- 콤보팩 A~D -->
-    <div class="option-section-label">콤보팩</div>
-    <div class="option-grid-container">
-        <div class="option-card" id="d-opt-콤보팩 A" onclick="selectDrawerOption('콤보팩 A', this)"><h4>콤보팩 A</h4><p>호핑 + 리버타드 고래상어 + 말룸파티</p></div>
-        <div class="option-card" id="d-opt-콤보팩 B" onclick="selectDrawerOption('콤보팩 B', this)"><h4>콤보팩 B</h4><p>호핑 + 리버타드 고래상어</p></div>
-        <div class="option-card" id="d-opt-콤보팩 C" onclick="selectDrawerOption('콤보팩 C', this)"><h4>콤보팩 C</h4><p>호핑 + 말룸파티</p></div>
-        <div class="option-card" id="d-opt-콤보팩 D" onclick="selectDrawerOption('콤보팩 D', this)"><h4>콤보팩 D</h4><p>말룸파티 + 리버타드 고래상어</p></div>
+        <div class="option-card" id="d-opt-픽샌팩 C" onclick="selectDrawerOption('픽샌팩 C', this)"><h4>픽샌팩 C</h4><p>픽샌 + 말룸파티</p></div>
+        <div class="option-card full-width" id="d-opt-패키지 B" onclick="selectDrawerOption('패키지 B', this)"><h4>패키지 B</h4><p>픽샌 + 호핑 + 말룸파티</p></div>
     </div>
 
     <!-- 인원 -->
@@ -443,16 +399,18 @@
 <script>
     const OPTIONS = {
         '시그니처 패키지': { name: '시그니처 패키지', desc: '픽샌 + 호핑 + 말룸 + 고래상어', adultPrice: 280000, childPrice: 270000, childDesc: '(만5세이상 ~ 초6)' },
-        '패키지 A':        { name: '패키지 A',        desc: '픽샌 + 호핑 + 고래상어',             adultPrice: 190000, childPrice: 190000, childDesc: '(성인 요금 동일)' },
-        '패키지 B':        { name: '패키지 B',        desc: '픽샌 + 호핑 + 말룸파티',           adultPrice: 195000, childPrice: 185000, childDesc: '(만5세이상 ~ 초6)' },
-        '패키지 C':        { name: '패키지 C',        desc: '픽샌 + 고래상어 + 말룸파티',         adultPrice: 230000, childPrice: 220000, childDesc: '(만5세이상 ~ 초6)' },
-        '픽샌팩 A':        { name: '픽샌팩 A',        desc: '픽샌 + 호핑',                      adultPrice: 100000, childPrice: 100000, childDesc: '(성인 요금 동일)' },
-        '픽샌팩 B':        { name: '픽샌팩 B',        desc: '픽샌 + 고래상어',                  adultPrice: 135000, childPrice: 135000, childDesc: '(성인 요금 동일)' },
-        '픽샌팩 C':        { name: '픽샌팩 C',        desc: '픽샌 + 말룸파티',                  adultPrice: 150000, childPrice: 140000, childDesc: '(36개월 ~ 초6)' },
-        '콤보팩 A':        { name: '콤보팩 A',        desc: '호핑 + 고래상어 + 말룸파티',       adultPrice: 260000, childPrice: 250000, childDesc: '(만5세이상 ~ 초6)' },
-        '콤보팩 B':        { name: '콤보팩 B',        desc: '호핑 + 고래상어',                  adultPrice: 140000, childPrice: 140000, childDesc: '(성인 요금 동일)' },
-        '콤보팩 C':        { name: '콤보팩 C',        desc: '호핑 + 말룸파티',                  adultPrice: 150000, childPrice: 140000, childDesc: '(36개월 ~ 초6)' },
-        '콤보팩 D':        { name: '콤보팩 D',        desc: '말룸파티 + 고래상어',              adultPrice: 180000, childPrice: 170000, childDesc: '(만5세이상 ~ 초6)' }
+        
+        // 고래상어 중심 패키지 (고래팩)
+        '고래팩 A': { name: '고래팩 A', desc: '고래상어 + 픽샌', adultPrice: 135000, childPrice: 135000, childDesc: '(성인 요금 동일)' },
+        '고래팩 B': { name: '고래팩 B', desc: '고래상어 + 호핑', adultPrice: 140000, childPrice: 140000, childDesc: '(성인 요금 동일)' },
+        '고래팩 C': { name: '고래팩 C', desc: '고래상어 + 말룸파티', adultPrice: 180000, childPrice: 170000, childDesc: '(만5세이상 ~ 초6)' },
+        '고래팩 D': { name: '고래팩 D', desc: '고래상어 + 픽샌 + 호핑', adultPrice: 190000, childPrice: 190000, childDesc: '(성인 요금 동일)' },
+        '고래팩 E': { name: '고래팩 E', desc: '고래상어 + 말룸파티 + 픽샌', adultPrice: 230000, childPrice: 220000, childDesc: '(만5세이상 ~ 초6)' },
+
+        // 기존 패키지 & 픽샌팩
+        '패키지 B': { name: '패키지 B', desc: '픽샌 + 호핑 + 말룸파티', adultPrice: 195000, childPrice: 185000, childDesc: '(만5세이상 ~ 초6)' },
+        '픽샌팩 A': { name: '픽샌팩 A', desc: '픽샌 + 호핑', adultPrice: 100000, childPrice: 100000, childDesc: '(성인 요금 동일)' },
+        '픽샌팩 C': { name: '픽샌팩 C', desc: '픽샌 + 말룸파티', adultPrice: 150000, childPrice: 140000, childDesc: '(만5세이상 ~ 초6)' },
     };
 
     let adultCount = 1;

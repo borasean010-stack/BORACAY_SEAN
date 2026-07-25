@@ -243,7 +243,16 @@
     <div class="reservation-box">
         <div class="reservation-box-title">패키지 옵션 선택</div>
 
-        <!-- 픽샌팩 -->
+        <!-- 시그니처 (최상단) -->
+        <div class="option-section-label">⭐ 베스트셀러</div>
+        <div class="option-grid-container" style="margin-bottom: 16px;">
+            <div class="option-card full-width active" style="grid-column: span 3;" onclick="selectOption('시그니처 패키지', this)">
+                <h4>시그니처 패키지</h4>
+                <p>픽샌 + 호핑 + 말룸 + 고래상어</p>
+            </div>
+        </div>
+
+        <!-- 픽샌팩 & 패키지 (상단 3열) -->
         <div class="option-grid-container" style="grid-template-columns: repeat(3, 1fr);">
             <div class="option-card" onclick="selectOption('픽샌팩 A', this)"><h4>픽샌팩 A</h4><p>픽샌 + 요트호핑</p></div>
             <div class="option-card" onclick="selectOption('픽샌팩 B', this)"><h4>픽샌팩 B</h4><p>픽샌 + 고래상어</p></div>
@@ -252,12 +261,6 @@
             <div class="option-card" onclick="selectOption('패키지 A', this)"><h4>패키지 A</h4><p>픽샌 + 요트호핑 + 고래상어</p></div>
             <div class="option-card" onclick="selectOption('패키지 B', this)"><h4>패키지 B</h4><p>픽샌 + 요트호핑 + 말룸파티</p></div>
             <div class="option-card" onclick="selectOption('패키지 C', this)"><h4>패키지 C</h4><p>픽샌 + 고래상어 + 말룸파티</p></div>
-            
-            <!-- 시그니처 -->
-            <div class="option-card full-width active" style="grid-column: span 3;" onclick="selectOption('시그니처 패키지', this)">
-                <h4>시그니처 패키지</h4>
-                <p>픽샌 + 호핑 + 말룸 + 고래상어</p>
-            </div>
         </div>
 
         <!-- 고래팩 A~E -->
@@ -329,7 +332,16 @@
     <button class="drawer-close" onclick="closeBookingDrawer()">✕</button>
     <div class="drawer-title">패키지 옵션 선택</div>
 
-    <!-- 픽샌팩 -->
+    <!-- 시그니처 (최상단) -->
+    <div class="option-section-label">⭐ 베스트셀러</div>
+    <div class="option-grid-container" style="margin-bottom: 16px;">
+        <div class="option-card full-width active" style="grid-column: span 3;" id="d-opt-시그니처 패키지" onclick="selectDrawerOption('시그니처 패키지', this)">
+            <h4>시그니처 패키지</h4>
+            <p>픽샌 + 호핑 + 말룸 + 고래상어</p>
+        </div>
+    </div>
+
+    <!-- 픽샌팩 & 패키지 (상단 3열) -->
     <div class="option-grid-container" style="grid-template-columns: repeat(3, 1fr);">
         <div class="option-card" id="d-opt-픽샌팩 A" onclick="selectDrawerOption('픽샌팩 A', this)"><h4>픽샌팩 A</h4><p>픽샌 + 요트호핑</p></div>
         <div class="option-card" id="d-opt-픽샌팩 B" onclick="selectDrawerOption('픽샌팩 B', this)"><h4>픽샌팩 B</h4><p>픽샌 + 고래상어</p></div>
@@ -338,12 +350,6 @@
         <div class="option-card" id="d-opt-패키지 A" onclick="selectDrawerOption('패키지 A', this)"><h4>패키지 A</h4><p>픽샌 + 요트호핑 + 고래상어</p></div>
         <div class="option-card" id="d-opt-패키지 B" onclick="selectDrawerOption('패키지 B', this)"><h4>패키지 B</h4><p>픽샌 + 요트호핑 + 말룸파티</p></div>
         <div class="option-card" id="d-opt-패키지 C" onclick="selectDrawerOption('패키지 C', this)"><h4>패키지 C</h4><p>픽샌 + 고래상어 + 말룸파티</p></div>
-        
-        <!-- 시그니처 -->
-        <div class="option-card full-width active" style="grid-column: span 3;" id="d-opt-시그니처 패키지" onclick="selectDrawerOption('시그니처 패키지', this)">
-            <h4>시그니처 패키지</h4>
-            <p>픽샌 + 호핑 + 말룸 + 고래상어</p>
-        </div>
     </div>
 
     <!-- 고래팩 A~E -->

@@ -1283,7 +1283,7 @@
             if (item.isPackage) {
                 isPackage = true;
                 const textToSearch = (item.name || '') + ' ' + (item.details || '');
-                if (textToSearch.includes('시그니처') || textToSearch.includes('고래팩 B') || textToSearch.includes('고래팩 D') || textToSearch.includes('패키지 B') || textToSearch.includes('픽샌팩 A')) {
+                if (textToSearch.includes('시그니처') || textToSearch.includes('고래팩 B') || textToSearch.includes('고래팩 D') || textToSearch.includes('패키지 A') || textToSearch.includes('패키지 B') || textToSearch.includes('패키지 C') || textToSearch.includes('픽샌팩 A') || textToSearch.includes('콤보팩 A') || textToSearch.includes('콤보팩 B') || textToSearch.includes('콤보팩 C')) {
                     hasHopping = true;
                 }
             }
@@ -1382,7 +1382,15 @@
             } else if (textToSearch.includes('고래팩 C') || textToSearch.includes('고래팩 E')) {
                 document.getElementById('pkg-oneday-group').style.display = 'block';
                 document.getElementById('pkg-oneday-date').required = true;
-            } else if (textToSearch.includes('패키지 B')) {
+            } else if (textToSearch.includes('패키지 A') || textToSearch.includes('콤보팩 D')) {
+                document.getElementById('pkg-oneday-group').style.display = 'block';
+                document.getElementById('pkg-oneday-date').required = true;
+            } else if (textToSearch.includes('패키지 B') || textToSearch.includes('콤보팩 B')) {
+                document.getElementById('pkg-hopping-group').style.display = 'block';
+                document.getElementById('pkg-hopping-date').required = true;
+                document.getElementById('pkg-whale-group').style.display = 'block';
+                document.getElementById('pkg-whale-date').required = true;
+            } else if (textToSearch.includes('패키지 C') || textToSearch.includes('콤보팩 C')) {
                 document.getElementById('pkg-hopping-group').style.display = 'block';
                 document.getElementById('pkg-hopping-date').required = true;
                 document.getElementById('pkg-malum-group').style.display = 'block';
@@ -1390,6 +1398,9 @@
             } else if (textToSearch.includes('픽샌팩 A')) {
                 document.getElementById('pkg-hopping-group').style.display = 'block';
                 document.getElementById('pkg-hopping-date').required = true;
+            } else if (textToSearch.includes('픽샌팩 B')) {
+                document.getElementById('pkg-whale-group').style.display = 'block';
+                document.getElementById('pkg-whale-date').required = true;
             } else if (textToSearch.includes('픽샌팩 C')) {
                 document.getElementById('pkg-malum-group').style.display = 'block';
                 document.getElementById('pkg-malum-date').required = true;

@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { title: "보라카이션 고래상어 패키지", img: "5.png", url: "/package-tour", badge: "HOT", mdBadge: true, desc: "고래상어와 함께 즐기는 패키지 조합", price: 135000 },
         { title: "블랙펄 요트호핑투어", img: "블랙펄 썸네일.jpg", url: "/hopping-tour", badge: "HOT", mdBadge: true, desc: "럭셔리 요트위에서 즐기는 선셋 파티 호핑", price: 55000 },
         { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "/malumpati", badge: "HOT", mdBadge: true, desc: "프라이빗하게 즐기는 블루라군과 튜빙", price: 99000 },
-        { title: "리버타드 고래상어", img: "005.png", url: "/whale-shark-tour", badge: "NEW", mdBadge: true, desc: "거대하고 온순한 고래상어와의 만남", price: 120000 },
+        { title: "리버타드 고래상어", img: "whale-shark-thumb.png", url: "/whale-shark-tour", badge: "NEW", mdBadge: true, desc: "거대하고 온순한 고래상어와의 만남", price: 120000 },
         { title: "에스파 마사지", img: "spa1.jpg", url: "/spa", badge: "HOT", mdBadge: true, desc: "보라카이 최초 포핸드 마사지 런칭", price: 55000 }
     ];
 

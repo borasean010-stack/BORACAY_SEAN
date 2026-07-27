@@ -1307,10 +1307,29 @@ async function parseCafeVoucherInput() {
         mappedTours.push(dbInfo);
     });
 
+    // 3. 패키지 조합 판별 로직
+    const hasWhale = realItems.some(it => it.includes('고래'));
+    const hasHopping = realItems.some(it => it.includes('호핑'));
+    const hasMalum = realItems.some(it => it.includes('말룸'));
+    const hasPickup = realItems.some(it => it.includes('픽업') || it.includes('샌딩'));
+
+    let packageName = "보라카이션 패키지,단품"; // 기본값
+
+    if (hasPickup && hasHopping && hasMalum && hasWhale) packageName = "시그니처 패키지";
+    else if (hasWhale && hasMalum && hasPickup) packageName = "고래팩 E";
+    else if (hasWhale && hasPickup && hasHopping) packageName = "고래팩 D";
+    else if (hasPickup && hasHopping && hasMalum) packageName = "픽샌팩 D";
+    else if (hasWhale && hasMalum) packageName = "고래팩 C";
+    else if (hasWhale && hasHopping) packageName = "고래팩 B";
+    else if (hasWhale && hasPickup) packageName = "고래팩 A"; // 픽샌팩 B 동일
+    else if (hasPickup && hasMalum) packageName = "픽샌팩 C";
+    else if (hasPickup && hasHopping) packageName = "픽샌팩 A";
+
     return { 
         name: customerName, 
         maskedName: maskCustomerName(customerName),
         month: customerMonth,
+        packageName: packageName,
         tours: mappedTours 
     };
 }
@@ -1319,8 +1338,8 @@ window.copyCafeTitle = async () => {
     try {
         const data = await parseCafeVoucherInput();
         if (!data) return alert('퀵바우처 링크(데이터)를 입력해주세요.');
-        // 🚀 오너 요청 반영: 뒤에 투어 이름 나열 빼고 심플하게 끝냄 + 예약 월 치환
-        const title = `[보라카이 자유여행] ${data.maskedName}님의 완벽한 ${data.month}보라카이션 예약 확정 !`;
+        // 🚀 패키지명 포함하여 조합
+        const title = `[보라카이 자유여행] ${data.maskedName}님의 완벽한 ${data.month}${data.packageName} 예약 확정 !`;
         await navigator.clipboard.writeText(title);
         alert('카페 제목이 복사되었습니다!');
     } catch(err) {

@@ -1196,6 +1196,7 @@ async function parseCafeVoucherInput() {
     if (!input) return null;
     
     let customerName = "고객";
+    let customerMonth = "";
     let realItems = [];
 
     try {
@@ -1217,6 +1218,20 @@ async function parseCafeVoucherInput() {
                 }
                 if (data.items && data.items.length > 0) {
                     realItems = data.items.map(it => it.name);
+                    
+                    // 예약 월(Month) 추출 로직
+                    const firstDate = data.items[0].date;
+                    if (firstDate) {
+                        const splitDate = firstDate.split(/[-/]/);
+                        if (splitDate.length >= 2) {
+                            let m = splitDate.length === 3 ? splitDate[1] : splitDate[0];
+                            // 01, 02 등 앞의 0 제거
+                            m = parseInt(m, 10);
+                            if (!isNaN(m)) {
+                                customerMonth = m + '월 ';
+                            }
+                        }
+                    }
                 }
             }
         } else {
@@ -1265,6 +1280,7 @@ async function parseCafeVoucherInput() {
     return { 
         name: customerName, 
         maskedName: maskCustomerName(customerName),
+        month: customerMonth,
         tours: mappedTours 
     };
 }
@@ -1273,8 +1289,8 @@ window.copyCafeTitle = async () => {
     try {
         const data = await parseCafeVoucherInput();
         if (!data) return alert('퀵바우처 링크(데이터)를 입력해주세요.');
-        // 🚀 오너 요청 반영: 뒤에 투어 이름 나열 빼고 심플하게 끝냄
-        const title = `[보라카이 자유여행] ${data.maskedName}님의 완벽한 보라카이션 예약 확정 !`;
+        // 🚀 오너 요청 반영: 뒤에 투어 이름 나열 빼고 심플하게 끝냄 + 예약 월 치환
+        const title = `[보라카이 자유여행] ${data.maskedName}님의 완벽한 ${data.month}보라카이션 예약 확정 !`;
         await navigator.clipboard.writeText(title);
         alert('카페 제목이 복사되었습니다!');
     } catch(err) {

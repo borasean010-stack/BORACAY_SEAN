@@ -1314,24 +1314,26 @@ async function parseCafeVoucherInput() {
     const hasPickup = realItems.some(it => it.includes('픽업') || it.includes('샌딩'));
 
     let packageName = "";
+    let isPackage = false;
 
-    if (hasPickup && hasHopping && hasMalum && hasWhale) packageName = "시그니처 패키지";
-    else if (hasWhale && hasMalum && hasPickup) packageName = "고래팩 E";
-    else if (hasWhale && hasPickup && hasHopping) packageName = "고래팩 D";
-    else if (hasPickup && hasHopping && hasMalum) packageName = "픽샌팩 D";
-    else if (hasWhale && hasMalum) packageName = "고래팩 C";
-    else if (hasWhale && hasHopping) packageName = "고래팩 B";
-    else if (hasWhale && hasPickup) packageName = "고래팩 A"; // 픽샌팩 B 동일
-    else if (hasPickup && hasMalum) packageName = "픽샌팩 C";
-    else if (hasPickup && hasHopping) packageName = "픽샌팩 A";
-    else if (realItems.length > 0) packageName = realItems[0]; // 단품이거나 매칭 안될 경우 투어명 바로 노출
-    else packageName = "패키지,단품";
+    if (hasPickup && hasHopping && hasMalum && hasWhale) { packageName = "시그니처 패키지"; isPackage = true; }
+    else if (hasWhale && hasMalum && hasPickup) { packageName = "고래팩 E"; isPackage = true; }
+    else if (hasWhale && hasPickup && hasHopping) { packageName = "고래팩 D"; isPackage = true; }
+    else if (hasPickup && hasHopping && hasMalum) { packageName = "픽샌팩 D"; isPackage = true; }
+    else if (hasWhale && hasMalum) { packageName = "고래팩 C"; isPackage = true; }
+    else if (hasWhale && hasHopping) { packageName = "고래팩 B"; isPackage = true; }
+    else if (hasWhale && hasPickup) { packageName = "고래팩 A"; isPackage = true; }
+    else if (hasPickup && hasMalum) { packageName = "픽샌팩 C"; isPackage = true; }
+    else if (hasPickup && hasHopping) { packageName = "픽샌팩 A"; isPackage = true; }
+    else if (realItems.length > 0) { packageName = realItems[0]; isPackage = false; }
+    else { packageName = "상품"; isPackage = false; }
 
     return { 
         name: customerName, 
         maskedName: maskCustomerName(customerName),
         month: customerMonth,
         packageName: packageName,
+        isPackage: isPackage,
         tours: mappedTours 
     };
 }
@@ -1340,8 +1342,9 @@ window.copyCafeTitle = async () => {
     try {
         const data = await parseCafeVoucherInput();
         if (!data) return alert('퀵바우처 링크(데이터)를 입력해주세요.');
-        // 🚀 패키지명 포함하여 조합 및 '보라카이션' 고정
-        const title = `[보라카이 자유여행] ${data.maskedName}님의 완벽한 ${data.month}보라카이션 ${data.packageName} 예약 확정 !`;
+        // 🚀 패키지명 포함하여 조합 및 '보라카이션' 고정 + 단품/패키지 텍스트 추가
+        const resType = data.isPackage ? "패키지 예약" : "단품 예약";
+        const title = `[보라카이 자유여행] ${data.maskedName}님의 완벽한 ${data.month}보라카이션 ${data.packageName} ${resType} 확정 !`;
         await navigator.clipboard.writeText(title);
         alert('카페 제목이 복사되었습니다!');
     } catch(err) {
@@ -1355,9 +1358,10 @@ window.copyCafeText = async () => {
         const data = await parseCafeVoucherInput();
         if (!data) return alert('퀵바우처 링크(데이터)를 입력해주세요.');
         
+        const resType = data.isPackage ? "패키지 예약이" : "단품 예약이";
         let text = `안녕하세요! 보라카이션입니다. 🌴\n\n`;
         text += `아름다운 보라카이에서 잊지 못할 추억을 만들어 드릴 준비가 완료되었습니다!\n`;
-        text += `${data.maskedName}님의 보라카이션 예약이 확정되었음을 안내해 드립니다.\n\n`;
+        text += `${data.maskedName}님의 보라카이션 ${data.packageName} ${resType} 확정되었음을 안내해 드립니다.\n\n`;
         text += `━━━━━━━━━━━━━━━━━━━━\n\n`;
         
         data.tours.forEach((tour, index) => {

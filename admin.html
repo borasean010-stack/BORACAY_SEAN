@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="admin.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* 🚀 명령하신 메인 레이아웃 전용 스타일 (5분할 한줄 배치) */
         .main-tool-grid { display: grid; grid-template-columns: repeat(4, 1fr) 0.7fr; gap: 10px; margin-bottom: 25px; }
@@ -105,8 +106,8 @@
                         <h4>퀵바우처 생성기</h4>
                         <div class="date-val" style="font-size:12px;">바로가기</div>
                     </div>
-                    <div class="tool-box" style="border-top-color: #007aff;" onclick="showInputArea('quote')">
-                        <h4>견적서 생성기</h4>
+                    <div class="tool-box" style="border-top-color: #007aff;" onclick="showInputArea('cafe')">
+                        <h4>카페 예약확인증</h4>
                         <div class="date-val" style="font-size:12px;">바로가기</div>
                     </div>
                     <div class="tool-box system-box small-box" onclick="showInputArea('reg')">
@@ -135,6 +136,42 @@
                         <button class="btn-action-outline" style="height:40px;" onclick="hideInputArea()">닫기</button>
                     </div>
                 </div>
+                <div id="input-area-cafe" class="input-area-card" style="border-color: #007aff;">
+                    <h3 style="margin:0 0 15px 0; color:#007aff; font-size:15px;">📝 카페 포스팅용 예약 확인증 생성</h3>
+                    <div style="margin-bottom:10px;">
+                        <textarea id="cafe-voucher-input" class="tool-textarea" style="height: 60px;" placeholder="고객 퀵바우처 링크(URL) 또는 데이터를 붙여넣으세요..."></textarea>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-action-received" style="flex:1; height:40px; background:#007aff;" onclick="copyCafeTitle()">제목 복사</button>
+                        <button class="btn-action-received" style="flex:1; height:40px; background:#ff6a00;" onclick="copyCafeImage()">이미지 복사</button>
+                        <button class="btn-action-received" style="flex:1; height:40px; background:#00c73c;" onclick="copyCafeText()">글 복사</button>
+                        <button class="btn-action-outline" style="height:40px;" onclick="hideInputArea()">닫기</button>
+                    </div>
+                </div>
+
+                <!-- 🚀 캡처용 숨김 예약 확인증 바우처 영역 -->
+                <div id="cafe-voucher-capture-area" style="position: absolute; left: -9999px; top: 0; width: 600px; background: #fff; border-radius: 20px; overflow: hidden; font-family: 'Pretendard', sans-serif;">
+                    <div style="background: linear-gradient(135deg, #ff6a00, #ff8c00); padding: 30px 20px; text-align: center; color: white;">
+                        <img src="logo.png" style="width: 150px; margin-bottom: 15px;" alt="logo">
+                        <h2 style="margin: 0; font-size: 24px; font-weight: 800;">예약 확정 안내</h2>
+                        <p style="margin: 10px 0 0 0; font-size: 14px; opacity: 0.9;">보라카이션과 함께 특별한 여행을 준비하세요!</p>
+                    </div>
+                    <div style="padding: 30px; background: #fffaf5;">
+                        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px;">
+                            <p style="margin: 0; font-size: 16px; color: #333; font-weight: 600;"><span id="cafe-voucher-name" style="color: #ff6a00; font-weight: 800; font-size: 18px;">고객</span>님의 예약이 안전하게 확정되었습니다.</p>
+                        </div>
+                        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                            <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #111; border-bottom: 2px solid #ff6a00; padding-bottom: 8px; display: inline-block;">선택하신 예약 상품</h3>
+                            <ul id="cafe-voucher-tour-list" style="margin: 0; padding-left: 20px; font-size: 15px; color: #444; line-height: 1.8; font-weight: 600;">
+                                <!-- 동적 추가 영역 -->
+                            </ul>
+                        </div>
+                    </div>
+                    <div style="background: #333; color: #fff; text-align: center; padding: 15px; font-size: 13px;">
+                        BORACAY SEAN - PREMIUM TRAVEL
+                    </div>
+                </div>
+
                 <div id="input-area-quote" class="input-area-card" style="border-color: #007aff;">
                     <h3 style="margin:0 0 15px 0; color:#007aff; font-size:15px;">📝 맞춤 견적서 생성</h3>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">

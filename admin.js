@@ -602,7 +602,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById(`input-area-${type}`).style.display = 'block'; 
         window.scrollTo({ top: 0, behavior: 'smooth' }); 
     };
-    window.hideInputArea = () => { ['quick', 'reg', 'quote'].forEach(id => { const el = document.getElementById(`input-area-${id}`); if(el) el.style.display = 'none'; }); };
+    window.hideInputArea = () => { ['quick', 'reg', 'quote', 'cafe'].forEach(id => { const el = document.getElementById(`input-area-${id}`); if(el) el.style.display = 'none'; }); };
     window.closeModal = () => { document.getElementById('res-detail-modal').style.display = 'none'; };
 
     window.registerBulkSchedule = async () => {
@@ -1141,3 +1141,140 @@ document.addEventListener('DOMContentLoaded', () => {
         popup.document.close();
     };
 });
+
+/* 🚀 네이버 카페 포스팅용 예약 확인증 생성기 로직 추가 */
+const CAFE_TOUR_DB = {
+    '고래': {
+        name: '보라카이션 고래상어 패키지',
+        time: '오전 08:00 ~ 오후 14:00 (약 6시간)',
+        program: '호텔 픽업 ➔ 리버타드 도착 및 브리핑 ➔ 고래상어 스노클링 ➔ 맛있는 현지식 점심식사 ➔ 호텔 드랍',
+        tips: '✔️ 수영복은 미리 입고 오시면 편해요!\n✔️ 비치타월과 선크림은 필수입니다!\n✔️ 현지 가이드 매너팁(약 100~200페소) 정도 준비하시면 좋습니다.'
+    },
+    '호핑': {
+        name: '프리미엄 요트 호핑투어',
+        time: '오후 13:30 ~ 19:30 (약 6시간)',
+        program: '미팅 장소 집결 ➔ 크리스탈 코브 섬 방문(선택) ➔ 스노클링 및 패들보드 ➔ 선상 라면 및 간식 ➔ 환상적인 선셋 감상 ➔ 복귀',
+        tips: '✔️ 멀미가 심하신 분들은 배 타기 전 멀미약을 꼭 챙겨주세요!\n✔️ 인생샷을 위해 예쁜 수영복과 방수팩 챙겨오시면 좋습니다.'
+    },
+    '말룸': {
+        name: '시크릿가든 말룸파티',
+        time: '오전 09:00 ~ 오후 17:00 (약 8시간)',
+        program: '호텔 픽업 ➔ 블루라군 도착 ➔ 다이빙 및 물놀이 ➔ 튜빙 트래킹(선택) ➔ 필리핀식 닭백숙 점심식사 ➔ 호텔 드랍',
+        tips: '✔️ 튜빙 트래킹을 하실 경우 래쉬가드와 아쿠아슈즈가 필수입니다!\n✔️ 물놀이 후 갈아입을 여벌 옷을 꼭 챙겨주세요.'
+    },
+    '스파': {
+        name: '보라카이 프리미엄 마사지/스파',
+        time: '예약 확정 시간 기준 (약 2시간 소요)',
+        program: '픽업 차량 탑승 ➔ 스파샵 도착 및 웰컴티 ➔ 전신 힐링 마사지 ➔ 샤워 및 복귀',
+        tips: '✔️ 픽업을 위해 예약 시간 10분 전까지 반드시 로비에서 대기해주세요.\n✔️ 마사지 테라피스트 매너팁(약 100페소)를 준비해주시면 좋습니다.'
+    }
+};
+
+function maskCustomerName(name) {
+    if (!name) return "고객";
+    if (name.length <= 2) return name.charAt(0) + "X";
+    return name.slice(0, -1) + "X";
+}
+
+function parseCafeVoucherInput() {
+    const input = document.getElementById('cafe-voucher-input').value.trim();
+    if (!input) return null;
+    
+    // 단순 파싱 (임시 로직 - URL 파라미터나 텍스트에서 이름/투어 추출)
+    let customerName = "고객";
+    let tours = [];
+
+    // URL인 경우 파라미터 체크 (예: ?name=홍길동)
+    try {
+        const urlObj = new URL(input);
+        if (urlObj.searchParams.has('name')) customerName = urlObj.searchParams.get('name');
+        else if (urlObj.searchParams.has('contact')) customerName = urlObj.searchParams.get('contact').split(' ')[0] || "고객";
+    } catch(e) {
+        // 일반 텍스트인 경우 '김동현' 같은 이름 추출 시도
+        const nameMatch = input.match(/예약자\s*:\s*([가-힣]+)/);
+        if (nameMatch) customerName = nameMatch[1];
+    }
+
+    // 투어 정보 추출 (단어 매칭)
+    if (input.includes('고래') || input.includes('고래팩')) tours.push('고래');
+    if (input.includes('호핑')) tours.push('호핑');
+    if (input.includes('말룸')) tours.push('말룸');
+    if (input.includes('스파') || input.includes('마사지')) tours.push('스파');
+
+    if (tours.length === 0) tours.push('고래'); // 기본값
+
+    return { 
+        name: customerName, 
+        maskedName: maskCustomerName(customerName),
+        tours: tours 
+    };
+}
+
+window.copyCafeTitle = () => {
+    const data = parseCafeVoucherInput();
+    if (!data) return alert('퀵바우처 데이터를 입력해주세요.');
+    const title = `[보라카이 자유여행] ${data.maskedName}님의 완벽한 보라카이션 예약 확정서! (${data.tours.map(t => CAFE_TOUR_DB[t].name).join(', ')})`;
+    navigator.clipboard.writeText(title).then(() => alert('카페 제목이 복사되었습니다!'));
+};
+
+window.copyCafeText = () => {
+    const data = parseCafeVoucherInput();
+    if (!data) return alert('퀵바우처 데이터를 입력해주세요.');
+    
+    let text = `안녕하세요! 보라카이션입니다. 🌴\n\n`;
+    text += `아름다운 보라카이에서 잊지 못할 추억을 만들어 드릴 준비가 완료되었습니다!\n`;
+    text += `${data.maskedName}님의 예약이 안전하게 확정되었음을 안내해 드립니다.\n\n`;
+    text += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+    
+    data.tours.forEach((tourKey, index) => {
+        const tour = CAFE_TOUR_DB[tourKey];
+        text += `🐬 [${tour.name}]\n`;
+        text += `- 진행 시간: ${tour.time}\n`;
+        text += `- 상세 일정: ${tour.program}\n\n`;
+        text += `💡 [보라카이션 꿀팁 & 준비물]\n${tour.tips}\n\n`;
+        if (index < data.tours.length - 1) text += `┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n\n`;
+    });
+    
+    text += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+    text += `보라카이션을 믿고 선택해 주셔서 진심으로 감사드립니다.\n`;
+    text += `현지에서 뵙는 그날까지 설레는 마음으로 기다리겠습니다!\n\n`;
+    text += `궁금한 점이 있으시면 언제든 카카오톡 채널 '보라카이션'으로 문의해 주세요. 💙`;
+
+    navigator.clipboard.writeText(text).then(() => alert('카페 본문 텍스트가 복사되었습니다!'));
+};
+
+window.copyCafeImage = () => {
+    const data = parseCafeVoucherInput();
+    if (!data) return alert('퀵바우처 데이터를 입력해주세요.');
+    
+    // DOM 업데이트
+    document.getElementById('cafe-voucher-name').innerText = data.maskedName;
+    const ul = document.getElementById('cafe-voucher-tour-list');
+    ul.innerHTML = '';
+    data.tours.forEach(tourKey => {
+        const li = document.createElement('li');
+        li.innerText = CAFE_TOUR_DB[tourKey].name;
+        ul.appendChild(li);
+    });
+
+    const targetDom = document.getElementById('cafe-voucher-capture-area');
+    
+    html2canvas(targetDom, {
+        scale: 2,
+        backgroundColor: '#ffffff'
+    }).then(canvas => {
+        canvas.toBlob(blob => {
+            try {
+                const item = new ClipboardItem({ 'image/png': blob });
+                navigator.clipboard.write([item]).then(() => {
+                    alert('바우처 이미지가 클립보드에 복사되었습니다! (Ctrl+V 로 붙여넣기)');
+                }).catch(err => {
+                    console.error(err);
+                    alert('클립보드 복사 권한이 없거나 지원하지 않는 브라우저입니다.');
+                });
+            } catch (e) {
+                alert('이미지 복사 중 오류가 발생했습니다: ' + e.message);
+            }
+        });
+    });
+};

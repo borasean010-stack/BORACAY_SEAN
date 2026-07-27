@@ -1219,17 +1219,14 @@ async function parseCafeVoucherInput() {
                 if (data.items && data.items.length > 0) {
                     realItems = data.items.map(it => it.name);
                     
-                    // 예약 월(Month) 추출 로직
+                    // 1순위: DB 안의 date 필드에서 월 파싱
                     const firstDate = data.items[0].date;
                     if (firstDate) {
-                        const splitDate = firstDate.split(/[-/]/);
+                        const splitDate = firstDate.split(/[-/.]/); // . 기호도 추가
                         if (splitDate.length >= 2) {
                             let m = splitDate.length === 3 ? splitDate[1] : splitDate[0];
-                            // 01, 02 등 앞의 0 제거
                             m = parseInt(m, 10);
-                            if (!isNaN(m)) {
-                                customerMonth = m + '월 ';
-                            }
+                            if (!isNaN(m)) customerMonth = m + '월 ';
                         }
                     }
                 }
@@ -1243,6 +1240,31 @@ async function parseCafeVoucherInput() {
         // URL이 아닌 텍스트일 경우
         const nameMatch = input.match(/예약자\s*:\s*([가-힣]+)/);
         if (nameMatch) customerName = nameMatch[1];
+        
+        // 텍스트 내에서 날짜(4/10, 2026-10-15 등) 추론 (이름이 없는 포맷이라도 달은 찾도록)
+        if (!customerName || customerName === "고객") {
+            const tempNameMatch = input.match(/^([가-힣]{2,4})/);
+            if (tempNameMatch) customerName = tempNameMatch[1];
+        }
+    }
+
+    // 2순위: 여전히 월(month)을 못 찾았다면, 전체 input 텍스트에서 4/10, 10.15, 10월 등의 패턴 찾기
+    if (!customerMonth) {
+        // 2026-07-28, 2026.07.28
+        let mMatch = input.match(/20\d{2}[-./](1[0-2]|0?[1-9])[-./]\d{1,2}/);
+        if (mMatch) {
+            customerMonth = parseInt(mMatch[1], 10) + '월 ';
+        } else {
+            // 07/28, 7.28, 7/28
+            mMatch = input.match(/(?:^|\s)(1[0-2]|0?[1-9])[-./]\d{1,2}/);
+            if (mMatch) {
+                customerMonth = parseInt(mMatch[1], 10) + '월 ';
+            } else {
+                // "10월" 이라는 명시적 단어
+                mMatch = input.match(/(1[0-2]|[1-9])월/);
+                if (mMatch) customerMonth = parseInt(mMatch[1], 10) + '월 ';
+            }
+        }
     }
 
     // DB 조회가 실패했거나 항목이 없는 경우의 백업 로직

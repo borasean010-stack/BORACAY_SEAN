@@ -1172,8 +1172,12 @@ const CAFE_TOUR_DB = {
 
 function maskCustomerName(name) {
     if (!name) return "고객";
-    if (name.length <= 2) return name.charAt(0) + "X";
-    return name.slice(0, -1) + "X";
+    // 한글 이름이 섞여있다면 한글(2~4자)을 우선적으로 타겟팅
+    const korMatch = name.match(/[가-힣]{2,5}/);
+    let targetName = korMatch ? korMatch[0] : name.split(' ')[0];
+    
+    if (targetName.length <= 2) return targetName.charAt(0) + "X";
+    return targetName.slice(0, -1) + "X";
 }
 
 async function parseCafeVoucherInput() {
@@ -1192,9 +1196,13 @@ async function parseCafeVoucherInput() {
             if (docSnap.exists()) {
                 const data = docSnap.data();
                 if (data.customerKorName) {
-                    customerName = data.customerKorName.split(',')[0].trim();
-                    // 이름에 공백이나 특수문자가 있을 수 있으므로 첫 단어만 추출
-                    customerName = customerName.split(' ')[0];
+                    // 한글 단어가 있는지 먼저 탐색
+                    const korMatch = data.customerKorName.match(/[가-힣]{2,5}/);
+                    if (korMatch) {
+                        customerName = korMatch[0];
+                    } else {
+                        customerName = data.customerKorName.split(',')[0].trim().split(' ')[0];
+                    }
                 }
                 if (data.items && data.items.length > 0) {
                     realItems = data.items.map(it => it.name);
@@ -1251,9 +1259,8 @@ window.copyCafeTitle = async () => {
     try {
         const data = await parseCafeVoucherInput();
         if (!data) return alert('퀵바우처 링크(데이터)를 입력해주세요.');
-        // 🚀 오너 요청 반영: 실제 매핑된 상품명들이 제목에 노출됨
-        const tourNamesStr = data.tours.map(t => t.name).join(', ');
-        const title = `[보라카이 자유여행] ${data.maskedName}님의 완벽한 보라카이션 예약 확정! (${tourNamesStr})`;
+        // 🚀 오너 요청 반영: 뒤에 투어 이름 나열 빼고 심플하게 끝냄
+        const title = `[보라카이 자유여행] ${data.maskedName}님의 완벽한 보라카이션 예약 확정 !`;
         await navigator.clipboard.writeText(title);
         alert('카페 제목이 복사되었습니다!');
     } catch(err) {

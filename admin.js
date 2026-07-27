@@ -1328,7 +1328,7 @@ window.copyCafeText = async () => {
         
         let text = `안녕하세요! 보라카이션입니다. 🌴\n\n`;
         text += `아름다운 보라카이에서 잊지 못할 추억을 만들어 드릴 준비가 완료되었습니다!\n`;
-        text += `${data.maskedName}님의 예약이 안전하게 확정되었음을 안내해 드립니다.\n\n`;
+        text += `${data.maskedName}님의 보라카이션 예약이 확정되었음을 안내해 드립니다.\n\n`;
         text += `━━━━━━━━━━━━━━━━━━━━\n\n`;
         
         data.tours.forEach((tour, index) => {

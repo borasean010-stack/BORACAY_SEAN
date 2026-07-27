@@ -1145,7 +1145,7 @@ document.addEventListener('DOMContentLoaded', () => {
 /* 🚀 네이버 카페 포스팅용 예약 확인증 생성기 로직 추가 */
 const CAFE_TOUR_DB = {
     '고래': {
-        name: '보라카이션 고래상어 패키지',
+        name: '고래상어',
         emoji: '🐋',
         time: '오전 08:00 ~ 오후 14:00 (약 6시간)',
         program: '호텔 픽업 ➔ 리버타드 도착 및 브리핑 ➔ 고래상어 스노클링 ➔ 맛있는 현지식 점심식사 ➔ 호텔 드랍',
@@ -1225,7 +1225,7 @@ async function parseCafeVoucherInput() {
 
     // DB 조회가 실패했거나 항목이 없는 경우의 백업 로직
     if (realItems.length === 0) {
-        if (input.includes('고래')) realItems.push('보라카이션 고래상어 패키지');
+        if (input.includes('고래')) realItems.push('고래상어');
         if (input.includes('호핑')) realItems.push('프리미엄 요트 호핑투어');
         if (input.includes('말룸')) realItems.push('시크릿가든 말룸파티');
         if (input.includes('스파') || input.includes('마사지')) realItems.push('프리미엄 마사지');

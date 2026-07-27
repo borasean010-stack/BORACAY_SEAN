@@ -1171,6 +1171,13 @@ const CAFE_TOUR_DB = {
         time: '예약 확정 시간 기준 (약 2시간 소요)',
         program: '픽업 차량 탑승 ➔ 스파샵 도착 및 웰컴티 ➔ 전신 힐링 마사지 ➔ 샤워 및 복귀',
         tips: '✔️ 픽업을 위해 예약 시간 10분 전까지 반드시 로비에서 대기해주세요.'
+    },
+    '픽업': {
+        name: '보라카이 공항 픽업샌딩',
+        emoji: '🚐',
+        time: '고객님 항공편 도착/출발 시간에 맞춰 진행',
+        program: '칼리보 공항 픽업 ➔ 까띠끌란 선착장 이동 ➔ 보라카이 섬 진입 ➔ 예약하신 리조트 샌딩',
+        tips: '✔️ 공항 출구에서 "보라카이션" 피켓을 들고 있는 가이드를 찾아주세요!\n✔️ 이동 시간(약 2시간)이 다소 기니 목베개나 가벼운 겉옷을 챙기시면 좋습니다.'
     }
 };
 
@@ -1229,6 +1236,7 @@ async function parseCafeVoucherInput() {
         if (input.includes('호핑')) realItems.push('프리미엄 요트 호핑투어');
         if (input.includes('말룸')) realItems.push('시크릿가든 말룸파티');
         if (input.includes('스파') || input.includes('마사지')) realItems.push('프리미엄 마사지');
+        if (input.includes('픽업') || input.includes('샌딩')) realItems.push('보라카이 공항 픽업샌딩');
     }
 
     // 완전 기본값
@@ -1249,6 +1257,7 @@ async function parseCafeVoucherInput() {
         else if (itemName.includes('호핑')) { dbInfo = { ...CAFE_TOUR_DB['호핑'], name: itemName }; }
         else if (itemName.includes('말룸')) { dbInfo = { ...CAFE_TOUR_DB['말룸'], name: itemName }; }
         else if (itemName.includes('스파') || itemName.includes('마사지') || itemName.includes('보라스파') || itemName.includes('루나') || itemName.includes('헬리오스')) { dbInfo = { ...CAFE_TOUR_DB['스파'], name: itemName }; }
+        else if (itemName.includes('픽업') || itemName.includes('샌딩')) { dbInfo = { ...CAFE_TOUR_DB['픽업'], name: itemName }; }
         
         mappedTours.push(dbInfo);
     });

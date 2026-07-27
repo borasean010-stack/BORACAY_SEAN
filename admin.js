@@ -1348,11 +1348,10 @@ window.copyCafeText = async () => {
             if (index < data.tours.length - 1) text += `┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n\n`;
         });
         
-        text += `━━━━━━━━━━━━━━━━━━━━\n\n`;
-        text += `카카오톡 채널 바로가기 🧡\nhttps://pf.kakao.com/_zBArM\n\n`;
         text += `보라카이션을 믿고 선택해 주셔서 진심으로 감사드립니다.\n`;
         text += `보라카이에서 뵙는 그날까지 설레는 마음으로 기다리겠습니다!\n\n`;
-        text += `궁금한 점이 있으시면 언제든 카카오톡 채널 '보라카이션'으로 문의해 주세요. 🧡`;
+        text += `궁금한 점이 있으시면 언제든 카카오톡 채널 '보라카이션'으로 문의해 주세요. 🧡\n\n`;
+        text += `카카오톡 채널 바로가기 🧡\nhttps://pf.kakao.com/_zBArM\n`;
 
         await navigator.clipboard.writeText(text);
         alert('카페 본문 텍스트가 복사되었습니다!');

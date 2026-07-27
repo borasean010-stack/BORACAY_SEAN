@@ -150,22 +150,36 @@
                 </div>
 
                 <!-- 🚀 캡처용 숨김 예약 확인증 바우처 영역 -->
-                <div id="cafe-voucher-capture-area" style="position: absolute; left: -9999px; top: 0; width: 600px; background: #fff; border-radius: 20px; overflow: hidden; font-family: 'Pretendard', sans-serif;">
-                    <div style="background: linear-gradient(135deg, #ff6a00, #ff8c00); padding: 30px 20px; text-align: center; color: white;">
-                        <img src="logo.png" style="width: 150px; margin-bottom: 15px;" alt="logo">
-                        <h2 style="margin: 0; font-size: 24px; font-weight: 800;">예약 확정 안내</h2>
-                        <p style="margin: 10px 0 0 0; font-size: 14px; opacity: 0.9;">보라카이션과 함께 특별한 여행을 준비하세요!</p>
+                <div id="cafe-voucher-capture-area" style="width: 650px; margin: 0 auto; background: #fffaf6; font-family: 'Pretendard', sans-serif; overflow: hidden; position: relative; border-radius: 12px;">
+                    <!-- 상단 해변 배경 배너 -->
+                    <div style="position: relative; width: 100%;">
+                        <img src="./img/cafe_voucher_bg_final.jpg" style="width: 100%; display: block;" alt="voucher background">
                     </div>
-                    <div style="padding: 30px; background: #fffaf5;">
-                        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px;">
-                            <p style="margin: 0; font-size: 16px; color: #333; font-weight: 600;"><span id="cafe-voucher-name" style="color: #ff6a00; font-weight: 800; font-size: 18px;">고객</span>님의 예약이 안전하게 확정되었습니다.</p>
+                    
+                    <!-- 중앙 콘텐츠 영역 -->
+                    <div style="padding: 35px 30px; position: relative; min-height: 300px;">
+                        <!-- 이름 및 인사말 박스 -->
+                        <div style="background: white; border-radius: 20px; padding: 25px 30px; box-shadow: 0 5px 25px rgba(0,0,0,0.04); margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between;">
+                            <p style="margin: 0; font-size: 18px; color: #333; font-weight: 700; letter-spacing: -0.5px;">
+                                <span id="cafe-voucher-name" style="color: #ff6a00; font-weight: 800; font-size: 20px;">고객</span>님의 예약이 안전하게 확정되었습니다.
+                            </p>
                         </div>
-                        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-                            <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #111; border-bottom: 2px solid #ff6a00; padding-bottom: 8px; display: inline-block;">선택하신 예약 상품</h3>
-                            <ul id="cafe-voucher-tour-list" style="margin: 0; padding-left: 20px; font-size: 15px; color: #444; line-height: 1.8; font-weight: 600;">
+                        
+                        <!-- 예약 상품 리스트 박스 -->
+                        <div style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 5px 25px rgba(0,0,0,0.04); position: relative; z-index: 1;">
+                            <h3 style="margin: 0 0 20px 0; font-size: 18px; color: #111; border-bottom: 2px solid #ea5b2d; padding-bottom: 10px; display: inline-block; font-weight: 800;">선택하신 예약 상품</h3>
+                            <ul id="cafe-voucher-tour-list" style="margin: 0; padding-left: 25px; font-size: 16px; color: #444; line-height: 2.2; font-weight: 700;">
                                 <!-- 동적 추가 영역 -->
                             </ul>
                         </div>
+
+                        <!-- 둥둥 떠있는 하단 캐릭터+하트 누끼 (CSS Absolute) -->
+                        <img src="./img/cafe_voucher_deco_final.png" style="position: absolute; bottom: 10px; right: 10px; width: 280px; z-index: 2;" alt="character deco">
+                    </div>
+                    
+                    <!-- 푸터 (검정 바) -->
+                    <div style="background: #333; color: #fff; text-align: center; padding: 18px; font-size: 14px; font-weight: 600; letter-spacing: 1px;">
+                        BORACAY SEAN - PREMIUM TRAVEL
                     </div>
                 </div>
 

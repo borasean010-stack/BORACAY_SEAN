@@ -1,6 +1,6 @@
 // admin.js - Final Full Luxury Admin (STRICT ORDER & KOREAN RESORTS)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, where, getDocs, addDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, query, orderBy, doc, getDoc, updateDoc, deleteDoc, where, getDocs, addDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDkDjmGKQDF-0Vu2S_qtI6W5Hf2-j4tKcM",
@@ -1176,105 +1176,160 @@ function maskCustomerName(name) {
     return name.slice(0, -1) + "X";
 }
 
-function parseCafeVoucherInput() {
+async function parseCafeVoucherInput() {
     const input = document.getElementById('cafe-voucher-input').value.trim();
     if (!input) return null;
     
-    // 단순 파싱 (임시 로직 - URL 파라미터나 텍스트에서 이름/투어 추출)
     let customerName = "고객";
-    let tours = [];
+    let realItems = [];
 
-    // URL인 경우 파라미터 체크 (예: ?name=홍길동)
     try {
         const urlObj = new URL(input);
-        if (urlObj.searchParams.has('name')) customerName = urlObj.searchParams.get('name');
-        else if (urlObj.searchParams.has('contact')) customerName = urlObj.searchParams.get('contact').split(' ')[0] || "고객";
+        const id = urlObj.searchParams.get('id');
+        if (id) {
+            // 🔥 Firestore에서 퀵바우처 원본 데이터 직접 조회
+            const docSnap = await getDoc(doc(db, "quick_vouchers", id));
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if (data.customerKorName) {
+                    customerName = data.customerKorName.split(',')[0].trim();
+                    // 이름에 공백이나 특수문자가 있을 수 있으므로 첫 단어만 추출
+                    customerName = customerName.split(' ')[0];
+                }
+                if (data.items && data.items.length > 0) {
+                    realItems = data.items.map(it => it.name);
+                }
+            }
+        } else {
+            // URL에 id가 없는 경우 대비 (단순 파싱)
+            if (urlObj.searchParams.has('name')) customerName = urlObj.searchParams.get('name');
+            else if (urlObj.searchParams.has('contact')) customerName = urlObj.searchParams.get('contact').split(' ')[0] || "고객";
+        }
     } catch(e) {
-        // 일반 텍스트인 경우 '김동현' 같은 이름 추출 시도
+        // URL이 아닌 텍스트일 경우
         const nameMatch = input.match(/예약자\s*:\s*([가-힣]+)/);
         if (nameMatch) customerName = nameMatch[1];
     }
 
-    // 투어 정보 추출 (단어 매칭)
-    if (input.includes('고래') || input.includes('고래팩')) tours.push('고래');
-    if (input.includes('호핑')) tours.push('호핑');
-    if (input.includes('말룸')) tours.push('말룸');
-    if (input.includes('스파') || input.includes('마사지')) tours.push('스파');
+    // DB 조회가 실패했거나 항목이 없는 경우의 백업 로직
+    if (realItems.length === 0) {
+        if (input.includes('고래')) realItems.push('보라카이션 고래상어 패키지');
+        if (input.includes('호핑')) realItems.push('프리미엄 요트 호핑투어');
+        if (input.includes('말룸')) realItems.push('시크릿가든 말룸파티');
+        if (input.includes('스파') || input.includes('마사지')) realItems.push('프리미엄 마사지');
+    }
 
-    if (tours.length === 0) tours.push('고래'); // 기본값
+    // 완전 기본값
+    if (realItems.length === 0) realItems.push('보라카이션 자유여행 패키지');
+
+    // 추출된 실제 상품명들을 기반으로 CAFE_TOUR_DB와 유연하게 매핑
+    const mappedTours = [];
+    realItems.forEach(itemName => {
+        let dbInfo = { 
+            name: itemName, // 🚀 오너 요청 반영: DB에 없는 상품이라도 실제 예약한 상품명이 제목에 노출됨
+            time: '예약된 바우처 스케줄 참고', 
+            program: '선택하신 투어 프로그램에 맞춰 현지 가이드가 안전하게 진행해 드립니다.', 
+            tips: '✔️ 투어 전일 안내드리는 미팅 시간과 장소를 꼭 확인해주세요.\n✔️ 편안한 복장을 권장하며, 가이드 매너팁을 준비해주시면 좋습니다.' 
+        };
+        
+        if (itemName.includes('고래')) { dbInfo = { ...CAFE_TOUR_DB['고래'], name: itemName }; }
+        else if (itemName.includes('호핑')) { dbInfo = { ...CAFE_TOUR_DB['호핑'], name: itemName }; }
+        else if (itemName.includes('말룸')) { dbInfo = { ...CAFE_TOUR_DB['말룸'], name: itemName }; }
+        else if (itemName.includes('스파') || itemName.includes('마사지') || itemName.includes('보라스파') || itemName.includes('루나') || itemName.includes('헬리오스')) { dbInfo = { ...CAFE_TOUR_DB['스파'], name: itemName }; }
+        
+        mappedTours.push(dbInfo);
+    });
 
     return { 
         name: customerName, 
         maskedName: maskCustomerName(customerName),
-        tours: tours 
+        tours: mappedTours 
     };
 }
 
-window.copyCafeTitle = () => {
-    const data = parseCafeVoucherInput();
-    if (!data) return alert('퀵바우처 데이터를 입력해주세요.');
-    const title = `[보라카이 자유여행] ${data.maskedName}님의 완벽한 보라카이션 예약 확정서! (${data.tours.map(t => CAFE_TOUR_DB[t].name).join(', ')})`;
-    navigator.clipboard.writeText(title).then(() => alert('카페 제목이 복사되었습니다!'));
+window.copyCafeTitle = async () => {
+    try {
+        const data = await parseCafeVoucherInput();
+        if (!data) return alert('퀵바우처 링크(데이터)를 입력해주세요.');
+        // 🚀 오너 요청 반영: 실제 매핑된 상품명들이 제목에 노출됨
+        const tourNamesStr = data.tours.map(t => t.name).join(', ');
+        const title = `[보라카이 자유여행] ${data.maskedName}님의 완벽한 보라카이션 예약 확정! (${tourNamesStr})`;
+        await navigator.clipboard.writeText(title);
+        alert('카페 제목이 복사되었습니다!');
+    } catch(err) {
+        console.error(err);
+        alert('오류가 발생했습니다: ' + err.message);
+    }
 };
 
-window.copyCafeText = () => {
-    const data = parseCafeVoucherInput();
-    if (!data) return alert('퀵바우처 데이터를 입력해주세요.');
-    
-    let text = `안녕하세요! 보라카이션입니다. 🌴\n\n`;
-    text += `아름다운 보라카이에서 잊지 못할 추억을 만들어 드릴 준비가 완료되었습니다!\n`;
-    text += `${data.maskedName}님의 예약이 안전하게 확정되었음을 안내해 드립니다.\n\n`;
-    text += `━━━━━━━━━━━━━━━━━━━━\n\n`;
-    
-    data.tours.forEach((tourKey, index) => {
-        const tour = CAFE_TOUR_DB[tourKey];
-        text += `🐬 [${tour.name}]\n`;
-        text += `- 진행 시간: ${tour.time}\n`;
-        text += `- 상세 일정: ${tour.program}\n\n`;
-        text += `💡 [보라카이션 꿀팁 & 준비물]\n${tour.tips}\n\n`;
-        if (index < data.tours.length - 1) text += `┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n\n`;
-    });
-    
-    text += `━━━━━━━━━━━━━━━━━━━━\n\n`;
-    text += `보라카이션을 믿고 선택해 주셔서 진심으로 감사드립니다.\n`;
-    text += `현지에서 뵙는 그날까지 설레는 마음으로 기다리겠습니다!\n\n`;
-    text += `궁금한 점이 있으시면 언제든 카카오톡 채널 '보라카이션'으로 문의해 주세요. 💙`;
-
-    navigator.clipboard.writeText(text).then(() => alert('카페 본문 텍스트가 복사되었습니다!'));
-};
-
-window.copyCafeImage = () => {
-    const data = parseCafeVoucherInput();
-    if (!data) return alert('퀵바우처 데이터를 입력해주세요.');
-    
-    // DOM 업데이트
-    document.getElementById('cafe-voucher-name').innerText = data.maskedName;
-    const ul = document.getElementById('cafe-voucher-tour-list');
-    ul.innerHTML = '';
-    data.tours.forEach(tourKey => {
-        const li = document.createElement('li');
-        li.innerText = CAFE_TOUR_DB[tourKey].name;
-        ul.appendChild(li);
-    });
-
-    const targetDom = document.getElementById('cafe-voucher-capture-area');
-    
-    html2canvas(targetDom, {
-        scale: 2,
-        backgroundColor: '#ffffff'
-    }).then(canvas => {
-        canvas.toBlob(blob => {
-            try {
-                const item = new ClipboardItem({ 'image/png': blob });
-                navigator.clipboard.write([item]).then(() => {
-                    alert('바우처 이미지가 클립보드에 복사되었습니다! (Ctrl+V 로 붙여넣기)');
-                }).catch(err => {
-                    console.error(err);
-                    alert('클립보드 복사 권한이 없거나 지원하지 않는 브라우저입니다.');
-                });
-            } catch (e) {
-                alert('이미지 복사 중 오류가 발생했습니다: ' + e.message);
-            }
+window.copyCafeText = async () => {
+    try {
+        const data = await parseCafeVoucherInput();
+        if (!data) return alert('퀵바우처 링크(데이터)를 입력해주세요.');
+        
+        let text = `안녕하세요! 보라카이션입니다. 🌴\n\n`;
+        text += `아름다운 보라카이에서 잊지 못할 추억을 만들어 드릴 준비가 완료되었습니다!\n`;
+        text += `${data.maskedName}님의 예약이 안전하게 확정되었음을 안내해 드립니다.\n\n`;
+        text += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+        
+        data.tours.forEach((tour, index) => {
+            text += `🐬 [${tour.name}]\n`;
+            text += `- 진행 시간: ${tour.time}\n`;
+            text += `- 상세 일정: ${tour.program}\n\n`;
+            text += `💡 [보라카이션 꿀팁 & 준비물]\n${tour.tips}\n\n`;
+            if (index < data.tours.length - 1) text += `┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n\n`;
         });
-    });
+        
+        text += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+        text += `보라카이션을 믿고 선택해 주셔서 진심으로 감사드립니다.\n`;
+        text += `현지에서 뵙는 그날까지 설레는 마음으로 기다리겠습니다!\n\n`;
+        text += `궁금한 점이 있으시면 언제든 카카오톡 채널 '보라카이션'으로 문의해 주세요. 💙`;
+
+        await navigator.clipboard.writeText(text);
+        alert('카페 본문 텍스트가 복사되었습니다!');
+    } catch(err) {
+        console.error(err);
+        alert('오류가 발생했습니다: ' + err.message);
+    }
+};
+
+window.copyCafeImage = async () => {
+    try {
+        const data = await parseCafeVoucherInput();
+        if (!data) return alert('퀵바우처 링크(데이터)를 입력해주세요.');
+        
+        // DOM 업데이트
+        document.getElementById('cafe-voucher-name').innerText = data.maskedName;
+        const ul = document.getElementById('cafe-voucher-tour-list');
+        ul.innerHTML = '';
+        data.tours.forEach(tour => {
+            const li = document.createElement('li');
+            li.innerText = tour.name;
+            ul.appendChild(li);
+        });
+
+        const targetDom = document.getElementById('cafe-voucher-capture-area');
+        
+        html2canvas(targetDom, {
+            scale: 2,
+            backgroundColor: '#ffffff'
+        }).then(canvas => {
+            canvas.toBlob(blob => {
+                try {
+                    const item = new ClipboardItem({ 'image/png': blob });
+                    navigator.clipboard.write([item]).then(() => {
+                        alert('바우처 이미지가 클립보드에 복사되었습니다! (Ctrl+V 로 붙여넣기)');
+                    }).catch(err => {
+                        console.error(err);
+                        alert('클립보드 복사 권한이 없거나 지원하지 않는 브라우저입니다.');
+                    });
+                } catch (e) {
+                    alert('이미지 복사 중 오류가 발생했습니다: ' + e.message);
+                }
+            });
+        });
+    } catch(err) {
+        console.error(err);
+        alert('오류가 발생했습니다: ' + err.message);
+    }
 };

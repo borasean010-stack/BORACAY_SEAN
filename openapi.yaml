@@ -1,0 +1,92 @@
+openapi: 3.1.0
+info:
+  title: Boracay Sean Product API
+  description: 보라카이션 홈페이지 상품 정보를 가져와 AI가 카페/블로그 글을 자동으로 작성할 수 있도록 돕는 API입니다.
+  version: 1.0.0
+servers:
+  - url: https://www.boracaysean.com
+    description: Production server
+paths:
+  /api/content/{slug}:
+    get:
+      summary: Get Product Info
+      description: 주어진 상품의 slug를 기반으로 상세 정보, 포함/불포함 사항, 스케줄 등을 JSON으로 가져옵니다.
+      operationId: getProductInfo
+      parameters:
+        - name: slug
+          in: path
+          description: 조회할 상품의 슬러그 (예시 - pickup-sending, hopping-tour, malumpati, whale-shark-tour)
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 성공적으로 상품 정보를 가져왔을 때의 응답
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '404':
+          description: 해당 슬러그의 상품이 존재하지 않음
+components:
+  schemas:
+    ProductResponse:
+      type: object
+      properties:
+        slug:
+          type: string
+        title:
+          type: string
+        summary:
+          type: string
+        description:
+          type: string
+        included:
+          type: array
+          items:
+            type: string
+        excluded:
+          type: array
+          items:
+            type: string
+        schedule:
+          type: array
+          items:
+            type: string
+        benefits:
+          type: array
+          items:
+            type: string
+        notice:
+          type: array
+          items:
+            type: string
+        faq:
+          type: array
+          items:
+            type: object
+            properties:
+              question:
+                type: string
+              answer:
+                type: string
+        refund:
+          type: string
+        price:
+          type: integer
+        duration:
+          type: string
+        meeting_point:
+          type: string
+        booking_deadline:
+          type: string
+        preparation:
+          type: array
+          items:
+            type: string
+        child_policy:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string

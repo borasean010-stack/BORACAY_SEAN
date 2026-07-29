@@ -12,6 +12,7 @@
         label { display: block; font-weight: bold; margin-bottom: 8px; color: #555; }
         select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; outline: none; }
         select:focus { border-color: #ff6a00; }
+        select:disabled { background: #eee; cursor: not-allowed; }
         .btn-copy { background: #ff6a00; color: white; border: none; padding: 15px; width: 100%; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; }
         .btn-copy:hover { background: #e65c00; }
         .btn-copy:active { transform: scale(0.98); }
@@ -26,7 +27,17 @@
     <p style="color:#666; margin-bottom: 25px;">오너님의 찐 프롬프트와 상품 팩트 데이터(JSON)를 결합하여 완벽한 포스팅 원고를 자동 생성합니다.</p>
 
     <div class="form-group">
-        <label for="product-select">1. 작성할 상품 선택</label>
+        <label for="prompt-type">1. 작성 목적(프롬프트 종류) 선택</label>
+        <select id="prompt-type">
+            <option value="type1">1. 상세페이지 기반 홍보 및 설명글 (메인)</option>
+            <option value="type2">2. 투어 상품 정보성 글 (찐정보/꿀팁 위주)</option>
+            <option value="type3">3. 투어 상품 사진 퍼가기 (사진 중심 배치 및 스토리텔링)</option>
+            <option value="type4">4. 보라카이 실시간 현지 정보 (날씨/환율/화이트비치 단독)</option>
+        </select>
+    </div>
+
+    <div class="form-group" id="product-select-group">
+        <label for="product-select">2. 작성할 투어 상품 선택</label>
         <select id="product-select">
             <option value="">-- 상품을 선택하세요 --</option>
             <optgroup label="핵심 투어 및 픽업샌딩">
@@ -64,22 +75,13 @@
         </select>
     </div>
 
-    <div class="form-group">
-        <label for="prompt-type">2. 작성 목적(프롬프트 종류) 선택</label>
-        <select id="prompt-type">
-            <option value="type1">1. 상세페이지 기반 홍보 및 설명글 (메인)</option>
-            <option value="type2">2. 투어 상품 정보성 글 (찐정보/꿀팁 위주)</option>
-            <option value="type3">3. 투어 상품 사진 퍼가기 (사진 중심 배치 및 스토리텔링)</option>
-        </select>
-    </div>
-
     <div id="loading" class="loading">데이터를 불러오는 중입니다...</div>
     
     <button class="btn-copy" id="btn-copy" style="display:none;" onclick="copyPrompt()">복사하고 챗GPT 열기</button>
 
     <div class="form-group" style="margin-top: 20px;">
         <label>생성된 프롬프트 미리보기</label>
-        <textarea id="prompt-output" readonly placeholder="상품과 작성 목적을 선택하면 이곳에 프롬프트가 완성됩니다."></textarea>
+        <textarea id="prompt-output" readonly placeholder="옵션을 선택하면 이곳에 프롬프트가 완성됩니다."></textarea>
     </div>
 </div>
 
@@ -123,9 +125,8 @@
 - 문체는 친근하고 진정성 있는 블로거 말투(~했어요, ~더라고요, ~꿀팁 알려드릴게요)를 사용합니다.
 
 2. 글 구성
-- 제목: 정보성을 강조한 제목 (예: "보라카이 픽업샌딩 꿀팁 + 7월 날씨와 환율, 화이트비치 상황 총정리")
+- 제목: 정보성을 강조한 제목 (예: "보라카이 픽업샌딩 예약 전 무조건 알아야 할 3가지 꿀팁")
 - 도입부: 여행 준비하면서 겪는 고민 공감 및 글을 쓰는 이유
-- 보라카이 현지 정보 (필수): 보라카이 날씨, 환율 정보, 화이트비치 상황을 하나로 묶어서 자연스럽게 제공하세요. (정확한 수치가 필요한 부분은 [현재 날씨], [오늘의 환율] 형식의 괄호로 남겨두어 사용자가 직접 숫자를 채워 넣을 수 있도록 합니다.)
 - 찐정보 1: 상품의 핵심 장점을 '내가 느낀 좋았던 점'으로 승화하여 작성
 - 찐정보 2: 꿀팁 및 주의사항 (데이터의 불포함사항이나 준비물을 기반으로 팁 제공)
 - 찐정보 3: 일정이나 스케줄 관련 꼭 알아둬야 할 동선 정보
@@ -137,7 +138,7 @@
 
 ==================================================
 아래는 분석해야 할 [상품 팩트 데이터(JSON)] 입니다. 
-광고 느낌을 빼고 위 데이터의 팩트와 '보라카이 날씨/환율/화이트비치 정보'를 하나로 묶어 '찐정보성 꿀팁 글'을 작성해 주세요!
+광고 느낌을 빼고 오직 위 데이터의 팩트를 기반으로 '찐정보성 꿀팁 글'을 작성해 주세요!
 
 `,
 
@@ -174,6 +175,34 @@
 아래는 분석해야 할 [상품 팩트 데이터(JSON)] 입니다. 
 이 데이터를 바탕으로 지시된 위치에 알맞은 사진을 넣을 수 있도록 '사진 중심의 스토리텔링 원고'를 작성해 주세요!
 
+`,
+
+        type4: `당신은 보라카이 현지 소식을 가장 빠르고 정확하게 전하는 여행 인플루언서입니다.
+
+이 프롬프트의 목적은 "오늘의 보라카이 날씨, 환율, 그리고 화이트비치 현황"을 하나로 묶어 여행객에게 실시간 현지 정보를 제공하는 정보성 포스팅을 작성하는 것입니다.
+
+1. 작성 원칙
+- 특정 투어 상품을 광고하지 않습니다. 오직 '보라카이 여행을 준비 중인 분들'을 위한 순수 현지 정보만을 작성합니다.
+- 문체는 생동감 넘치고 친근한 블로거 말투(~했어요, ~더라고요, 알려드릴게요!)를 사용합니다.
+- 내가 방금 디몰을 걷고 화이트비치 선셋을 보고 온 것처럼 현장감 있게 묘사합니다.
+
+2. 글 구성 및 데이터 괄호 사용법 (매우 중요)
+- 제목: 오늘의 날씨와 환율 등 정보성이 강하게 드러나는 SEO 제목
+- 도입부: "오늘 보라카이에서 전해드리는 실시간 소식입니다!" 같은 생동감 있는 인사말
+- 날씨 브리핑: 오늘 날씨와 기온에 대한 설명. (단, 정확한 수치는 사용자가 채워 넣을 수 있도록 [오늘 최고 기온], [오늘 최저 기온], [현재 체감 날씨] 형식의 괄호로 남겨둡니다.)
+- 환율 정보: 현재 페소 환율 및 환전 꿀팁. (수치는 [현재 디몰 100달러 환율], [오늘의 네이버 기준 환율] 로 남겨둡니다.)
+- 화이트비치 상황: 녹조 유무, 파도 상태, 선셋의 아름다움 등 바다 상황 묘사. (이 부분도 [오늘의 화이트비치 상황] 이라는 괄호 지시어를 포함하여 작성합니다.)
+- 꿀팁 방출: 건기/우기 옷차림이나 환전 시 주의할 점 등 유용한 정보 1~2개 추가
+- 마무리: 다음 실시간 소식을 기대해 달라는 멘트
+
+3. 최종 출력
+① 날씨/환율/비치 SEO 제목 (3개) 
+② 본문 (사용자가 괄호 부분만 수정해서 즉시 업로드할 수 있는 완벽한 템플릿 형태) 
+③ 관련 해시태그 (15개)
+
+==================================================
+위 가이드라인에 맞춰 보라카이 실시간 현지 정보(날씨, 환율, 화이트비치)를 브리핑하는 완벽한 포스팅 원고 템플릿을 지금 바로 작성해 주세요!
+(투어 데이터 분석은 필요 없으며, 독립적인 정보성 글로 작성합니다.)
 `
     };
 
@@ -184,8 +213,19 @@
     const loadingEl = document.getElementById('loading');
 
     async function generatePrompt() {
-        const slug = selectEl.value;
         const type = typeEl.value;
+        const slug = selectEl.value;
+        
+        // 4번 현지정보 모드일 경우 상품 선택 무시
+        if (type === 'type4') {
+            selectEl.disabled = true;
+            selectEl.value = "";
+            outputEl.value = prompts.type4;
+            btnEl.style.display = 'block';
+            return;
+        } else {
+            selectEl.disabled = false;
+        }
 
         if (!slug) {
             outputEl.value = '';

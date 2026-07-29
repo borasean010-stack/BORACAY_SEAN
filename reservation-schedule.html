@@ -408,8 +408,10 @@
                 const isPickupSending = item.name.includes('\ud53d\uc5c5') || item.name.includes('\uc0cc\ub529');
                 let displayName = item.name;
                 const lowName = displayName.toLowerCase();
-                if (lowName.includes('malum') || displayName.includes('\ub9d0\ub8f8\ud30c\ud2f0')) {
-                    displayName = "\uc2dc\ud06c\ub9bf\uac00\ub4e0 \ub9d0\ub8f8\ud30c\ud2f0";
+                if (displayName.includes('고말팩')) {
+                    // 고말팩(고래상어+말룸파티)은 이름 그대로 유지
+                } else if (lowName.includes('malum') || displayName.includes('말룸파티')) {
+                    displayName = "시크릿가든 말룸파티";
                 } else if (lowName.includes('hopping')) {
                     if (lowName.includes('\ubcf4\ub77c\uc544\uc7ac') || lowName.includes('\uce74\ub77c\ubc14\uc624')) displayName = "\ubcf4\ub77c\uc544\uc7ac \ud638\ud551\ud22c\uc5b4";
                     else if (lowName.includes('\uc810\ubcf4') || lowName.includes('\uc810\uc2ec')) displayName = "\ube14\ub799\ud384 \ud638\ud551\ud22c\uc5b4 (+\uc810\ubcf4\ud06c\ub7a9 \uc810\uc2ec)";

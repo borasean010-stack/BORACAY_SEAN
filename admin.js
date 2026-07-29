@@ -948,8 +948,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 allItems.push({ name: `공항 픽업 (${fl2})`, date: formatDate(row[0]), time: "14:00", count: totalPax });
             }
 
-            // 📌 국내선 샌딩: remark에서 "sending HH:MM" 시간 먼저 추출
-            const remarkRaw = (row[16] || '').trim();
+            // 📌 리마크: 컬럼 번호에 의존하지 않고 행 전체를 합쳐서 날짜 패턴(M/D) 찾기
+            // 이렇게 하면 따옴표로 인한 컬럼 밀림 현상을 완전히 회피
+            const remarkRaw = row.slice(4).join('\n').trim(); // col 4 이후 전체를 합쳐서 뒤짐
             const sendingDateStr = formatDate(row[1]);
             let remarkSendingTime = null;
             remarkRaw.split('\n').forEach(rLine => {

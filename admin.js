@@ -1434,3 +1434,61 @@ window.copyCafeImage = async () => {
         alert('오류가 발생했습니다: ' + err.message);
     }
 };
+
+/* 🔗 링크 이미지 복사 */
+const TOUR_URL_MAP = {
+    '고래': { url: 'https://www.boracaysean.com/whale-shark-tour', label: '🐋 리버타드 고래상어 투어 상세보기' },
+    '호핑': { url: 'https://www.boracaysean.com/hopping-tour', label: '⛵ 블랙펄 요트호핑 투어 상세보기' },
+    '말룸': { url: 'https://www.boracaysean.com/malumpati', label: '🌿 시크릿가든 말룸파티 상세보기' },
+    '픽업': { url: 'https://www.boracaysean.com/pickup-sending', label: '🚐 공항 픽업 상세보기' },
+    '샌딩': { url: 'https://www.boracaysean.com/pickup-sending', label: '🚐 공항 샌딩 상세보기' },
+    '스파':  { url: 'https://www.boracaysean.com/massage', label: '💆 마사지&스파 상세보기' },
+    '마사지': { url: 'https://www.boracaysean.com/massage', label: '💆 마사지&스파 상세보기' },
+};
+const PACKAGE_URL_MAP2 = {
+    '시그니처': { url: 'https://www.boracaysean.com/package-signature', label: '⭐ 시그니처 패키지 예약 및 정보 바로가기' },
+    '고래팩': { url: 'https://www.boracaysean.com/package-tour', label: '🐋 고래팩 예약 및 정보 바로가기' },
+    '픽샌팩': { url: 'https://www.boracaysean.com/boracay-package', label: '🚐 픽샌팩 예약 및 정보 바로가기' },
+};
+const KAKAO_BTN = { url: 'https://pf.kakao.com/_zBArM', label: '🧡 보라카이션 카카오채널 상담하기', type: 'kakao' };
+
+window.copyLinkImage = async () => {
+    try {
+        const data = await parseCafeVoucherInput();
+        if (!data) return alert('퀵바우처 링크(데이터)를 입력해주세요.');
+        const links = [];
+        if (data.isPackage) {
+            const pkgKey = Object.keys(PACKAGE_URL_MAP2).find(k => data.packageName.includes(k));
+            if (pkgKey) links.push({ ...PACKAGE_URL_MAP2[pkgKey], type: 'package' });
+        }
+        const addedUrls = new Set();
+        data.tours.forEach(tour => {
+            const key = Object.keys(TOUR_URL_MAP).find(k => tour.name && tour.name.includes(k));
+            if (key && !addedUrls.has(TOUR_URL_MAP[key].url)) {
+                links.push({ ...TOUR_URL_MAP[key], type: 'tour' });
+                addedUrls.add(TOUR_URL_MAP[key].url);
+            }
+        });
+        links.push(KAKAO_BTN);
+
+        const wrap = document.createElement('div');
+        wrap.style.cssText = 'position:absolute;left:-9999px;top:0;width:650px;background:#fff;font-family:Pretendard,sans-serif;padding:30px;box-sizing:border-box;';
+        const rows = links.map(link => {
+            const bg = link.type==='kakao'?'#FEE500':link.type==='package'?'#ff6a00':'#1a1a2e';
+            const cl = link.type==='kakao'?'#3c1e1e':'#fff';
+            return `<div style="background:${bg};color:${cl};padding:18px 24px;border-radius:14px;font-size:17px;font-weight:800;text-align:center;margin-bottom:12px;">${link.label}</div>`;
+        }).join('');
+        wrap.innerHTML = `<div style="text-align:center;margin-bottom:22px;"><div style="font-size:22px;font-weight:900;color:#ff6a00;">${data.maskedName}님의 보라카이션 예약 정보</div><div style="font-size:13px;color:#888;margin-top:6px;">아래 버튼을 통해 상세 정보를 확인하세요</div></div>${rows}<div style="text-align:center;margin-top:16px;font-size:11px;color:#bbb;">BORACAY SEAN</div>`;
+        document.body.appendChild(wrap);
+        const canvas = await html2canvas(wrap, { scale:2, useCORS:true, backgroundColor:'#ffffff' });
+        document.body.removeChild(wrap);
+
+        canvas.toBlob(async (pngBlob) => {
+            const htmlStr = `<div style="font-family:sans-serif;max-width:650px;"><p style="font-size:18px;font-weight:900;color:#ff6a00;">${data.maskedName}님의 보라카이션 예약 정보</p>${links.map(link=>{const bg=link.type==='kakao'?'#FEE500':link.type==='package'?'#ff6a00':'#1a1a2e';const cl=link.type==='kakao'?'#3c1e1e':'#fff';return`<a href="${link.url}" style="display:block;background:${bg};color:${cl};padding:14px 20px;border-radius:10px;margin-bottom:10px;font-size:16px;font-weight:800;text-decoration:none;text-align:center;">${link.label}</a>`;}).join('')}</div>`;
+            try {
+                await navigator.clipboard.write([new ClipboardItem({'image/png':pngBlob,'text/html':new Blob([htmlStr],{type:'text/html'})})]);
+                alert('🔗 링크 이미지가 복사되었습니다!\n네이버 카페 에디터에 붙여넣기하면 링크 버튼이 실제로 작동합니다!');
+            } catch(e) { alert('복사 실패: '+e.message); }
+        }, 'image/png');
+    } catch(err) { console.error(err); alert('오류: '+err.message); }
+};

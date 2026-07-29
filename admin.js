@@ -1045,7 +1045,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     if (line.includes('afh') || line.includes('AFH')) itemTime = "18:00";
                     else if (line.includes('afm') || line.includes('AFM')) itemTime = "17:00";
+                    
+                    // 특수기호만 있거나 비어있는 항목은 무시 (예: '▲', '-', '')
+                    const cleanedName = itemName.replace(/[^\w가-힣a-zA-Z]/g, '').trim();
+                    if (!cleanedName) return;
+
                     allItems.push({ name: itemName, date: tDate, time: itemTime, count: itemPax, details: line });
+
                 }
             });
         });
@@ -1251,7 +1257,7 @@ async function parseCafeVoucherInput() {
                     }
                 }
                 if (data.items && data.items.length > 0) {
-                    realItems = data.items.map(it => it.name);
+                    realItems = data.items.map(it => it.name).filter(name => name.replace(/[^\w가-힣a-zA-Z]/g, '').trim() !== '');
                     
                     // 1순위: DB 안의 date 필드에서 월 파싱
                     const firstDate = data.items[0].date;

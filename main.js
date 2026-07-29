@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const productData = {
         essential: [
             { title: "보라카이션 패키지", img: "package-sean.png", url: "/package-signature", badge: "HOT", mdBadge: true, desc: "보라카이 최고 프리미엄 조합", price: 100000 },
-            { title: "보라카이션 고래상어 패키지", img: "5.png", url: "/package-tour", badge: "HOT", mdBadge: true, desc: "고래상어와 함께 즐기는 패키지 조합", price: 135000 },
+            { title: "보라카이션 고래상어 패키지", img: "whalesum.png", url: "/package-tour", badge: "HOT", mdBadge: true, desc: "고래상어와 함께 즐기는 패키지 조합", price: 135000 },
             { title: "보라카이 왕복 픽업샌딩", img: "pickup.jpg", url: "/pickup-sending", badge: "HOT", mdBadge: true, desc: "공항부터 숙소 앞까지 안전하고 편안하게!", price: 54900 },
             { title: "블랙펄 요트호핑투어", img: "블랙펄 썸네일.jpg", url: "/hopping-tour", badge: "HOT", mdBadge: true, desc: "럭셔리 요트위에서 즐기는 선셋 파티 호핑", price: 55000 },
             { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "/malumpati", badge: "HOT", mdBadge: true, desc: "프라이빗하게 즐기는 블루라군 and 튜빙", price: 99000 },
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const mdProductsData = [
         { title: "보라카이션 패키지", img: "package-sean.png", url: "/package-signature", badge: "HOT", mdBadge: true, desc: "보라카이 최고 프리미엄 조합", price: 100000, mobileOnly: true },
-        { title: "보라카이션 고래상어 패키지", img: "5.png", url: "/package-tour", badge: "HOT", mdBadge: true, desc: "고래상어와 함께 즐기는 패키지 조합", price: 135000 },
+        { title: "보라카이션 고래상어 패키지", img: "whalesum.png", url: "/package-tour", badge: "HOT", mdBadge: true, desc: "고래상어와 함께 즐기는 패키지 조합", price: 135000 },
         { title: "블랙펄 요트호핑투어", img: "블랙펄 썸네일.jpg", url: "/hopping-tour", badge: "HOT", mdBadge: true, desc: "럭셔리 요트위에서 즐기는 선셋 파티 호핑", price: 55000 },
         { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "/malumpati", badge: "HOT", mdBadge: true, desc: "프라이빗하게 즐기는 블루라군과 튜빙", price: 99000 },
         { title: "리버타드 고래상어", img: "whale-shark-thumb.png", url: "/whale-shark-tour", badge: "NEW", mdBadge: true, desc: "거대하고 온순한 고래상어와의 만남", price: 97500 },

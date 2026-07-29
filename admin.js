@@ -1482,6 +1482,17 @@ window.copyLinkImage = async () => {
         ).join('');
         wrap.innerHTML = `<div style="text-align:center;margin-bottom:22px;"><div style="font-size:22px;font-weight:900;color:#ff6a00;">${data.maskedName}님의 보라카이션 예약 정보</div><div style="font-size:13px;color:#888;margin-top:6px;">아래 버튼을 통해 상세 정보를 확인하세요</div></div>${rows}<div style="text-align:center;margin-top:16px;font-size:11px;color:#bbb;">BORACAY SEAN</div>`;
         document.body.appendChild(wrap);
+
+        // 이미지 완전 로딩 대기 (이게 없으면 빈 화면이 캡처됨)
+        const images = Array.from(wrap.querySelectorAll('img'));
+        await Promise.all(images.map(img => {
+            if (img.complete) return Promise.resolve();
+            return new Promise(resolve => {
+                img.onload = resolve;
+                img.onerror = resolve;
+            });
+        }));
+
         const canvas = await html2canvas(wrap, { scale:2, useCORS:true, backgroundColor:'#ffffff' });
         document.body.removeChild(wrap);
 

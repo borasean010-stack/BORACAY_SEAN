@@ -1463,7 +1463,7 @@ const TOUR_URL_MAP = {
 const PACKAGE_URL_MAP2 = {
     '시그니처': { url: 'https://www.boracaysean.com/package-signature', label: '⭐ 시그니처 패키지 예약 및 정보 바로가기' },
     '고래팩': { url: 'https://www.boracaysean.com/package-tour', label: '🐋 고래팩 예약 및 정보 바로가기', img: 'b1.png' },
-    '고말팩(고래상어+말룸파티)': { url: 'https://www.boracaysean.com/package-tour', label: '🐋🌿 고말팩(고래상어+말룸파티) 정보 바로가기', img: 'b1.png' },
+    '고말팩(고래상어+말룸파티)': { url: 'https://www.boracaysean.com/package-tour', label: '🐋 고래상어 패키지 예약 및 정보 바로가기', img: 'b1.png' },
     '픽샌팩': { url: 'https://www.boracaysean.com/boracay-package', label: '🚐 픽샌팩 예약 및 정보 바로가기', img: 'b2.png' },
 };
 const ACTIVITY_FALLBACK_BTN = { url: 'https://www.boracaysean.com/activities', label: '🎉 액티비티 전체보기', img: 'b8.png', type: 'tour' };

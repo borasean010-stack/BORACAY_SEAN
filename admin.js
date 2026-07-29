@@ -1011,9 +1011,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         else if (lowerLine.includes('(j)') || lowerLine.includes('점보')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!actualTimeMatch) itemTime = "12:30"; } 
                         else { itemName = '블랙펄 요트호핑투어'; if(!actualTimeMatch) itemTime = "13:30"; } 
                     }
-                    else if (lowerLine.includes('고말팩') || /shark\s*\+?\s*malum/.test(lowerLine)) { itemName = '고말팩(고래상어+말룸파티)'; if(!actualTimeMatch) itemTime = "07:30"; }
-                    else if (lowerLine.includes('malum') || lowerLine.includes('말룸')) { itemName = '시크릿가든 말룸파티'; if(!actualTimeMatch) itemTime = "09:40"; }
-                    else if (lowerLine.includes('shark') || lowerLine.includes('고래상어')) { itemName = '리버타드 고래상어'; if(!actualTimeMatch) itemTime = "07:30"; }
+                    const hasWhaleKeyword = lowerLine.includes('shark') || lowerLine.includes('고래');
+                    const hasMalumKeyword = lowerLine.includes('malum') || lowerLine.includes('말룸');
+                    
+                    if (lowerLine.includes('고말팩') || (hasWhaleKeyword && hasMalumKeyword)) { itemName = '고말팩(고래상어+말룸파티)'; if(!actualTimeMatch) itemTime = "07:30"; }
+                    else if (hasMalumKeyword) { itemName = '시크릿가든 말룸파티'; if(!actualTimeMatch) itemTime = "09:40"; }
+                    else if (hasWhaleKeyword) { itemName = '리버타드 고래상어'; if(!actualTimeMatch) itemTime = "07:30"; }
                     else if (lowerLine.includes('jetski') || lowerLine.includes('zetski') || lowerLine.includes('제트스키')) itemName = '제트스키';
                     else if (lowerLine.includes('helmet') || lowerLine.includes('헬멧')) itemName = '헬멧다이빙';
                     else if (lowerLine.includes('para') || lowerLine.includes('파라')) itemName = '파라세일링';
@@ -1285,10 +1288,12 @@ async function parseCafeVoucherInput() {
     // DB 조회가 실패했거나 항목이 없는 경우의 백업 로직
     if (realItems.length === 0) {
         const lowerInput = input.toLowerCase();
-        if (lowerInput.includes('고말팩') || /shark\s*\+?\s*malum/i.test(input)) {
+        const hasWhaleKeyword = lowerInput.includes('shark') || lowerInput.includes('고래');
+        const hasMalumKeyword = lowerInput.includes('malum') || lowerInput.includes('말룸');
+        if (lowerInput.includes('고말팩') || (hasWhaleKeyword && hasMalumKeyword)) {
             realItems.push('고말팩(고래상어+말룸파티)');
         } else {
-            if (input.includes('고래') || lowerInput.includes('shark')) realItems.push('고래상어');
+            if (hasWhaleKeyword) realItems.push('고래상어');
             if (input.includes('호핑')) realItems.push('프리미엄 요트 호핑투어');
             if (input.includes('말룸') || lowerInput.includes('malum')) realItems.push('시크릿가든 말룸파티');
             if (input.includes('스파') || input.includes('마사지')) realItems.push('프리미엄 마사지');

@@ -1343,7 +1343,7 @@ window.copyCafeTitle = async () => {
         const data = await parseCafeVoucherInput();
         if (!data) return alert('퀵바우처 링크(데이터)를 입력해주세요.');
         // 🚀 패키지명 포함하여 조합 및 '보라카이션' 고정 + 단품/패키지 텍스트 추가
-        const resType = data.isPackage ? "패키지 예약" : "단품 예약";
+        const resType = data.isPackage ? "패키지 예약" : "예약";
         const title = `[보라카이 자유여행] ${data.maskedName}님의 완벽한 ${data.month}보라카이션 ${data.packageName} ${resType} 확정 !`;
         await navigator.clipboard.writeText(title);
         alert('카페 제목이 복사되었습니다!');
@@ -1358,7 +1358,7 @@ window.copyCafeText = async () => {
         const data = await parseCafeVoucherInput();
         if (!data) return alert('퀵바우처 링크(데이터)를 입력해주세요.');
         
-        const resType = data.isPackage ? "패키지 예약이" : "단품 예약이";
+        const resType = data.isPackage ? "패키지 예약이" : "예약이";
         let text = `안녕하세요! 보라카이션입니다. 🌴\n\n`;
         text += `아름다운 보라카이에서 잊지 못할 추억을 만들어 드릴 준비가 완료되었습니다!\n`;
         text += `${data.maskedName}님의 보라카이션 ${data.packageName} ${resType} 확정되었음을 안내해 드립니다.\n\n`;

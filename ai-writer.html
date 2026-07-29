@@ -13,11 +13,24 @@
         select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; outline: none; }
         select:focus { border-color: #ff6a00; }
         select:disabled { background: #eee; cursor: not-allowed; }
-        .btn-copy { background: #ff6a00; color: white; border: none; padding: 15px; width: 100%; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        
+        .btn-copy { background: #ff6a00; color: white; border: none; padding: 15px; width: 100%; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; margin-bottom: 10px; }
         .btn-copy:hover { background: #e65c00; }
         .btn-copy:active { transform: scale(0.98); }
+        
+        .btn-secondary { background: #555; color: white; border: none; padding: 10px 15px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+        .btn-secondary:hover { background: #333; }
+        
+        .btn-danger { background: #e74c3c; color: white; border: none; padding: 10px 15px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+        .btn-danger:hover { background: #c0392b; }
+
         textarea { width: 100%; height: 300px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; line-height: 1.6; resize: vertical; box-sizing: border-box; background: #f9f9f9; margin-top: 10px; }
         .loading { display: none; color: #ff6a00; font-weight: bold; margin-bottom: 10px; }
+        
+        .edit-section { display: none; background: #fff3e6; padding: 20px; border-radius: 8px; border: 1px solid #ffdcb3; margin-bottom: 20px; }
+        .edit-section h3 { margin-top: 0; color: #d35400; font-size: 18px; }
+        .controls { display: flex; justify-content: space-between; align-items: center; }
+        .controls-right { display: flex; gap: 10px; }
     </style>
 </head>
 <body>
@@ -34,6 +47,21 @@
             <option value="type3">3. 투어 상품 사진 퍼가기 (사진 중심 배치 및 스토리텔링)</option>
             <option value="type4">4. 보라카이 실시간 현지 정보 (날씨/환율/화이트비치 단독)</option>
         </select>
+    </div>
+    
+    <div style="margin-bottom: 20px;">
+        <button class="btn-secondary" onclick="toggleEditSection()">✏️ 현재 선택된 프롬프트 템플릿 수정하기</button>
+    </div>
+
+    <div id="edit-section" class="edit-section">
+        <h3>프롬프트 템플릿 수정 (고급)</h3>
+        <p style="font-size:13px; color:#666; margin-bottom:10px;">여기서 프롬프트를 수정하고 저장하면, 이후 해당 모드를 사용할 때 커스텀 저장된 내용이 불러와집니다. (데이터는 브라우저에 저장됩니다)</p>
+        <textarea id="template-editor" style="background:#fff; height:250px;"></textarea>
+        <div style="margin-top:10px; display:flex; gap:10px;">
+            <button class="btn-copy" style="width:auto; padding:10px 20px; margin-bottom:0;" onclick="saveTemplate()">저장하기</button>
+            <button class="btn-danger" onclick="resetTemplate()">기본값으로 초기화</button>
+            <button class="btn-secondary" onclick="toggleEditSection()">닫기</button>
+        </div>
     </div>
 
     <div class="form-group" id="product-select-group">
@@ -77,16 +105,18 @@
 
     <div id="loading" class="loading">데이터를 불러오는 중입니다...</div>
     
-    <button class="btn-copy" id="btn-copy" style="display:none;" onclick="copyPrompt()">복사하고 챗GPT 열기</button>
-
-    <div class="form-group" style="margin-top: 20px;">
+    <div class="controls">
         <label>생성된 프롬프트 미리보기</label>
-        <textarea id="prompt-output" readonly placeholder="옵션을 선택하면 이곳에 프롬프트가 완성됩니다."></textarea>
+        <div class="controls-right">
+            <button class="btn-copy" id="btn-copy" style="display:none; padding:10px 20px; font-size:14px;" onclick="copyPrompt()">복사하고 챗GPT 열기</button>
+        </div>
     </div>
+    
+    <textarea id="prompt-output" readonly placeholder="옵션을 선택하면 이곳에 프롬프트가 완성됩니다."></textarea>
 </div>
 
 <script>
-    const prompts = {
+    const defaultPrompts = {
         type1: `당신은 보라카이 여행상품 전문 콘텐츠 에디터이며 네이버 SEO와 네이버 AI 메이트 최적화 전문가입니다.
 
 내가 보내는 상세페이지 팩트 데이터를 먼저 끝까지 분석한 후 내용을 이해합니다.
@@ -129,8 +159,9 @@
 - 문체는 친근하고 진정성 있는 블로거 말투(~했어요, ~더라고요, ~꿀팁 알려드릴게요)를 사용합니다.
 
 3. 글 구성
-- 제목: 정보성을 강조한 제목 (예: "보라카이 픽업샌딩 예약 전 무조건 알아야 할 3가지 꿀팁")
+- 제목: 정보성을 강조한 제목 (예: "보라카이 픽업샌딩 꿀팁 + 7월 날씨와 환율, 화이트비치 상황 총정리")
 - 도입부: 여행 준비하면서 겪는 고민 공감 및 글을 쓰는 이유 (적절한 사진 지시표 포함)
+- 보라카이 현지 정보 (필수): 보라카이 날씨, 환율 정보, 화이트비치 상황을 하나로 묶어서 자연스럽게 제공하세요. (정확한 수치가 필요한 부분은 [현재 날씨], [오늘의 환율] 형식의 괄호로 남겨두어 사용자가 직접 숫자를 채워 넣을 수 있도록 합니다.)
 - 찐정보 1: 상품의 핵심 장점을 '내가 느낀 좋았던 점'으로 승화하여 작성 (관련 사진 지시표 포함)
 - 찐정보 2: 꿀팁 및 주의사항 (데이터의 불포함사항이나 준비물을 기반으로 팁 제공)
 - 찐정보 3: 일정이나 스케줄 관련 꼭 알아둬야 할 동선 정보 (관련 사진 지시표 포함)
@@ -142,7 +173,7 @@
 
 ==================================================
 아래는 분석해야 할 [상품 팩트 데이터(JSON)] 입니다. 
-광고 느낌을 빼고 오직 위 데이터의 팩트를 기반으로 적절한 [사진] 배치표와 함께 '찐정보성 꿀팁 글'을 작성해 주세요!
+광고 느낌을 빼고 위 데이터의 팩트와 '보라카이 날씨/환율/화이트비치 정보'를 하나로 묶어 적절한 [사진] 배치표와 함께 '찐정보성 꿀팁 글'을 작성해 주세요!
 
 `,
 
@@ -215,11 +246,56 @@
 `
     };
 
+    function getSavedPrompt(type) {
+        const saved = localStorage.getItem('boracay_prompt_' + type);
+        return saved ? saved : defaultPrompts[type];
+    }
+
     const selectEl = document.getElementById('product-select');
     const typeEl = document.getElementById('prompt-type');
     const btnEl = document.getElementById('btn-copy');
     const outputEl = document.getElementById('prompt-output');
     const loadingEl = document.getElementById('loading');
+    const editSection = document.getElementById('edit-section');
+    const templateEditor = document.getElementById('template-editor');
+
+    function toggleEditSection() {
+        if (editSection.style.display === 'block') {
+            editSection.style.display = 'none';
+        } else {
+            const type = typeEl.value;
+            templateEditor.value = getSavedPrompt(type);
+            editSection.style.display = 'block';
+        }
+    }
+
+    function saveTemplate() {
+        const type = typeEl.value;
+        const newTemplate = templateEditor.value.trim();
+        if (!newTemplate) {
+            alert('내용을 입력해주세요.');
+            return;
+        }
+        localStorage.setItem('boracay_prompt_' + type, newTemplate);
+        alert('프롬프트 템플릿이 브라우저에 저장되었습니다!\n이제부터 이 기기에서는 수정된 템플릿이 적용됩니다.');
+        toggleEditSection();
+        generatePrompt(); // 재생성
+    }
+
+    function resetTemplate() {
+        if (!confirm('정말로 기본 템플릿으로 초기화하시겠습니까?\n저장한 내용이 모두 사라집니다.')) return;
+        const type = typeEl.value;
+        localStorage.removeItem('boracay_prompt_' + type);
+        templateEditor.value = defaultPrompts[type];
+        alert('기본값으로 초기화되었습니다.');
+        generatePrompt(); // 재생성
+    }
+
+    typeEl.addEventListener('change', () => {
+        if (editSection.style.display === 'block') {
+            templateEditor.value = getSavedPrompt(typeEl.value);
+        }
+    });
 
     async function generatePrompt() {
         const type = typeEl.value;
@@ -229,7 +305,7 @@
         if (type === 'type4') {
             selectEl.disabled = true;
             selectEl.value = "";
-            outputEl.value = prompts.type4;
+            outputEl.value = getSavedPrompt(type);
             btnEl.style.display = 'block';
             return;
         } else {
@@ -252,7 +328,7 @@
             const data = await response.json();
             const dataStr = JSON.stringify(data, null, 2);
             
-            const selectedPromptTemplate = prompts[type];
+            const selectedPromptTemplate = getSavedPrompt(type);
             const finalPrompt = selectedPromptTemplate + dataStr;
             outputEl.value = finalPrompt;
             btnEl.style.display = 'block';

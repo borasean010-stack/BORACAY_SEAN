@@ -9,6 +9,7 @@
     "cleanUrls": true,
     "trailingSlash": false,
     "rewrites": [
+      { "source": "/ai-writer", "destination": "/ai-writer.html" },
       { "source": "/activities", "destination": "/activities.html" },
       { "source": "/massage", "destination": "/massage.html" },
       { "source": "/essential-tours", "destination": "/essential-tours.html" },

@@ -1480,7 +1480,7 @@ window.copyLinkImage = async () => {
         const rows = links.map(link =>
             `<img src="${link.img}" alt="${link.label}" style="width:100%;display:block;border-radius:14px;margin-bottom:12px;">`
         ).join('');
-        wrap.innerHTML = `<div style="text-align:center;margin-bottom:22px;"><div style="font-size:22px;font-weight:900;color:#ff6a00;">${data.maskedName}님의 보라카이션 예약 정보</div><div style="font-size:13px;color:#888;margin-top:6px;">아래 버튼을 통해 상세 정보를 확인하세요</div></div>${rows}<div style="text-align:center;margin-top:16px;font-size:11px;color:#bbb;">BORACAY SEAN</div>`;
+        wrap.innerHTML = `<div style="display:flex;flex-direction:column;gap:12px;">${rows}</div>`;
         document.body.appendChild(wrap);
 
         // 이미지 완전 로딩 대기 (이게 없으면 빈 화면이 캡처됨)
@@ -1497,8 +1497,8 @@ window.copyLinkImage = async () => {
         document.body.removeChild(wrap);
 
         canvas.toBlob(async (pngBlob) => {
-            const htmlStr = `<div style="font-family:sans-serif;max-width:650px;"><p style="font-size:18px;font-weight:900;color:#ff6a00;">${data.maskedName}님의 보라카이션 예약 정보</p>${links.map(link=>
-                `<a href="${link.url}"><img src="https://www.boracaysean.com/${link.img}" alt="${link.label}" style="width:100%;display:block;border-radius:10px;margin-bottom:10px;"></a>`
+            const htmlStr = `<div style="max-width:650px;">${links.map(link=>
+                `<a href="${link.url}"><img src="https://www.boracaysean.com/${link.img}" alt="${link.label}" style="width:100%;display:block;border-radius:10px;margin-bottom:10px;border:none;"></a>`
             ).join('')}</div>`;
             try {
                 await navigator.clipboard.write([new ClipboardItem({'image/png':pngBlob,'text/html':new Blob([htmlStr],{type:'text/html'})})]);

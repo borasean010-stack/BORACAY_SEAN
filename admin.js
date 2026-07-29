@@ -1432,12 +1432,13 @@ window.copyCafeImage = async () => {
         }).then(canvas => {
             canvas.toBlob(blob => {
                 try {
+                    window.focus();
                     const item = new ClipboardItem({ 'image/png': blob });
                     navigator.clipboard.write([item]).then(() => {
                         alert('바우처 이미지가 클립보드에 복사되었습니다! (Ctrl+V 로 붙여넣기)');
                     }).catch(err => {
                         console.error(err);
-                        alert('클립보드 복사 권한이 없거나 지원하지 않는 브라우저입니다.');
+                        alert('복사 실패: 버튼 클릭 후 다른 창을 누르지 말고 잠시 기다려주세요! (오류: ' + err.message + ')');
                     });
                 } catch (e) {
                     alert('이미지 복사 중 오류가 발생했습니다: ' + e.message);
@@ -1517,9 +1518,10 @@ window.copyLinkImage = async () => {
                 `<a href="${link.url}"><img src="https://www.boracaysean.com/${link.img}" alt="${link.label}" style="width:100%;display:block;border-radius:10px;margin-bottom:10px;border:none;"></a>`
             ).join('')}</div>`;
             try {
+                window.focus();
                 await navigator.clipboard.write([new ClipboardItem({'image/png':pngBlob,'text/html':new Blob([htmlStr],{type:'text/html'})})]);
                 alert('🔗 링크 이미지가 복사되었습니다!\n네이버 카페 에디터에 붙여넣기하면 링크 버튼이 실제로 작동합니다!');
-            } catch(e) { alert('복사 실패: '+e.message); }
+            } catch(e) { alert('복사 실패: 버튼 누르고 잠시 딴 창 누르지 마세요! (오류: '+e.message+')'); }
         }, 'image/png');
     } catch(err) { console.error(err); alert('오류: '+err.message); }
 };

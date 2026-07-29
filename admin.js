@@ -879,23 +879,34 @@ document.addEventListener('DOMContentLoaded', () => {
         const inputVal = document.getElementById('quick-voucher-input').value.trim(); if (!inputVal) return;
         
         const parseRobustTSV = (text) => {
-            const rawRows = text.split('\n').map(line => line.split('\t'));
-            // 후처리: "xxx" 형태로 쪼개진 컬럼 합치기
-            // e.g. col[N]='"', col[N+1]='백승혁"' → 합쳐서 '백승혁'으로 만들기
-            return rawRows.map(cols => {
-                const merged = [];
-                for (let i = 0; i < cols.length; i++) {
-                    const c = cols[i];
-                    // 따옴표만 단독으로 있는 컬럼이고, 다음 컬럼이 따옴표로 끝나는 경우 합치기
-                    if (c === '"' && i + 1 < cols.length && cols[i+1].endsWith('"')) {
-                        merged.push(cols[i+1].slice(0, -1).trim()); // 끝 따옴표 제거
-                        i++; // 다음 컬럼 건너뜀
-                    } else {
-                        merged.push(c.replace(/^"|"$/g, '').trim()); // 앞뒤 따옴표 제거
-                    }
+            // 문자 하나씩 읽어서 따옴표 안의 \n, \t를 모두 셀 내용으로 처리
+            // → 멀티라인 셀("9/21 hopping\n9/20 malum") + 이름 따옴표 밀림 모두 해결
+            const rows = [];
+            let currentRow = [];
+            let currentField = "";
+            let inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                const ch = text[i];
+                if (ch === '"') {
+                    inQuotes = !inQuotes;
+                    // 따옴표 문자 자체는 필드값에 추가하지 않음
+                } else if (ch === '\t' && !inQuotes) {
+                    currentRow.push(currentField.trim());
+                    currentField = "";
+                } else if (ch === '\n' && !inQuotes) {
+                    currentRow.push(currentField.trim());
+                    if (currentRow.length > 1 || currentRow[0]) rows.push(currentRow);
+                    currentRow = [];
+                    currentField = "";
+                } else {
+                    currentField += ch;
                 }
-                return merged;
-            });
+            }
+            if (currentField || currentRow.length > 0) {
+                currentRow.push(currentField.trim());
+                rows.push(currentRow);
+            }
+            return rows;
         };
 
         const rows = parseRobustTSV(inputVal);

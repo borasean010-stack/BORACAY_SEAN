@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 블로그 프롬프트 생성기 (무료 GPT용)</title>
+    <style>
+        body { font-family: 'Pretendard', sans-serif; background: #f4f7f6; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h1 { color: #ff6a00; font-size: 24px; margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: bold; margin-bottom: 8px; color: #555; }
+        select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; outline: none; }
+        select:focus { border-color: #ff6a00; }
+        .btn-copy { background: #ff6a00; color: white; border: none; padding: 15px; width: 100%; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .btn-copy:hover { background: #e65c00; }
+        .btn-copy:active { transform: scale(0.98); }
+        textarea { width: 100%; height: 300px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; line-height: 1.6; resize: vertical; box-sizing: border-box; background: #f9f9f9; margin-top: 10px; }
+        .loading { display: none; color: #ff6a00; font-weight: bold; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🤖 챗GPT 전용 프롬프트 생성기</h1>
+    <p style="color:#666; margin-bottom: 25px;">무료 챗GPT 사용자도 완벽한 블로그 글을 쓸 수 있도록, <strong>오너님의 찐 프롬프트</strong>와 <strong>상품 팩트 데이터(JSON)</strong>를 결합해 줍니다.</p>
+
+    <div class="form-group">
+        <label for="product-select">1. 작성할 상품 선택</label>
+        <select id="product-select">
+            <option value="">-- 상품을 선택하세요 --</option>
+            <optgroup label="핵심 투어 및 픽업샌딩">
+                <option value="pickup-sending">공항 왕복 픽업샌딩</option>
+                <option value="hopping-tour">블랙펄 요트호핑투어</option>
+                <option value="whale-shark-tour">리버타드 고래상어 투어</option>
+                <option value="malumpati">시크릿가든 말룸파티 투어</option>
+            </optgroup>
+            <optgroup label="할인 패키지">
+                <option value="package-signature">⭐ 시그니처 패키지</option>
+                <option value="package-tour">고래팩 시리즈</option>
+                <option value="tour-combo-pack">픽샌팩 & 일반 패키지</option>
+            </optgroup>
+            <optgroup label="마사지 및 스파">
+                <option value="spa">에스파 (S-SPA)</option>
+                <option value="poseidon">포세이돈 스파</option>
+                <option value="maris">마리스 스파</option>
+                <option value="boraspa">보라스파</option>
+                <option value="luna">루나 스파</option>
+                <option value="helios">헬리오스 스파</option>
+                <option value="kabayan">카바얀 스파</option>
+                <option value="aspa">아유르베다 스파</option>
+            </optgroup>
+            <optgroup label="기타 액티비티">
+                <option value="bora-ajae-hopping">보라아재 호핑투어</option>
+                <option value="parasailing">파라세일링</option>
+                <option value="jetski">제트스키</option>
+                <option value="scuba-diving">체험다이빙</option>
+                <option value="helmet-diving">헬멧다이빙</option>
+                <option value="land-tour">보라카이 랜드투어</option>
+                <option value="freediving">프리다이빙 체험</option>
+                <option value="jl-snap">JL 스냅사진 촬영</option>
+                <option value="golf">페어웨이 골프클럽</option>
+            </optgroup>
+        </select>
+    </div>
+
+    <div id="loading" class="loading">데이터를 불러오는 중입니다...</div>
+    
+    <button class="btn-copy" id="btn-copy" style="display:none;" onclick="copyPrompt()">복사하고 챗GPT 열기</button>
+
+    <div class="form-group" style="margin-top: 20px;">
+        <label>생성된 프롬프트 미리보기</label>
+        <textarea id="prompt-output" readonly placeholder="상품을 선택하면 이곳에 프롬프트가 완성됩니다."></textarea>
+    </div>
+</div>
+
+<script>
+    const userPromptTemplate = `당신은 보라카이 여행상품 전문 콘텐츠 에디터이며 네이버 SEO와 네이버 AI 메이트 최적화 전문가입니다.
+
+내가 보내는 상세페이지(URL 또는 이미지)를 먼저 끝까지 분석한 후 내용을 이해합니다.
+절대로 원문을 복사하거나 문장을 그대로 사용하지 않습니다.
+상세페이지를 이해한 뒤 같은 내용을 사람이 새롭게 작성한 것처럼 재구성합니다.
+
+1. 상세페이지 분석
+상세페이지를 처음부터 끝까지 분석하여 아래 내용을 모두 파악합니다.
+상품 소개, 상품 특징, 진행 순서, 이용 시간, 포함사항, 불포함사항, 준비물, 예약 방법, 예약 조건, 이용 혜택, 환불 규정, 주의사항, 자주 묻는 질문, 고객이 예약 전에 반드시 알아야 하는 내용
+없는 내용은 절대로 임의로 추가하지 않습니다. 추측하지 않습니다.
+
+2. 작성 원칙
+상세페이지 문장을 그대로 복사하지 않습니다.
+같은 의미를 새로운 문장으로 다시 작성합니다.
+문장 구조도 변경합니다. 중복 표현을 줄입니다. 사람이 직접 작성한 자연스러운 글처럼 작성합니다.
+
+3. 네이버 SEO 최적화
+네이버에서 실제 검색하는 키워드를 자연스럽게 포함합니다.
+예시: 보라카이 호핑투어, 보라카이 마사지, 보라카이 액티비티, 보라카이 선셋, 보라카이 여행, 보라카이 자유여행, 보라카이 가족여행
+브랜드명보다 일반 검색 키워드를 우선 사용합니다.
+키워드를 억지로 반복하지 않습니다. 제목과 소제목에도 자연스럽게 포함합니다.
+
+4. 네이버 AI 메이트 최적화
+광고성 문체보다 정보성 문체를 우선합니다.
+고객이 실제 궁금해하는 내용을 먼저 설명합니다. 예약을 유도하기보다 예약 전에 알아야 할 정보를 충분히 제공합니다.
+FAQ를 풍부하게 작성합니다. 읽는 사람이 상품을 이해할 수 있도록 설명합니다.
+
+5. 문체
+사람이 직접 작성한 느낌으로 작성합니다. 쉼표 사용을 최소화합니다.
+문장 길이를 다양하게 작성합니다. 짧은 문장과 긴 문장을 적절히 섞습니다.
+과장 표현은 사용하지 않습니다.
+다음 표현은 사용하지 않습니다: 최고의, 무조건, 압도적인, 인생투어, 역대급, 절대 후회 없는, 넘사벽, 레전드, 끝판왕, 게임체인저
+AI가 자주 사용하는 표현도 피합니다. (예: "지금부터 알아보겠습니다.", "한눈에 살펴보겠습니다.", "추천드립니다.")
+
+6. 글 구성
+상품에 따라 필요한 항목은 추가하거나 제외합니다.
+기본 구성은 아래 순서를 따릅니다.
+- 제목: 검색 키워드를 자연스럽게 포함합니다.
+- 상품 소개: 이 상품이 어떤 여행인지 쉽게 설명합니다.
+- 이런 분께 추천합니다: 고객 유형을 자연스럽게 소개합니다.
+- 상품 특징: 상세페이지의 장점을 자연스럽게 녹여 설명합니다. 혜택은 따로 나열하지 말고 본문 안에서 설명합니다.
+- 이용 순서: 예약부터 종료까지 순서대로 작성합니다.
+- 포함사항 / 불포함사항 / 준비물 (있는 경우만)
+- 이용 혜택 (필요할 경우 작성)
+- 자주 묻는 질문: 최소 7개 이상 작성합니다. (예: 픽업 가능한가요?, 아이도 이용?, 우천시?, 복장?, 사진?, 취소?, 예약마감?)
+- 예약 전 확인사항: 반드시 알아야 하는 내용을 정리합니다.
+- 이용 시 주의사항: 중요한 내용을 보기 쉽게 작성합니다.
+- 마무리: 광고 문장이 아니라 상품을 다시 한번 이해할 수 있도록 정리합니다.
+
+7. 차별점 작성 방법
+경쟁업체를 언급하지 않습니다. 비교하지 않습니다.
+상세페이지의 장점을 본문 곳곳에 자연스럽게 녹여 작성합니다. 혜택을 단순 나열하지 않습니다.
+
+8. 가독성
+소제목을 적극 활용합니다. 한 문단은 2~4줄 정도로 작성합니다.
+목록은 필요한 경우에만 사용합니다. 모바일에서도 읽기 편한 형태로 작성합니다.
+
+9. 최종 출력
+아래 순서로 출력합니다.
+① SEO 제목 (5개)
+② 대표 썸네일 문구 (5개)
+③ 메타 설명 (120~160자)
+④ 본문
+⑤ FAQ
+⑥ 해시태그 (20개)
+
+10. 최종 목표
+- 상세페이지보다 이해하기 쉬워야 함
+- 네이버 AI 메이트가 정보성 콘텐츠로 인식
+- 네이버 검색 노출을 고려한 SEO 구조
+- 예약 전 고객의 궁금증 해결
+- 사람이 직접 쓴 자연스러운 글
+- 원본과 문장 중복 없음
+- 예약 전환 고려 콘텐츠
+
+추가 규칙
+상세페이지 분석이 끝난 후에만 글을 작성합니다. 정보가 없는 내용은 추측하거나 추가하지 않습니다. 출력은 완성된 원고만 제공합니다. 원문을 그대로 인용하거나 복사하지 않습니다.
+
+==================================================
+아래는 분석해야 할 [상품 상세페이지 팩트 데이터(JSON)] 입니다. 
+이 데이터를 바탕으로 위 가이드에 맞춰 네이버 포스팅 원고를 작성해 주세요!
+
+`;
+
+    const selectEl = document.getElementById('product-select');
+    const btnEl = document.getElementById('btn-copy');
+    const outputEl = document.getElementById('prompt-output');
+    const loadingEl = document.getElementById('loading');
+
+    selectEl.addEventListener('change', async function() {
+        const slug = this.value;
+        if (!slug) {
+            outputEl.value = '';
+            btnEl.style.display = 'none';
+            return;
+        }
+
+        loadingEl.style.display = 'block';
+        btnEl.style.display = 'none';
+        outputEl.value = '';
+
+        try {
+            // API에서 JSON 가져오기
+            const response = await fetch('/api/content/' + slug + '.json');
+            if (!response.ok) throw new Error('API 로드 실패');
+            const data = await response.json();
+            const dataStr = JSON.stringify(data, null, 2);
+            
+            // 프롬프트 결합
+            const finalPrompt = userPromptTemplate + dataStr;
+            outputEl.value = finalPrompt;
+            btnEl.style.display = 'block';
+
+        } catch (error) {
+            outputEl.value = '데이터를 불러오는 중 오류가 발생했습니다: ' + error.message;
+        } finally {
+            loadingEl.style.display = 'none';
+        }
+    });
+
+    function copyPrompt() {
+        const text = outputEl.value;
+        if (!text) return;
+        
+        navigator.clipboard.writeText(text).then(() => {
+            alert('프롬프트 복사가 완료되었습니다!\n이제 챗GPT 창으로 이동합니다.');
+            window.open('https://chatgpt.com', '_blank');
+        }).catch(err => {
+            alert('복사에 실패했습니다. 텍스트창 내용을 직접 복사해 주세요.');
+        });
+    }
+</script>
+</body>
+</html>

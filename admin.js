@@ -1151,6 +1151,13 @@ const CAFE_TOUR_DB = {
         program: '메인로드 졸리비 ➔ 리버타드 도착 및 브리핑 ➔ 고래상어 스노클링 ➔ 메인로드 졸리비 드랍',
         tips: '✔️ 수영복은 미리 입고 오시면 편해요!\n✔️ 비치타월 챙겨오심이 좋습니다'
     },
+    '고말팩': {
+        name: '보라카이션 고말팩 (고래상어+말룸파티)',
+        emoji: '🐋🌿',
+        time: '오전 07:30 ~ 오후 17:00 (종일 투어)',
+        program: '07:30 미팅 ➔ 고래상어 스노클링 ➔ 말룸파티로 이동 ➔ 튜브트래킹 or 시크릿가든 물놀이 ➔ 점심 한방백숙 ➔ 오후 물놀이 ➔ 17:30 숙소 복귀',
+        tips: '✔️ 수영복은 미리 입고 오시고 비치타월을 챙겨주세요!\n✔️ 말룸파티 튜빙 트래킹 시 래쉬가드와 아쿠아슈즈가 필수입니다!'
+    },
     '호핑': {
         name: '블랙펄 요트 호핑투어',
         emoji: '⛵',
@@ -1276,11 +1283,16 @@ async function parseCafeVoucherInput() {
 
     // DB 조회가 실패했거나 항목이 없는 경우의 백업 로직
     if (realItems.length === 0) {
-        if (input.includes('고래')) realItems.push('고래상어');
-        if (input.includes('호핑')) realItems.push('프리미엄 요트 호핑투어');
-        if (input.includes('말룸')) realItems.push('시크릿가든 말룸파티');
-        if (input.includes('스파') || input.includes('마사지')) realItems.push('프리미엄 마사지');
-        if (input.includes('픽업') || input.includes('샌딩')) realItems.push('보라카이 공항 픽업샌딩');
+        const lowerInput = input.toLowerCase();
+        if (lowerInput.includes('고말팩') || /shark\s*\+?\s*malum/i.test(input)) {
+            realItems.push('고말팩');
+        } else {
+            if (input.includes('고래') || lowerInput.includes('shark')) realItems.push('고래상어');
+            if (input.includes('호핑')) realItems.push('프리미엄 요트 호핑투어');
+            if (input.includes('말룸') || lowerInput.includes('malum')) realItems.push('시크릿가든 말룸파티');
+            if (input.includes('스파') || input.includes('마사지')) realItems.push('프리미엄 마사지');
+            if (input.includes('픽업') || input.includes('샌딩')) realItems.push('보라카이 공항 픽업샌딩');
+        }
     }
 
     // 완전 기본값
@@ -1297,7 +1309,8 @@ async function parseCafeVoucherInput() {
             tips: '✔️ 투어 전일 안내드리는 미팅 시간과 장소를 꼭 확인해주세요.\n✔️ 편안한 복장을 권장합니다.' 
         };
         
-        if (itemName.includes('고래')) { dbInfo = { ...CAFE_TOUR_DB['고래'], name: itemName }; }
+        if (itemName.includes('고말팩')) { dbInfo = { ...CAFE_TOUR_DB['고말팩'], name: itemName }; }
+        else if (itemName.includes('고래')) { dbInfo = { ...CAFE_TOUR_DB['고래'], name: itemName }; }
         else if (itemName.includes('호핑')) { dbInfo = { ...CAFE_TOUR_DB['호핑'], name: itemName }; }
         else if (itemName.includes('말룸')) { dbInfo = { ...CAFE_TOUR_DB['말룸'], name: itemName }; }
         else if (itemName.includes('스파') || itemName.includes('마사지') || itemName.includes('보라스파') || itemName.includes('루나') || itemName.includes('헬리오스')) { dbInfo = { ...CAFE_TOUR_DB['스파'], name: itemName }; }
@@ -1308,9 +1321,9 @@ async function parseCafeVoucherInput() {
     });
 
     // 3. 패키지 조합 판별 로직
-    const hasWhale = realItems.some(it => it.includes('고래'));
+    const hasWhale = realItems.some(it => it.includes('고래') || it.includes('고말팩'));
     const hasHopping = realItems.some(it => it.includes('호핑'));
-    const hasMalum = realItems.some(it => it.includes('말룸'));
+    const hasMalum = realItems.some(it => it.includes('말룸') || it.includes('고말팩'));
     const hasPickup = realItems.some(it => it.includes('픽업') || it.includes('샌딩'));
 
     let packageName = "";
@@ -1320,11 +1333,12 @@ async function parseCafeVoucherInput() {
     else if (hasWhale && hasMalum && hasPickup) { packageName = "고래팩 E"; isPackage = true; }
     else if (hasWhale && hasPickup && hasHopping) { packageName = "고래팩 D"; isPackage = true; }
     else if (hasPickup && hasHopping && hasMalum) { packageName = "픽샌팩 D"; isPackage = true; }
-    else if (hasWhale && hasMalum) { packageName = "고래팩 C"; isPackage = true; }
+    else if (hasWhale && hasMalum) { packageName = "고말팩"; isPackage = true; }
     else if (hasWhale && hasHopping) { packageName = "고래팩 B"; isPackage = true; }
     else if (hasWhale && hasPickup) { packageName = "고래팩 A"; isPackage = true; }
     else if (hasPickup && hasMalum) { packageName = "픽샌팩 C"; isPackage = true; }
     else if (hasPickup && hasHopping) { packageName = "픽샌팩 A"; isPackage = true; }
+    else if (realItems.some(it => it.includes('고말팩'))) { packageName = "고말팩"; isPackage = true; }
     else if (realItems.length > 0) { packageName = realItems[0]; isPackage = false; }
     else { packageName = "상품"; isPackage = false; }
 
@@ -1448,6 +1462,7 @@ const TOUR_URL_MAP = {
 const PACKAGE_URL_MAP2 = {
     '시그니처': { url: 'https://www.boracaysean.com/package-signature', label: '⭐ 시그니처 패키지 예약 및 정보 바로가기' },
     '고래팩': { url: 'https://www.boracaysean.com/package-tour', label: '🐋 고래팩 예약 및 정보 바로가기', img: 'b1.png' },
+    '고말팩': { url: 'https://www.boracaysean.com/package-tour', label: '🐋🌿 고말팩 예약 및 정보 바로가기', img: 'b1.png' },
     '픽샌팩': { url: 'https://www.boracaysean.com/boracay-package', label: '🚐 픽샌팩 예약 및 정보 바로가기', img: 'b2.png' },
 };
 const ACTIVITY_FALLBACK_BTN = { url: 'https://www.boracaysean.com/activities', label: '🎉 액티비티 전체보기', img: 'b8.png', type: 'tour' };

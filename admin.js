@@ -1011,7 +1011,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         else if (lowerLine.includes('(j)') || lowerLine.includes('점보')) { itemName = '블랙펄 호핑투어 (+점보크랩 점심)'; if(!actualTimeMatch) itemTime = "12:30"; } 
                         else { itemName = '블랙펄 요트호핑투어'; if(!actualTimeMatch) itemTime = "13:30"; } 
                     }
-                    else if (lowerLine.includes('고말팩') || /shark\s*\+?\s*malum/.test(lowerLine)) { itemName = '고말팩'; if(!actualTimeMatch) itemTime = "07:30"; }
+                    else if (lowerLine.includes('고말팩') || /shark\s*\+?\s*malum/.test(lowerLine)) { itemName = '고말팩(고래상어+말룸파티)'; if(!actualTimeMatch) itemTime = "07:30"; }
                     else if (lowerLine.includes('malum') || lowerLine.includes('말룸')) { itemName = '시크릿가든 말룸파티'; if(!actualTimeMatch) itemTime = "09:40"; }
                     else if (lowerLine.includes('shark') || lowerLine.includes('고래상어')) { itemName = '리버타드 고래상어'; if(!actualTimeMatch) itemTime = "07:30"; }
                     else if (lowerLine.includes('jetski') || lowerLine.includes('zetski') || lowerLine.includes('제트스키')) itemName = '제트스키';
@@ -1286,7 +1286,7 @@ async function parseCafeVoucherInput() {
     if (realItems.length === 0) {
         const lowerInput = input.toLowerCase();
         if (lowerInput.includes('고말팩') || /shark\s*\+?\s*malum/i.test(input)) {
-            realItems.push('고말팩');
+            realItems.push('고말팩(고래상어+말룸파티)');
         } else {
             if (input.includes('고래') || lowerInput.includes('shark')) realItems.push('고래상어');
             if (input.includes('호핑')) realItems.push('프리미엄 요트 호핑투어');
@@ -1334,12 +1334,12 @@ async function parseCafeVoucherInput() {
     else if (hasWhale && hasMalum && hasPickup) { packageName = "고래팩 E"; isPackage = true; }
     else if (hasWhale && hasPickup && hasHopping) { packageName = "고래팩 D"; isPackage = true; }
     else if (hasPickup && hasHopping && hasMalum) { packageName = "픽샌팩 D"; isPackage = true; }
-    else if (hasWhale && hasMalum) { packageName = "고말팩"; isPackage = true; }
+    else if (hasWhale && hasMalum) { packageName = "고말팩(고래상어+말룸파티)"; isPackage = true; }
     else if (hasWhale && hasHopping) { packageName = "고래팩 B"; isPackage = true; }
     else if (hasWhale && hasPickup) { packageName = "고래팩 A"; isPackage = true; }
     else if (hasPickup && hasMalum) { packageName = "픽샌팩 C"; isPackage = true; }
     else if (hasPickup && hasHopping) { packageName = "픽샌팩 A"; isPackage = true; }
-    else if (realItems.some(it => it.includes('고말팩'))) { packageName = "고말팩"; isPackage = true; }
+    else if (realItems.some(it => it.includes('고말팩'))) { packageName = "고말팩(고래상어+말룸파티)"; isPackage = true; }
     else if (realItems.length > 0) { packageName = realItems[0]; isPackage = false; }
     else { packageName = "상품"; isPackage = false; }
 
@@ -1463,7 +1463,7 @@ const TOUR_URL_MAP = {
 const PACKAGE_URL_MAP2 = {
     '시그니처': { url: 'https://www.boracaysean.com/package-signature', label: '⭐ 시그니처 패키지 예약 및 정보 바로가기' },
     '고래팩': { url: 'https://www.boracaysean.com/package-tour', label: '🐋 고래팩 예약 및 정보 바로가기', img: 'b1.png' },
-    '고말팩': { url: 'https://www.boracaysean.com/package-tour', label: '🐋🌿 고말팩 예약 및 정보 바로가기', img: 'b1.png' },
+    '고말팩(고래상어+말룸파티)': { url: 'https://www.boracaysean.com/package-tour', label: '🐋🌿 고말팩(고래상어+말룸파티) 정보 바로가기', img: 'b1.png' },
     '픽샌팩': { url: 'https://www.boracaysean.com/boracay-package', label: '🚐 픽샌팩 예약 및 정보 바로가기', img: 'b2.png' },
 };
 const ACTIVITY_FALLBACK_BTN = { url: 'https://www.boracaysean.com/activities', label: '🎉 액티비티 전체보기', img: 'b8.png', type: 'tour' };

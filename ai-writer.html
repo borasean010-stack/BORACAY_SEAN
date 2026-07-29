@@ -108,7 +108,7 @@
     <div class="controls">
         <label>생성된 프롬프트 미리보기</label>
         <div class="controls-right">
-            <button class="btn-copy" id="btn-copy" style="display:none; padding:10px 20px; font-size:14px;" onclick="copyPrompt()">복사하고 챗GPT 열기</button>
+            <button class="btn-copy" id="btn-copy" style="display:none; padding:10px 20px; font-size:14px;" onclick="copyPrompt()">단순 프롬프트 복사하기</button>
         </div>
     </div>
     
@@ -348,8 +348,7 @@
         if (!text) return;
         
         navigator.clipboard.writeText(text).then(() => {
-            alert('프롬프트 복사가 완료되었습니다!\n이제 챗GPT 창으로 이동합니다.');
-            window.open('https://chatgpt.com', '_blank');
+            alert('프롬프트 복사가 완료되었습니다!\n이제 원하시는 곳에 붙여넣기 하세요.');
         }).catch(err => {
             alert('복사에 실패했습니다. 텍스트창 내용을 직접 복사해 주세요.');
         });

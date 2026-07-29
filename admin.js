@@ -1340,6 +1340,14 @@ async function parseCafeVoucherInput() {
     else if (hasPickup && hasMalum) { packageName = "픽샌팩 C"; isPackage = true; }
     else if (hasPickup && hasHopping) { packageName = "픽샌팩 A"; isPackage = true; }
     else if (realItems.some(it => it.includes('고말팩'))) { packageName = "고말팩(고래상어+말룸파티)"; isPackage = true; }
+    else if (hasPickup && !hasHopping && !hasMalum && !hasWhale) {
+        const isPickup = realItems.some(it => it.includes('픽업'));
+        const isSending = realItems.some(it => it.includes('샌딩'));
+        if (isPickup && isSending) packageName = "공항 왕복 픽업샌딩";
+        else if (isPickup) packageName = "공항 픽업";
+        else packageName = "공항 샌딩";
+        isPackage = false;
+    }
     else if (realItems.length > 0) { packageName = realItems[0]; isPackage = false; }
     else { packageName = "상품"; isPackage = false; }
 

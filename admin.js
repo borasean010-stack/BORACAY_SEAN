@@ -1342,31 +1342,72 @@ async function parseCafeVoucherInput() {
         mappedTours.push(dbInfo);
     });
 
-    // 3. 패키지 조합 판별 로직
+    // 3. 패키지 조합 판별 로직 (홈페이지 /boracay-package 기준으로 정확하게 매핑)
     const hasWhale = realItems.some(it => it.includes('고래') || it.includes('고말팩'));
     const hasHopping = realItems.some(it => it.includes('호핑'));
     const hasMalum = realItems.some(it => it.includes('말룸') || it.includes('고말팩'));
-    const hasPickup = realItems.some(it => it.includes('픽업') || it.includes('샌딩'));
+    const hasPickup = realItems.some(it => it.includes('픽업') || it.includes('샌딩') || it.includes('픽샌'));
+    const isGomalPack = realItems.some(it => it.includes('고말팩'));
 
     let packageName = "";
     let isPackage = false;
 
-    if (hasPickup && hasHopping && hasMalum && hasWhale) { packageName = "시그니처 패키지"; isPackage = true; }
-    else if (hasWhale && hasMalum && hasPickup) { packageName = "고래팩 E"; isPackage = true; }
-    else if (hasWhale && hasPickup && hasHopping) { packageName = "고래팩 D"; isPackage = true; }
-    else if (hasPickup && hasHopping && hasMalum) { packageName = "픽샌팩 D"; isPackage = true; }
-    else if (hasWhale && hasMalum) { packageName = "고말팩(고래상어+말룸파티)"; isPackage = true; }
-    else if (hasWhale && hasHopping) { packageName = "고래팩 B"; isPackage = true; }
-    else if (hasWhale && hasPickup) { packageName = "고래팩 A"; isPackage = true; }
-    else if (hasPickup && hasMalum) { packageName = "픽샌팩 C"; isPackage = true; }
-    else if (hasPickup && hasHopping) { packageName = "픽샌팩 A"; isPackage = true; }
-    else if (realItems.some(it => it.includes('고말팩'))) { packageName = "고말팩(고래상어+말룸파티)"; isPackage = true; }
-    else if (hasPickup && !hasHopping && !hasMalum && !hasWhale) {
-        packageName = "공항 왕복 픽업샌딩";
-        isPackage = false;
+    // ─── 4종 조합 ───────────────────────────────────────────────────
+    if (hasPickup && hasHopping && hasMalum && hasWhale) {
+        packageName = "시그니처 패키지"; isPackage = true;
     }
+    // ─── 고래팩 E (고래+말룸+픽샌) ─────────────────────────────────
+    else if (hasWhale && hasMalum && hasPickup && !hasHopping) {
+        packageName = "고래팩 E"; isPackage = true;
+    }
+    // ─── 고래팩 D (고래+픽샌+호핑) ─────────────────────────────────
+    else if (hasWhale && hasPickup && hasHopping && !hasMalum) {
+        packageName = "고래팩 D"; isPackage = true;
+    }
+    // ─── 패키지 A (픽샌+호핑+고래) ─────────────────────────────────
+    else if (hasPickup && hasHopping && hasWhale && !hasMalum) {
+        packageName = "패키지 A"; isPackage = true;
+    }
+    // ─── 패키지 B (픽샌+호핑+말룸) ─────────────────────────────────
+    else if (hasPickup && hasHopping && hasMalum && !hasWhale) {
+        packageName = "패키지 B"; isPackage = true;
+    }
+    // ─── 패키지 C (픽샌+고래+말룸) ─────────────────────────────────
+    else if (hasPickup && hasWhale && hasMalum && !hasHopping) {
+        packageName = "패키지 C"; isPackage = true;
+    }
+    // ─── 고래팩 A (고래+픽샌) ───────────────────────────────────────
+    else if (hasWhale && hasPickup && !hasHopping && !hasMalum) {
+        packageName = "고래팩 A"; isPackage = true;
+    }
+    // ─── 고래팩 B (고래+호핑) ───────────────────────────────────────
+    else if (hasWhale && hasHopping && !hasPickup && !hasMalum) {
+        packageName = "고래팩 B"; isPackage = true;
+    }
+    // ─── 고말팩 단독 or 고래팩 C (고래+말룸, 픽샌/호핑 없음) ────────
+    else if (isGomalPack || (hasWhale && hasMalum && !hasPickup && !hasHopping)) {
+        packageName = "고말팩(고래상어+말룸파티)"; isPackage = true;
+    }
+    // ─── 픽샌팩 A (픽샌+호핑) ──────────────────────────────────────
+    else if (hasPickup && hasHopping && !hasWhale && !hasMalum) {
+        packageName = "픽샌팩 A"; isPackage = true;
+    }
+    // ─── 픽샌팩 B (픽샌+고래) ──────────────────────────────────────
+    else if (hasPickup && hasWhale && !hasHopping && !hasMalum) {
+        packageName = "픽샌팩 B"; isPackage = true;
+    }
+    // ─── 픽샌팩 C (픽샌+말룸) ──────────────────────────────────────
+    else if (hasPickup && hasMalum && !hasHopping && !hasWhale) {
+        packageName = "픽샌팩 C"; isPackage = true;
+    }
+    // ─── 픽업/샌딩 단독 ────────────────────────────────────────────
+    else if (hasPickup && !hasHopping && !hasMalum && !hasWhale) {
+        packageName = "공항 왕복 픽업샌딩"; isPackage = false;
+    }
+    // ─── 단품 ──────────────────────────────────────────────────────
     else if (realItems.length > 0) { packageName = realItems[0]; isPackage = false; }
     else { packageName = "상품"; isPackage = false; }
+
 
     return { 
         name: customerName, 

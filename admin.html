@@ -69,24 +69,19 @@
             <div class="ss-sidebar-brand"><img src="logo.png" alt="Logo" class="ss-logo"><span class="ss-brand-name">관리자 센터</span></div>
             <nav class="ss-nav">
                 <div class="ss-nav-group">
-                    <button class="ss-nav-item active" onclick="switchMainView()"><span class="material-icons">dashboard</span> 메인 페이지</button>
-                    <button class="ss-nav-item" onclick="switchAdminTab('new')"><span class="material-icons">inbox</span> 신규예약</button>
-                    <button class="ss-nav-item" onclick="switchAdminTab('confirmed')"><span class="material-icons">task_alt</span> 예약확정</button>
-                    <button class="ss-nav-item" onclick="switchAdminTab('resorts')"><span class="material-icons">hotel</span> 리조트 견적</button>
-                    <button class="ss-nav-item" onclick="switchAdminTab('resort-confirmed')"><span class="material-icons">check_circle</span> 리조트 확정</button>
+                    <button class="ss-nav-item active" id="nav-main" onclick="navClick('main'); switchMainView()"><span class="material-icons">dashboard</span> 메인 페이지</button>
+                    <button class="ss-nav-item" id="nav-sales" onclick="navClick('sales'); switchDashboard('sales')"><span class="material-icons">bar_chart</span> 영업 대시보드</button>
+                    <button class="ss-nav-item" id="nav-schedule" onclick="navClick('schedule'); switchDashboard('schedule')"><span class="material-icons">calendar_month</span> 스케줄 관리</button>
+                    <button class="ss-nav-item" id="nav-profit" onclick="navClick('profit'); switchDashboard('profit')"><span class="material-icons">account_balance_wallet</span> 손익 대시보드</button>
+                    <button class="ss-nav-item" id="nav-management" onclick="navClick('management'); switchDashboard('management')"><span class="material-icons">insights</span> 경영 대시보드</button>
                 </div>
-                <div class="ss-nav-group">
-                    <p class="ss-nav-label">시스템</p>
+                <div class="ss-nav-group" style="margin-top:auto; padding-top:10px; border-top:1px solid #eee;">
+                    <p class="ss-nav-label">도구</p>
                     <button class="ss-nav-item" onclick="showInputArea('quick')"><span class="material-icons">confirmation_number</span> 퀵바우처 생성</button>
                     <button class="ss-nav-item" onclick="showInputArea('reg')"><span class="material-icons">upload_file</span> 스케줄 등록</button>
-                    <button class="ss-nav-item system-danger" onclick="switchAdminTab('system')"><span class="material-icons">settings</span> 초기화</button>
-                </div>
-                <div class="ss-nav-group">
-                    <p class="ss-nav-label">대시보드</p>
-                    <button class="ss-nav-item" onclick="switchDashboard('sales')"><span class="material-icons">bar_chart</span> 영업 대시보드</button>
-                    <button class="ss-nav-item" onclick="switchDashboard('schedule')"><span class="material-icons">calendar_month</span> 스케줄 관리</button>
-                    <button class="ss-nav-item" onclick="switchDashboard('profit')"><span class="material-icons">account_balance_wallet</span> 손익 대시보드</button>
-                    <button class="ss-nav-item" onclick="switchDashboard('management')"><span class="material-icons">insights</span> 경영 대시보드</button>
+                    <button class="ss-nav-item" onclick="switchAdminTab('new')"><span class="material-icons">inbox</span> 신규예약</button>
+                    <button class="ss-nav-item" onclick="switchAdminTab('confirmed')"><span class="material-icons">task_alt</span> 예약확정</button>
+                    <button class="ss-nav-item system-danger" onclick="switchAdminTab('system')" style="font-size:12px; opacity:0.5;"><span class="material-icons" style="font-size:14px;">settings</span> 초기화</button>
                 </div>
             </nav>
             <div class="ss-sidebar-footer"><button id="logout-btn"><span class="material-icons">logout</span> 로그아웃</button></div>
@@ -104,10 +99,12 @@
                     <div id="tool-box-today" class="tool-box active" onclick="switchScheduleDay('today')">
                         <h4>오늘 일정</h4>
                         <div id="box-date-today" class="date-val">-</div>
+                        <div id="gs-count-today" style="font-size:11px; color:#ff6a00; margin-top:4px; font-weight:700;"></div>
                     </div>
                     <div id="tool-box-tomorrow" class="tool-box" onclick="switchScheduleDay('tomorrow')">
                         <h4>내일 일정</h4>
                         <div id="box-date-tomorrow" class="date-val">-</div>
+                        <div id="gs-count-tomorrow" style="font-size:11px; color:#888; margin-top:4px; font-weight:700;"></div>
                     </div>
                     <div class="tool-box system-box" onclick="showInputArea('quick')">
                         <h4>퀵바우처 생성기</h4>
@@ -122,6 +119,58 @@
                         <div class="date-val">바로가기</div>
                     </div>
                 </div>
+
+                <!-- 구글 시트 일정 카운트 fetch 스크립트 -->
+                <script>
+                (function() {
+                    // ⚠️ 오너님의 Apps Script 웹 앱 URL을 여기에 넣어주세요
+                    const GS_API_URL = 'API_URL_HERE';
+
+                    window.navClick = function(tab) {
+                        document.querySelectorAll('.ss-nav-item').forEach(el => el.classList.remove('active'));
+                        const target = document.getElementById('nav-' + tab);
+                        if (target) target.classList.add('active');
+                        // 대시보드 탭이 아닌 메인으로 돌아갈 때 오버레이 닫기
+                        if (tab === 'main') {
+                            const overlay = document.getElementById('dashboard-overlay');
+                            if (overlay) overlay.style.display = 'none';
+                        }
+                    };
+
+                    async function fetchGSheetScheduleCount() {
+                        if (GS_API_URL === 'API_URL_HERE') return; // URL 미설정 시 스킵
+
+                        try {
+                            const res = await fetch(GS_API_URL + '?action=schedule');
+                            const data = await res.json();
+                            if (data.status !== 'success') return;
+
+                            const todayEl    = document.getElementById('gs-count-today');
+                            const tomorrowEl = document.getElementById('gs-count-tomorrow');
+
+                            if (todayEl && data.todayCount !== undefined) {
+                                todayEl.innerText = data.todayCount > 0
+                                    ? `📋 구글시트 ${data.todayCount}건`
+                                    : '';
+                            }
+                            if (tomorrowEl && data.tomorrowCount !== undefined) {
+                                tomorrowEl.innerText = data.tomorrowCount > 0
+                                    ? `📋 구글시트 ${data.tomorrowCount}건`
+                                    : '';
+                            }
+                        } catch(e) {
+                            console.log('구글 시트 일정 카운트 로드 실패:', e);
+                        }
+                    }
+
+                    // 페이지 로드 시 & 5분마다 자동 갱신
+                    document.addEventListener('DOMContentLoaded', () => {
+                        fetchGSheetScheduleCount();
+                        setInterval(fetchGSheetScheduleCount, 5 * 60 * 1000);
+                    });
+                })();
+                </script>
+
 
                 <!-- 🚀 퀵바우처 / 스케줄 등록 / 견적서 생성 입력창 (직사각형 스타일) -->
                 <div id="input-area-quick" class="input-area-card">

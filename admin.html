@@ -388,36 +388,49 @@
                         }
                     };
 
-                    async function fetchGSheetScheduleCount() {
+                    async function fetchGSheetData() {
                         if (GS_API_URL === 'API_URL_HERE') return; // URL 미설정 시 스킵
 
                         try {
-                            const res = await fetch(GS_API_URL + '?action=schedule');
-                            const data = await res.json();
-                            if (data.status !== 'success') return;
+                            // 1. 일정 카운트 가져오기
+                            const resSchedule = await fetch(GS_API_URL + '?action=schedule');
+                            const dataSchedule = await resSchedule.json();
+                            if (dataSchedule.status === 'success') {
+                                const todayEl    = document.getElementById('gs-count-today');
+                                const tomorrowEl = document.getElementById('gs-count-tomorrow');
 
-                            const todayEl    = document.getElementById('gs-count-today');
-                            const tomorrowEl = document.getElementById('gs-count-tomorrow');
-
-                            if (todayEl && data.todayCount !== undefined) {
-                                todayEl.innerText = data.todayCount > 0
-                                    ? `📋 구글시트 ${data.todayCount}건`
-                                    : '';
+                                if (todayEl && dataSchedule.todayCount !== undefined) {
+                                    todayEl.innerText = dataSchedule.todayCount > 0
+                                        ? `📋 구글시트 ${dataSchedule.todayCount}건`
+                                        : '';
+                                }
+                                if (tomorrowEl && dataSchedule.tomorrowCount !== undefined) {
+                                    tomorrowEl.innerText = dataSchedule.tomorrowCount > 0
+                                        ? `📋 구글시트 ${dataSchedule.tomorrowCount}건`
+                                        : '';
+                                }
                             }
-                            if (tomorrowEl && data.tomorrowCount !== undefined) {
-                                tomorrowEl.innerText = data.tomorrowCount > 0
-                                    ? `📋 구글시트 ${data.tomorrowCount}건`
-                                    : '';
+                            
+                            // 2. 손익 대시보드 매출 가져오기
+                            const resIncome = await fetch(GS_API_URL);
+                            const dataIncome = await resIncome.json();
+                            if (dataIncome.status === 'success') {
+                                const incomeEl = document.getElementById('db-income');
+                                if (incomeEl && dataIncome.thisMonthIncome !== undefined) {
+                                    incomeEl.innerText = '₩ ' + dataIncome.thisMonthIncome.toLocaleString();
+                                } else if (incomeEl && dataIncome.totalIncome !== undefined) {
+                                    incomeEl.innerText = '₩ ' + dataIncome.totalIncome.toLocaleString();
+                                }
                             }
                         } catch(e) {
-                            console.log('구글 시트 일정 카운트 로드 실패:', e);
+                            console.log('구글 시트 데이터 로드 실패:', e);
                         }
                     }
 
                     // 페이지 로드 시 & 5분마다 자동 갱신
                     document.addEventListener('DOMContentLoaded', () => {
-                        fetchGSheetScheduleCount();
-                        setInterval(fetchGSheetScheduleCount, 5 * 60 * 1000);
+                        fetchGSheetData();
+                        setInterval(fetchGSheetData, 5 * 60 * 1000);
                     });
                 })();
                 </script>

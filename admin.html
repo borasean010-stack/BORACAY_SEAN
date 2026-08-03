@@ -379,7 +379,156 @@
                 (function() {
                     const GS_API_URL = 'https://script.google.com/macros/s/AKfycbxjHAQmXaYT15Yn4dxFLvZd56zweAAemVxYTw6Nby0x8nvXFBKlYk4eq8UW1DfbaRx4/exec';
 
+                    // ============ 투어 타입 매핑 (REMARKS 키워드 → 표준 투어명) ============
+                    // 우선순위가 중요: 더 구체적인 키워드를 먼저 검사한다 (예: marisspa가 일반 sspa보다 먼저,
+                    // helmet이 diving보다 먼저 와야 "helmet diving" 문구가 헬멧다이빙으로만 분류된다)
+                    const TOUR_TYPES = [
+                        { key: 'MARIS',    regex: /marisspa|마리스/i,         label: '마리스 스파',        labelEn: 'Maris Spa',       bucket: 'tour',   color: '#ff2d55' },
+                        { key: 'HELIOS',   regex: /heliosspa|헬리오스/i,      label: '헬리오스 스파',      labelEn: 'Helios Spa',      bucket: 'tour',   color: '#ff375f' },
+                        { key: 'POSEIDON', regex: /poseidonspa|포세이돈/i,    label: '포세이돈 스파',      labelEn: 'Poseidon Spa',    bucket: 'tour',   color: '#ff6482' },
+                        { key: 'SSPA',     regex: /sspa|에스파/i,             label: '에스파 (S-SPA)',    labelEn: 'S-Spa',           bucket: 'tour',   color: '#ff8fa3' },
+                        { key: 'HELMET',   regex: /helmet|헬멧/i,             label: '헬멧다이빙',         labelEn: 'Helmet Diving',   bucket: 'tour',   color: '#5ac8fa' },
+                        { key: 'JETSKI',   regex: /zetski|jetski|제트스키/i,  label: '제트스키',           labelEn: 'Jet Ski',         bucket: 'tour',   color: '#32ade6' },
+                        { key: 'PARA',     regex: /para|파라세일링/i,         label: '파라세일링',         labelEn: 'Parasailing',     bucket: 'tour',   color: '#64d2ff' },
+                        { key: 'DIVING',   regex: /diving|다이빙/i,           label: '체험다이빙',         labelEn: 'Try Diving',      bucket: 'tour',   color: '#0a84ff' },
+                        { key: 'SHARK',    regex: /shark|고래/i,              label: '리버타드 고래상어',   labelEn: 'Whale Shark',     bucket: 'tour',   color: '#af52de' },
+                        { key: 'MALUM',    regex: /malum|말룸/i,              label: '시크릿가든 말룸파티',  labelEn: 'Malumpati Party', bucket: 'tour',   color: '#34c759' },
+                        { key: 'HOPPING',  regex: /hop|호핑/i,                label: '블랙펄 요트호핑투어',  labelEn: 'Hopping Tour',    bucket: 'tour',   color: '#007aff' },
+                        { key: 'LAND',     regex: /land|랜드/i,               label: '보라카이 랜드투어',   labelEn: 'Land Tour',       bucket: 'tour',   color: '#ffcc00' },
+                        { key: 'SENDING',  regex: /sending|샌딩/i,            label: '샌딩',               labelEn: 'Sending',         bucket: 'pickup', color: '#ff6a00' },
+                    ];
+                    window.TOUR_TYPES = TOUR_TYPES;
+                    const AIRPORT_COLOR = '#ff6a00';
+                    const OTHER_COLOR = '#8e8e93';
+                    function tourColor(key) {
+                        if (key === 'AIRPORT') return AIRPORT_COLOR;
+                        if (key === 'OTHER') return OTHER_COLOR;
+                        const t = TOUR_TYPES.find(t => t.key === key);
+                        return t ? t.color : OTHER_COLOR;
+                    }
+                    window.tourColor = tourColor;
+                    function mdSortKey(md) {
+                        const parts = (md || '').split('/');
+                        const mm = parseInt(parts[0], 10) || 0;
+                        const dd = parseInt(parts[1], 10) || 0;
+                        const todayMonth = new Date().getMonth() + 1;
+                        let m = mm;
+                        if (m < todayMonth - 6) m += 12; // 연말/연초 경계 보정
+                        return m * 100 + dd;
+                    }
+                    window.mdSortKey = mdSortKey;
+                    function getDayStr(offset) {
+                        const d = new Date(Date.now() + offset * 86400000);
+                        return `${d.getMonth() + 1}/${d.getDate()}`;
+                    }
+                    window.getDayStr = getDayStr;
+                    window.scheduleDayFilter = 0; // 0=오늘, 1=내일
+                    window.setScheduleDay = function(offset) {
+                        window.scheduleDayFilter = offset;
+                        document.getElementById('sch-tab-today').style.background = offset === 0 ? '#ff6a00' : '#ddd';
+                        document.getElementById('sch-tab-today').style.color = offset === 0 ? '#fff' : '#333';
+                        document.getElementById('sch-tab-tomorrow').style.background = offset === 1 ? '#ff6a00' : '#ddd';
+                        document.getElementById('sch-tab-tomorrow').style.color = offset === 1 ? '#fff' : '#333';
+                        renderScheduleDashboard();
+                    };
+
+                    function matchTourTypes(text) {
+                        // 콤보 표기(예: shark+malum, shark + malum)는 두 개의 이벤트로 분리
+                        if (/shark\s*\+\s*malum/i.test(text)) {
+                            return [TOUR_TYPES.find(t => t.key === 'SHARK'), TOUR_TYPES.find(t => t.key === 'MALUM')];
+                        }
+                        for (const t of TOUR_TYPES) {
+                            if (t.regex.test(text)) return [t];
+                        }
+                        return [];
+                    }
+
+                    // 고정 운행 시간표 — 호핑(s)/호핑(j)/말룸은 REMARKS에 적힌 시간과 무관하게
+                    // 항상 정해진 출발 시간으로 통일해서 표시한다 (담당자 요청)
+                    function canonicalTime(key, text) {
+                        if (key === 'MALUM') return '09:40';
+                        if (key === 'HOPPING') return /\(\s*j\s*\)/i.test(text) ? '12:30' : '13:30';
+                        return null;
+                    }
+
+                    // REMARKS(다중 라인) + F-IN/F-OUT/SEND 컬럼을 하나의 이벤트 배열로 파싱한다.
+                    // REMARKS 한 셀 안에 여러 날짜의 일정이 줄바꿈으로 섞여 있을 수 있으므로 반드시 라인 단위로 처리한다.
+                    function parseScheduleEvents(rows) {
+                        const events = [];
+                        if (!rows) return events;
+
+                        for (let i = 1; i < rows.length; i++) {
+                            const r = rows[i];
+                            if (!r) continue;
+                            const cell = (idx) => r[idx]?.v;
+                            const dep = cell(1);
+                            const fin = cell(2);
+                            const fout = cell(3);
+                            const send = cell(4);
+                            const resort = (cell(9) || '리조트미정').toString().trim() || '리조트미정';
+                            const name = cell(10) || '';
+                            const pax = cell(11) || '';
+                            const remarksRaw = (cell(16) || '').toString();
+                            // 겟머니 완료 표시(노란색)는 REMARKS 셀 전체 단위 배경색이다 (라인별 아님)
+                            const isYellow = (r[1]?.bg === '#ffff00' || r[1]?.bg === '#fff2cc' || r[16]?.bg === '#ffff00' || r[16]?.bg === '#fff2cc');
+
+                            // 1. 공항 픽업/샌딩 (F-IN/F-OUT/SEND 컬럼 기반, 날짜 = DEP)
+                            // 고객명이 없는 행은 실제 예약이 아니라 시트 내 참조/시간표성 메모이므로 제외한다
+                            if (dep && name && (fin || fout || send)) {
+                                let typeStr = '';
+                                if (fin) typeStr += `IN:${fin} `;
+                                if (fout) typeStr += `OUT:${fout} `;
+                                if (send) typeStr += `SEND:${send} `;
+                                events.push({
+                                    date: dep, time: null, key: 'AIRPORT', label: '공항 픽업/샌딩', labelEn: 'Airport Pickup/Sending',
+                                    bucket: 'pickup', resort, name, pax, getMoney: '', raw: typeStr.trim()
+                                });
+                            }
+
+                            // 2. REMARKS 라인 단위 파싱 (라인마다 날짜가 다를 수 있음)
+                            // 고객명이 없으면 실제 예약이 아니므로 스케줄 대상에서 제외
+                            if (!remarksRaw || !name) continue;
+                            const lines = remarksRaw.split('\n');
+                            for (const lineRaw of lines) {
+                                const line = lineRaw.trim();
+                                if (!line) continue;
+                                const dateMatch = line.match(/^(\d{1,2}\/\d{1,2})\s*(.*)$/);
+                                if (!dateMatch) continue; // 날짜로 시작하지 않는 줄(정산 메모 등)은 스케줄 대상 아님
+                                const lineDate = dateMatch[1];
+                                const rest = dateMatch[2];
+
+                                const timeMatch = rest.match(/(\d{1,2}:\d{2})/);
+                                const time = timeMatch ? timeMatch[1] : null;
+
+                                let getMoney = '';
+                                if (!isYellow) {
+                                    const gm = rest.match(/get\s*[\$₱]?\s*(\d+)/i);
+                                    if (gm) getMoney = '$' + gm[1];
+                                }
+
+                                const matches = matchTourTypes(rest);
+                                if (matches.length === 0) {
+                                    events.push({
+                                        date: lineDate, time, key: 'OTHER', label: '기타', labelEn: 'Other',
+                                        bucket: 'tour', resort, name, pax, getMoney, raw: rest
+                                    });
+                                    continue;
+                                }
+                                for (const t of matches) {
+                                    const fixedTime = canonicalTime(t.key, rest);
+                                    events.push({
+                                        date: lineDate, time: fixedTime || time, key: t.key, label: t.label, labelEn: t.labelEn,
+                                        bucket: t.bucket, resort, name, pax, getMoney, raw: rest
+                                    });
+                                }
+                            }
+                        }
+                        return events;
+                    }
+                    window.parseScheduleEvents = parseScheduleEvents;
+
                     window.gSheetData = [];
+                    window.gScheduleEvents = [];
                     
                     window.navClick = function(tab) {
                         document.querySelectorAll('.ss-nav-item').forEach(el => el.classList.remove('active'));
@@ -427,37 +576,22 @@
                         let thisMonthIncome = 0;
                         let todayCount = 0;
                         let tomorrowCount = 0;
-                        
-                        // 영업 대시보드 통계용
-                        let countPickup = 0, countHopping = 0, countMalum = 0, countWhale = 0, countMassage = 0, countActivity = 0;
 
                         for (let i = 1; i < rows.length; i++) {
                             const row = rows[i];
                             if (!row || !row[1]) continue;
 
                             const dep = row[1]?.v;
-                            const fin = row[2]?.v;
-                            const fout = row[3]?.v;
-                            const send = row[4]?.v;
-                            const remarks = (row[16]?.v || '').toString().toUpperCase();
                             const amount = parseFloat(row[20]?.v);
 
                             // 일정 카운트 계산
                             if (dep === todayStr) todayCount++;
                             if (dep === tomorrowStr) tomorrowCount++;
 
-                            // 영업 대시보드 뱃지용 분류
-                            if (fin || fout || send) countPickup++;
-                            if (remarks.includes('HOP') || remarks.includes('호핑')) countHopping++;
-                            if (remarks.includes('MALUM') || remarks.includes('말룸')) countMalum++;
-                            if (remarks.includes('SHARK') || remarks.includes('고래')) countWhale++;
-                            if (remarks.includes('SPA') || remarks.includes('마사지') || remarks.includes('MASSAGE')) countMassage++;
-                            if (remarks.includes('LAND') || remarks.includes('랜투') || remarks.includes('랜드')) countActivity++;
-
                             // 매출 계산
                             if (!isNaN(amount) && amount > 0) {
                                 totalIncome += amount;
-                                thisMonthIncome += amount; 
+                                thisMonthIncome += amount;
                             }
                         }
 
@@ -466,129 +600,143 @@
                         const tomorrowEl = document.getElementById('gs-count-tomorrow');
                         if (todayEl) todayEl.innerText = todayCount > 0 ? `📋 예약 ${todayCount}건` : '';
                         if (tomorrowEl) tomorrowEl.innerText = tomorrowCount > 0 ? `📋 예약 ${tomorrowCount}건` : '';
-                        
+
                         const incomeEl = document.getElementById('db-income');
                         if (incomeEl) incomeEl.innerText = '₩ ' + thisMonthIncome.toLocaleString();
 
-                        // 영업 대시보드 업데이트
-                        const ePick = document.getElementById('db-pickup');
-                        if (ePick) ePick.innerText = countPickup;
-                        const eHop = document.getElementById('db-hopping');
-                        if (eHop) eHop.innerText = countHopping;
-                        const eMal = document.getElementById('db-malum');
-                        if (eMal) eMal.innerText = countMalum;
-                        const eWha = document.getElementById('db-whale');
-                        if (eWha) eWha.innerText = countWhale;
-                        const eMas = document.getElementById('db-massage');
-                        if (eMas) eMas.innerText = countMassage;
-                        const eAct = document.getElementById('db-activity');
-                        if (eAct) eAct.innerText = countActivity;
+                        // REMARKS 라인 단위 이벤트로 파싱 (영업/스케줄/경영 대시보드가 공유)
+                        window.gScheduleEvents = parseScheduleEvents(rows);
 
-                        // 스케줄 및 경영 차트 렌더링
+                        renderSalesDashboard(window.gScheduleEvents);
                         renderScheduleDashboard();
                         renderManagementDashboard();
                     }
 
-                    // 📅 스케줄 대시보드 (오너님 요청사항 반영)
+                    // 📊 영업 대시보드 — 이번 달 예약 건을 투어 종류별로 집계해 카드 동적 생성
+                    const CARD_ICONS = {
+                        PICKUP: '🚐', HOPPING: '⛵', MALUM: '🌿', SHARK: '🦈', LAND: '🚙',
+                        DIVING: '🤿', PARA: '🪂', JETSKI: '🌊', HELMET: '⛑️',
+                        MARIS: '💆', HELIOS: '💆', POSEIDON: '💆', SSPA: '💆', OTHER: '❓'
+                    };
+                    const SALES_CARD_ORDER = ['PICKUP', 'HOPPING', 'MALUM', 'SHARK', 'LAND', 'DIVING', 'PARA', 'JETSKI', 'HELMET', 'MARIS', 'HELIOS', 'POSEIDON', 'SSPA', 'OTHER'];
+                    const SALES_CARD_LABEL = {
+                        PICKUP: '픽업/샌딩', HOPPING: '블랙펄 요트호핑투어', MALUM: '시크릿가든 말룸파티', SHARK: '리버타드 고래상어',
+                        LAND: '보라카이 랜드투어', DIVING: '체험다이빙', PARA: '파라세일링', JETSKI: '제트스키', HELMET: '헬멧다이빙',
+                        MARIS: '마리스 스파', HELIOS: '헬리오스 스파', POSEIDON: '포세이돈 스파', SSPA: '에스파 (S-SPA)', OTHER: '기타'
+                    };
+                    const SALES_CARD_COLOR = { PICKUP: AIRPORT_COLOR, OTHER: OTHER_COLOR };
+                    TOUR_TYPES.forEach(t => { if (t.key !== 'SENDING') SALES_CARD_COLOR[t.key] = t.color; });
+                    window.SALES_CARD_LABEL = SALES_CARD_LABEL;
+
+                    function isThisMonth(md) {
+                        const mm = parseInt((md || '').split('/')[0], 10);
+                        return mm === (new Date().getMonth() + 1);
+                    }
+
+                    window.renderSalesDashboard = function(events) {
+                        const grid = document.getElementById('sales-card-grid');
+                        if (!grid || !events) return;
+
+                        const counts = {};
+                        events.filter(e => isThisMonth(e.date)).forEach(e => {
+                            const group = (e.key === 'AIRPORT' || e.key === 'SENDING') ? 'PICKUP' : e.key;
+                            counts[group] = (counts[group] || 0) + 1;
+                        });
+
+                        const cardsHtml = SALES_CARD_ORDER
+                            .filter(key => counts[key])
+                            .map(key => `
+                                <div class="db-card" style="border-left:5px solid ${SALES_CARD_COLOR[key]};">
+                                    <div class="db-icon">${CARD_ICONS[key]}</div>
+                                    <h3>${SALES_CARD_LABEL[key]}</h3>
+                                    <div class="db-count">${counts[key]}</div>
+                                    <p>예약 건</p>
+                                </div>
+                            `).join('');
+
+                        grid.innerHTML = cardsHtml || '<p style="color:#aaa; text-align:center; grid-column:1/-1;">이번 달 예약 데이터가 없습니다.</p>';
+                    };
+
+                    // 📅 스케줄 대시보드 — 오늘/내일 중 선택된 하루만 표시하되,
+                    // 날짜 → (리조트 또는 시간) 2단 그룹핑 구조는 유지한다.
                     window.renderScheduleDashboard = function() {
-                        const rows = window.gSheetData;
-                        if (!rows || rows.length < 2) return;
+                        const allEvents = window.gScheduleEvents;
+                        if (!allEvents) return;
+                        const targetDate = getDayStr(window.scheduleDayFilter || 0);
+                        const events = allEvents.filter(e => e.date === targetDate);
 
-                        let pickupHtml = '';
-                        let tourHtml = '';
-                        
-                        const pickupData = {};
-                        const tourData = {};
-
-                        // 데이터 분류
-                        for (let i = 1; i < rows.length; i++) {
-                            const r = rows[i];
-                            const dep = r[1]?.v;
-                            if (!dep) continue;
-                            
-                            const fin = r[2]?.v;
-                            const fout = r[3]?.v;
-                            const send = r[4]?.v;
-                            const resort = r[9]?.v || '리조트미정';
-                            const name = r[10]?.v || '';
-                            const pax = r[11]?.v || '';
-                            const remarks = (r[16]?.v || '').toString();
-                            
-                            // 겟머니 금액 파싱 (get 60 등)
-                            let getMoneyStr = '';
-                            const m = remarks.match(/get\s*[\$₱]?\s*(\d+)/i);
-                            if (m) getMoneyStr = '$' + m[1];
-
-                            // ⚠️ 노란색 배경 셀 제외 조건 (겟머니 완료)
-                            const isYellow = (r[1]?.bg === '#ffff00' || r[1]?.bg === '#fff2cc' || r[16]?.bg === '#ffff00');
-                            
-                            // 노란색이 칠해져 있으면 겟머니 표시 제거
-                            if (isYellow) getMoneyStr = '';
-
-                            // 1. 픽업/샌딩 분류 (리조트별 그룹)
-                            if (fin || fout || send) {
-                                if (!pickupData[resort]) pickupData[resort] = [];
-                                let typeStr = '';
-                                if (fin) typeStr += `(FIN:${fin}) `;
-                                if (fout) typeStr += `(FOUT:${fout}) `;
-                                if (send) typeStr += `(SEND:${send}) `;
-                                
-                                pickupData[resort].push(`
-                                    <div style="padding:10px 0; border-bottom:1px solid #eee;">
-                                        <div style="font-size:12px; color:#ff6a00; font-weight:700;">${dep}</div>
-                                        <div style="font-weight:700; margin:4px 0;">${name} <span style="color:#888; font-size:12px;">(${pax}명)</span></div>
-                                        <div style="font-size:12px; color:#555;">${typeStr}</div>
-                                        ${getMoneyStr ? `<div style="display:inline-block; margin-top:4px; padding:2px 6px; background:#fff3cd; color:#856404; font-size:11px; border-radius:4px; font-weight:700;">Get: ${getMoneyStr}</div>` : ''}
-                                    </div>
-                                `);
-                            }
-
-                            // 2. 투어 분류
-                            let tourType = '';
-                            let tourTime = '미정';
-                            let eventClass = 'blue';
-
-                            const rUp = remarks.toUpperCase();
-                            if (rUp.includes('HOP') || rUp.includes('호핑')) { tourType = '호핑투어'; eventClass = 'blue'; }
-                            else if (rUp.includes('MALUM') || rUp.includes('말룸')) { tourType = '말룸파티'; eventClass = 'green'; }
-                            else if (rUp.includes('SHARK') || rUp.includes('고래')) { tourType = '고래상어'; eventClass = 'purple'; }
-                            else if (rUp.includes('SPA') || rUp.includes('마사지')) { tourType = '마사지'; eventClass = 'red'; }
-                            
-                            // 시간 추출 정규식 (예: 13:30)
-                            const timeMatch = remarks.match(/(\d{1,2}:\d{2})/);
-                            if (timeMatch) tourTime = timeMatch[1];
-
-                            if (tourType) {
-                                if (!tourData[tourTime]) tourData[tourTime] = [];
-                                tourData[tourTime].push(`
-                                    <div class="db-event ${eventClass}" style="margin-bottom:8px;">
-                                        <div style="font-size:12px; opacity:0.8; margin-bottom:4px; font-weight:700;">${dep} [${tourType}] - ${resort}</div>
-                                        <div style="font-weight:800; font-size:15px;">${name} <span style="font-weight:500; font-size:13px; color:#666;">(${pax}명)</span></div>
-                                        ${getMoneyStr ? `<div style="margin-top:5px; padding:2px 8px; background:#ffd700; color:#000; font-size:11px; border-radius:12px; display:inline-block; font-weight:800;">💰 Get: ${getMoneyStr}</div>` : ''}
-                                    </div>
-                                `);
-                            }
+                        function getMoneyBadge(e) {
+                            return e.getMoney ? `<div style="display:inline-block; margin-top:4px; padding:2px 6px; background:#fff3cd; color:#856404; font-size:11px; border-radius:4px; font-weight:700;">Get: ${e.getMoney}</div>` : '';
                         }
 
-                        // HTML 조립 - 픽업샌딩 (리조트별)
-                        for (const resort in pickupData) {
+                        // ---- 픽업/샌딩: 날짜 → 리조트 ----
+                        const pickupEvents = events.filter(e => e.bucket === 'pickup');
+                        const pickupByDate = {};
+                        pickupEvents.forEach(e => {
+                            (pickupByDate[e.date] = pickupByDate[e.date] || {});
+                            (pickupByDate[e.date][e.resort] = pickupByDate[e.date][e.resort] || []).push(e);
+                        });
+                        const pickupDates = Object.keys(pickupByDate).sort((a, b) => mdSortKey(a) - mdSortKey(b));
+
+                        let pickupHtml = '';
+                        for (const date of pickupDates) {
+                            let resortsHtml = '';
+                            for (const resort in pickupByDate[date]) {
+                                const items = pickupByDate[date][resort].map(e => `
+                                    <div style="padding:10px 0; border-bottom:1px solid #eee;">
+                                        <div style="font-weight:700; margin:0 0 4px;">${e.name} <span style="color:#888; font-size:12px;">(${e.pax}명)</span></div>
+                                        <div style="font-size:12px; color:#555;">${e.label}${e.raw ? ' · ' + e.raw : ''}</div>
+                                        ${getMoneyBadge(e)}
+                                    </div>
+                                `).join('');
+                                resortsHtml += `
+                                    <div style="background:#fafafa; border-radius:12px; padding:15px; margin-bottom:12px; border-left:4px solid ${tourColor('AIRPORT')};">
+                                        <div style="font-weight:900; font-size:15px; margin-bottom:6px; color:#333;">🏨 ${resort}</div>
+                                        ${items}
+                                    </div>
+                                `;
+                            }
                             pickupHtml += `
-                                <div style="background:#fafafa; border-radius:12px; padding:15px; margin-bottom:15px; border-left:4px solid #555;">
-                                    <div style="font-weight:900; font-size:15px; margin-bottom:10px; color:#333;">🏨 ${resort}</div>
-                                    ${pickupData[resort].join('')}
+                                <div style="margin-bottom:20px;">
+                                    <div style="font-size:13px; font-weight:900; color:#ff6a00; margin-bottom:10px; padding-bottom:6px; border-bottom:2px solid #ff6a00;">📅 ${date}</div>
+                                    ${resortsHtml}
                                 </div>
                             `;
                         }
 
-                        // HTML 조립 - 투어 (시간순 정렬)
-                        const sortedTimes = Object.keys(tourData).sort();
-                        for (const time of sortedTimes) {
-                            tourHtml += `
-                                <div class="db-timeline-item">
-                                    <span class="db-time" style="font-size:14px; color:#ff6a00;">${time}</span>
-                                    <div style="flex:1;">
-                                        ${tourData[time].join('')}
+                        // ---- 투어: 날짜 → 시간 ----
+                        const tourEvents = events.filter(e => e.bucket === 'tour');
+                        const tourByDate = {};
+                        tourEvents.forEach(e => {
+                            const t = e.time || '미정';
+                            (tourByDate[e.date] = tourByDate[e.date] || {});
+                            (tourByDate[e.date][t] = tourByDate[e.date][t] || []).push(e);
+                        });
+                        const tourDates = Object.keys(tourByDate).sort((a, b) => mdSortKey(a) - mdSortKey(b));
+
+                        let tourHtml = '';
+                        for (const date of tourDates) {
+                            const sortedTimes = Object.keys(tourByDate[date]).sort();
+                            let timelineHtml = '';
+                            for (const time of sortedTimes) {
+                                const items = tourByDate[date][time].map(e => `
+                                    <div class="db-event" style="margin-bottom:8px; border-left-color:${tourColor(e.key)}; background:${tourColor(e.key)}14;">
+                                        <div style="font-size:12px; opacity:0.8; margin-bottom:4px; font-weight:700;">[${e.label}] - ${e.resort}</div>
+                                        <div style="font-weight:800; font-size:15px;">${e.name} <span style="font-weight:500; font-size:13px; color:#666;">(${e.pax}명)</span></div>
+                                        ${getMoneyBadge(e)}
                                     </div>
+                                `).join('');
+                                timelineHtml += `
+                                    <div class="db-timeline-item">
+                                        <span class="db-time" style="font-size:14px; color:#ff6a00;">${time}</span>
+                                        <div style="flex:1;">${items}</div>
+                                    </div>
+                                `;
+                            }
+                            tourHtml += `
+                                <div style="margin-bottom:20px;">
+                                    <div style="font-size:13px; font-weight:900; color:#ff6a00; margin-bottom:10px; padding-bottom:6px; border-bottom:2px solid #ff6a00;">📅 ${date}</div>
+                                    ${timelineHtml}
                                 </div>
                             `;
                         }
@@ -597,7 +745,63 @@
                         document.getElementById('db-sch-tour').innerHTML = tourHtml || '<p style="color:#aaa; text-align:center;">일정 없음</p>';
                     }
 
-                    // 📈 경영 대시보드 차트 렌더링
+                    // 📈 경영 대시보드 차트 렌더링 — 더미 수치 없이 실제 파싱 데이터 기반
+                    function computeTypeBreakdown(events) {
+                        const groupMap = {
+                            AIRPORT: '픽업/샌딩', SENDING: '픽업/샌딩', HOPPING: '호핑투어', MALUM: '말룸파티', SHARK: '고래상어',
+                            LAND: '랜드투어', DIVING: '액티비티', PARA: '액티비티', JETSKI: '액티비티', HELMET: '액티비티',
+                            MARIS: '마사지', HELIOS: '마사지', POSEIDON: '마사지', SSPA: '마사지', OTHER: '기타'
+                        };
+                        const colorMap = { '픽업/샌딩': AIRPORT_COLOR, '호핑투어': '#007aff', '말룸파티': '#34c759', '고래상어': '#af52de', '랜드투어': '#ffcc00', '액티비티': '#5ac8fa', '마사지': '#ff2d55', '기타': OTHER_COLOR };
+                        const order = ['픽업/샌딩', '호핑투어', '말룸파티', '고래상어', '랜드투어', '액티비티', '마사지', '기타'];
+                        const counts = {};
+                        events.filter(e => isThisMonth(e.date)).forEach(e => {
+                            const g = groupMap[e.key] || '기타';
+                            counts[g] = (counts[g] || 0) + 1;
+                        });
+                        const labels = order.filter(g => counts[g]);
+                        return { labels, data: labels.map(g => counts[g]), colors: labels.map(g => colorMap[g]) };
+                    }
+
+                    function computeWeeklyTrend(events) {
+                        const keys = ['HOPPING', 'MALUM', 'SHARK'];
+                        const labelMap = { HOPPING: '호핑', MALUM: '말룸', SHARK: '고래상어' };
+                        const colorMap = { HOPPING: '#007aff', MALUM: '#34c759', SHARK: '#af52de' };
+                        const perKeyWeekly = {}; keys.forEach(k => perKeyWeekly[k] = [0, 0, 0, 0, 0]);
+                        events.filter(e => isThisMonth(e.date) && keys.includes(e.key)).forEach(e => {
+                            const day = parseInt((e.date || '').split('/')[1], 10) || 1;
+                            const wIdx = Math.min(4, Math.floor((day - 1) / 7));
+                            perKeyWeekly[e.key][wIdx]++;
+                        });
+                        return {
+                            labels: ['1주차', '2주차', '3주차', '4주차', '5주차'],
+                            datasets: keys.map(k => ({ label: labelMap[k], data: perKeyWeekly[k], backgroundColor: colorMap[k], borderRadius: 6 }))
+                        };
+                    }
+
+                    function computeMonthlyRevenue(rows) {
+                        const sums = {};
+                        for (let i = 1; i < rows.length; i++) {
+                            const r = rows[i];
+                            if (!r) continue;
+                            const payDate = r[21]?.v;
+                            const amount = parseFloat(r[20]?.v);
+                            if (!payDate || isNaN(amount) || amount <= 0) continue;
+                            const mm = parseInt((payDate + '').split('/')[0], 10);
+                            if (!mm) continue;
+                            sums[mm] = (sums[mm] || 0) + amount;
+                        }
+                        const curMonth = new Date().getMonth() + 1;
+                        const labels = [], data = [];
+                        for (let k = 5; k >= 0; k--) {
+                            let m = curMonth - k;
+                            if (m <= 0) m += 12;
+                            labels.push(m + '월');
+                            data.push(sums[m] || 0);
+                        }
+                        return { labels, data };
+                    }
+
                     window.renderManagementDashboard = function() {
                         const mArea = document.getElementById('db-management');
                         // 차트 캔버스가 없으면 주입
@@ -607,62 +811,65 @@
                                     <h2 style="margin:0; font-size:22px; font-weight:900;">📈 경영 대시보드</h2>
                                     <button class="btn-db-close" onclick="closeDashboard()"><span class="material-icons">close</span> 닫기</button>
                                 </div>
-                                <div style="display:grid; grid-template-columns:2fr 1fr; gap:20px; margin-bottom:30px;">
+                                <div style="display:grid; grid-template-columns:2fr 1fr; gap:20px; margin-bottom:20px;">
                                     <div class="db-card" id="mgmt-chart-area">
-                                        <h3 style="margin:0 0 20px;">월간 투어 예약 트렌드</h3>
-                                        <canvas id="trendChart" height="120"></canvas>
+                                        <h3 style="margin:0 0 20px;">주차별 예약 추이 (호핑 · 말룸 · 고래상어, 이번 달)</h3>
+                                        <div style="position:relative; height:280px;"><canvas id="trendChart"></canvas></div>
                                     </div>
                                     <div class="db-card">
-                                        <h3 style="margin:0 0 20px;">상품별 예약 점유율</h3>
-                                        <canvas id="ratioChart" height="200"></canvas>
+                                        <h3 style="margin:0 0 20px;">투어 유형별 예약 분포 (이번 달)</h3>
+                                        <div style="position:relative; height:280px;"><canvas id="ratioChart"></canvas></div>
                                     </div>
+                                </div>
+                                <div class="db-card">
+                                    <h3 style="margin:0 0 20px;">월별 매출 추이 (최근 6개월)</h3>
+                                    <div style="position:relative; height:220px;"><canvas id="revenueChart"></canvas></div>
                                 </div>
                             `;
                         }
 
-                        // 데이터 계산
+                        const events = window.gScheduleEvents || [];
                         const rows = window.gSheetData || [];
-                        let counts = { '호핑투어':0, '말룸파티':0, '고래상어':0, '마사지':0 };
-                        
-                        for(let i=1; i<rows.length; i++) {
-                            const rem = (rows[i][16]?.v || '').toString().toUpperCase();
-                            if(rem.includes('HOP')||rem.includes('호핑')) counts['호핑투어']++;
-                            if(rem.includes('MALUM')||rem.includes('말룸')) counts['말룸파티']++;
-                            if(rem.includes('SHARK')||rem.includes('고래')) counts['고래상어']++;
-                            if(rem.includes('SPA')||rem.includes('마사지')) counts['마사지']++;
-                        }
+                        const trend = computeWeeklyTrend(events);
+                        const breakdown = computeTypeBreakdown(events);
+                        const revenue = computeMonthlyRevenue(rows);
 
                         // 기존 차트 파괴 (리렌더링 시 오류 방지)
-                        if(window.trendChartInst) window.trendChartInst.destroy();
-                        if(window.ratioChartInst) window.ratioChartInst.destroy();
+                        if (window.trendChartInst) window.trendChartInst.destroy();
+                        if (window.ratioChartInst) window.ratioChartInst.destroy();
+                        if (window.revenueChartInst) window.revenueChartInst.destroy();
 
-                        // 막대 차트
+                        // 막대 차트 — 주차별 예약 추이
                         const ctx1 = document.getElementById('trendChart').getContext('2d');
                         window.trendChartInst = new Chart(ctx1, {
                             type: 'bar',
-                            data: {
-                                labels: ['1주차', '2주차', '3주차', '이번 달 총합'],
-                                datasets: [
-                                    { label: '호핑투어', data: [12, 19, 15, counts['호핑투어']||0], backgroundColor: '#007aff', borderRadius: 6 },
-                                    { label: '말룸파티', data: [8, 12, 10, counts['말룸파티']||0], backgroundColor: '#34c759', borderRadius: 6 }
-                                ]
-                            },
-                            options: { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } }
+                            data: { labels: trend.labels, datasets: trend.datasets },
+                            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
                         });
 
-                        // 도넛 차트
+                        // 도넛 차트 — 투어 유형별 분포
                         const ctx2 = document.getElementById('ratioChart').getContext('2d');
                         window.ratioChartInst = new Chart(ctx2, {
                             type: 'doughnut',
                             data: {
-                                labels: ['호핑', '말룸', '고래', '마사지'],
+                                labels: breakdown.labels,
+                                datasets: [{ data: breakdown.data, backgroundColor: breakdown.colors, borderWidth: 0 }]
+                            },
+                            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, cutout: '75%' }
+                        });
+
+                        // 라인 차트 — 월별 매출 추이 (입금날짜/입금 컬럼 기반 실데이터)
+                        const ctx3 = document.getElementById('revenueChart').getContext('2d');
+                        window.revenueChartInst = new Chart(ctx3, {
+                            type: 'line',
+                            data: {
+                                labels: revenue.labels,
                                 datasets: [{
-                                    data: [counts['호핑투어']||0, counts['말룸파티']||0, counts['고래상어']||0, counts['마사지']||0],
-                                    backgroundColor: ['#007aff', '#34c759', '#af52de', '#ff2d55'],
-                                    borderWidth: 0
+                                    label: '매출 (₱)', data: revenue.data, borderColor: '#ff6a00',
+                                    backgroundColor: 'rgba(255,106,0,0.08)', fill: true, tension: 0.3, borderWidth: 2, pointRadius: 4
                                 }]
                             },
-                            options: { responsive: true, plugins: { legend: { position: 'bottom' } }, cutout: '75%' }
+                            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
                         });
                     }
 
@@ -729,24 +936,27 @@
                 <h2 style="margin:0; font-size:22px; font-weight:900;">📊 영업 대시보드</h2>
                 <button class="btn-db-close" onclick="closeDashboard()"><span class="material-icons">close</span> 닫기</button>
             </div>
-            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">
-                <div class="db-card" style="border-left:5px solid #ff6a00;"><div class="db-icon">🚐</div><h3>픽업샌딩</h3><div class="db-count" id="db-pickup">-</div><p>예약 건</p></div>
-                <div class="db-card" style="border-left:5px solid #007aff;"><div class="db-icon">⛵</div><h3>블랙펄 요트 호핑투어</h3><div class="db-count" id="db-hopping">-</div><p>예약 건</p></div>
-                <div class="db-card" style="border-left:5px solid #34c759;"><div class="db-icon">🌿</div><h3>시크릿가든 말룸파티</h3><div class="db-count" id="db-malum">-</div><p>예약 건</p></div>
-                <div class="db-card" style="border-left:5px solid #af52de;"><div class="db-icon">🦈</div><h3>고래상어</h3><div class="db-count" id="db-whale">-</div><p>예약 건</p></div>
-                <div class="db-card" style="border-left:5px solid #ff2d55;"><div class="db-icon">💆</div><h3>마사지</h3><div class="db-count" id="db-massage">-</div><p>예약 건</p></div>
-                <div class="db-card" style="border-left:5px solid #5ac8fa;"><div class="db-icon">🏄</div><h3>해양스포츠</h3><div class="db-count" id="db-activity">-</div><p>예약 건</p></div>
+            <p style="margin:-15px 0 15px; color:#aaa; font-size:13px;">이번 달 기준 · 스케줄 관리와 동일한 데이터에서 집계</p>
+            <div id="sales-card-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">
+                <p style="color:#aaa; text-align:center; grid-column:1/-1;">데이터를 불러오는 중...</p>
             </div>
         </div>
 
-        <!-- 2. 스케줄 관리 -->
+        <!-- 2. 스케줄 관리 (오늘/내일만 표시) -->
         <div id="db-schedule" class="db-panel" style="display:none;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
-                <div style="display:flex; align-items:center; gap:15px;">
-                    <h2 style="margin:0; font-size:22px; font-weight:900;">📅 스케줄 관리</h2>
-                    <button class="btn-action-received" style="height:32px; font-size:13px; background:#333; border:none; border-radius:8px; padding:0 15px;" onclick="printScheduleEnglish()">🖨️ English Print</button>
-                </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h2 style="margin:0; font-size:22px; font-weight:900;">📅 스케줄 관리</h2>
                 <button class="btn-db-close" onclick="closeDashboard()"><span class="material-icons">close</span> 닫기</button>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; flex-wrap:wrap; gap:10px;">
+                <div style="display:flex; gap:8px;">
+                    <button class="btn-action-received" id="sch-tab-today" style="height:34px; font-size:13px; background:#ff6a00; border:none; border-radius:8px; padding:0 16px;" onclick="setScheduleDay(0)">오늘</button>
+                    <button class="btn-action-received" id="sch-tab-tomorrow" style="height:34px; font-size:13px; background:#ddd; color:#333; border:none; border-radius:8px; padding:0 16px;" onclick="setScheduleDay(1)">내일</button>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn-action-received" style="height:34px; font-size:13px; background:#333; border:none; border-radius:8px; padding:0 15px;" onclick="printScheduleEnglish(0)">🖨️ 오늘 프린트</button>
+                    <button class="btn-action-received" style="height:34px; font-size:13px; background:#333; border:none; border-radius:8px; padding:0 15px;" onclick="printScheduleEnglish(1)">🖨️ 내일 프린트</button>
+                </div>
             </div>
             <div style="display:grid; grid-template-columns:340px 1fr; gap:20px;">
                 <div class="db-column"><div class="db-column-header">🛬 픽업샌딩</div><div id="db-sch-pickup" class="db-list"><p style="color:#aaa; text-align:center;">일정 없음</p></div></div>
@@ -755,74 +965,38 @@
         </div>
 
         <script>
-            window.printScheduleEnglish = function() {
-                const rows = window.gSheetData;
-                if (!rows || rows.length < 2) {
+            window.printScheduleEnglish = function(dayOffset) {
+                const allEvents = window.gScheduleEvents;
+                if (!allEvents || allEvents.length === 0) {
                     alert('데이터를 불러오는 중입니다.');
                     return;
                 }
+                const targetDate = getDayStr(dayOffset || 0);
+                const dayLabel = dayOffset === 1 ? 'Tomorrow' : 'Today';
+                const events = allEvents.filter(e => e.date === targetDate);
 
-                let pickupData = {};
-                let tourData = {};
-
-                for (let i = 1; i < rows.length; i++) {
-                    const r = rows[i];
-                    const dep = r[1]?.v;
-                    if (!dep) continue;
-                    
-                    const fin = r[2]?.v;
-                    const fout = r[3]?.v;
-                    const send = r[4]?.v;
-                    const resort = r[9]?.v || 'TBD';
-                    const name = r[10]?.v || '';
-                    const pax = r[11]?.v || '';
-                    const remarks = (r[16]?.v || '').toString();
-                    
-                    let getMoneyStr = '';
-                    const m = remarks.match(/get\s*[\$₱]?\s*(\d+)/i);
-                    if (m) getMoneyStr = 'Collect: $' + m[1];
-                    const isYellow = (r[1]?.bg === '#ffff00' || r[1]?.bg === '#fff2cc' || r[16]?.bg === '#ffff00');
-                    if (isYellow) getMoneyStr = '';
-
-                    // 1. Pickup/Sending
-                    if (fin || fout || send) {
-                        if (!pickupData[resort]) pickupData[resort] = [];
-                        let typeStr = '';
-                        if (fin) typeStr += `[IN:${fin}] `;
-                        if (fout) typeStr += `[OUT:${fout}] `;
-                        if (send) typeStr += `[SEND:${send}] `;
-                        
-                        pickupData[resort].push(`
-                            <div class="item">
-                                <span style="font-weight:bold;">${name}</span> (${pax} pax) 
-                                - <span style="color:#555;">${typeStr}</span>
-                                ${getMoneyStr ? `<span class="get-money">${getMoneyStr}</span>` : ''}
-                            </div>
-                        `);
-                    }
-
-                    // 2. Tours
-                    let tourType = '';
-                    let tourTime = 'TBD';
-                    const rUp = remarks.toUpperCase();
-                    if (rUp.includes('HOP') || rUp.includes('호핑')) tourType = 'Hopping Tour';
-                    else if (rUp.includes('MALUM') || rUp.includes('말룸')) tourType = 'Malumpati';
-                    else if (rUp.includes('SHARK') || rUp.includes('고래')) tourType = 'Whale Shark';
-                    else if (rUp.includes('SPA') || rUp.includes('마사지')) tourType = 'Spa/Massage';
-                    
-                    const timeMatch = remarks.match(/(\d{1,2}:\d{2})/);
-                    if (timeMatch) tourTime = timeMatch[1];
-
-                    if (tourType) {
-                        if (!tourData[tourTime]) tourData[tourTime] = [];
-                        tourData[tourTime].push(`
-                            <div class="item">
-                                <span style="font-weight:bold;">[${tourType}] ${resort}</span> - ${name} (${pax} pax)
-                                ${getMoneyStr ? `<span class="get-money">${getMoneyStr}</span>` : ''}
-                            </div>
-                        `);
-                    }
+                function getMoneyTag(e) {
+                    return e.getMoney ? `<span class="get-money">Collect: ${e.getMoney}</span>` : '';
                 }
+
+                // ---- Pickup/Sending: date -> resort ----
+                const pickupEvents = events.filter(e => e.bucket === 'pickup');
+                const pickupByDate = {};
+                pickupEvents.forEach(e => {
+                    (pickupByDate[e.date] = pickupByDate[e.date] || {});
+                    (pickupByDate[e.date][e.resort] = pickupByDate[e.date][e.resort] || []).push(e);
+                });
+                const pickupDates = Object.keys(pickupByDate).sort((a, b) => mdSortKey(a) - mdSortKey(b));
+
+                // ---- Tours: date -> time ----
+                const tourEvents = events.filter(e => e.bucket === 'tour');
+                const tourByDate = {};
+                tourEvents.forEach(e => {
+                    const t = e.time || 'TBD';
+                    (tourByDate[e.date] = tourByDate[e.date] || {});
+                    (tourByDate[e.date][t] = tourByDate[e.date][t] || []).push(e);
+                });
+                const tourDates = Object.keys(tourByDate).sort((a, b) => mdSortKey(a) - mdSortKey(b));
 
                 let html = `
                     <html>
@@ -832,41 +1006,60 @@
                             body { font-family: sans-serif; font-size: 14px; padding: 20px; line-height: 1.5; }
                             h1 { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
                             h2 { background: #eee; padding: 5px 10px; margin-top: 30px; }
-                            .resort-name { font-size: 16px; font-weight: bold; margin-top: 15px; color: #333; }
+                            .date-block { font-size: 17px; font-weight: bold; margin-top: 20px; color: #ff6a00; border-bottom: 2px solid #ff6a00; padding-bottom: 4px; }
+                            .resort-name { font-size: 16px; font-weight: bold; margin-top: 12px; color: #333; }
                             .item { padding: 4px 0; border-bottom: 1px dashed #ccc; }
-                            .time-block { font-size: 15px; font-weight: bold; margin-top: 15px; color: #ff6a00; border-bottom: 1px solid #ff6a00; padding-bottom: 3px; }
+                            .time-block { font-size: 15px; font-weight: bold; margin-top: 12px; color: #555; border-bottom: 1px solid #ccc; padding-bottom: 3px; }
                             .get-money { color: red; font-weight: bold; margin-left: 10px; border: 1px solid red; padding: 1px 4px; font-size: 11px; }
                         </style>
                     </head>
                     <body>
-                        <h1>Boracay Sean - Daily Schedule</h1>
-                        
-                        <h2>🚐 Pick-up & Sending</h2>
-                `;
-                
-                let pCount = 0;
-                for (const resort in pickupData) {
-                    pCount++;
-                    html += `<div class="resort-name">🏨 ${resort}</div>`;
-                    html += pickupData[resort].join('');
-                }
-                if (pCount === 0) html += '<p>No Pick-up/Sending schedules.</p>';
+                        <h1>Boracay Sean - Schedule (${dayLabel}, ${targetDate})</h1>
 
-                html += `<h2>⛵ Tours (By Time)</h2>`;
-                const sortedTimes = Object.keys(tourData).sort();
-                if (sortedTimes.length === 0) {
+                        <h2>Pick-up &amp; Sending</h2>
+                `;
+
+                if (pickupDates.length === 0) {
+                    html += '<p>No Pick-up/Sending schedules.</p>';
+                } else {
+                    for (const date of pickupDates) {
+                        html += `<div class="date-block">${date}</div>`;
+                        for (const resort in pickupByDate[date]) {
+                            html += `<div class="resort-name">${resort}</div>`;
+                            html += pickupByDate[date][resort].map(e => `
+                                <div class="item">
+                                    <span style="font-weight:bold;">${e.name}</span> (${e.pax} pax)
+                                    - <span style="color:#555;">${e.labelEn}${e.raw ? ' [' + e.raw + ']' : ''}</span>
+                                    ${getMoneyTag(e)}
+                                </div>
+                            `).join('');
+                        }
+                    }
+                }
+
+                html += `<h2>Tours (By Date / Time)</h2>`;
+                if (tourDates.length === 0) {
                     html += '<p>No Tour schedules.</p>';
                 } else {
-                    for (const time of sortedTimes) {
-                        html += `<div class="time-block">⏰ ${time}</div>`;
-                        html += tourData[time].join('');
+                    for (const date of tourDates) {
+                        html += `<div class="date-block">${date}</div>`;
+                        const sortedTimes = Object.keys(tourByDate[date]).sort();
+                        for (const time of sortedTimes) {
+                            html += `<div class="time-block">${time}</div>`;
+                            html += tourByDate[date][time].map(e => `
+                                <div class="item">
+                                    <span style="font-weight:bold;">[${e.labelEn}] ${e.resort}</span> - ${e.name} (${e.pax} pax)
+                                    ${getMoneyTag(e)}
+                                </div>
+                            `).join('');
+                        }
                     }
                 }
 
                 html += `
                         <script>
                             window.onload = function() { window.print(); }
-                        </script>
+                        <\/script>
                     </body>
                     </html>
                 `;
@@ -883,35 +1076,54 @@
                 <h2 style="margin:0; font-size:22px; font-weight:900;">💰 손익 대시보드</h2>
                 <button class="btn-db-close" onclick="closeDashboard()"><span class="material-icons">close</span> 닫기</button>
             </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:30px;">
-                <div class="db-card" style="background:#ff6a00; color:#fff; border:none;"><p style="opacity:.8; margin:0 0 10px;">Total Income (이번 달)</p><div style="font-size:38px; font-weight:900;" id="db-income">₩ --</div><p style="opacity:.8; margin:5px 0 0; font-size:13px;">Google Sheets 연동</p></div>
-                <div class="db-card"><p style="color:#888; margin:0 0 10px;">Total Spending (이번 달)</p><div style="font-size:38px; font-weight:900; color:#ff2d55;" id="db-spending">₩0</div></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; margin-bottom:30px;">
+                <div class="db-card" style="background:#ff6a00; color:#fff; border:none;"><p style="opacity:.8; margin:0 0 10px;">Total Income (이번 달)</p><div style="font-size:32px; font-weight:900;" id="db-income">₩ --</div><p style="opacity:.8; margin:5px 0 0; font-size:13px;">Google Sheets 연동</p></div>
+                <div class="db-card"><p style="color:#888; margin:0 0 10px;">Total Spending (이번 달)</p><div style="font-size:32px; font-weight:900; color:#ff2d55;" id="db-spending">₩0</div></div>
+                <div class="db-card"><p style="color:#888; margin:0 0 10px;">오피스 사용비용</p><div style="font-size:32px; font-weight:900; color:#5856d6;" id="db-office-cost">₱0</div></div>
             </div>
-            <div class="db-card">
+            <div class="db-card" style="margin-bottom:20px;">
                 <h3 style="margin:0 0 20px;">지출 내역 등록</h3>
                 <form id="db-expense-form" onsubmit="addExpense(event)" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
                     <input type="date" id="exp-date" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:130px;" required>
-                    <select id="exp-category" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:110px;">
-                        <option value="투어비용">투어비용</option>
-                        <option value="픽샌비용">픽샌비용</option>
-                        <option value="오피스비용">오피스비용</option>
-                        <option value="기타비용">기타비용</option>
+                    <select id="exp-tour" style="flex:1.4; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:160px;" required>
+                        <option value="PICKUP">픽업/샌딩</option>
+                        <option value="HOPPING">블랙펄 요트호핑투어</option>
+                        <option value="MALUM">시크릿가든 말룸파티</option>
+                        <option value="SHARK">리버타드 고래상어</option>
+                        <option value="LAND">보라카이 랜드투어</option>
+                        <option value="DIVING">체험다이빙</option>
+                        <option value="PARA">파라세일링</option>
+                        <option value="JETSKI">제트스키</option>
+                        <option value="HELMET">헬멧다이빙</option>
+                        <option value="MARIS">마리스 스파</option>
+                        <option value="HELIOS">헬리오스 스파</option>
+                        <option value="POSEIDON">포세이돈 스파</option>
+                        <option value="SSPA">에스파 (S-SPA)</option>
+                        <option value="OFFICE">오피스비용</option>
+                        <option value="OTHER">기타비용</option>
                     </select>
-                    <input type="text" id="exp-detail" placeholder="내역 (예: 호핑 23명 / 샌딩 20명)" style="flex:2; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:150px;" required>
-                    <input type="text" id="exp-staff" placeholder="담당자" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:100px;" required>
+                    <input type="number" id="exp-pax" placeholder="인원수" min="0" style="flex:0.7; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:90px;">
+                    <input type="text" id="exp-detail" placeholder="내역 (선택, 비우면 자동생성)" style="flex:1.6; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:150px;">
+                    <input type="text" id="exp-staff" placeholder="담당자 (실제 처리한 사람)" style="flex:1.2; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:130px;" required>
                     <input type="number" id="exp-amount" placeholder="금액(₱)" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:120px;" required>
                     <button type="submit" style="background:#ff6a00; color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:700;">등록</button>
                 </form>
                 <table style="width:100%; border-collapse:collapse;">
                     <thead><tr style="border-bottom:2px solid #eee;">
                         <th style="padding:12px; text-align:left; color:#888; font-size:13px;">날짜</th>
-                        <th style="padding:12px; text-align:left; color:#888; font-size:13px;">분류</th>
+                        <th style="padding:12px; text-align:left; color:#888; font-size:13px;">투어</th>
+                        <th style="padding:12px; text-align:left; color:#888; font-size:13px;">인원</th>
                         <th style="padding:12px; text-align:left; color:#888; font-size:13px;">내역</th>
                         <th style="padding:12px; text-align:left; color:#888; font-size:13px;">담당자</th>
+                        <th style="padding:12px; text-align:left; color:#888; font-size:13px;">등록자</th>
                         <th style="padding:12px; text-align:right; color:#888; font-size:13px;">금액(₱)</th>
                     </tr></thead>
                     <tbody id="db-expense-list"></tbody>
                 </table>
+            </div>
+            <div class="db-card">
+                <h3 style="margin:0 0 15px;">투어별 1인당 비용 (1/n)</h3>
+                <div id="db-tour-cost-summary"></div>
             </div>
         </div>
 
@@ -923,8 +1135,8 @@
             </div>
             <div class="db-card" style="text-align:center; padding:60px 20px;">
                 <div style="font-size:60px; margin-bottom:20px;">📊</div>
-                <h3 style="font-size:22px; margin:0 0 10px;">경영 통계 분석 (준비중)</h3>
-                <p style="color:#aaa;">월별/연도별 예약 성장 추이 및 매출 통계가 업데이트될 예정입니다.</p>
+                <h3 style="font-size:22px; margin:0 0 10px;">데이터를 불러오는 중...</h3>
+                <p style="color:#aaa;">구글 시트 연동 후 실데이터 기반 차트가 표시됩니다.</p>
             </div>
         </div>
     </div>
@@ -962,47 +1174,106 @@
             document.getElementById('dashboard-overlay').style.display = 'none';
         };
 
-        // 지출 내역 (localStorage)
+        // 지출 내역 (localStorage) — 투어별 카테고리 + 인원수 + 등록자(로그인 관리자, 자동/고정) 기록
+        const EXPENSE_EXTRA_LABEL = { OFFICE: '오피스비용', OTHER: '기타비용' };
+        function expenseTourLabel(key) {
+            return (window.SALES_CARD_LABEL && window.SALES_CARD_LABEL[key]) || EXPENSE_EXTRA_LABEL[key] || key;
+        }
+
         window.addExpense = function(e) {
             e.preventDefault();
-            const date     = document.getElementById('exp-date').value;
-            const category = document.getElementById('exp-category').value;
-            const detail   = document.getElementById('exp-detail').value;
-            const staff    = document.getElementById('exp-staff').value;
-            const amount   = document.getElementById('exp-amount').value;
-            
-            if (!date || !detail || !staff || !amount) { alert('모든 항목을 입력해주세요.'); return; }
+            const date   = document.getElementById('exp-date').value;
+            const tour   = document.getElementById('exp-tour').value;
+            const pax    = document.getElementById('exp-pax').value;
+            let detail   = document.getElementById('exp-detail').value.trim();
+            const staff  = document.getElementById('exp-staff').value;
+            const amount = document.getElementById('exp-amount').value;
+
+            if (!date || !staff || !amount) { alert('날짜 / 담당자 / 금액은 필수입니다.'); return; }
+
+            // 내역을 비워두면 "투어명 N명" 형태로 자동 생성
+            if (!detail) {
+                const tourLabel = expenseTourLabel(tour);
+                detail = pax ? `${tourLabel} ${pax}명` : tourLabel;
+            }
+
+            const registeredBy = sessionStorage.getItem('adminId') || '';
 
             const expenses = JSON.parse(localStorage.getItem('bs_expenses_v2') || '[]');
-            expenses.push({ id: Date.now(), date, category, detail, staff, amount: Number(amount) });
+            expenses.push({ id: Date.now(), date, tour, pax: pax ? Number(pax) : 0, detail, staff, registeredBy, amount: Number(amount) });
             localStorage.setItem('bs_expenses_v2', JSON.stringify(expenses));
-            
-            // 폼 초기화 시 이름 유지
+
+            // 폼 초기화 (담당자는 유지)
+            document.getElementById('exp-pax').value = '';
             document.getElementById('exp-detail').value = '';
             document.getElementById('exp-amount').value = '';
-            
+
             renderExpenses();
         };
 
+        // 날짜(YYYY-MM-DD)가 이번 달인지 확인 — 손익 대시보드는 다른 달 지출과 합산되면 안 됨
+        function isExpenseThisMonth(dateStr) {
+            if (!dateStr) return false;
+            const d = new Date(dateStr + 'T00:00:00');
+            const now = new Date();
+            return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+        }
+
         function renderExpenses() {
-            const expenses = JSON.parse(localStorage.getItem('bs_expenses_v2') || '[]');
+            const allExpenses = JSON.parse(localStorage.getItem('bs_expenses_v2') || '[]');
+            const expenses = allExpenses.filter(e => isExpenseThisMonth(e.date));
             const tbody    = document.getElementById('db-expense-list');
             if (!tbody) return;
+
             let total = 0;
+            let officeTotal = 0;
+            const byTour = {}; // { key: { amount, pax } } — 투어별 1/n 계산용
+
             tbody.innerHTML = [...expenses].reverse().map(e => {
                 total += e.amount;
+                if (e.tour === 'OFFICE') officeTotal += e.amount;
+
+                if (e.tour && e.tour !== 'OFFICE' && e.tour !== 'OTHER') {
+                    if (!byTour[e.tour]) byTour[e.tour] = { amount: 0, pax: 0 };
+                    byTour[e.tour].amount += e.amount;
+                    byTour[e.tour].pax += (e.pax || 0);
+                }
+
+                // 구버전 항목(category 필드만 있음) 호환
+                const tourLabel = e.tour ? expenseTourLabel(e.tour) : (e.category || '-');
+
                 return `<tr style="border-bottom:1px solid #f0f0f0;">
                     <td style="padding:12px; font-size:14px;">${e.date}</td>
-                    <td style="padding:12px; font-size:14px;"><span style="background:#f4f7f6; padding:4px 8px; border-radius:4px; font-size:12px; color:#555; font-weight:600;">${e.category}</span></td>
+                    <td style="padding:12px; font-size:14px;"><span style="background:#f4f7f6; padding:4px 8px; border-radius:4px; font-size:12px; color:#555; font-weight:600;">${tourLabel}</span></td>
+                    <td style="padding:12px; font-size:14px;">${e.pax ? e.pax + '명' : '-'}</td>
                     <td style="padding:12px; font-size:14px; font-weight:600;">${e.detail}</td>
                     <td style="padding:12px; font-size:14px;">${e.staff}</td>
+                    <td style="padding:12px; font-size:14px; color:#888;">${e.registeredBy || '-'}</td>
                     <td style="padding:12px; font-size:14px; color:#ff2d55; font-weight:700; text-align:right;">-₱${e.amount.toLocaleString()}</td>
                 </tr>`;
             }).join('');
+
             const el = document.getElementById('db-spending');
             if (el) el.innerText = '₱ ' + total.toLocaleString();
-            
-            // 로그인한 사람 자동 맵핑 로직
+            const officeEl = document.getElementById('db-office-cost');
+            if (officeEl) officeEl.innerText = '₱ ' + officeTotal.toLocaleString();
+
+            // 투어별 1인당 비용(1/n) 요약
+            const summaryEl = document.getElementById('db-tour-cost-summary');
+            if (summaryEl) {
+                const keys = Object.keys(byTour);
+                summaryEl.innerHTML = keys.length ? keys.map(key => {
+                    const { amount, pax } = byTour[key];
+                    const perPax = pax > 0 ? Math.round(amount / pax) : null;
+                    return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f0f0f0; font-size:14px;">
+                        <span style="font-weight:700;">${expenseTourLabel(key)}</span>
+                        <span style="color:#888;">₱${amount.toLocaleString()} / ${pax}명</span>
+                        <span style="font-weight:800; color:#ff6a00;">${perPax !== null ? '1인당 ₱' + perPax.toLocaleString() : '인원 미입력'}</span>
+                    </div>`;
+                }).join('') : '<p style="color:#aaa; text-align:center;">투어별 지출 데이터가 없습니다.</p>';
+            }
+
+            // 로그인한 관리자를 담당자 입력창 기본값으로 (필요 시 수정 가능)
             const adminId = document.getElementById('fx-greeting-admin-id');
             const expStaff = document.getElementById('exp-staff');
             if (adminId && expStaff && !expStaff.value) {

@@ -18,6 +18,14 @@
       { "source": "/cart", "destination": "/cart.html" },
       { "source": "/mypage", "destination": "/mypage.html" },
       { "source": "/about-us", "destination": "/about-us.html" }
+    ],
+    "headers": [
+      {
+        "source": "/admin",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        ]
+      }
     ]
   },
   "firestore": {

@@ -627,13 +627,15 @@
 
                         // 매출 계산 — "이번 달" 기준은 입금날짜가 아니라 이번 달 시트(탭) 자체.
                         // 지난달 시트에서 병합해 온 행은 매출 합산에서 제외한다.
+                        // 고객명(컬럼11)이 있는 행만 실제 예약 건이므로, 정산/메모성 행(리조트 입금·출금 등)은 제외한다.
+                        // 금액은 음수(환불/보정)도 그대로 포함해서 순매출을 반영한다.
                         let thisMonthIncome = 0;
                         const incomeRows = currentMonthRows || rows;
                         for (let i = 1; i < incomeRows.length; i++) {
                             const row = incomeRows[i];
-                            if (!row || !row[1]) continue;
+                            if (!row || !row[11]?.v) continue; // NAME 없으면 제외
                             const amount = parseFloat(row[20]?.v); // 입금
-                            if (!isNaN(amount) && amount > 0) thisMonthIncome += amount;
+                            if (!isNaN(amount)) thisMonthIncome += amount;
                         }
 
                         // 메인 통계 업데이트

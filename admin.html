@@ -722,43 +722,52 @@
                             return e.getMoney ? `<div style="display:inline-block; margin-top:4px; padding:2px 6px; background:#fff3cd; color:#856404; font-size:11px; border-radius:4px; font-weight:700;">Get: ${e.getMoney}</div>` : '';
                         }
 
-                        // ---- 픽업/샌딩: 날짜 → 리조트 ----
-                        const pickupEvents = events.filter(e => e.bucket === 'pickup');
-                        const pickupByDate = {};
-                        pickupEvents.forEach(e => {
-                            (pickupByDate[e.date] = pickupByDate[e.date] || {});
-                            (pickupByDate[e.date][e.resort] = pickupByDate[e.date][e.resort] || []).push(e);
-                        });
-                        const pickupDates = Object.keys(pickupByDate).sort((a, b) => mdSortKey(a) - mdSortKey(b));
-
-                        let pickupHtml = '';
-                        for (const date of pickupDates) {
-                            let resortsHtml = '';
-                            for (const resort in pickupByDate[date]) {
-                                const items = [...pickupByDate[date][resort]].sort((a, b) => (a.time || '').localeCompare(b.time || '')).map(e => `
-                                    <div style="padding:10px 0; border-bottom:1px solid #eee;">
-                                        <div style="display:flex; justify-content:space-between; align-items:center; margin:0 0 4px;">
+                        // ---- 픽업/샌딩: 픽업/샌딩 구분 → 시간순 → 리조트 ----
+                        // (날짜는 오늘/내일 탭으로 이미 한 개로 좁혀져 있으므로 그룹핑 기준에서 제외)
+                        function renderPickSendGroup(items) {
+                            const byTime = {};
+                            items.forEach(e => {
+                                const t = e.time || '미정';
+                                (byTime[t] = byTime[t] || {});
+                                (byTime[t][e.resort] = byTime[t][e.resort] || []).push(e);
+                            });
+                            const times = Object.keys(byTime).sort();
+                            let html = '';
+                            for (const time of times) {
+                                let resortsHtml = '';
+                                for (const resort in byTime[time]) {
+                                    const rows = byTime[time][resort].map(e => `
+                                        <div style="padding:8px 0; border-bottom:1px solid #eee;">
                                             <div style="font-weight:700;">${e.name} <span style="color:#888; font-size:12px;">(${e.pax}명)</span></div>
-                                            ${e.time ? `<span style="font-size:12px; font-weight:800; color:#ff6a00;">${e.time}</span>` : ''}
+                                            <div style="font-size:12px; color:#555;">${e.raw || ''}</div>
+                                            ${getMoneyBadge(e)}
                                         </div>
-                                        <div style="font-size:12px; color:#555;">${e.label}${e.raw ? ' · ' + e.raw : ''}</div>
-                                        ${getMoneyBadge(e)}
-                                    </div>
-                                `).join('');
-                                resortsHtml += `
-                                    <div style="background:#fafafa; border-radius:12px; padding:15px; margin-bottom:12px; border-left:4px solid ${tourColor('PICKUP')};">
-                                        <div style="font-weight:900; font-size:15px; margin-bottom:6px; color:#333;">🏨 ${resort}</div>
-                                        ${items}
+                                    `).join('');
+                                    resortsHtml += `
+                                        <div style="background:#fafafa; border-radius:12px; padding:12px 15px; margin-bottom:10px; border-left:4px solid ${tourColor('PICKUP')};">
+                                            <div style="font-weight:900; font-size:14px; margin-bottom:4px; color:#333;">🏨 ${resort}</div>
+                                            ${rows}
+                                        </div>
+                                    `;
+                                }
+                                html += `
+                                    <div style="margin-bottom:14px;">
+                                        <div style="font-size:13px; font-weight:900; color:#ff6a00; margin-bottom:8px;">⏰ ${time}</div>
+                                        ${resortsHtml}
                                     </div>
                                 `;
                             }
-                            pickupHtml += `
-                                <div style="margin-bottom:20px;">
-                                    <div style="font-size:13px; font-weight:900; color:#ff6a00; margin-bottom:10px; padding-bottom:6px; border-bottom:2px solid #ff6a00;">📅 ${date}</div>
-                                    ${resortsHtml}
-                                </div>
-                            `;
+                            return html || '<p style="color:#aaa; text-align:center; padding:10px 0;">일정 없음</p>';
                         }
+
+                        const pickupItems = events.filter(e => e.key === 'PICKUP');
+                        const sendingItems = events.filter(e => e.key === 'SENDING');
+                        const pickupHtml = `
+                            <div style="font-weight:900; font-size:14px; color:#111; margin-bottom:10px;">🛫 픽업</div>
+                            ${renderPickSendGroup(pickupItems)}
+                            <div style="font-weight:900; font-size:14px; color:#111; margin:18px 0 10px; padding-top:14px; border-top:1px solid #eee;">🛬 샌딩</div>
+                            ${renderPickSendGroup(sendingItems)}
+                        `;
 
                         // ---- 투어: 날짜 → 시간 ----
                         const tourEvents = events.filter(e => e.bucket === 'tour');
@@ -1037,14 +1046,20 @@
                     return e.getMoney ? `<span class="get-money">Collect: ${e.getMoney}</span>` : '';
                 }
 
-                // ---- Pickup/Sending: date -> resort ----
-                const pickupEvents = events.filter(e => e.bucket === 'pickup');
-                const pickupByDate = {};
-                pickupEvents.forEach(e => {
-                    (pickupByDate[e.date] = pickupByDate[e.date] || {});
-                    (pickupByDate[e.date][e.resort] = pickupByDate[e.date][e.resort] || []).push(e);
-                });
-                const pickupDates = Object.keys(pickupByDate).sort((a, b) => mdSortKey(a) - mdSortKey(b));
+                // ---- Pickup/Sending: category (Pickup/Sending) -> time -> resort ----
+                function groupPickSendEn(items) {
+                    const byTime = {};
+                    items.forEach(e => {
+                        const t = e.time || 'TBD';
+                        (byTime[t] = byTime[t] || {});
+                        (byTime[t][e.resort] = byTime[t][e.resort] || []).push(e);
+                    });
+                    return byTime;
+                }
+                const pickupItems = events.filter(e => e.key === 'PICKUP');
+                const sendingItems = events.filter(e => e.key === 'SENDING');
+                const pickupByTime = groupPickSendEn(pickupItems);
+                const sendingByTime = groupPickSendEn(sendingItems);
 
                 // ---- Tours: date -> time ----
                 const tourEvents = events.filter(e => e.bucket === 'tour');
@@ -1074,26 +1089,32 @@
                     <body>
                         <h1>Boracay Sean - Schedule (${dayLabel}, ${targetDate})</h1>
 
-                        <h2>Pick-up &amp; Sending</h2>
+                        <h2>Pick-up</h2>
                 `;
 
-                if (pickupDates.length === 0) {
-                    html += '<p>No Pick-up/Sending schedules.</p>';
-                } else {
-                    for (const date of pickupDates) {
-                        html += `<div class="date-block">${date}</div>`;
-                        for (const resort in pickupByDate[date]) {
-                            html += `<div class="resort-name">${resort}</div>`;
-                            html += [...pickupByDate[date][resort]].sort((a, b) => (a.time || '').localeCompare(b.time || '')).map(e => `
+                function renderPickSendHtmlEn(byTime) {
+                    const times = Object.keys(byTime).sort();
+                    if (times.length === 0) return '<p>No schedules.</p>';
+                    let out = '';
+                    for (const time of times) {
+                        out += `<div class="time-block">${time}</div>`;
+                        for (const resort in byTime[time]) {
+                            out += `<div class="resort-name">${resort}</div>`;
+                            out += byTime[time][resort].map(e => `
                                 <div class="item">
-                                    ${e.time ? `<span style="font-weight:bold; color:#ff6a00;">${e.time}</span> ` : ''}<span style="font-weight:bold;">${e.name}</span> (${e.pax} pax)
-                                    - <span style="color:#555;">${e.labelEn}${e.raw ? ' [' + e.raw + ']' : ''}</span>
+                                    <span style="font-weight:bold;">${e.name}</span> (${e.pax} pax)
+                                    ${e.raw ? `- <span style="color:#555;">${e.raw}</span>` : ''}
                                     ${getMoneyTag(e)}
                                 </div>
                             `).join('');
                         }
                     }
+                    return out;
                 }
+
+                html += renderPickSendHtmlEn(pickupByTime);
+                html += `<h2>Sending</h2>`;
+                html += renderPickSendHtmlEn(sendingByTime);
 
                 html += `<h2>Tours (By Date / Time)</h2>`;
                 if (tourDates.length === 0) {

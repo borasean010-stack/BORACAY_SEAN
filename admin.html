@@ -1021,8 +1021,8 @@
                     <button class="btn-action-received" id="sch-tab-tomorrow" style="height:34px; font-size:13px; background:#ddd; color:#333; border:none; border-radius:8px; padding:0 16px;" onclick="setScheduleDay(1)">내일</button>
                 </div>
                 <div style="display:flex; gap:8px;">
-                    <button class="btn-action-received" style="height:34px; font-size:13px; background:#333; border:none; border-radius:8px; padding:0 15px;" onclick="printScheduleEnglish(0)">🖨️ 오늘 프린트</button>
-                    <button class="btn-action-received" style="height:34px; font-size:13px; background:#333; border:none; border-radius:8px; padding:0 15px;" onclick="printScheduleEnglish(1)">🖨️ 내일 프린트</button>
+                    <button class="btn-action-received" style="height:34px; font-size:13px; background:#333; border:none; border-radius:8px; padding:0 15px;" onclick="printScheduleEnglish(window.scheduleDayFilter || 0, 'pickup')">🖨️ 픽업/샌딩 프린트</button>
+                    <button class="btn-action-received" style="height:34px; font-size:13px; background:#ff6a00; border:none; border-radius:8px; padding:0 15px;" onclick="printScheduleEnglish(window.scheduleDayFilter || 0, 'all')">🖨️ 전체 프린트</button>
                 </div>
             </div>
             <div style="display:grid; grid-template-columns:340px 1fr; gap:20px;">
@@ -1032,7 +1032,9 @@
         </div>
 
         <script>
-            window.printScheduleEnglish = function(dayOffset) {
+            // section: 'all' (기본, 픽업/샌딩/투어 전체) | 'pickup' (픽업/샌딩만)
+            window.printScheduleEnglish = function(dayOffset, section) {
+                section = section || 'all';
                 const allEvents = window.gScheduleEvents;
                 if (!allEvents || allEvents.length === 0) {
                     alert('데이터를 불러오는 중입니다.');
@@ -1071,6 +1073,8 @@
                 });
                 const tourDates = Object.keys(tourByDate).sort((a, b) => mdSortKey(a) - mdSortKey(b));
 
+                const titleMap = { all: 'Full Schedule', pickup: 'Pick-up & Sending' };
+
                 let html = `
                     <html>
                     <head>
@@ -1084,12 +1088,13 @@
                             .item { padding: 4px 0; border-bottom: 1px dashed #ccc; }
                             .time-block { font-size: 15px; font-weight: bold; margin-top: 12px; color: #555; border-bottom: 1px solid #ccc; padding-bottom: 3px; }
                             .get-money { color: red; font-weight: bold; margin-left: 10px; border: 1px solid red; padding: 1px 4px; font-size: 11px; }
+                            /* 프린트 후 현장에서 추가 예약을 손으로 적을 수 있도록 각 섹션 끝에 빈 여백을 둔다 */
+                            .blank-space { height: 90px; border: 1px dashed #bbb; border-radius: 6px; margin-top: 15px; }
+                            .blank-space::before { content: '+ Additional bookings'; display:block; padding: 6px 10px; font-size: 11px; color: #aaa; }
                         </style>
                     </head>
                     <body>
-                        <h1>Boracay Sean - Schedule (${dayLabel}, ${targetDate})</h1>
-
-                        <h2>Pick-up</h2>
+                        <h1>Boracay Sean - ${titleMap[section]} (${dayLabel}, ${targetDate})</h1>
                 `;
 
                 function renderPickSendHtmlEn(byTime) {
@@ -1112,27 +1117,35 @@
                     return out;
                 }
 
-                html += renderPickSendHtmlEn(pickupByTime);
-                html += `<h2>Sending</h2>`;
-                html += renderPickSendHtmlEn(sendingByTime);
+                if (section === 'all' || section === 'pickup') {
+                    html += `<h2>Pick-up</h2>`;
+                    html += renderPickSendHtmlEn(pickupByTime);
+                    html += `<div class="blank-space"></div>`;
+                    html += `<h2>Sending</h2>`;
+                    html += renderPickSendHtmlEn(sendingByTime);
+                    html += `<div class="blank-space"></div>`;
+                }
 
-                html += `<h2>Tours (By Date / Time)</h2>`;
-                if (tourDates.length === 0) {
-                    html += '<p>No Tour schedules.</p>';
-                } else {
-                    for (const date of tourDates) {
-                        html += `<div class="date-block">${date}</div>`;
-                        const sortedTimes = Object.keys(tourByDate[date]).sort();
-                        for (const time of sortedTimes) {
-                            html += `<div class="time-block">${time}</div>`;
-                            html += tourByDate[date][time].map(e => `
-                                <div class="item">
-                                    <span style="font-weight:bold;">[${e.labelEn}] ${e.resort}</span> - ${e.name} (${e.pax} pax)
-                                    ${getMoneyTag(e)}
-                                </div>
-                            `).join('');
+                if (section === 'all') {
+                    html += `<h2>Tours (By Date / Time)</h2>`;
+                    if (tourDates.length === 0) {
+                        html += '<p>No Tour schedules.</p>';
+                    } else {
+                        for (const date of tourDates) {
+                            html += `<div class="date-block">${date}</div>`;
+                            const sortedTimes = Object.keys(tourByDate[date]).sort();
+                            for (const time of sortedTimes) {
+                                html += `<div class="time-block">${time}</div>`;
+                                html += tourByDate[date][time].map(e => `
+                                    <div class="item">
+                                        <span style="font-weight:bold;">[${e.labelEn}] ${e.resort}</span> - ${e.name} (${e.pax} pax)
+                                        ${getMoneyTag(e)}
+                                    </div>
+                                `).join('');
+                            }
                         }
                     }
+                    html += `<div class="blank-space"></div>`;
                 }
 
                 html += `

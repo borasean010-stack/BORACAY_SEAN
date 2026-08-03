@@ -94,31 +94,158 @@
             </header>
 
             <div class="ss-content">
-                <!-- 상단 5분할 박스 (한줄 배치) -->
-                <div class="main-tool-grid">
-                    <div id="tool-box-today" class="tool-box active" onclick="switchScheduleDay('today')">
-                        <h4>오늘 일정</h4>
-                        <div id="box-date-today" class="date-val">-</div>
-                        <div id="gs-count-today" style="font-size:11px; color:#ff6a00; margin-top:4px; font-weight:700;"></div>
+                <style>
+                    .fx-greeting { margin-bottom: 25px; }
+                    .fx-greeting h1 { font-size: 26px; font-weight: 800; color: #111; margin: 0 0 6px 0; letter-spacing: -0.5px; }
+                    .fx-greeting p { font-size: 14px; color: #777; margin: 0; }
+
+                    .fx-stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 25px; }
+                    .fx-stat-card { background: #fff; border-radius: 16px; padding: 22px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); cursor: pointer; transition: all 0.2s ease; border: 1px solid #f0f0f0; display: flex; flex-direction: column; justify-content: space-between; min-height: 110px; }
+                    .fx-stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.06); border-color: #e5e5e5; }
+                    .fx-stat-card.orange { background: linear-gradient(135deg, #ff8c00 0%, #ff6a00 100%); color: #fff; border: none; box-shadow: 0 10px 25px rgba(255, 106, 0, 0.2); }
+                    .fx-stat-card.orange:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(255, 106, 0, 0.3); }
+
+                    .fx-stat-title { font-size: 14px; font-weight: 600; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; opacity: 0.9; }
+                    .fx-stat-value { font-size: 32px; font-weight: 800; line-height: 1; margin-bottom: 6px; }
+                    .fx-stat-sub { font-size: 12px; font-weight: 600; opacity: 0.9; }
+
+                    .fx-stat-card:not(.orange) .fx-stat-title { color: #555; }
+                    .fx-stat-card:not(.orange) .fx-stat-value { color: #111; }
+                    .fx-stat-card:not(.orange) .fx-stat-sub { color: #888; }
+
+                    .fx-middle-grid { display: grid; grid-template-columns: 320px 1fr; gap: 20px; margin-bottom: 30px; }
+
+                    .fx-card { background: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 20px; border: 1px solid #f0f0f0; }
+                    .fx-card-title { font-size: 16px; font-weight: 800; color: #111; margin: 0 0 18px 0; display: flex; align-items: center; justify-content: space-between; }
+
+                    .fx-btn-pill { display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 20px; border-radius: 12px; background: #fafafa; border: 1px solid #eee; color: #333; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: left; margin-bottom: 12px; }
+                    .fx-btn-pill:hover { background: #fff; border-color: #ff6a00; color: #ff6a00; box-shadow: 0 4px 12px rgba(255,106,0,0.08); }
+                    .fx-btn-pill .material-icons { font-size: 20px; color: #888; transition: 0.2s; }
+                    .fx-btn-pill:hover .material-icons { color: #ff6a00; }
+
+                    .fx-resort-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
+                    .fx-resort-row:last-child { border-bottom: none; padding-bottom: 0; }
+                    .fx-resort-row:hover .fx-resort-label { color: #ff6a00; }
+                    .fx-resort-label { font-size: 14px; font-weight: 600; color: #555; transition: color 0.2s; }
+                    .fx-resort-val { font-size: 20px; font-weight: 800; color: #111; }
+
+                    .fx-filter-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; scrollbar-width: none; }
+                    .fx-filter-bar::-webkit-scrollbar { display: none; }
+                    .fx-filter-bar .filter-btn { padding: 8px 16px; border-radius: 20px; background: #f4f7f6; border: none; font-size: 13px; font-weight: 600; color: #666; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+                    .fx-filter-bar .filter-btn:hover { background: #e9ecef; }
+                    .fx-filter-bar .filter-btn.active { background: #ff6a00; color: #fff; }
+
+                    #data-view-section { background: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f0f0f0; }
+                    .ss-view-header { border-bottom: none !important; margin-bottom: 15px; }
+                    .ss-card { border: 1px solid #eee !important; border-radius: 12px; box-shadow: none !important; }
+                </style>
+
+                <div class="fx-greeting">
+                    <h1>Good morning, 관리자 ☀️</h1>
+                    <p>오늘도 좋은 하루 되세요. <span id="fx-current-time" style="margin-left:10px; font-weight:600; color:#ff6a00;"></span></p>
+                </div>
+
+                <!-- 4 Stats Cards -->
+                <div class="fx-stat-grid">
+                    <div id="tool-box-today" class="fx-stat-card orange" onclick="switchScheduleDay('today')">
+                        <div class="fx-stat-title">오늘 일정 <span class="material-icons" style="font-size:18px;">event</span></div>
+                        <div>
+                            <div id="box-date-today" class="fx-stat-value">-</div>
+                            <div id="gs-count-today" class="fx-stat-sub"></div>
+                        </div>
                     </div>
-                    <div id="tool-box-tomorrow" class="tool-box" onclick="switchScheduleDay('tomorrow')">
-                        <h4>내일 일정</h4>
-                        <div id="box-date-tomorrow" class="date-val">-</div>
-                        <div id="gs-count-tomorrow" style="font-size:11px; color:#888; margin-top:4px; font-weight:700;"></div>
+                    <div id="tool-box-tomorrow" class="fx-stat-card" onclick="switchScheduleDay('tomorrow')">
+                        <div class="fx-stat-title">내일 일정 <span class="material-icons" style="font-size:18px; color:#ccc;">event</span></div>
+                        <div>
+                            <div id="box-date-tomorrow" class="fx-stat-value">-</div>
+                            <div id="gs-count-tomorrow" class="fx-stat-sub"></div>
+                        </div>
                     </div>
-                    <div class="tool-box system-box" onclick="showInputArea('quick')">
-                        <h4>퀵바우처 생성기</h4>
-                        <div class="date-val" style="font-size:12px;">바로가기</div>
+                    <div id="stat-new" class="fx-stat-card" onclick="switchAdminTab('new')">
+                        <div class="fx-stat-title">신규 예약 <span class="material-icons" style="font-size:18px; color:#007aff;">inbox</span></div>
+                        <div>
+                            <div id="count-new" class="fx-stat-value">0</div>
+                            <div class="fx-stat-sub" style="color:#007aff;">예약 접수 대기중</div>
+                        </div>
                     </div>
-                    <div class="tool-box" style="border-top-color: #007aff;" onclick="showInputArea('cafe')">
-                        <h4>카페 예약확인증</h4>
-                        <div class="date-val" style="font-size:12px;">바로가기</div>
-                    </div>
-                    <div class="tool-box system-box small-box" onclick="showInputArea('reg')">
-                        <h4>스케줄 등록기</h4>
-                        <div class="date-val">바로가기</div>
+                    <div id="stat-confirmed" class="fx-stat-card" onclick="switchAdminTab('confirmed')">
+                        <div class="fx-stat-title">예약 확정 <span class="material-icons" style="font-size:18px; color:#34c759;">task_alt</span></div>
+                        <div>
+                            <div id="count-confirmed" class="fx-stat-value">0</div>
+                            <div class="fx-stat-sub" style="color:#34c759;">진행 중인 예약</div>
+                        </div>
                     </div>
                 </div>
+
+                <div class="fx-middle-grid">
+                    <!-- Left Col -->
+                    <div class="fx-left-col">
+                        <div class="fx-card">
+                            <div class="fx-card-title">Quick Tools</div>
+                            <button class="fx-btn-pill" onclick="showInputArea('quick')"><span class="material-icons">confirmation_number</span> 퀵바우처 생성기</button>
+                            <button class="fx-btn-pill" onclick="showInputArea('cafe')"><span class="material-icons">camera_alt</span> 카페 예약확인증</button>
+                            <button class="fx-btn-pill" onclick="showInputArea('reg')"><span class="material-icons">upload_file</span> 스케줄 등록기</button>
+                        </div>
+                        
+                        <div class="fx-card">
+                            <div class="fx-card-title">Resort Status</div>
+                            <div id="stat-resorts" class="fx-resort-row" onclick="switchAdminTab('resorts')">
+                                <span class="fx-resort-label">리조트 견적</span>
+                                <span id="count-resorts" class="fx-resort-val">0</span>
+                            </div>
+                            <div id="stat-resort-confirmed" class="fx-resort-row" onclick="switchAdminTab('resort-confirmed')">
+                                <span class="fx-resort-label">리조트 확정</span>
+                                <span id="count-resort-confirmed" class="fx-resort-val">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Col -->
+                    <div class="fx-card fx-timeline-card">
+                        <div class="fx-card-title">
+                            <div><span id="schedule-title-date" style="display:none;">-</span>일정 타임라인</div>
+                            <div style="display:flex; gap:8px;">
+                                <button class="btn-action-received" style="height:32px; font-size:12px; background:#333; border-color:#333; border-radius:8px;" onclick="openSchedulePopup('pickup')">픽샌 명단</button>
+                                <button class="btn-action-received" style="height:32px; font-size:12px; background:#ff6a00; border-color:#ff6a00; border-radius:8px;" onclick="openSchedulePopup('activity')">액티비티 명단</button>
+                            </div>
+                        </div>
+                        
+                        <div class="fx-filter-bar filter-bar">
+                            <button class="filter-btn active" onclick="filterSchedule('all')">전체</button>
+                            <button class="filter-btn" onclick="filterSchedule('픽업/샌딩')">픽업/샌딩</button>
+                            <button class="filter-btn" onclick="filterSchedule('호핑투어')">호핑투어</button>
+                            <button class="filter-btn" onclick="filterSchedule('시크릿가든 말룸파티')">시크릿가든 말룸파티</button>
+                            <button class="filter-btn" onclick="filterSchedule('랜드투어')">랜드투어</button>
+                            <button class="filter-btn" onclick="filterSchedule('고래상어')">고래상어</button>
+                            <button class="filter-btn" onclick="filterSchedule('액티비티')">액티비티</button>
+                        </div>
+                        
+                        <!-- MUST keep these classes for JS rendering -->
+                        <div class="timeline-section" style="padding:0; box-shadow:none; margin:0; background:transparent;">
+                            <div id="active-timeline" class="timeline-content" style="padding-top:10px;">
+                                <div class="sc-empty">데이터 로딩 중...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    function updateFxTime() {
+                        const el = document.getElementById('fx-current-time');
+                        if(!el) return;
+                        const now = new Date();
+                        const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+                        const krTime = new Date(utc + (9 * 3600000));
+                        
+                        const hours = String(krTime.getHours()).padStart(2, '0');
+                        const mins = String(krTime.getMinutes()).padStart(2, '0');
+                        const ampm = krTime.getHours() >= 12 ? 'PM' : 'AM';
+                        el.innerText = `${hours}:${mins} ${ampm}`;
+                    }
+                    setInterval(updateFxTime, 1000);
+                    updateFxTime();
+                </script>
+
 
                 <!-- 구글 시트 일정 카운트 fetch 스크립트 -->
                 <script>
@@ -256,47 +383,9 @@
                     </div>
                 </div>
 
-                <div class="timeline-section">
-                    <div class="timeline-header">
-                        <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
-                            <div style="display:flex; align-items:center; gap:20px;">
-                                <div class="timeline-title"><span class="material-icons">calendar_today</span> <span id="schedule-title-date">-</span> 일정</div>
-                                <div class="filter-bar" style="border-bottom:none; padding-bottom:0; margin-bottom:0;">
-                                    <button class="filter-btn active" onclick="filterSchedule('all')">전체</button>
-                                    <button class="filter-btn" onclick="filterSchedule('픽업/샌딩')">픽업/샌딩</button>
-                                    <button class="filter-btn" onclick="filterSchedule('호핑투어')">호핑투어</button>
-                                    <button class="filter-btn" onclick="filterSchedule('시크릿가든 말룸파티')">시크릿가든 말룸파티</button>
-                                    <button class="filter-btn" onclick="filterSchedule('랜드투어')">랜드투어</button>
-                                    <button class="filter-btn" onclick="filterSchedule('고래상어')">고래상어</button>
-                                    <button class="filter-btn" onclick="filterSchedule('액티비티')">액티비티</button>
-                                </div>
-                            </div>
-                            <div style="display:flex; gap:8px;">
-                                <button class="btn-action-received" style="height:32px; font-size:12px; background:#333; border-color:#333;" onclick="openSchedulePopup('pickup')">픽샌 명단</button>
-                                <button class="btn-action-received" style="height:32px; font-size:12px; background:#ff6a00; border-color:#ff6a00;" onclick="openSchedulePopup('activity')">액티비티 명단</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="active-timeline" class="timeline-content">
-                        <div class="sc-empty">데이터 로딩 중...</div>
-                    </div>
-                </div>
+                <!-- 타임라인 섹션이 fx-middle-grid 안으로 이동됨 -->
 
-                <!-- 하단 상태 카드 -->
-                <div class="status-cards-row">
-                    <div class="stat-card active" id="stat-new" onclick="switchAdminTab('new')">
-                        <div class="label">신규 예약</div><div class="count" id="count-new">0</div>
-                    </div>
-                    <div class="stat-card" id="stat-confirmed" onclick="switchAdminTab('confirmed')">
-                        <div class="label">예약 확정</div><div class="count" id="count-confirmed">0</div>
-                    </div>
-                    <div class="stat-card" id="stat-resorts" onclick="switchAdminTab('resorts')">
-                        <div class="label">리조트 견적</div><div class="count" id="count-resorts">0</div>
-                    </div>
-                    <div class="stat-card" id="stat-resort-confirmed" onclick="switchAdminTab('resort-confirmed')">
-                        <div class="label">리조트 확정</div><div class="count" id="count-resort-confirmed">0</div>
-                    </div>
-                </div>
+                <!-- 하단 상태 카드가 상단 fx-stat-grid 안으로 이동됨 -->
 
                 <!-- 예약 리스트 테이블 -->
                 <div id="data-view-section">

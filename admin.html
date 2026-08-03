@@ -526,14 +526,26 @@
             <div class="db-card">
                 <h3 style="margin:0 0 20px;">지출 내역 등록</h3>
                 <form id="db-expense-form" onsubmit="addExpense(event)" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
-                    <input type="date" id="exp-date" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:130px;">
-                    <input type="number" id="exp-pax" placeholder="인원 수" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:100px;">
-                    <input type="text" id="exp-staff" placeholder="직원명" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:100px;">
-                    <input type="number" id="exp-amount" placeholder="지출 금액" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:120px;">
+                    <input type="date" id="exp-date" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:130px;" required>
+                    <select id="exp-category" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:110px;">
+                        <option value="투어비용">투어비용</option>
+                        <option value="픽샌비용">픽샌비용</option>
+                        <option value="오피스비용">오피스비용</option>
+                        <option value="기타비용">기타비용</option>
+                    </select>
+                    <input type="text" id="exp-detail" placeholder="내역 (예: 호핑 23명 / 샌딩 20명)" style="flex:2; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:150px;" required>
+                    <input type="text" id="exp-staff" placeholder="담당자" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:100px;" required>
+                    <input type="number" id="exp-amount" placeholder="금액(₱)" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:120px;" required>
                     <button type="submit" style="background:#ff6a00; color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:700;">등록</button>
                 </form>
                 <table style="width:100%; border-collapse:collapse;">
-                    <thead><tr style="border-bottom:2px solid #eee;"><th style="padding:12px; text-align:left; color:#888; font-size:13px;">날짜</th><th style="padding:12px; text-align:left; color:#888; font-size:13px;">직원</th><th style="padding:12px; text-align:left; color:#888; font-size:13px;">인원</th><th style="padding:12px; text-align:left; color:#888; font-size:13px;">금액</th></tr></thead>
+                    <thead><tr style="border-bottom:2px solid #eee;">
+                        <th style="padding:12px; text-align:left; color:#888; font-size:13px;">날짜</th>
+                        <th style="padding:12px; text-align:left; color:#888; font-size:13px;">분류</th>
+                        <th style="padding:12px; text-align:left; color:#888; font-size:13px;">내역</th>
+                        <th style="padding:12px; text-align:left; color:#888; font-size:13px;">담당자</th>
+                        <th style="padding:12px; text-align:right; color:#888; font-size:13px;">금액(₱)</th>
+                    </tr></thead>
                     <tbody id="db-expense-list"></tbody>
                 </table>
             </div>
@@ -589,21 +601,27 @@
         // 지출 내역 (localStorage)
         window.addExpense = function(e) {
             e.preventDefault();
-            const date   = document.getElementById('exp-date').value;
-            const pax    = document.getElementById('exp-pax').value;
-            const staff  = document.getElementById('exp-staff').value;
-            const amount = document.getElementById('exp-amount').value;
-            if (!date || !pax || !staff || !amount) { alert('모든 항목을 입력해주세요.'); return; }
+            const date     = document.getElementById('exp-date').value;
+            const category = document.getElementById('exp-category').value;
+            const detail   = document.getElementById('exp-detail').value;
+            const staff    = document.getElementById('exp-staff').value;
+            const amount   = document.getElementById('exp-amount').value;
+            
+            if (!date || !detail || !staff || !amount) { alert('모든 항목을 입력해주세요.'); return; }
 
-            const expenses = JSON.parse(localStorage.getItem('bs_expenses') || '[]');
-            expenses.push({ id: Date.now(), date, pax, staff, amount: Number(amount) });
-            localStorage.setItem('bs_expenses', JSON.stringify(expenses));
-            document.getElementById('db-expense-form').reset();
+            const expenses = JSON.parse(localStorage.getItem('bs_expenses_v2') || '[]');
+            expenses.push({ id: Date.now(), date, category, detail, staff, amount: Number(amount) });
+            localStorage.setItem('bs_expenses_v2', JSON.stringify(expenses));
+            
+            // 폼 초기화 시 이름 유지
+            document.getElementById('exp-detail').value = '';
+            document.getElementById('exp-amount').value = '';
+            
             renderExpenses();
         };
 
         function renderExpenses() {
-            const expenses = JSON.parse(localStorage.getItem('bs_expenses') || '[]');
+            const expenses = JSON.parse(localStorage.getItem('bs_expenses_v2') || '[]');
             const tbody    = document.getElementById('db-expense-list');
             if (!tbody) return;
             let total = 0;
@@ -611,13 +629,21 @@
                 total += e.amount;
                 return `<tr style="border-bottom:1px solid #f0f0f0;">
                     <td style="padding:12px; font-size:14px;">${e.date}</td>
-                    <td style="padding:12px; font-size:14px; font-weight:600;">${e.staff}</td>
-                    <td style="padding:12px; font-size:14px;">${e.pax}명</td>
-                    <td style="padding:12px; font-size:14px; color:#ff2d55; font-weight:700;">-₩${e.amount.toLocaleString()}</td>
+                    <td style="padding:12px; font-size:14px;"><span style="background:#f4f7f6; padding:4px 8px; border-radius:4px; font-size:12px; color:#555; font-weight:600;">${e.category}</span></td>
+                    <td style="padding:12px; font-size:14px; font-weight:600;">${e.detail}</td>
+                    <td style="padding:12px; font-size:14px;">${e.staff}</td>
+                    <td style="padding:12px; font-size:14px; color:#ff2d55; font-weight:700; text-align:right;">-₱${e.amount.toLocaleString()}</td>
                 </tr>`;
             }).join('');
             const el = document.getElementById('db-spending');
-            if (el) el.innerText = '₩' + total.toLocaleString();
+            if (el) el.innerText = '₱ ' + total.toLocaleString();
+            
+            // 로그인한 사람 자동 맵핑 로직
+            const adminId = document.getElementById('fx-greeting-admin-id');
+            const expStaff = document.getElementById('exp-staff');
+            if (adminId && expStaff && !expStaff.value) {
+                expStaff.value = adminId.innerText;
+            }
         }
     </script>
 

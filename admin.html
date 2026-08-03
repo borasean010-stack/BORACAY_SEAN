@@ -1022,7 +1022,7 @@
                 </div>
                 <div style="display:flex; gap:8px;">
                     <button class="btn-action-received" style="height:34px; font-size:13px; background:#333; border:none; border-radius:8px; padding:0 15px;" onclick="printScheduleEnglish(window.scheduleDayFilter || 0, 'pickup')">🖨️ 픽업/샌딩 프린트</button>
-                    <button class="btn-action-received" style="height:34px; font-size:13px; background:#ff6a00; border:none; border-radius:8px; padding:0 15px;" onclick="printScheduleEnglish(window.scheduleDayFilter || 0, 'all')">🖨️ 전체 프린트</button>
+                    <button class="btn-action-received" style="height:34px; font-size:13px; background:#ff6a00; border:none; border-radius:8px; padding:0 15px;" onclick="printScheduleEnglish(window.scheduleDayFilter || 0, 'tour')">🖨️ 투어 전체 프린트</button>
                 </div>
             </div>
             <div style="display:grid; grid-template-columns:340px 1fr; gap:20px;">
@@ -1032,9 +1032,9 @@
         </div>
 
         <script>
-            // section: 'all' (기본, 픽업/샌딩/투어 전체) | 'pickup' (픽업/샌딩만)
+            // section: 'pickup' (픽업/샌딩만) | 'tour' (투어 전체, 시간별로 나뉨)
             window.printScheduleEnglish = function(dayOffset, section) {
-                section = section || 'all';
+                section = section || 'pickup';
                 const allEvents = window.gScheduleEvents;
                 if (!allEvents || allEvents.length === 0) {
                     alert('데이터를 불러오는 중입니다.');
@@ -1073,7 +1073,7 @@
                 });
                 const tourDates = Object.keys(tourByDate).sort((a, b) => mdSortKey(a) - mdSortKey(b));
 
-                const titleMap = { all: 'Full Schedule', pickup: 'Pick-up & Sending' };
+                const titleMap = { pickup: 'Pick-up & Sending', tour: 'Tour Schedule' };
 
                 let html = `
                     <html>
@@ -1117,7 +1117,7 @@
                     return out;
                 }
 
-                if (section === 'all' || section === 'pickup') {
+                if (section === 'pickup') {
                     html += `<h2>Pick-up</h2>`;
                     html += renderPickSendHtmlEn(pickupByTime);
                     html += `<div class="blank-space"></div>`;
@@ -1126,8 +1126,8 @@
                     html += `<div class="blank-space"></div>`;
                 }
 
-                if (section === 'all') {
-                    html += `<h2>Tours (By Date / Time)</h2>`;
+                if (section === 'tour') {
+                    html += `<h2>Tours (By Time)</h2>`;
                     if (tourDates.length === 0) {
                         html += '<p>No Tour schedules.</p>';
                     } else {

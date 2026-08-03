@@ -377,7 +377,7 @@
                 <!-- 구글 시트 V4 데이터 연동 스크립트 -->
                 <script>
                 (function() {
-                    const GS_API_URL = 'https://script.google.com/macros/s/AKfycbxjHAQmXaYT15Yn4dxFLvZd56zweAAemVxYTw6Nby0x8nvXFBKlYk4eq8UW1DfbaRx4/exec';
+                    const GS_API_URL = 'https://script.google.com/macros/s/AKfycbx-ccesceV8pgc3vToVxkEQqnJo4Glvnvn38H9P2GzPpSroP_LvabmnwKU0eT9S8XkO/exec';
 
                     // ============ 투어 타입 매핑 (REMARKS 키워드 → 표준 투어명) ============
                     // 우선순위가 중요: 더 구체적인 키워드를 먼저 검사한다 (예: marisspa가 일반 sspa보다 먼저,
@@ -552,21 +552,47 @@
                         }
                     };
 
+                    // 시트가 매달(YYMM) 새로 만들어지는 구조라, 이번 달 초에는 지난달 시트에
+                    // 이번 달 예약(REMARKS에 이번 달 날짜)이 남아있을 수 있다. 그래서 이번 달 시트 +
+                    // 지난달 시트를 함께 가져와 병합한다.
+                    function prevMonthSheetCode() {
+                        const d = new Date();
+                        d.setDate(1); // 월말 오버플로우 방지
+                        d.setMonth(d.getMonth() - 1);
+                        const yy = String(d.getFullYear()).slice(-2);
+                        const mm = String(d.getMonth() + 1).padStart(2, '0');
+                        return yy + mm;
+                    }
+
                     async function fetchGSheetData() {
-                        if (GS_API_URL === 'API_URL_HERE') return; 
+                        if (GS_API_URL === 'API_URL_HERE') return;
 
                         try {
                             const res = await fetch(GS_API_URL + '?action=all_data');
                             const data = await res.json();
-                            if (data.status === 'success' && data.rows) {
-                                window.gSheetData = data.rows;
-                                try {
-                                    processGSheetData(data.rows);
-                                } catch (err) {
-                                    alert('데이터 처리 중 오류 발생: ' + err.message);
-                                }
-                            } else {
+                            if (data.status !== 'success' || !data.rows) {
                                 alert('서버 응답 오류: ' + JSON.stringify(data));
+                                return;
+                            }
+
+                            let rows = data.rows;
+
+                            // 지난달 시트도 함께 요청해서 병합 (실패해도 이번 달 데이터는 그대로 사용)
+                            try {
+                                const prevRes = await fetch(GS_API_URL + '?action=all_data&sheet=' + prevMonthSheetCode());
+                                const prevData = await prevRes.json();
+                                if (prevData.status === 'success' && prevData.rows && prevData.rows.length > 1) {
+                                    rows = rows.concat(prevData.rows.slice(1)); // 헤더 행 제외하고 병합
+                                }
+                            } catch (prevErr) {
+                                console.log('지난달 시트 병합 실패(이번 달 데이터는 정상 표시):', prevErr);
+                            }
+
+                            window.gSheetData = rows;
+                            try {
+                                processGSheetData(rows);
+                            } catch (err) {
+                                alert('데이터 처리 중 오류 발생: ' + err.message);
                             }
                         } catch(e) {
                             alert('구글 시트 데이터 로드 실패 (CORS 등 네트워크 문제): ' + e.message);
@@ -776,18 +802,20 @@
                     }
 
                     function computeWeeklyTrend(events) {
-                        const keys = ['HOPPING', 'MALUM', 'SHARK'];
-                        const labelMap = { HOPPING: '호핑', MALUM: '말룸', SHARK: '고래상어' };
-                        const colorMap = { HOPPING: '#007aff', MALUM: '#34c759', SHARK: '#af52de' };
-                        const perKeyWeekly = {}; keys.forEach(k => perKeyWeekly[k] = [0, 0, 0, 0, 0]);
-                        events.filter(e => isThisMonth(e.date) && keys.includes(e.key)).forEach(e => {
+                        const groups = ['PICKUP', 'HOPPING', 'MALUM', 'SHARK'];
+                        const labelMap = { PICKUP: '픽업/샌딩', HOPPING: '호핑', MALUM: '말룸', SHARK: '고래상어' };
+                        const colorMap = { PICKUP: AIRPORT_COLOR, HOPPING: '#007aff', MALUM: '#34c759', SHARK: '#af52de' };
+                        const perGroupWeekly = {}; groups.forEach(g => perGroupWeekly[g] = [0, 0, 0, 0, 0]);
+                        events.filter(e => isThisMonth(e.date)).forEach(e => {
+                            const g = (e.key === 'AIRPORT' || e.key === 'SENDING') ? 'PICKUP' : e.key;
+                            if (!groups.includes(g)) return;
                             const day = parseInt((e.date || '').split('/')[1], 10) || 1;
                             const wIdx = Math.min(4, Math.floor((day - 1) / 7));
-                            perKeyWeekly[e.key][wIdx]++;
+                            perGroupWeekly[g][wIdx]++;
                         });
                         return {
                             labels: ['1주차', '2주차', '3주차', '4주차', '5주차'],
-                            datasets: keys.map(k => ({ label: labelMap[k], data: perKeyWeekly[k], backgroundColor: colorMap[k], borderRadius: 6 }))
+                            datasets: groups.map(g => ({ label: labelMap[g], data: perGroupWeekly[g], backgroundColor: colorMap[g], borderRadius: 6 }))
                         };
                     }
 
@@ -825,7 +853,7 @@
                                 </div>
                                 <div style="display:grid; grid-template-columns:2fr 1fr; gap:20px; margin-bottom:20px;">
                                     <div class="db-card" id="mgmt-chart-area">
-                                        <h3 style="margin:0 0 20px;">주차별 예약 추이 (호핑 · 말룸 · 고래상어, 이번 달)</h3>
+                                        <h3 style="margin:0 0 20px;">주차별 예약 추이 (픽업/샌딩 · 호핑 · 말룸 · 고래상어, 이번 달)</h3>
                                         <div style="position:relative; height:280px;"><canvas id="trendChart"></canvas></div>
                                     </div>
                                     <div class="db-card">
@@ -1113,7 +1141,8 @@
                     <input type="text" id="exp-detail" placeholder="내역 (선택, 비우면 자동생성)" style="flex:1.6; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:150px;">
                     <input type="text" id="exp-staff" placeholder="담당자 (돈 받아가는 사람)" style="flex:1.2; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:130px;" required>
                     <input type="number" id="exp-amount" placeholder="금액(₱)" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:120px;" required>
-                    <button type="submit" style="background:#ff6a00; color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:700;">등록</button>
+                    <button type="submit" id="exp-submit-btn" style="background:#ff6a00; color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:700;">등록</button>
+                    <button type="button" id="exp-cancel-btn" onclick="cancelEditExpense()" style="display:none; background:#fff; color:#555; border:1px solid #ddd; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:700;">취소</button>
                 </form>
                 <table style="width:100%; border-collapse:collapse;">
                     <thead><tr style="border-bottom:2px solid #eee;">
@@ -1124,6 +1153,7 @@
                         <th style="padding:12px; text-align:left; color:#888; font-size:13px;">담당자</th>
                         <th style="padding:12px; text-align:left; color:#888; font-size:13px;">등록자</th>
                         <th style="padding:12px; text-align:right; color:#888; font-size:13px;">금액(₱)</th>
+                        <th style="padding:12px; text-align:center; color:#888; font-size:13px;">관리</th>
                     </tr></thead>
                     <tbody id="db-expense-list"></tbody>
                 </table>
@@ -1197,6 +1227,9 @@
             return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         }
 
+        // 수정 중인 지출의 id (null이면 신규 등록 모드)
+        let editingExpenseId = null;
+
         window.addExpense = function(e) {
             e.preventDefault();
             const date   = normalizeDateInput(document.getElementById('exp-date').value.trim());
@@ -1214,17 +1247,62 @@
                 detail = pax ? `${tourLabel} ${pax}명` : tourLabel;
             }
 
-            const registeredBy = sessionStorage.getItem('adminId') || '';
-
             const expenses = JSON.parse(localStorage.getItem('bs_expenses_v2') || '[]');
-            expenses.push({ id: Date.now(), date, tour, pax: pax ? Number(pax) : 0, detail, staff, registeredBy, amount: Number(amount) });
-            localStorage.setItem('bs_expenses_v2', JSON.stringify(expenses));
 
-            // 폼 초기화 (담당자는 유지)
-            document.getElementById('exp-pax').value = '';
-            document.getElementById('exp-detail').value = '';
-            document.getElementById('exp-amount').value = '';
+            if (editingExpenseId !== null) {
+                // 수정 모드: 기존 항목을 찾아 값만 갱신 (등록자/id는 유지)
+                const idx = expenses.findIndex(exp => exp.id === editingExpenseId);
+                if (idx !== -1) {
+                    expenses[idx] = { ...expenses[idx], date, tour, pax: pax ? Number(pax) : 0, detail, staff, amount: Number(amount) };
+                }
+                localStorage.setItem('bs_expenses_v2', JSON.stringify(expenses));
+                cancelEditExpense();
+            } else {
+                const registeredBy = sessionStorage.getItem('adminId') || '';
+                expenses.push({ id: Date.now(), date, tour, pax: pax ? Number(pax) : 0, detail, staff, registeredBy, amount: Number(amount) });
+                localStorage.setItem('bs_expenses_v2', JSON.stringify(expenses));
 
+                // 폼 초기화 (날짜/담당자는 유지 — 같은 날 여러 건 입력하기 편하게)
+                document.getElementById('exp-pax').value = '';
+                document.getElementById('exp-detail').value = '';
+                document.getElementById('exp-amount').value = '';
+            }
+
+            renderExpenses();
+        };
+
+        // 지출 항목 수정 시작 — 폼에 기존 값을 채우고 등록 버튼을 "수정 완료"로 전환
+        window.editExpense = function(id) {
+            const expenses = JSON.parse(localStorage.getItem('bs_expenses_v2') || '[]');
+            const exp = expenses.find(e => e.id === id);
+            if (!exp) return;
+
+            editingExpenseId = id;
+            document.getElementById('exp-date').value = exp.date || '';
+            document.getElementById('exp-tour').value = exp.tour || 'PICKUP';
+            document.getElementById('exp-pax').value = exp.pax || '';
+            document.getElementById('exp-detail').value = exp.detail || '';
+            document.getElementById('exp-staff').value = exp.staff || '';
+            document.getElementById('exp-amount').value = exp.amount || '';
+
+            document.getElementById('exp-submit-btn').innerText = '수정 완료';
+            document.getElementById('exp-cancel-btn').style.display = 'inline-block';
+            document.getElementById('db-expense-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        };
+
+        window.cancelEditExpense = function() {
+            editingExpenseId = null;
+            document.getElementById('db-expense-form').reset();
+            document.getElementById('exp-submit-btn').innerText = '등록';
+            document.getElementById('exp-cancel-btn').style.display = 'none';
+        };
+
+        window.deleteExpense = function(id) {
+            if (!confirm('이 지출 내역을 삭제할까요?')) return;
+            const expenses = JSON.parse(localStorage.getItem('bs_expenses_v2') || '[]');
+            const filtered = expenses.filter(e => e.id !== id);
+            localStorage.setItem('bs_expenses_v2', JSON.stringify(filtered));
+            if (editingExpenseId === id) cancelEditExpense();
             renderExpenses();
         };
 
@@ -1280,6 +1358,10 @@
                     <td style="padding:12px; font-size:14px;">${e.staff}</td>
                     <td style="padding:12px; font-size:14px; color:#888;">${e.registeredBy || '-'}</td>
                     <td style="padding:12px; font-size:14px; color:#ff2d55; font-weight:700; text-align:right;">-₱${e.amount.toLocaleString()}</td>
+                    <td style="padding:12px; text-align:center; white-space:nowrap;">
+                        <button type="button" onclick="editExpense(${e.id})" style="background:none; border:1px solid #ddd; border-radius:6px; padding:4px 8px; font-size:12px; cursor:pointer; margin-right:4px;">수정</button>
+                        <button type="button" onclick="deleteExpense(${e.id})" style="background:none; border:1px solid #ffd1d1; color:#ff2d55; border-radius:6px; padding:4px 8px; font-size:12px; cursor:pointer;">삭제</button>
+                    </td>
                 </tr>`;
             }).join('');
 

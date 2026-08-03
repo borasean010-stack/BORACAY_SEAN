@@ -5,331 +5,468 @@
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>관리자 센터 - Boracay Sean Premium</title>
+    <title>관리자 센터 - Boracay Sean</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="admin.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* 🚀 명령하신 메인 레이아웃 전용 스타일 (5분할 한줄 배치) */
+        .main-tool-grid { display: grid; grid-template-columns: repeat(4, 1fr) 0.7fr; gap: 10px; margin-bottom: 25px; }
+        .tool-box { background: #fff; border-radius: 12px; padding: 15px 10px; border-top: 5px solid #ff6a00; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; cursor: pointer; transition: transform 0.2s; }
+        .tool-box:hover { transform: translateY(-3px); }
+        .tool-box.active { background: #fffaf5; border-color: #ff6a00; box-shadow: 0 0 15px rgba(255, 106, 0, 0.2); transform: translateY(-3px); }
+        .tool-box.active h4 { color: #ff6a00; font-weight: 800; }
+        .tool-box h4 { margin: 0; font-size: 13px; color: #666; font-weight: 600; white-space: nowrap; }
+        .tool-box .date-val { margin-top: 8px; font-size: 16px; font-weight: 800; color: #333; }
+        .tool-box.system-box { border-top-color: #00c73c; }
+        .tool-box.small-box { padding: 10px 5px; }
+        .tool-box.small-box h4 { font-size: 11px; }
+        .tool-box.small-box .date-val { font-size: 12px; margin-top: 4px; }
+
+        .timeline-section { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .timeline-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .timeline-title { font-size: 16px; font-weight: 900; color: #111; display: flex; align-items: center; gap: 8px; }
+        .timeline-title span { color: #ff6a00; }
+        .filter-bar { display: flex; gap: 10px; overflow-x: auto; }
+        .filter-btn { padding: 8px 16px; border-radius: 20px; border: 1px solid #ddd; background: #fff; font-size: 13px; font-weight: 700; color: #666; cursor: pointer; white-space: nowrap; }
+        .filter-btn.active { background: #ff6a00; color: #fff; border-color: #ff6a00; }
+
+        .timeline-content { display: flex; gap: 15px; overflow-x: auto; padding: 10px 0; min-height: 100px; }
+        
+        .status-cards-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; cursor: pointer; border-bottom: 4px solid #eee; }
+        .stat-card.active { border-bottom-color: #ff6a00; background: #fffaf5; }
+        .stat-card .label { font-size: 13px; font-weight: 700; color: #888; }
+        .stat-card .count { font-size: 24px; font-weight: 800; color: #333; margin-top: 5px; }
+
+        /* 입력창 영역 (직사각형 스타일로 수정) */
+        .input-area-card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 25px; border: 2px solid #ff6a00; display: none; }
+        .input-area-card.system-border { border-color: #00c73c; }
+        .tool-textarea { width: 100%; height: 45px; border: 1px solid #ddd; border-radius: 8px; padding: 12px; font-size: 12px; resize: none; margin-bottom: 10px; box-sizing: border-box; }
+    </style>
 </head>
-<body>
-    <div class="app-container">
-        <!-- Sidebar Navigation -->
-        <nav class="sidebar">
-            <div class="brand">
-                <div class="brand-logo">B</div>
-                <span class="brand-name">Boracay Sean</span>
+<body class="smartstore-admin">
+    <!-- Login -->
+    <div id="login-container" class="admin-login-wrapper">
+        <div class="admin-login-card">
+            <div class="admin-login-header">
+                <div class="admin-logo-box"><img src="logo.png" alt="Logo"></div>
+                <h1>BORACAY SEAN</h1>
+                <h2>파트너 센터</h2>
             </div>
-            
-            <ul class="nav-menu">
-                <li class="nav-item active" data-view="sales">
-                    <span class="material-icons-round">dashboard</span>
-                    <span class="nav-text">영업 대시보드</span>
-                </li>
-                <li class="nav-item" data-view="schedule">
-                    <span class="material-icons-round">calendar_month</span>
-                    <span class="nav-text">스케줄 관리</span>
-                </li>
-                <li class="nav-item" data-view="profit">
-                    <span class="material-icons-round">account_balance_wallet</span>
-                    <span class="nav-text">손익 대시보드</span>
-                </li>
-                <li class="nav-item" data-view="management">
-                    <span class="material-icons-round">insights</span>
-                    <span class="nav-text">경영 대시보드</span>
-                </li>
-            </ul>
+            <form id="login-form">
+                <div class="admin-form-group"><label>아이디</label><input type="text" id="username" required></div>
+                <div class="admin-form-group"><label>비밀번호</label><input type="password" id="password" required></div>
+                <button type="submit" class="btn-admin-login">로그인</button>
+            </form>
+        </div>
+    </div>
 
-            <div class="sidebar-bottom">
-                <li class="nav-item" onclick="window.location.href='/'">
-                    <span class="material-icons-round">logout</span>
-                    <span class="nav-text">홈페이지로</span>
-                </li>
-            </div>
-        </nav>
+    <div id="admin-container" class="admin-full-layout" style="display: none;">
+        <aside class="ss-sidebar">
+            <div class="ss-sidebar-brand"><img src="logo.png" alt="Logo" class="ss-logo"><span class="ss-brand-name">관리자 센터</span></div>
+            <nav class="ss-nav">
+                <div class="ss-nav-group">
+                    <button class="ss-nav-item active" onclick="switchMainView()"><span class="material-icons">dashboard</span> 메인 페이지</button>
+                    <button class="ss-nav-item" onclick="switchAdminTab('new')"><span class="material-icons">inbox</span> 신규예약</button>
+                    <button class="ss-nav-item" onclick="switchAdminTab('confirmed')"><span class="material-icons">task_alt</span> 예약확정</button>
+                    <button class="ss-nav-item" onclick="switchAdminTab('resorts')"><span class="material-icons">hotel</span> 리조트 견적</button>
+                    <button class="ss-nav-item" onclick="switchAdminTab('resort-confirmed')"><span class="material-icons">check_circle</span> 리조트 확정</button>
+                </div>
+                <div class="ss-nav-group">
+                    <p class="ss-nav-label">시스템</p>
+                    <button class="ss-nav-item" onclick="showInputArea('quick')"><span class="material-icons">confirmation_number</span> 퀵바우처 생성</button>
+                    <button class="ss-nav-item" onclick="showInputArea('reg')"><span class="material-icons">upload_file</span> 스케줄 등록</button>
+                    <button class="ss-nav-item system-danger" onclick="switchAdminTab('system')"><span class="material-icons">settings</span> 초기화</button>
+                </div>
+                <div class="ss-nav-group">
+                    <p class="ss-nav-label">대시보드</p>
+                    <button class="ss-nav-item" onclick="switchDashboard('sales')"><span class="material-icons">bar_chart</span> 영업 대시보드</button>
+                    <button class="ss-nav-item" onclick="switchDashboard('schedule')"><span class="material-icons">calendar_month</span> 스케줄 관리</button>
+                    <button class="ss-nav-item" onclick="switchDashboard('profit')"><span class="material-icons">account_balance_wallet</span> 손익 대시보드</button>
+                    <button class="ss-nav-item" onclick="switchDashboard('management')"><span class="material-icons">insights</span> 경영 대시보드</button>
+                </div>
+            </nav>
+            <div class="ss-sidebar-footer"><button id="logout-btn"><span class="material-icons">logout</span> 로그아웃</button></div>
+        </aside>
 
-        <!-- Main Content Area -->
-        <main class="main-content">
-            <!-- Top Header -->
-            <header class="top-header">
-                <div class="greeting-box">
-                    <div class="greeting-icon">☀️</div>
-                    <div class="greeting-text">
-                        <h1>Good morning, Boracay Sean</h1>
-                        <p>오늘의 투어 현황과 매출을 확인하세요.</p>
-                    </div>
-                </div>
-                
-                <div class="header-actions">
-                    <button class="action-btn primary" onclick="openModal('quick-voucher-modal')">
-                        <span class="material-icons-round">confirmation_number</span>
-                        퀵바우처 생성
-                    </button>
-                    <button class="action-btn secondary" onclick="openModal('cafe-confirm-modal')">
-                        <span class="material-icons-round">coffee</span>
-                        카페 예약 확인증
-                    </button>
-                    <div class="user-profile">
-                        <img src="logo.png" alt="Profile" class="avatar">
-                        <div class="user-info">
-                            <span class="user-name">관리자</span>
-                            <span class="user-role">Master Admin</span>
-                        </div>
-                    </div>
-                </div>
+        <div class="ss-main">
+            <header class="ss-top-header">
+                <div class="ss-header-left"><span class="ss-breadcrumb">관리자 > <b id="breadcrumb-active">메인 페이지</b></span></div>
+                <div class="ss-header-right"><span id="display-admin-id">Admin</span>님 반갑습니다.</div>
             </header>
 
-            <!-- Views Container -->
-            <div class="views-wrapper">
-                
-                <!-- 1. 영업 대시보드 (Sales) -->
-                <div id="view-sales" class="view-panel active">
-                    <div class="section-title">
-                        <h2>영업 대시보드</h2>
+            <div class="ss-content">
+                <!-- 상단 5분할 박스 (한줄 배치) -->
+                <div class="main-tool-grid">
+                    <div id="tool-box-today" class="tool-box active" onclick="switchScheduleDay('today')">
+                        <h4>오늘 일정</h4>
+                        <div id="box-date-today" class="date-val">-</div>
+                    </div>
+                    <div id="tool-box-tomorrow" class="tool-box" onclick="switchScheduleDay('tomorrow')">
+                        <h4>내일 일정</h4>
+                        <div id="box-date-tomorrow" class="date-val">-</div>
+                    </div>
+                    <div class="tool-box system-box" onclick="showInputArea('quick')">
+                        <h4>퀵바우처 생성기</h4>
+                        <div class="date-val" style="font-size:12px;">바로가기</div>
+                    </div>
+                    <div class="tool-box" style="border-top-color: #007aff;" onclick="showInputArea('cafe')">
+                        <h4>카페 예약확인증</h4>
+                        <div class="date-val" style="font-size:12px;">바로가기</div>
+                    </div>
+                    <div class="tool-box system-box small-box" onclick="showInputArea('reg')">
+                        <h4>스케줄 등록기</h4>
+                        <div class="date-val">바로가기</div>
+                    </div>
+                </div>
+
+                <!-- 🚀 퀵바우처 / 스케줄 등록 / 견적서 생성 입력창 (직사각형 스타일) -->
+                <div id="input-area-quick" class="input-area-card">
+                    <h3 style="margin:0 0 15px 0; color:#ff6a00; font-size:15px;">🎫 퀵바우처 생성</h3>
+                    <textarea id="quick-voucher-input" class="tool-textarea" placeholder="데이터를 붙여넣으세요..."></textarea>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-action-received" style="flex:1; height:40px;" onclick="makeQuickVoucher()">생성 및 링크 복사</button>
+                        <button class="btn-action-outline" style="height:40px;" onclick="hideInputArea()">닫기</button>
+                    </div>
+                </div>
+                <div id="input-area-reg" class="input-area-card system-border">
+                    <h3 style="margin:0 0 15px 0; color:#00c73c; font-size:15px;">📤 스케줄 일괄 등록 (Q열)</h3>
+                    <textarea id="schedule-reg-input" class="tool-textarea" placeholder="전체 데이터를 붙여넣으세요..."></textarea>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-action-received" style="flex:1; background:#00c73c; height:40px;" onclick="registerBulkSchedule()">스케줄 업데이트</button>
+                        <button class="btn-action-danger" style="height:40px; padding: 0 10px;" onclick="handleClearSchedules()" title="모든 스케줄 삭제">
+                            <span class="material-icons">delete_sweep</span> 클리어
+                        </button>
+                        <button class="btn-action-outline" style="height:40px;" onclick="hideInputArea()">닫기</button>
+                    </div>
+                </div>
+                <div id="input-area-cafe" class="input-area-card" style="border-color: #007aff;">
+                    <h3 style="margin:0 0 15px 0; color:#007aff; font-size:15px;">📝 카페 포스팅용 예약 확인증 생성</h3>
+                    <div style="margin-bottom:10px;">
+                        <textarea id="cafe-voucher-input" class="tool-textarea" style="height: 60px;" placeholder="고객 퀵바우처 링크(URL) 또는 데이터를 붙여넣으세요..."></textarea>
+                    </div>
+                    <div style="display:flex; gap:10px; margin-bottom:8px;">
+                        <button class="btn-action-received" style="flex:1; height:40px; background:#007aff;" onclick="copyCafeTitle()">제목 복사</button>
+                        <button class="btn-action-received" style="flex:1; height:40px; background:#ff6a00;" onclick="copyCafeImage()">이미지 복사</button>
+                        <button class="btn-action-received" style="flex:1; height:40px; background:#00c73c;" onclick="copyCafeText()">글 복사</button>
+                        <button class="btn-action-outline" style="height:40px;" onclick="hideInputArea()">닫기</button>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-action-received" style="flex:1; height:40px; background:#9b59b6;" onclick="copyLinkImage()">🔗 링크 이미지 복사</button>
+                    </div>
+                </div>
+
+                <!-- 🚀 캡처용 숨김 예약 확인증 바우처 영역 -->
+                <div id="cafe-voucher-capture-area" style="position: absolute; left: -9999px; top: 0; width: 650px; background: #fffaf6; font-family: 'Pretendard', sans-serif; overflow: hidden; border-radius: 12px;">
+                    <!-- 상단 해변 배경 배너 -->
+                    <div style="position: relative; width: 100%;">
+                        <img src="./img/cafe_voucher_bg_final.jpg" style="width: 100%; display: block;" alt="voucher background">
                     </div>
                     
-                    <div class="sales-grid">
-                        <div class="sales-card theme-orange">
-                            <div class="card-header">
-                                <h3>픽업샌딩</h3>
-                                <span class="material-icons-round">airport_shuttle</span>
-                            </div>
-                            <div class="card-body">
-                                <div class="metric">
-                                    <span class="value" id="sales-pickup-count">0</span>
-                                    <span class="label">예약 건</span>
-                                </div>
-                            </div>
+                    <!-- 중앙 콘텐츠 영역 -->
+                    <div style="padding: 35px 30px; position: relative; min-height: 300px;">
+                        <!-- 이름 및 인사말 박스 -->
+                        <div style="background: white; border-radius: 20px; padding: 25px 30px; box-shadow: 0 5px 25px rgba(0,0,0,0.04); margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between;">
+                            <p style="margin: 0; font-size: 18px; color: #333; font-weight: 700; letter-spacing: -0.5px;">
+                                <span id="cafe-voucher-name" style="color: #ff6a00; font-weight: 800; font-size: 20px;">고객</span>님의 보라카이션 예약이 확정되었습니다.
+                            </p>
+                        </div>
+                        
+                        <!-- 예약 상품 리스트 박스 -->
+                        <div style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 5px 25px rgba(0,0,0,0.04); position: relative; z-index: 1;">
+                            <h3 style="margin: 0 0 20px 0; font-size: 18px; color: #111; border-bottom: 2px solid #ea5b2d; padding-bottom: 10px; display: inline-block; font-weight: 800;">선택하신 예약 상품</h3>
+                            <ul id="cafe-voucher-tour-list" style="margin: 0; padding-left: 25px; font-size: 16px; color: #444; line-height: 2.2; font-weight: 700;">
+                                <!-- 동적 추가 영역 -->
+                            </ul>
                         </div>
 
-                        <div class="sales-card theme-blue">
-                            <div class="card-header">
-                                <h3>블랙펄 요트 호핑투어</h3>
-                                <span class="material-icons-round">sailing</span>
-                            </div>
-                            <div class="card-body">
-                                <div class="metric">
-                                    <span class="value" id="sales-hopping-count">0</span>
-                                    <span class="label">예약 건</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="sales-card theme-green">
-                            <div class="card-header">
-                                <h3>시크릿가든 말룸파티</h3>
-                                <span class="material-icons-round">forest</span>
-                            </div>
-                            <div class="card-body">
-                                <div class="metric">
-                                    <span class="value" id="sales-malumpati-count">0</span>
-                                    <span class="label">예약 건</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="sales-card theme-purple">
-                            <div class="card-header">
-                                <h3>고래상어</h3>
-                                <span class="material-icons-round">scuba_diving</span>
-                            </div>
-                            <div class="card-body">
-                                <div class="metric">
-                                    <span class="value" id="sales-whale-count">0</span>
-                                    <span class="label">예약 건</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="sales-card theme-pink">
-                            <div class="card-header">
-                                <h3>마사지</h3>
-                                <span class="material-icons-round">spa</span>
-                            </div>
-                            <div class="card-body">
-                                <div class="metric">
-                                    <span class="value" id="sales-massage-count">0</span>
-                                    <span class="label">예약 건</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="sales-card theme-teal">
-                            <div class="card-header">
-                                <h3>해양스포츠</h3>
-                                <span class="material-icons-round">surfing</span>
-                            </div>
-                            <div class="card-body">
-                                <div class="metric">
-                                    <span class="value" id="sales-activity-count">0</span>
-                                    <span class="label">예약 건</span>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- 둥둥 떠있는 하단 캐릭터+하트 누끼 (CSS Absolute) -->
+                        <img src="./img/cafe_voucher_deco_final.png" style="position: absolute; bottom: 10px; right: 10px; width: 280px; z-index: 2;" alt="character deco">
+                    </div>
+                    
+                    <!-- 푸터 (검정 바) -->
+                    <div style="background: #333; color: #fff; text-align: center; padding: 18px; font-size: 14px; font-weight: 600; letter-spacing: 1px;">
+                        BORACAY SEAN
                     </div>
                 </div>
 
-                <!-- 2. 스케줄 관리 (Schedule) -->
-                <div id="view-schedule" class="view-panel">
-                    <div class="section-title">
-                        <h2>스케줄 관리</h2>
-                        <input type="date" id="schedule-date-picker" class="modern-input">
+                <div id="input-area-quote" class="input-area-card" style="border-color: #007aff;">
+                    <h3 style="margin:0 0 15px 0; color:#007aff; font-size:15px;">📝 맞춤 견적서 생성</h3>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                        <input type="text" id="quote-customer" class="tool-textarea" style="height:35px; margin:0;" placeholder="고객명">
+                        <input type="text" id="quote-contact" class="tool-textarea" style="height:35px; margin:0;" placeholder="연락처">
                     </div>
-
-                    <div class="schedule-container">
-                        <!-- 픽업샌딩 구역 -->
-                        <div class="schedule-column">
-                            <div class="column-header">
-                                <span class="material-icons-round">flight_land</span>
-                                <h3>픽업샌딩</h3>
-                            </div>
-                            <div class="schedule-list" id="schedule-pickup-list">
-                                <div class="empty-state">일정이 없습니다.</div>
-                            </div>
-                        </div>
-
-                        <!-- 투어 종합 구역 (시간대별) -->
-                        <div class="schedule-column main-column">
-                            <div class="column-header">
-                                <span class="material-icons-round">tour</span>
-                                <h3>투어 종합 일정 (시간순)</h3>
-                            </div>
-                            <div class="schedule-list" id="schedule-tour-list">
-                                <!-- Example item -->
-                                <div class="timeline-item">
-                                    <div class="time">09:00 AM</div>
-                                    <div class="event-card type-hopping">
-                                        <h4>블랙펄 요트 호핑투어</h4>
-                                        <p>김철수 (4명) - 스테이션2 미팅</p>
-                                    </div>
-                                </div>
-                                <div class="timeline-item">
-                                    <div class="time">13:00 PM</div>
-                                    <div class="event-card type-malumpati">
-                                        <h4>시크릿가든 말룸파티</h4>
-                                        <p>이영희 (2명) - 로비 미팅</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <textarea id="quote-items-input" class="tool-textarea" style="height:60px;" placeholder="상품정보 (예: 4/10 호핑 2명, 4/11 마사지 2명)"></textarea>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <input type="number" id="quote-total" class="tool-textarea" style="height:40px; margin:0; flex:1;" placeholder="총 합계 금액 (원)">
+                        <button class="btn-action-received" style="background:#007aff; border-color:#007aff; height:40px; flex:1;" onclick="createCustomQuote()">견적 링크 생성</button>
+                        <button class="btn-action-outline" style="height:40px;" onclick="hideInputArea()">닫기</button>
                     </div>
                 </div>
 
-                <!-- 3. 손익 대시보드 (Profit) -->
-                <div id="view-profit" class="view-panel">
-                    <div class="section-title">
-                        <h2>손익 대시보드</h2>
-                    </div>
-
-                    <div class="profit-overview-grid">
-                        <div class="profit-card total-balance">
-                            <div class="card-header">
-                                <h3>Total Income</h3>
-                                <span class="badge">Google Sheets</span>
+                <div class="timeline-section">
+                    <div class="timeline-header">
+                        <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+                            <div style="display:flex; align-items:center; gap:20px;">
+                                <div class="timeline-title"><span class="material-icons">calendar_today</span> <span id="schedule-title-date">-</span> 일정</div>
+                                <div class="filter-bar" style="border-bottom:none; padding-bottom:0; margin-bottom:0;">
+                                    <button class="filter-btn active" onclick="filterSchedule('all')">전체</button>
+                                    <button class="filter-btn" onclick="filterSchedule('픽업/샌딩')">픽업/샌딩</button>
+                                    <button class="filter-btn" onclick="filterSchedule('호핑투어')">호핑투어</button>
+                                    <button class="filter-btn" onclick="filterSchedule('시크릿가든 말룸파티')">시크릿가든 말룸파티</button>
+                                    <button class="filter-btn" onclick="filterSchedule('랜드투어')">랜드투어</button>
+                                    <button class="filter-btn" onclick="filterSchedule('고래상어')">고래상어</button>
+                                    <button class="filter-btn" onclick="filterSchedule('액티비티')">액티비티</button>
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <h2 id="total-income-amount">₩0</h2>
-                                <p class="trend positive"><span class="material-icons-round">trending_up</span> 실시간 입금 현황</p>
-                            </div>
-                        </div>
-                        
-                        <div class="profit-card total-spending">
-                            <div class="card-header">
-                                <h3>Total Spending</h3>
-                            </div>
-                            <div class="card-body">
-                                <h2 id="total-expense-amount">₩0</h2>
-                                <p class="trend negative"><span class="material-icons-round">trending_down</span> 이번 달 지출</p>
+                            <div style="display:flex; gap:8px;">
+                                <button class="btn-action-received" style="height:32px; font-size:12px; background:#333; border-color:#333;" onclick="openSchedulePopup('pickup')">픽샌 명단</button>
+                                <button class="btn-action-received" style="height:32px; font-size:12px; background:#ff6a00; border-color:#ff6a00;" onclick="openSchedulePopup('activity')">액티비티 명단</button>
                             </div>
                         </div>
                     </div>
+                    <div id="active-timeline" class="timeline-content">
+                        <div class="sc-empty">데이터 로딩 중...</div>
+                    </div>
+                </div>
 
-                    <div class="expense-entry-section">
-                        <h3>지출 내역 등록</h3>
-                        <form id="expense-form" class="modern-form">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>날짜</label>
-                                    <input type="date" id="exp-date" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>몇 명 (인원)</label>
-                                    <input type="number" id="exp-pax" placeholder="예: 4" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>직원 (누구)</label>
-                                    <input type="text" id="exp-staff" placeholder="직원명 입력" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>지출 금액 (얼마)</label>
-                                    <input type="number" id="exp-amount" placeholder="금액 입력" required>
-                                </div>
-                                <div class="form-group btn-group">
-                                    <label>&nbsp;</label>
-                                    <button type="submit" class="action-btn primary">등록</button>
-                                </div>
-                            </div>
-                        </form>
-                        
-                        <div class="expense-list-container">
-                            <table class="modern-table">
+                <!-- 하단 상태 카드 -->
+                <div class="status-cards-row">
+                    <div class="stat-card active" id="stat-new" onclick="switchAdminTab('new')">
+                        <div class="label">신규 예약</div><div class="count" id="count-new">0</div>
+                    </div>
+                    <div class="stat-card" id="stat-confirmed" onclick="switchAdminTab('confirmed')">
+                        <div class="label">예약 확정</div><div class="count" id="count-confirmed">0</div>
+                    </div>
+                    <div class="stat-card" id="stat-resorts" onclick="switchAdminTab('resorts')">
+                        <div class="label">리조트 견적</div><div class="count" id="count-resorts">0</div>
+                    </div>
+                    <div class="stat-card" id="stat-resort-confirmed" onclick="switchAdminTab('resort-confirmed')">
+                        <div class="label">리조트 확정</div><div class="count" id="count-resort-confirmed">0</div>
+                    </div>
+                </div>
+
+                <!-- 예약 리스트 테이블 -->
+                <div id="data-view-section">
+                    <div class="ss-view-header">
+                        <h2 id="current-view-title">예약 리스트</h2>
+                        <input type="text" id="header-global-search" placeholder="고객명 검색" class="ss-search">
+                    </div>
+                    <div class="ss-card">
+                        <div class="ss-table-wrapper">
+                            <table class="ss-table">
                                 <thead>
                                     <tr>
-                                        <th>날짜</th>
-                                        <th>직원명</th>
-                                        <th>인원</th>
-                                        <th>지출 금액</th>
+                                        <th width="40"><input type="checkbox"></th>
+                                        <th width="50">번호</th>
+                                        <th width="100">예약번호</th>
+                                        <th width="140">고객명</th>
+                                        <th>상품 정보</th>
+                                        <th width="120">금액</th>
+                                        <th width="100">신청일</th>
+                                        <th width="90">상태</th>
+                                        <th width="160">액션</th>
                                     </tr>
                                 </thead>
-                                <tbody id="expense-table-body">
-                                    <!-- List populates here -->
-                                </tbody>
+                                <tbody id="admin-table-body"></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                <!-- 4. 경영 대시보드 (Management) -->
-                <div id="view-management" class="view-panel">
-                    <div class="section-title">
-                        <h2>경영 대시보드</h2>
-                    </div>
-                    <div class="coming-soon-box">
-                        <span class="material-icons-round">bar_chart</span>
-                        <h3>경영 통계 분석 (준비중)</h3>
-                        <p>월별/연도별 예약 성장 추이 및 부서별 효율성 지표가 업데이트 될 예정입니다.</p>
+                <!-- 시스템 초기화 -->
+                <div id="system-setup-section" style="display: none; margin-top:30px;">
+                    <div class="system-view">
+                        <span class="material-icons sv-icon">security</span>
+                        <h2 class="sv-title">데이터 초기화</h2>
+                        <button class="btn-danger-luxury" onclick="handleClearAllData()">모든 데이터 삭제</button>
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
-    <!-- Modals -->
-    <div id="quick-voucher-modal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>🎫 퀵바우처 생성기</h3>
-                <button class="close-btn" onclick="closeModal('quick-voucher-modal')"><span class="material-icons-round">close</span></button>
+    <!-- ============================================================
+         대시보드 패널 (좌측탭 클릭 시 ss-main 영역을 덮어서 표시)
+         ============================================================ -->
+    <div id="dashboard-overlay" style="display:none; position:fixed; top:0; left:260px; right:0; bottom:0; background:#f4f7f6; z-index:200; overflow-y:auto; padding:30px 40px; box-sizing:border-box;">
+
+        <!-- 1. 영업 대시보드 -->
+        <div id="db-sales" class="db-panel">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+                <h2 style="margin:0; font-size:22px; font-weight:900;">📊 영업 대시보드</h2>
+                <button onclick="closeDashboard()" style="background:#ff6a00; color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:700;">✕ 닫기</button>
             </div>
-            <div class="modal-body">
-                <textarea id="cafe-voucher-input" class="modern-textarea" style="height: 100px;" placeholder="고객 퀵바우처 링크(URL) 또는 데이터를 붙여넣으세요..."></textarea>
-                <button class="action-btn primary w-100" onclick="alert('바우처 생성 로직 실행!')">바우처 이미지 생성</button>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">
+                <div class="db-card" style="border-left:5px solid #ff6a00;"><div class="db-icon">🚐</div><h3>픽업샌딩</h3><div class="db-count" id="db-pickup">-</div><p>예약 건</p></div>
+                <div class="db-card" style="border-left:5px solid #007aff;"><div class="db-icon">⛵</div><h3>블랙펄 요트 호핑투어</h3><div class="db-count" id="db-hopping">-</div><p>예약 건</p></div>
+                <div class="db-card" style="border-left:5px solid #34c759;"><div class="db-icon">🌿</div><h3>시크릿가든 말룸파티</h3><div class="db-count" id="db-malum">-</div><p>예약 건</p></div>
+                <div class="db-card" style="border-left:5px solid #af52de;"><div class="db-icon">🦈</div><h3>고래상어</h3><div class="db-count" id="db-whale">-</div><p>예약 건</p></div>
+                <div class="db-card" style="border-left:5px solid #ff2d55;"><div class="db-icon">💆</div><h3>마사지</h3><div class="db-count" id="db-massage">-</div><p>예약 건</p></div>
+                <div class="db-card" style="border-left:5px solid #5ac8fa;"><div class="db-icon">🏄</div><h3>해양스포츠</h3><div class="db-count" id="db-activity">-</div><p>예약 건</p></div>
+            </div>
+        </div>
+
+        <!-- 2. 스케줄 관리 -->
+        <div id="db-schedule" class="db-panel" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+                <h2 style="margin:0; font-size:22px; font-weight:900;">📅 스케줄 관리</h2>
+                <button onclick="closeDashboard()" style="background:#ff6a00; color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:700;">✕ 닫기</button>
+            </div>
+            <div style="display:grid; grid-template-columns:340px 1fr; gap:20px;">
+                <div class="db-column"><div class="db-column-header">🛬 픽업샌딩</div><div id="db-sch-pickup" class="db-list"><p style="color:#aaa; text-align:center;">일정 없음</p></div></div>
+                <div class="db-column"><div class="db-column-header">🗓 투어 종합 (시간순)</div><div id="db-sch-tour" class="db-list"><div class="db-timeline-item"><span class="db-time">09:00</span><div class="db-event blue"><b>블랙펄 호핑투어</b><br>예시 데이터 (Firebase 연동 예정)</div></div><div class="db-timeline-item"><span class="db-time">13:00</span><div class="db-event green"><b>시크릿가든 말룸파티</b><br>예시 데이터 (Firebase 연동 예정)</div></div></div></div>
+            </div>
+        </div>
+
+        <!-- 3. 손익 대시보드 -->
+        <div id="db-profit" class="db-panel" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+                <h2 style="margin:0; font-size:22px; font-weight:900;">💰 손익 대시보드</h2>
+                <button onclick="closeDashboard()" style="background:#ff6a00; color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:700;">✕ 닫기</button>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:30px;">
+                <div class="db-card" style="background:#ff6a00; color:#fff; border:none;"><p style="opacity:.8; margin:0 0 10px;">Total Income (이번 달)</p><div style="font-size:38px; font-weight:900;" id="db-income">₩ --</div><p style="opacity:.8; margin:5px 0 0; font-size:13px;">Google Sheets 연동</p></div>
+                <div class="db-card"><p style="color:#888; margin:0 0 10px;">Total Spending (이번 달)</p><div style="font-size:38px; font-weight:900; color:#ff2d55;" id="db-spending">₩0</div></div>
+            </div>
+            <div class="db-card">
+                <h3 style="margin:0 0 20px;">지출 내역 등록</h3>
+                <form id="db-expense-form" onsubmit="addExpense(event)" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
+                    <input type="date" id="exp-date" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:130px;">
+                    <input type="number" id="exp-pax" placeholder="인원 수" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:100px;">
+                    <input type="text" id="exp-staff" placeholder="직원명" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:100px;">
+                    <input type="number" id="exp-amount" placeholder="지출 금액" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px; min-width:120px;">
+                    <button type="submit" style="background:#ff6a00; color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:700;">등록</button>
+                </form>
+                <table style="width:100%; border-collapse:collapse;">
+                    <thead><tr style="border-bottom:2px solid #eee;"><th style="padding:12px; text-align:left; color:#888; font-size:13px;">날짜</th><th style="padding:12px; text-align:left; color:#888; font-size:13px;">직원</th><th style="padding:12px; text-align:left; color:#888; font-size:13px;">인원</th><th style="padding:12px; text-align:left; color:#888; font-size:13px;">금액</th></tr></thead>
+                    <tbody id="db-expense-list"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 4. 경영 대시보드 -->
+        <div id="db-management" class="db-panel" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+                <h2 style="margin:0; font-size:22px; font-weight:900;">📈 경영 대시보드</h2>
+                <button onclick="closeDashboard()" style="background:#ff6a00; color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:700;">✕ 닫기</button>
+            </div>
+            <div class="db-card" style="text-align:center; padding:60px 20px;">
+                <div style="font-size:60px; margin-bottom:20px;">📊</div>
+                <h3 style="font-size:22px; margin:0 0 10px;">경영 통계 분석 (준비중)</h3>
+                <p style="color:#aaa;">월별/연도별 예약 성장 추이 및 매출 통계가 업데이트될 예정입니다.</p>
             </div>
         </div>
     </div>
 
-    <div id="cafe-confirm-modal" class="modal-overlay">
+    <style>
+        .db-card { background:#fff; border-radius:12px; padding:24px; box-shadow:0 2px 10px rgba(0,0,0,0.06); }
+        .db-icon { font-size:28px; margin-bottom:10px; }
+        .db-card h3 { margin:0 0 8px; font-size:15px; color:#555; font-weight:600; }
+        .db-count { font-size:40px; font-weight:900; color:#111; }
+        .db-card p { margin:4px 0 0; font-size:13px; color:#aaa; }
+        .db-column { background:#fff; border-radius:12px; padding:20px; box-shadow:0 2px 10px rgba(0,0,0,0.06); }
+        .db-column-header { font-size:16px; font-weight:800; margin-bottom:15px; padding-bottom:12px; border-bottom:1px solid #eee; }
+        .db-list { display:flex; flex-direction:column; gap:12px; }
+        .db-timeline-item { display:flex; gap:12px; align-items:flex-start; }
+        .db-time { min-width:50px; font-size:12px; font-weight:700; color:#aaa; padding-top:6px; }
+        .db-event { flex:1; padding:12px 15px; border-radius:8px; font-size:14px; border-left:4px solid #eee; }
+        .db-event.blue { border-left-color:#007aff; background:rgba(0,122,255,0.05); }
+        .db-event.green { border-left-color:#34c759; background:rgba(52,199,89,0.05); }
+    </style>
+
+    <script>
+        window.switchDashboard = function(tab) {
+            document.getElementById('dashboard-overlay').style.display = 'block';
+            document.querySelectorAll('.db-panel').forEach(p => p.style.display = 'none');
+            document.getElementById('db-' + tab).style.display = 'block';
+
+            // 손익 탭: 지출 리스트 렌더
+            if (tab === 'profit') renderExpenses();
+        };
+
+        window.closeDashboard = function() {
+            document.getElementById('dashboard-overlay').style.display = 'none';
+        };
+
+        // 지출 내역 (localStorage)
+        window.addExpense = function(e) {
+            e.preventDefault();
+            const date   = document.getElementById('exp-date').value;
+            const pax    = document.getElementById('exp-pax').value;
+            const staff  = document.getElementById('exp-staff').value;
+            const amount = document.getElementById('exp-amount').value;
+            if (!date || !pax || !staff || !amount) { alert('모든 항목을 입력해주세요.'); return; }
+
+            const expenses = JSON.parse(localStorage.getItem('bs_expenses') || '[]');
+            expenses.push({ id: Date.now(), date, pax, staff, amount: Number(amount) });
+            localStorage.setItem('bs_expenses', JSON.stringify(expenses));
+            document.getElementById('db-expense-form').reset();
+            renderExpenses();
+        };
+
+        function renderExpenses() {
+            const expenses = JSON.parse(localStorage.getItem('bs_expenses') || '[]');
+            const tbody    = document.getElementById('db-expense-list');
+            if (!tbody) return;
+            let total = 0;
+            tbody.innerHTML = [...expenses].reverse().map(e => {
+                total += e.amount;
+                return `<tr style="border-bottom:1px solid #f0f0f0;">
+                    <td style="padding:12px; font-size:14px;">${e.date}</td>
+                    <td style="padding:12px; font-size:14px; font-weight:600;">${e.staff}</td>
+                    <td style="padding:12px; font-size:14px;">${e.pax}명</td>
+                    <td style="padding:12px; font-size:14px; color:#ff2d55; font-weight:700;">-₩${e.amount.toLocaleString()}</td>
+                </tr>`;
+            }).join('');
+            const el = document.getElementById('db-spending');
+            if (el) el.innerText = '₩' + total.toLocaleString();
+        }
+    </script>
+
+
+    <div id="res-detail-modal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3>☕ 카페 예약 확인증</h3>
-                <button class="close-btn" onclick="closeModal('cafe-confirm-modal')"><span class="material-icons-round">close</span></button>
-            </div>
-            <div class="modal-body">
-                <p>예약 확인증 템플릿과 폼이 이 영역에 표시됩니다.</p>
-                <!-- 기존 카페 예약 확인증 템플릿 마크업 복원 영역 -->
-            </div>
+            <div class="modal-header"><h3>상세 정보</h3><button onclick="closeModal()">✕</button></div>
+            <div class="modal-body" id="modal-body"></div>
+            <div class="modal-footer"><button class="btn-action-outline" onclick="closeModal()">닫기</button></div>
         </div>
     </div>
 
-    <script type="module" src="admin.js"></script>
+    <!-- 💎 Luxury Mobile Bottom Navigation -->
+    <nav class="ss-mobile-bottom-nav">
+        <button class="mobile-nav-item active" onclick="switchMainView(); updateMobileNav(this)">
+            <span class="material-icons">dashboard</span>
+            <span>홈</span>
+        </button>
+        <button class="mobile-nav-item" onclick="switchScheduleDay('today'); updateMobileNav(this)">
+            <span class="material-icons">calendar_today</span>
+            <span>오늘일정</span>
+        </button>
+        <button class="mobile-nav-item" onclick="switchScheduleDay('tomorrow'); updateMobileNav(this)">
+            <span class="material-icons">event_repeat</span>
+            <span>내일일정</span>
+        </button>
+        <button class="mobile-nav-item" onclick="switchAdminTab('new'); updateMobileNav(this)">
+            <span class="material-icons">inbox</span>
+            <span>신규예약</span>
+        </button>
+        <button class="mobile-nav-item" onclick="switchAdminTab('confirmed'); updateMobileNav(this)">
+            <span class="material-icons">task_alt</span>
+            <span>확정내역</span>
+        </button>
+    </nav>
+
+    <script>
+        // 모바일 네비게이션 활성화 상태 업데이트
+        window.updateMobileNav = (el) => {
+            document.querySelectorAll('.mobile-nav-item').forEach(item => item.classList.remove('active'));
+            el.classList.add('active');
+        };
+    </script>
+    <script type="module" src="admin.js?v=20260729_8"></script>
 </body>
 </html>

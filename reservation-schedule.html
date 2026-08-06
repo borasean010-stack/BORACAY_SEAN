@@ -71,9 +71,21 @@
         </div>
 
         <!-- 이벤트 배너 (Inline Mid Banner) -->
-        <a href="/" style="display: block; margin: 20px 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
+        <a href="#" onclick="openCafeEvent(); return false;" style="display: block; margin: 20px 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
             <img src="vv.png" alt="보라카이션 이벤트 한눈에 보기" style="width: 100%; height: auto; display: block;">
         </a>
+
+        <script>
+            function openCafeEvent() {
+                var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                var url = "https://cafe.naver.com/f-e/cafes/17953658/menus/57?viewType=I";
+                if (isMobile) {
+                    // 모바일일 경우 m.cafe.naver.com 으로 변경
+                    url = url.replace("cafe.naver.com", "m.cafe.naver.com");
+                }
+                window.open(url, "_blank");
+            }
+        </script>
 
         <div class="section-title">투어 및 액티비티 일정</div>
         <div id="item-list">

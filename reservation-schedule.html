@@ -78,12 +78,11 @@
         <script>
             function openCafeEvent() {
                 var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-                var url = "https://cafe.naver.com/f-e/cafes/17953658/menus/57?viewType=I";
                 if (isMobile) {
-                    // 모바일일 경우 m.cafe.naver.com 으로 변경
-                    url = url.replace("cafe.naver.com", "m.cafe.naver.com");
+                    window.open("https://m.cafe.naver.com/ca-fe/web/cafes/17953658/menus/57", "_blank");
+                } else {
+                    window.open("https://cafe.naver.com/f-e/cafes/17953658/menus/57?viewType=I", "_blank");
                 }
-                window.open(url, "_blank");
             }
         </script>
 

@@ -1641,8 +1641,8 @@ function initWhaleSharkAdmin() {
         const todayD = new Date();
         const yesterday = new Date(todayD);
         yesterday.setDate(yesterday.getDate() - 1);
-        yesterdayDateStr = `${yesterday.getMonth() + 1}월 ${yesterday.getDate()}일`;
-        const yStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth()+1).padStart(2,'0')}-${String(yesterday.getDate()).padStart(2,'0')}`;
+        yesterdayDateStr = `${todayD.getMonth() + 1}월 ${todayD.getDate()}일`;
+        const yStr = `${todayD.getFullYear()}-${String(todayD.getMonth()+1).padStart(2,'0')}-${String(todayD.getDate()).padStart(2,'0')}`;
         try {
             const { query: q2, where, getDocs, collection: col } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
             const yq = q2(col(db, "whale_transactions"), where("type", "==", "USE"), where("createdAt", ">=", yStr + "T00:00:00"), where("createdAt", "<=", yStr + "T23:59:59"));
@@ -1660,7 +1660,11 @@ function initWhaleSharkAdmin() {
             const finSettlement = document.getElementById('ws-fin-settlement');
             const finSettlementLabel = document.getElementById('ws-fin-settlement-label');
             if (finSettlement) finSettlement.innerText = (totalYesterdayUsed * 1670).toLocaleString() + ' ₱';
-            if (finSettlementLabel) finSettlementLabel.innerText = `${yesterdayDateStr} 사용 ${totalYesterdayUsed}장 × 1,670`;
+            const tomorrow = new Date(todayD); tomorrow.setDate(tomorrow.getDate() + 1);
+            const tomorrowStr = `${tomorrow.getMonth() + 1}월 ${tomorrow.getDate()}일`;
+            const lblFinSettlement = document.getElementById('lbl-fin-settlement');
+            if (lblFinSettlement) lblFinSettlement.innerText = `${tomorrowStr} 정산금액 (내일)`;
+            if (finSettlementLabel) finSettlementLabel.innerText = `오늘(${yesterdayDateStr}) 사용 ${totalYesterdayUsed}장 × 1,670`;
             if (currentWsAgencies.length > 0) renderWsAgencies();
         } catch(e) { console.error("어제 트랜잭션 로드 실패:", e); }
     })();
@@ -1811,7 +1815,7 @@ function renderWsAgencies() {
                 <strong>${currentMonthNum}월 사용티켓:</strong> <span style="float:right;">${mUsed.toLocaleString()}장</span>
             </div>
             <div style="font-size: 14px; color:#555; margin-bottom: 8px;">
-                <strong>어제 사용 (${yesterdayDateStr}):</strong> <span style="float:right; color:#34c759; font-weight:700;">${yUsed.toLocaleString()}장</span>
+                <strong>오늘 사용 (${yesterdayDateStr}):</strong> <span style="float:right; color:#34c759; font-weight:700;">${yUsed.toLocaleString()}장</span>
             </div>
             <div style="font-size: 15px; color:#111; margin-bottom: 15px; font-weight:800; padding-top:10px; border-top:1px dashed #eee;">
                 <strong>총 잔여티켓:</strong> <span style="float:right; color:#007aff; font-size:18px;">${(a.remainCount || 0).toLocaleString()}장</span>

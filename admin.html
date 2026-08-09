@@ -416,6 +416,30 @@
                 <div class="db-card"><p style="color:#888; margin:0 0 10px;">오늘 현장 방문 (리버타드)</p><div style="font-size:26px; font-weight:900; color:#34c759;" id="ws-today-count">0</div></div>
             </div>
 
+            <!-- 재무 정산 합계 -->
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:20px; margin-bottom:20px;">
+                <div class="db-card" style="border-top:4px solid #111;">
+                    <p style="color:#888; margin:0 0 8px; font-size:13px;" id="lbl-fin-total">8월 구매티켓 총금액</p>
+                    <div style="font-size:22px; font-weight:900; color:#111;" id="ws-fin-total">0 ₱</div>
+                    <div style="font-size:11px; color:#aaa; margin-top:4px;">구매장수 × 1,920</div>
+                </div>
+                <div class="db-card" style="border-top:4px solid #ff9500;">
+                    <p style="color:#888; margin:0 0 8px; font-size:13px;" id="lbl-fin-benefit">8월 베네핏 금액</p>
+                    <div style="font-size:22px; font-weight:900; color:#ff9500;" id="ws-fin-benefit">0 ₱</div>
+                    <div style="font-size:11px; color:#aaa; margin-top:4px;">구매장수 × 250</div>
+                </div>
+                <div class="db-card" style="border-top:4px solid #007aff;">
+                    <p style="color:#888; margin:0 0 8px; font-size:13px;" id="lbl-fin-cost">8월 티켓비용</p>
+                    <div style="font-size:22px; font-weight:900; color:#007aff;" id="ws-fin-cost">0 ₱</div>
+                    <div style="font-size:11px; color:#aaa; margin-top:4px;">구매장수 × 1,670</div>
+                </div>
+                <div class="db-card" style="border-top:4px solid #34c759;">
+                    <p style="color:#888; margin:0 0 8px; font-size:13px;" id="lbl-fin-settlement">금일 정산금액</p>
+                    <div style="font-size:22px; font-weight:900; color:#34c759;" id="ws-fin-settlement">0 ₱</div>
+                    <div style="font-size:11px; color:#aaa; margin-top:4px;" id="ws-fin-settlement-label">어제 사용장수 × 1,670</div>
+                </div>
+            </div>
+
             <div class="db-card" style="margin-bottom:20px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                     <h3 style="margin:0;">판매처별 현황</h3>
@@ -539,6 +563,6 @@
             el.classList.add('active');
         };
     </script>
-    <script type="module" src="admin_v2.js?v=9"></script>
+    <script type="module" src="admin_v2.js?v=10"></script>
 </body>
 </html>

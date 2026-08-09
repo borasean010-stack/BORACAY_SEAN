@@ -1648,10 +1648,19 @@ function initWhaleSharkAdmin() {
             const yq = q2(col(db, "whale_transactions"), where("type", "==", "USE"), where("createdAt", ">=", yStr + "T00:00:00"), where("createdAt", "<=", yStr + "T23:59:59"));
             const snap = await getDocs(yq);
             yesterdayUsageByAgency = {};
+            let totalYesterdayUsed = 0;
             snap.forEach(docSnap => {
                 const d = docSnap.data();
-                if (d.agencyId) yesterdayUsageByAgency[d.agencyId] = (yesterdayUsageByAgency[d.agencyId] || 0) + (d.amount || 0);
+                if (d.agencyId) {
+                    yesterdayUsageByAgency[d.agencyId] = (yesterdayUsageByAgency[d.agencyId] || 0) + (d.amount || 0);
+                    totalYesterdayUsed += (d.amount || 0);
+                }
             });
+            // 금일 정산 카드 업데이트
+            const finSettlement = document.getElementById('ws-fin-settlement');
+            const finSettlementLabel = document.getElementById('ws-fin-settlement-label');
+            if (finSettlement) finSettlement.innerText = (totalYesterdayUsed * 1670).toLocaleString() + ' ₱';
+            if (finSettlementLabel) finSettlementLabel.innerText = `${yesterdayDateStr} 사용 ${totalYesterdayUsed}장 × 1,670`;
             if (currentWsAgencies.length > 0) renderWsAgencies();
         } catch(e) { console.error("어제 트랜잭션 로드 실패:", e); }
     })();
@@ -1723,6 +1732,21 @@ function initWhaleSharkAdmin() {
         document.getElementById('ws-total-used').innerText = totalMonthlyUsed.toLocaleString();
         document.getElementById('ws-total-remain').innerText = totalRemain.toLocaleString();
 
+        // 재무 합계 카드 업데이트
+        const finTotal = document.getElementById('ws-fin-total');
+        const finBenefit = document.getElementById('ws-fin-benefit');
+        const finCost = document.getElementById('ws-fin-cost');
+        if (finTotal) finTotal.innerText = (totalMonthlyBought * 1920).toLocaleString() + ' ₱';
+        if (finBenefit) finBenefit.innerText = (totalMonthlyBought * 250).toLocaleString() + ' ₱';
+        if (finCost) finCost.innerText = (totalMonthlyBought * 1670).toLocaleString() + ' ₱';
+        // 라벨도 월 이름으로 동적 업데이트
+        const lblFinTotal = document.getElementById('lbl-fin-total');
+        const lblFinBenefit = document.getElementById('lbl-fin-benefit');
+        const lblFinCost = document.getElementById('lbl-fin-cost');
+        if (lblFinTotal) lblFinTotal.innerText = `${currentMonthNum}월 구매티켓 총금액`;
+        if (lblFinBenefit) lblFinBenefit.innerText = `${currentMonthNum}월 베네핏 금액`;
+        if (lblFinCost) lblFinCost.innerText = `${currentMonthNum}월 티켓비용`;
+
         renderWsAgencies();
     }, (error) => {
         console.error("고래상어 데이터 로드 에러:", error);
@@ -1773,13 +1797,7 @@ function renderWsAgencies() {
         const currentMonthStr = `${new Date().getFullYear()}-${String(currentMonthNum).padStart(2,'0')}`;
         const mBought = a.currentMonth === currentMonthStr ? (a.monthlyBought || 0) : 0;
         const mUsed = a.currentMonth === currentMonthStr ? (a.monthlyUsed || 0) : 0;
-
-        const totalAmount = mBought * 1920;
-        const totalBenefit = mBought * 250;
-        const totalCost = mBought * 1670;
-
         const yUsed = yesterdayUsageByAgency[a.id] || 0;
-        const ySettlement = yUsed * 1670;
 
         return `<div class="db-card" style="padding: 20px; position:relative; border-top: 4px solid ${agencyColor};">
             <div style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
@@ -1789,32 +1807,13 @@ function renderWsAgencies() {
             <div style="font-size: 14px; color:#555; margin-bottom: 8px;">
                 <strong>${currentMonthNum}월 구매티켓:</strong> <span style="float:right; font-weight:700;">${mBought.toLocaleString()}장</span>
             </div>
-
-            <div style="border-top: 1px dashed #ccc; margin: 12px 0;"></div>
-
-            <div style="font-size: 13px; color:#555; margin-bottom: 6px;">
-                <span>${currentMonthNum}월 구매티켓 총금액 (×1920):</span> <span style="float:right;">${totalAmount.toLocaleString()} ₱</span>
-            </div>
-            <div style="font-size: 13px; color:#555; margin-bottom: 6px;">
-                <span>${currentMonthNum}월 베네핏 금액 (×250):</span> <span style="float:right; color:#ff9500;">${totalBenefit.toLocaleString()} ₱</span>
-            </div>
-            <div style="font-size: 13px; color:#555; margin-bottom: 6px;">
-                <span>${currentMonthNum}월 티켓비용 (×1670):</span> <span style="float:right; color:#007aff; font-weight:700;">${totalCost.toLocaleString()} ₱</span>
-            </div>
-
-            <div style="background:#f0f6ff; padding:12px 14px; border-radius:10px; margin: 12px 0; border-left: 3px solid #007aff;">
-                <div style="font-size:12px; color:#555; margin-bottom:4px;">📅 금일 정산 (${yesterdayDateStr} 사용량 기준)</div>
-                <div style="font-size:15px; font-weight:900; color:#111; text-align:right;">
-                    ${yUsed}장 × 1,670 = <span style="color:#007aff;">${ySettlement.toLocaleString()} ₱</span>
-                </div>
-            </div>
-
-            <div style="border-top: 1px dashed #ccc; margin: 12px 0;"></div>
-
             <div style="font-size: 14px; color:#555; margin-bottom: 8px;">
                 <strong>${currentMonthNum}월 사용티켓:</strong> <span style="float:right;">${mUsed.toLocaleString()}장</span>
             </div>
-            <div style="font-size: 15px; color:#111; margin-bottom: 15px; font-weight:800;">
+            <div style="font-size: 14px; color:#555; margin-bottom: 8px;">
+                <strong>어제 사용 (${yesterdayDateStr}):</strong> <span style="float:right; color:#34c759; font-weight:700;">${yUsed.toLocaleString()}장</span>
+            </div>
+            <div style="font-size: 15px; color:#111; margin-bottom: 15px; font-weight:800; padding-top:10px; border-top:1px dashed #eee;">
                 <strong>총 잔여티켓:</strong> <span style="float:right; color:#007aff; font-size:18px;">${(a.remainCount || 0).toLocaleString()}장</span>
             </div>
             <div style="display:flex; justify-content:space-between; gap:10px;">

@@ -1832,7 +1832,7 @@ function renderWsAgencies() {
                 <strong>총 잔여티켓:</strong> <span style="float:right; color:#007aff; font-size:18px;">${(a.remainCount || 0).toLocaleString()}장</span>
             </div>
             <div style="display:flex; gap:10px; margin-bottom:8px;">
-                <button class="btn-sm" style="flex:1;" onclick="showWsQr('${a.id}', '${a.name}', '${a.token}')">QR 보기</button>
+                <button class="btn-sm" style="flex:1;" onclick="showWsQr('${a.id}', '${a.name}', '${a.token}', '${agencyColor}')">QR 보기</button>
             </div>
             <div style="display:flex; gap:10px; margin-bottom:8px;">
                 <button class="btn-sm" style="flex:1; color:#007aff; border-color:#007aff; font-weight:900; font-size:14px;" onclick="openAddAgencyModal('${a.id}')">+ 티켓+</button>
@@ -2043,7 +2043,7 @@ window.deleteWsAgency = async function(id, name) {
 };
 // QR 코드 생성 및 표시
 let wsQrCodeInstance = null;
-window.showWsQr = function(id, name, token) {
+window.showWsQr = function(id, name, token, color) {
     document.getElementById('ws-qr-agency-name').innerText = name;
     const container = document.getElementById('ws-qrcode-container');
     container.innerHTML = ''; // 초기화
@@ -2056,12 +2056,39 @@ window.showWsQr = function(id, name, token) {
         text: qrUrl,
         width: 200,
         height: 200,
-        colorDark : "#000000",
+        colorDark : color || "#000000", // 업체별 색깔
         colorLight : "#ffffff",
         correctLevel : QRCode.CorrectLevel.H
     });
 
     document.getElementById('ws-qr-modal').style.display = 'flex';
+
+    // QR코드 렌더링 후 캔버스에 로고 덮어쓰기
+    setTimeout(() => {
+        const canvas = container.querySelector('canvas');
+        const imgEl = container.querySelector('img');
+        if (canvas && imgEl) {
+            const ctx = canvas.getContext('2d');
+            const logo = new Image();
+            logo.crossOrigin = "Anonymous";
+            logo.src = 'libertad.png';
+            logo.onload = () => {
+                const logoSize = 46;
+                const x = (canvas.width - logoSize) / 2;
+                const y = (canvas.height - logoSize) / 2;
+                
+                // 하얀색 배경 사각형 (QR선 가리기)
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(x - 4, y - 4, logoSize + 8, logoSize + 8);
+                
+                // 로고 그리기
+                ctx.drawImage(logo, x, y, logoSize, logoSize);
+                
+                // 덮어쓴 캔버스 결과를 <img> 태그에 반영 (다운로드 버튼 작동 위함)
+                imgEl.src = canvas.toDataURL("image/png");
+            };
+        }
+    }, 150);
 };
 
 window.closeWsQrModal = function() {

@@ -2048,15 +2048,11 @@ window.showWsQr = function(id, name, token, color) {
     const container = document.getElementById('ws-qrcode-container');
     container.innerHTML = ''; // 초기화
     
-    // 리버타드 전용 카운터 URL + 토큰
-    const baseUrl = window.location.origin; // 현재 도메인
-    const qrUrl = `${baseUrl}/whale-counter.html?token=${token}`;
-    
     wsQrCodeInstance = new QRCode(container, {
-        text: qrUrl,
+        text: token, // URL 대신 토큰만 담아서 boracaysean 도메인이 안 보이게 함
         width: 200,
         height: 200,
-        colorDark : color || "#000000", // 업체별 색깔
+        colorDark : color || "#ff2d55", // 지정된 색상 또는 기본 핑크
         colorLight : "#ffffff",
         correctLevel : QRCode.CorrectLevel.H
     });
@@ -2220,4 +2216,58 @@ window.toggleSettlement = async function(key, agencyId, agencyName, date, usedCo
 
 window.closeSettlementModal = function() {
     document.getElementById('ws-settlement-modal').style.display = 'none';
+};
+
+// 현장확인용(카운터) 메인 QR코드 생성 및 다운로드
+window.downloadMainCounterQr = function() {
+    // 임시 컨테이너 생성
+    const tempDiv = document.createElement('div');
+    tempDiv.style.display = 'none';
+    document.body.appendChild(tempDiv);
+    
+    const baseUrl = window.location.origin;
+    const counterUrl = `${baseUrl}/whale-counter.html`;
+    
+    new QRCode(tempDiv, {
+        text: counterUrl,
+        width: 300,
+        height: 300,
+        colorDark : "#ff2d55", // 핑크색
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+    });
+
+    setTimeout(() => {
+        const canvas = tempDiv.querySelector('canvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            const logo = new Image();
+            logo.crossOrigin = "Anonymous";
+            logo.src = 'libertad.png';
+            logo.onload = () => {
+                const logoSize = 70;
+                const x = (canvas.width - logoSize) / 2;
+                const y = (canvas.height - logoSize) / 2;
+                
+                // 하얀색 배경
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(x - 5, y - 5, logoSize + 10, logoSize + 10);
+                
+                // 로고 그리기
+                ctx.drawImage(logo, x, y, logoSize, logoSize);
+                
+                // 다운로드 트리거
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL("image/png");
+                link.download = `고래상어_현장확인용_QR.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                document.body.removeChild(tempDiv);
+            };
+        } else {
+            document.body.removeChild(tempDiv);
+            alert('QR코드 생성 실패');
+        }
+    }, 200);
 };

@@ -1657,6 +1657,20 @@ function initWhaleSharkAdmin() {
         tempDocs.forEach(docSnap => {
             const data = docSnap.data();
             data.id = docSnap.id;
+            
+            // 과거 테스트 데이터 자동 마이그레이션
+            if (data.monthlyBought === undefined || data.monthlyUsed === undefined) {
+                data.monthlyBought = data.totalBought || 0;
+                data.monthlyUsed = data.totalUsed || 0;
+                data.currentMonth = currentMonthStr;
+                // 비동기로 Firestore 업데이트 (기다리지 않음)
+                updateDoc(doc(db, "whale_agencies", data.id), {
+                    monthlyBought: data.monthlyBought,
+                    monthlyUsed: data.monthlyUsed,
+                    currentMonth: currentMonthStr
+                }).catch(e => console.error("Auto migration failed", e));
+            }
+
             currentWsAgencies.push(data);
             
             if (data.currentMonth === currentMonthStr) {

@@ -1669,6 +1669,12 @@ function initWhaleSharkAdmin() {
             const tomorrowStr = `${tomorrow.getMonth() + 1}월 ${tomorrow.getDate()}일`;
             const lblFinSettlement = document.getElementById('lbl-fin-settlement');
             if (lblFinSettlement) lblFinSettlement.innerText = `${tomorrowStr} 정산금액 (내일)`;
+            // 정산 카드 클릭 이벤트 등록
+            const settlementCard = document.getElementById('ws-fin-settlement')?.closest('.db-card');
+            if (settlementCard) {
+                settlementCard.style.cursor = 'pointer';
+                settlementCard.onclick = () => openSettlementModal();
+            }
             if (finSettlementLabel) finSettlementLabel.innerText = `오늘(${yesterdayDateStr}) 사용 ${totalYesterdayUsed}장 × 1,670`;
             if (currentWsAgencies.length > 0) renderWsAgencies();
         } catch(e) { console.error("어제 트랜잭션 로드 실패:", e); }
@@ -2077,4 +2083,114 @@ window.downloadWsQr = function() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+};
+
+// ========== 정산 기록 모달 ==========
+window.openSettlementModal = async function() {
+    document.getElementById('ws-settlement-modal').style.display = 'flex';
+    const listEl = document.getElementById('ws-settlement-list');
+    listEl.innerHTML = '<div style="text-align:center; color:#aaa; padding:40px;">불러오는 중...</div>';
+
+    try {
+        // 모든 트랜잭션 가져오기 (USE 타입)
+        const txSnap = await getDocs(query(collection(db, 'whale_transactions')));
+        
+        // 날짜별, 업체별 집계
+        const dailyMap = {}; // { 'YYYY-MM-DD': { agencyId: count } }
+        txSnap.forEach(d => {
+            const data = d.data();
+            if (data.type !== 'USE') return;
+            const date = (data.createdAt || '').substring(0, 10);
+            if (!date) return;
+            if (!dailyMap[date]) dailyMap[date] = {};
+            dailyMap[date][data.agencyId] = (dailyMap[date][data.agencyId] || 0) + (data.amount || 0);
+        });
+
+        // 정산 완료 여부 가져오기
+        const settlementSnap = await getDocs(collection(db, 'whale_settlements'));
+        const paidMap = {}; // { 'YYYY-MM-DD_agencyId': true/false }
+        settlementSnap.forEach(d => {
+            const data = d.data();
+            paidMap[d.id] = { isPaid: data.isPaid, paidAt: data.paidAt };
+        });
+
+        const agencyMap = {};
+        currentWsAgencies.forEach(a => { agencyMap[a.id] = a.name; });
+
+        const sortedDates = Object.keys(dailyMap).sort((a, b) => b.localeCompare(a));
+
+        if (sortedDates.length === 0) {
+            listEl.innerHTML = '<div style="text-align:center; color:#aaa; padding:40px;">정산 내역이 없습니다.</div>';
+            return;
+        }
+
+        let html = '';
+        sortedDates.forEach(date => {
+            const agencies = dailyMap[date];
+            const totalUsed = Object.values(agencies).reduce((a, b) => a + b, 0);
+            const totalAmount = totalUsed * 1670;
+
+            // 날짜 그룹 헤더
+            html += `<div style="background:#f4f7f6; padding:12px 16px; border-radius:10px; margin-bottom:8px; font-weight:800; color:#333;">
+                📅 ${date} &nbsp; <span style="color:#007aff;">${totalUsed}장</span> &nbsp; <span style="color:#34c759; font-size:16px;">= ${totalAmount.toLocaleString()} ₱</span>
+            </div>`;
+
+            // 각 업체별 행
+            Object.entries(agencies).forEach(([agencyId, usedCount]) => {
+                const agencyName = agencyMap[agencyId] || '알 수 없는 업체';
+                const amount = usedCount * 1670;
+                const key = `${date}_${agencyId}`;
+                const isPaid = paidMap[key]?.isPaid || false;
+                const paidAt = paidMap[key]?.paidAt || '';
+
+                html += `<div style="display:flex; align-items:center; padding:12px 16px; border:1px solid #eee; border-radius:10px; margin-bottom:6px; background:${isPaid ? '#f0fff4' : '#fff'};">
+                    <input type="checkbox" id="chk_${key}" ${isPaid ? 'checked' : ''} 
+                        onchange="toggleSettlement('${key}', '${agencyId}', '${agencyName}', '${date}', ${usedCount}, ${amount}, this.checked)"
+                        style="width:18px; height:18px; cursor:pointer; margin-right:14px; accent-color:#34c759;">
+                    <div style="flex:1;">
+                        <div style="font-weight:700; color:#111;">${agencyName}</div>
+                        <div style="font-size:12px; color:#888; margin-top:2px;">${usedCount}장 × 1,670 = <strong style="color:#007aff;">${amount.toLocaleString()} ₱</strong>${isPaid ? ` &nbsp;✅ ${paidAt ? paidAt.substring(0,10) + ' 정산완료' : '정산완료'}` : ''}</div>
+                    </div>
+                    <div style="font-size:13px; font-weight:800; color:${isPaid ? '#34c759' : '#ff9500'};">${isPaid ? '✅ 완료' : '⏳ 미정산'}</div>
+                </div>`;
+            });
+            html += '<div style="margin-bottom:16px;"></div>';
+        });
+
+        listEl.innerHTML = html;
+    } catch(e) {
+        console.error(e);
+        listEl.innerHTML = '<div style="text-align:center; color:#ff2d55; padding:40px;">데이터 로드 실패</div>';
+    }
+};
+
+window.toggleSettlement = async function(key, agencyId, agencyName, date, usedCount, amount, isPaid) {
+    try {
+        const { setDoc, doc: firestoreDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+        await setDoc(firestoreDoc(db, 'whale_settlements', key), {
+            agencyId,
+            agencyName,
+            date,
+            usedCount,
+            amount,
+            isPaid,
+            paidAt: isPaid ? new Date().toISOString() : null,
+            updatedAt: new Date().toISOString()
+        });
+        // UI 즉시 반영
+        const row = document.getElementById('chk_' + key)?.closest('div[style]');
+        if (row) {
+            row.style.background = isPaid ? '#f0fff4' : '#fff';
+            const statusEl = row.querySelector('div:last-child');
+            if (statusEl) statusEl.innerHTML = isPaid ? '✅ 완료' : '⏳ 미정산';
+            statusEl.style.color = isPaid ? '#34c759' : '#ff9500';
+        }
+    } catch(e) {
+        console.error(e);
+        Swal.fire('오류', '저장 중 문제가 발생했습니다.', 'error');
+    }
+};
+
+window.closeSettlementModal = function() {
+    document.getElementById('ws-settlement-modal').style.display = 'none';
 };

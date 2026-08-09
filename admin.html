@@ -563,6 +563,20 @@
             el.classList.add('active');
         };
     </script>
-    <script type="module" src="admin_v2.js?v=13"></script>
+    <script type="module" src="admin_v2.js?v=14"></script>
+
+    <!-- 정산 기록 모달 -->
+    <div id="ws-settlement-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
+        <div style="background:#fff; border-radius:20px; width:700px; max-width:95vw; max-height:85vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+            <div style="padding:24px 28px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+                <h2 style="margin:0; font-size:20px; font-weight:900;">💰 정산 기록</h2>
+                <button onclick="closeSettlementModal()" style="background:none; border:none; font-size:24px; cursor:pointer; color:#888;">&times;</button>
+            </div>
+            <div style="padding:20px 28px; overflow-y:auto; flex:1;">
+                <div id="ws-settlement-list"><div style="text-align:center; color:#aaa; padding:40px;">불러오는 중...</div></div>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

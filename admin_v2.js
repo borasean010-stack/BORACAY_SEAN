@@ -1641,17 +1641,22 @@ function initWhaleSharkAdmin() {
         const todayD = new Date();
         const yesterday = new Date(todayD);
         yesterday.setDate(yesterday.getDate() - 1);
-        yesterdayDateStr = `${todayD.getMonth() + 1}월 ${todayD.getDate()}일`;
-        const yStr = `${todayD.getFullYear()}-${String(todayD.getMonth()+1).padStart(2,'0')}-${String(todayD.getDate()).padStart(2,'0')}`;
+        // 필리핀 시간(UTC+8) 기준 오늘 날짜의 UTC 범위를 계산
+        const phOffset = 8 * 60 * 60 * 1000;
+        const phToday = new Date(todayD.getTime() + phOffset);
+        const yStr = `${phToday.getUTCFullYear()}-${String(phToday.getUTCMonth()+1).padStart(2,'0')}-${String(phToday.getUTCDate()).padStart(2,'0')}`;
+        yesterdayDateStr = `${phToday.getUTCMonth() + 1}월 ${phToday.getUTCDate()}일`;
         try {
             const { query: q2, where, getDocs, collection: col } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-            const yq = q2(col(db, "whale_transactions"), where("type", "==", "USE"), where("createdAt", ">=", yStr + "T00:00:00"), where("createdAt", "<=", yStr + "T23:59:59"));
+            // type 없이 날짜 범위만 쿼리 (composite index 불필요)
+            const yq = q2(col(db, "whale_transactions"), where("createdAt", ">=", yStr + "T00:00:00"), where("createdAt", "<=", yStr + "T23:59:59"));
             const snap = await getDocs(yq);
             yesterdayUsageByAgency = {};
             let totalYesterdayUsed = 0;
             snap.forEach(docSnap => {
                 const d = docSnap.data();
-                if (d.agencyId) {
+                // JS에서 USE 타입만 필터링
+                if (d.type === 'USE' && d.agencyId) {
                     yesterdayUsageByAgency[d.agencyId] = (yesterdayUsageByAgency[d.agencyId] || 0) + (d.amount || 0);
                     totalYesterdayUsed += (d.amount || 0);
                 }

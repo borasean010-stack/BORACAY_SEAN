@@ -1712,7 +1712,7 @@ function renderWsAgencies() {
         return `<div class="db-card" style="padding: 20px; position:relative;">
             <div style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
                 ${statusBadge}
-                <h3 style="margin:0; font-size: 18px; color:#333;">${a.name}</h3>
+                <h3 style="margin:0; font-size: 18px; color:#007aff; font-weight: 800;">${a.name}</h3>
             </div>
             <div style="font-size: 14px; color:#555; margin-bottom: 8px;">
                 <strong>월 구매티켓:</strong> <span style="float:right;">${a.monthlyBought || 0}</span>
@@ -1727,8 +1727,9 @@ function renderWsAgencies() {
                 <button class="btn-sm" style="flex:1;" onclick="showWsQr('${a.id}', '${a.name}', '${a.token}')">QR 보기</button>
                 <button class="btn-sm" style="flex:1; color:#007aff; border-color:#007aff;" onclick="openAddAgencyModal('${a.id}')">티켓 추가</button>
             </div>
-            <div style="margin-top: 10px;">
-                <button class="btn-sm" style="width:100%;" onclick="toggleWsStatus('${a.id}', ${isActive})">${isActive ? '정지' : '활성화'}</button>
+            <div style="display:flex; justify-content:space-between; gap:10px; margin-top: 10px;">
+                <button class="btn-sm" style="flex:1;" onclick="toggleWsStatus('${a.id}', ${isActive})">${isActive ? '정지' : '활성화'}</button>
+                <button class="btn-sm" style="flex:1; color:#ff2d55; border-color:#ff2d55;" onclick="deleteWsAgency('${a.id}', '${a.name}')">삭제</button>
             </div>
         </div>`;
     }).join('');
@@ -1832,22 +1833,40 @@ window.saveWsAgency = async function() {
 };
 
 window.toggleWsStatus = async function(id, currentActive) {
-    const newStatus = currentActive ? 'INACTIVE' : 'ACTIVE';
-    const confirmMsg = currentActive ? '이 판매처의 QR을 정지하시겠습니까?' : '이 판매처를 다시 활성화하시겠습니까?';
-    
-    if (!confirm(confirmMsg)) return;
-
     try {
+        const newStatus = currentActive ? 'INACTIVE' : 'ACTIVE';
         await updateDoc(doc(db, "whale_agencies", id), {
             status: newStatus,
             updatedAt: new Date().toISOString()
         });
-    } catch(e) {
+    } catch (e) {
         console.error(e);
-        alert('상태 변경 실패');
+        Swal.fire('오류', '상태 변경 중 문제가 발생했습니다.', 'error');
     }
 };
 
+window.deleteWsAgency = async function(id, name) {
+    Swal.fire({
+        title: '판매처 삭제',
+        text: `'${name}' 판매처를 정말 삭제하시겠습니까? (복구 불가)`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ff2d55',
+        cancelButtonColor: '#aaa',
+        confirmButtonText: '삭제',
+        cancelButtonText: '취소'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                await deleteDoc(doc(db, "whale_agencies", id));
+                Swal.fire('삭제 완료', '판매처가 삭제되었습니다.', 'success');
+            } catch(e) {
+                console.error(e);
+                Swal.fire('오류', '삭제 중 문제가 발생했습니다.', 'error');
+            }
+        }
+    });
+};
 // QR 코드 생성 및 표시
 let wsQrCodeInstance = null;
 window.showWsQr = function(id, name, token) {

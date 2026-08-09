@@ -1638,8 +1638,8 @@ function initWhaleSharkAdmin() {
     const q = query(collection(db, "whale_agencies"));
     wsUnsubscribe = onSnapshot(q, (snapshot) => {
         currentWsAgencies = [];
-        let totalBought = 0;
-        let totalUsed = 0;
+        let totalMonthlyBought = 0;
+        let totalMonthlyUsed = 0;
         let totalRemain = 0;
 
         const tempDocs = [];
@@ -1650,18 +1650,31 @@ function initWhaleSharkAdmin() {
             return dateB.localeCompare(dateA);
         });
         
+        const today = new Date();
+        const currentMonthStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+        const currentMonthNum = today.getMonth() + 1;
+
         tempDocs.forEach(docSnap => {
             const data = docSnap.data();
             data.id = docSnap.id;
             currentWsAgencies.push(data);
             
-            totalBought += (data.totalBought || 0);
-            totalUsed += (data.totalUsed || 0);
+            if (data.currentMonth === currentMonthStr) {
+                totalMonthlyBought += (data.monthlyBought || 0);
+                totalMonthlyUsed += (data.monthlyUsed || 0);
+            }
             totalRemain += (data.remainCount || 0);
         });
 
-        document.getElementById('ws-total-bought').innerText = totalBought.toLocaleString();
-        document.getElementById('ws-total-used').innerText = totalUsed.toLocaleString();
+        const lblBought = document.getElementById('lbl-total-bought');
+        const lblUsed = document.getElementById('lbl-total-used');
+        const lblRemain = document.getElementById('lbl-total-remain');
+        if (lblBought) lblBought.innerText = `${currentMonthNum}월 구매티켓`;
+        if (lblUsed) lblUsed.innerText = `${currentMonthNum}월 사용티켓`;
+        if (lblRemain) lblRemain.innerText = `총 잔여티켓`;
+
+        document.getElementById('ws-total-bought').innerText = totalMonthlyBought.toLocaleString();
+        document.getElementById('ws-total-used').innerText = totalMonthlyUsed.toLocaleString();
         document.getElementById('ws-total-remain').innerText = totalRemain.toLocaleString();
 
         renderWsAgencies();
@@ -1705,20 +1718,21 @@ function renderWsAgencies() {
 
     grid.innerHTML = currentWsAgencies.map(a => {
         const isActive = a.status !== 'INACTIVE';
+        const agencyColor = a.agencyColor || '#007aff';
         const statusBadge = isActive 
             ? `<span class="badge badge-active" style="float:right; font-size:11px;">활성</span>`
             : `<span class="badge badge-inactive" style="float:right; font-size:11px;">정지됨</span>`;
         
-        return `<div class="db-card" style="padding: 20px; position:relative;">
+        return `<div class="db-card" style="padding: 20px; position:relative; border-top: 4px solid ${agencyColor};">
             <div style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
                 ${statusBadge}
-                <h3 style="margin:0; font-size: 18px; color:#007aff; font-weight: 800;">${a.name}</h3>
+                <h3 style="margin:0; font-size: 18px; color:${agencyColor}; font-weight: 800;">${a.name}</h3>
             </div>
             <div style="font-size: 14px; color:#555; margin-bottom: 8px;">
-                <strong>월 구매티켓:</strong> <span style="float:right;">${a.monthlyBought || 0}</span>
+                <strong>${new Date().getMonth() + 1}월 구매티켓:</strong> <span style="float:right;">${(a.currentMonth === `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}`) ? (a.monthlyBought || 0) : 0}</span>
             </div>
             <div style="font-size: 14px; color:#555; margin-bottom: 8px;">
-                <strong>총 사용티켓:</strong> <span style="float:right;">${a.totalUsed || 0}</span>
+                <strong>${new Date().getMonth() + 1}월 사용티켓:</strong> <span style="float:right;">${(a.currentMonth === `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}`) ? (a.monthlyUsed || 0) : 0}</span>
             </div>
             <div style="font-size: 15px; color:#111; margin-bottom: 15px; font-weight:800;">
                 <strong>총 잔여티켓:</strong> <span style="float:right; color:#007aff; font-size:18px;">${a.remainCount || 0}</span>
@@ -1739,13 +1753,15 @@ window.openAddAgencyModal = function(id = null) {
     document.getElementById('ws-agency-id').value = id || '';
     document.getElementById('ws-agency-name').value = '';
     document.getElementById('ws-agency-add-count').value = '';
+    document.getElementById('ws-agency-color').value = '#007aff';
 
     if (id) {
         const agency = currentWsAgencies.find(a => a.id === id);
         if(agency) {
-            document.getElementById('ws-modal-title').innerText = '티켓 추가 충전';
+            document.getElementById('ws-modal-title').innerText = '판매처 설정 및 충전';
             document.getElementById('ws-agency-name').value = agency.name;
             document.getElementById('ws-agency-name').readOnly = true;
+            document.getElementById('ws-agency-color').value = agency.agencyColor || '#007aff';
             document.getElementById('ws-add-ticket-section').style.display = 'block';
         }
     } else {
@@ -1765,6 +1781,7 @@ window.saveWsAgency = async function() {
     const id = document.getElementById('ws-agency-id').value;
     const name = document.getElementById('ws-agency-name').value.trim();
     const addCount = parseInt(document.getElementById('ws-agency-add-count').value) || 0;
+    const color = document.getElementById('ws-agency-color').value || '#007aff';
 
     if (!name) { Swal.fire('알림', '판매처명을 입력해주세요.', 'warning'); return; }
     
@@ -1773,7 +1790,7 @@ window.saveWsAgency = async function() {
     
     try {
         if (id) {
-            // 기존 업체 티켓 충전
+            // 기존 업체 설정/충전
             const agency = currentWsAgencies.find(a => a.id === id);
             if (!agency) return;
             
@@ -1793,28 +1810,39 @@ window.saveWsAgency = async function() {
                     totalBought: newTotal,
                     monthlyBought: newMonthlyBought,
                     currentMonth: currentMonthStr,
+                    agencyColor: color,
                     updatedAt: new Date().toISOString()
                 });
 
-                // 트랜잭션 로그 기록
                 await addDoc(collection(db, "whale_transactions"), {
                     agencyId: id,
                     type: 'ADD',
                     amount: addCount,
                     createdAt: new Date().toISOString()
                 });
-                Swal.fire('성공', `티켓 ${addCount}장이 충전되었습니다.`, 'success');
+                Swal.fire('성공', `티켓 ${addCount}장이 충전되었습니다. (색상 업데이트 됨)`, 'success');
             } else {
-                Swal.fire('알림', '추가할 수량을 입력해주세요.', 'warning');
-                return;
+                // 수량 증가 없이 색상만 변경
+                await updateDoc(doc(db, "whale_agencies", id), {
+                    agencyColor: color,
+                    updatedAt: new Date().toISOString()
+                });
+                Swal.fire('성공', '설정이 변경되었습니다.', 'success');
             }
         } else {
             // 새 판매처 등록
             const token = generateWsToken();
             await addDoc(collection(db, "whale_agencies"), {
                 name: name,
+                token: token,
+                agencyColor: color,
+                remainCount: 0,
                 totalBought: 0,
                 totalUsed: 0,
+                monthlyBought: 0,
+                monthlyUsed: 0,
+                currentMonth: currentMonthStr,
+                status: 'ACTIVE',
                 remainCount: 0,
                 monthlyBought: 0,
                 currentMonth: currentMonthStr,

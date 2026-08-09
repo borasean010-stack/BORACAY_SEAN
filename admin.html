@@ -410,9 +410,9 @@
             </div>
             
             <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:20px; margin-bottom:30px;">
-                <div class="db-card"><p style="color:#888; margin:0 0 10px;">총 구매 티켓</p><div style="font-size:26px; font-weight:900; color:#111;" id="ws-total-bought">0</div></div>
-                <div class="db-card"><p style="color:#888; margin:0 0 10px;">총 사용 티켓</p><div style="font-size:26px; font-weight:900; color:#ff2d55;" id="ws-total-used">0</div></div>
-                <div class="db-card"><p style="color:#888; margin:0 0 10px;">총 잔여 티켓</p><div style="font-size:26px; font-weight:900; color:#007aff;" id="ws-total-remain">0</div></div>
+                <div class="db-card"><p style="color:#888; margin:0 0 10px;" id="lbl-total-bought">총 구매 티켓</p><div style="font-size:26px; font-weight:900; color:#111;" id="ws-total-bought">0</div></div>
+                <div class="db-card"><p style="color:#888; margin:0 0 10px;" id="lbl-total-used">총 사용 티켓</p><div style="font-size:26px; font-weight:900; color:#ff2d55;" id="ws-total-used">0</div></div>
+                <div class="db-card"><p style="color:#888; margin:0 0 10px;" id="lbl-total-remain">총 잔여 티켓</p><div style="font-size:26px; font-weight:900; color:#007aff;" id="ws-total-remain">0</div></div>
                 <div class="db-card"><p style="color:#888; margin:0 0 10px;">오늘 현장 방문 (리버타드)</p><div style="font-size:26px; font-weight:900; color:#34c759;" id="ws-today-count">0</div></div>
             </div>
 
@@ -480,6 +480,10 @@
                     <input type="number" id="ws-agency-add-count" class="swal2-input" style="width:100%; box-sizing:border-box; margin:0;" placeholder="0">
                     <p style="font-size:11px; color:#888; margin-top:5px; margin-bottom:0;">※ 기존 잔여량에 위 수량만큼 더해집니다.</p>
                 </div>
+                <div style="margin-bottom:15px;" id="ws-agency-color-section">
+                    <label style="display:block; font-weight:bold; margin-bottom:5px; color:#555; font-size:13px;">업체 테마 색상 (선택)</label>
+                    <input type="color" id="ws-agency-color" value="#007aff" style="width:100%; height:40px; border:1px solid #ddd; border-radius:8px; cursor:pointer;">
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn-action-outline" onclick="closeWsAgencyModal()">취소</button>
@@ -535,6 +539,6 @@
             el.classList.add('active');
         };
     </script>
-    <script type="module" src="admin_v2.js?v=4"></script>
+    <script type="module" src="admin_v2.js?v=6"></script>
 </body>
 </html>

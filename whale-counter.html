@@ -207,9 +207,21 @@
                 const newRemain = currentRemain - deductCount;
                 const newTotalUsed = (agencyData.totalUsed || 0) + deductCount;
                 
+                let newMonthlyUsed = agencyData.monthlyUsed || 0;
+                const todayForTx = new Date();
+                const currentMonthStr = `${todayForTx.getFullYear()}-${String(todayForTx.getMonth() + 1).padStart(2, '0')}`;
+                
+                if (agencyData.currentMonth === currentMonthStr) {
+                    newMonthlyUsed += deductCount;
+                } else {
+                    newMonthlyUsed = deductCount;
+                }
+
                 transaction.update(agencyRef, {
                     remainCount: newRemain,
                     totalUsed: newTotalUsed,
+                    monthlyUsed: newMonthlyUsed,
+                    currentMonth: currentMonthStr,
                     updatedAt: new Date().toISOString()
                 });
 

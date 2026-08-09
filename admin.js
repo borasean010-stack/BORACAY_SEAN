@@ -1630,7 +1630,7 @@ function initWhaleSharkAdmin() {
     if (wsUnsubscribe) wsUnsubscribe();
     
     // 판매처 목록 리스닝
-    const q = query(collection(window.db, "whale_agencies"), orderBy("createdAt", "desc"));
+    const q = query(collection(db, "whale_agencies"), orderBy("createdAt", "desc"));
     wsUnsubscribe = onSnapshot(q, (snapshot) => {
         currentWsAgencies = [];
         let totalBought = 0;
@@ -1661,7 +1661,7 @@ function initWhaleSharkAdmin() {
     const today = new Date();
     const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
     
-    const todayRef = doc(window.db, "whale_daily_counts", todayStr);
+    const todayRef = doc(db, "whale_daily_counts", todayStr);
     onSnapshot(todayRef, (docSnap) => {
         if (docSnap.exists()) {
             document.getElementById('ws-today-count').innerText = (docSnap.data().count || 0).toLocaleString();
@@ -1764,7 +1764,7 @@ window.saveWsAgency = async function() {
                     newMonthlyBought = addCount;
                 }
                 
-                await updateDoc(doc(window.db, "whale_agencies", id), {
+                await updateDoc(doc(db, "whale_agencies", id), {
                     remainCount: newRemain,
                     totalBought: newTotal,
                     monthlyBought: newMonthlyBought,
@@ -1773,7 +1773,7 @@ window.saveWsAgency = async function() {
                 });
 
                 // 트랜잭션 로그 기록
-                await addDoc(collection(window.db, "whale_transactions"), {
+                await addDoc(collection(db, "whale_transactions"), {
                     agencyId: id,
                     type: 'ADD',
                     amount: addCount,
@@ -1787,7 +1787,7 @@ window.saveWsAgency = async function() {
         } else {
             // 새 판매처 등록
             const token = generateWsToken();
-            await addDoc(collection(window.db, "whale_agencies"), {
+            await addDoc(collection(db, "whale_agencies"), {
                 name: name,
                 totalBought: 0,
                 totalUsed: 0,
@@ -1815,7 +1815,7 @@ window.toggleWsStatus = async function(id, currentActive) {
     if (!confirm(confirmMsg)) return;
 
     try {
-        await updateDoc(doc(window.db, "whale_agencies", id), {
+        await updateDoc(doc(db, "whale_agencies", id), {
             status: newStatus,
             updatedAt: new Date().toISOString()
         });

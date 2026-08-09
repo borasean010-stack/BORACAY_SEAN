@@ -1613,11 +1613,16 @@ function generateWsToken() {
 }
 
 // 탭 클릭 시 고래상어 데이터 리스닝 시작
-window.switchDashboard = window.switchDashboard || function(tab) {
-    document.getElementById('dashboard-overlay').style.display = 'block';
-    document.querySelectorAll('.db-panel').forEach(p => p.style.display = 'none');
-    const target = document.getElementById('db-' + tab);
-    if(target) target.style.display = 'block';
+const originalSwitchDashboard = window.switchDashboard;
+window.switchDashboard = function(tab) {
+    if (originalSwitchDashboard) {
+        originalSwitchDashboard(tab);
+    } else {
+        document.getElementById('dashboard-overlay').style.display = 'block';
+        document.querySelectorAll('.db-panel').forEach(p => p.style.display = 'none');
+        const target = document.getElementById('db-' + tab);
+        if(target) target.style.display = 'block';
+    }
 
     if (tab === 'whale-shark') {
         initWhaleSharkAdmin();

@@ -422,22 +422,9 @@
                     <button class="btn-action-outline" onclick="openAddAgencyModal()" style="border-radius:8px; padding:6px 12px; font-weight:bold;">+ 새 판매처 등록</button>
                 </div>
                 <div style="overflow-x:auto;">
-                    <table style="width:100%; border-collapse:collapse; min-width:800px;">
-                        <thead>
-                            <tr style="border-bottom:2px solid #eee;">
-                                <th style="padding:12px; text-align:left; color:#888; font-size:13px;">판매처명</th>
-                                <th style="padding:12px; text-align:center; color:#888; font-size:13px;">누적 구매</th>
-                                <th style="padding:12px; text-align:center; color:#888; font-size:13px;">누적 사용</th>
-                                <th style="padding:12px; text-align:center; color:#888; font-size:13px; font-weight:bold; color:#007aff;">현재 잔여량</th>
-                                <th style="padding:12px; text-align:center; color:#888; font-size:13px;">상태</th>
-                                <th style="padding:12px; text-align:center; color:#888; font-size:13px;">QR 관리</th>
-                                <th style="padding:12px; text-align:right; color:#888; font-size:13px;">관리 액션</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ws-agency-list">
-                            <tr><td colspan="7" style="padding:30px; text-align:center; color:#aaa;">데이터를 불러오는 중...</td></tr>
-                        </tbody>
-                    </table>
+                    <div id="ws-agency-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+                        <div style="padding:30px; text-align:center; color:#aaa; grid-column: 1 / -1;">데이터를 불러오는 중...</div>
+                    </div>
                 </div>
             </div>
         </div>

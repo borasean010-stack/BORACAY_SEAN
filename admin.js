@@ -1672,32 +1672,42 @@ function initWhaleSharkAdmin() {
 }
 
 function renderWsAgencies() {
-    const tbody = document.getElementById('ws-agency-list');
+    const grid = document.getElementById('ws-agency-grid');
+    if (!grid) return;
+    
     if (!currentWsAgencies.length) {
-        tbody.innerHTML = '<tr><td colspan="7" style="padding:30px; text-align:center; color:#aaa;">등록된 판매처가 없습니다.</td></tr>';
+        grid.innerHTML = '<div style="padding:30px; text-align:center; color:#aaa; grid-column: 1 / -1;">등록된 판매처가 없습니다.</div>';
         return;
     }
 
-    tbody.innerHTML = currentWsAgencies.map(a => {
+    grid.innerHTML = currentWsAgencies.map(a => {
         const isActive = a.status !== 'INACTIVE';
         const statusBadge = isActive 
-            ? `<span class="badge badge-active">활성</span>`
-            : `<span class="badge badge-inactive">정지됨</span>`;
+            ? `<span class="badge badge-active" style="float:right; font-size:11px;">활성</span>`
+            : `<span class="badge badge-inactive" style="float:right; font-size:11px;">정지됨</span>`;
         
-        return `<tr style="border-bottom:1px solid #f0f0f0;">
-            <td style="padding:12px; font-weight:bold; color:#333;">${a.name}</td>
-            <td style="padding:12px; text-align:center;">${a.totalBought || 0}</td>
-            <td style="padding:12px; text-align:center;">${a.totalUsed || 0}</td>
-            <td style="padding:12px; text-align:center; font-weight:900; color:#007aff; font-size:16px;">${a.remainCount || 0}</td>
-            <td style="padding:12px; text-align:center;">${statusBadge}</td>
-            <td style="padding:12px; text-align:center;">
-                <button class="btn-sm" onclick="showWsQr('${a.id}', '${a.name}', '${a.token}')">QR 보기</button>
-            </td>
-            <td style="padding:12px; text-align:right;">
-                <button class="btn-sm" style="color:#007aff; border-color:#007aff;" onclick="openAddAgencyModal('${a.id}')">티켓 추가</button>
-                <button class="btn-sm" onclick="toggleWsStatus('${a.id}', ${isActive})">${isActive ? '정지' : '활성화'}</button>
-            </td>
-        </tr>`;
+        return `<div class="db-card" style="padding: 20px; position:relative;">
+            <div style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                ${statusBadge}
+                <h3 style="margin:0; font-size: 18px; color:#333;">${a.name}</h3>
+            </div>
+            <div style="font-size: 14px; color:#555; margin-bottom: 8px;">
+                <strong>월 구매티켓:</strong> <span style="float:right;">${a.monthlyBought || 0}</span>
+            </div>
+            <div style="font-size: 14px; color:#555; margin-bottom: 8px;">
+                <strong>총 사용티켓:</strong> <span style="float:right;">${a.totalUsed || 0}</span>
+            </div>
+            <div style="font-size: 15px; color:#111; margin-bottom: 15px; font-weight:800;">
+                <strong>총 잔여티켓:</strong> <span style="float:right; color:#007aff; font-size:18px;">${a.remainCount || 0}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; gap:10px;">
+                <button class="btn-sm" style="flex:1;" onclick="showWsQr('${a.id}', '${a.name}', '${a.token}')">QR 보기</button>
+                <button class="btn-sm" style="flex:1; color:#007aff; border-color:#007aff;" onclick="openAddAgencyModal('${a.id}')">티켓 추가</button>
+            </div>
+            <div style="margin-top: 10px;">
+                <button class="btn-sm" style="width:100%;" onclick="toggleWsStatus('${a.id}', ${isActive})">${isActive ? '정지' : '활성화'}</button>
+            </div>
+        </div>`;
     }).join('');
 }
 
@@ -1734,6 +1744,9 @@ window.saveWsAgency = async function() {
 
     if (!name) { Swal.fire('알림', '판매처명을 입력해주세요.', 'warning'); return; }
     
+    const today = new Date();
+    const currentMonthStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+    
     try {
         if (id) {
             // 기존 업체 티켓 충전
@@ -1744,9 +1757,18 @@ window.saveWsAgency = async function() {
                 const newRemain = (agency.remainCount || 0) + addCount;
                 const newTotal = (agency.totalBought || 0) + addCount;
                 
+                let newMonthlyBought = agency.monthlyBought || 0;
+                if (agency.currentMonth === currentMonthStr) {
+                    newMonthlyBought += addCount;
+                } else {
+                    newMonthlyBought = addCount;
+                }
+                
                 await updateDoc(doc(window.db, "whale_agencies", id), {
                     remainCount: newRemain,
                     totalBought: newTotal,
+                    monthlyBought: newMonthlyBought,
+                    currentMonth: currentMonthStr,
                     updatedAt: new Date().toISOString()
                 });
 
@@ -1770,6 +1792,8 @@ window.saveWsAgency = async function() {
                 totalBought: 0,
                 totalUsed: 0,
                 remainCount: 0,
+                monthlyBought: 0,
+                currentMonth: currentMonthStr,
                 token: token,
                 status: 'ACTIVE',
                 createdAt: new Date().toISOString(),

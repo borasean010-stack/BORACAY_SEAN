@@ -1602,7 +1602,7 @@ window.copyLinkImage = async () => {
 // ==========================================
 // 🐋 고래상어 관리 시스템 (Whale Shark Admin)
 // ==========================================
-import { collection, doc, addDoc, updateDoc, onSnapshot, getDocs, query, where, orderBy, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
 
 let wsUnsubscribe = null;
 let currentWsAgencies = [];

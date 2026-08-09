@@ -1630,14 +1630,22 @@ function initWhaleSharkAdmin() {
     if (wsUnsubscribe) wsUnsubscribe();
     
     // 판매처 목록 리스닝
-    const q = query(collection(db, "whale_agencies"), orderBy("createdAt", "desc"));
+    const q = query(collection(db, "whale_agencies"));
     wsUnsubscribe = onSnapshot(q, (snapshot) => {
         currentWsAgencies = [];
         let totalBought = 0;
         let totalUsed = 0;
         let totalRemain = 0;
 
-        snapshot.forEach(docSnap => {
+        const tempDocs = [];
+        snapshot.forEach(docSnap => tempDocs.push(docSnap));
+        tempDocs.sort((a, b) => {
+            const dateA = a.data().createdAt || '';
+            const dateB = b.data().createdAt || '';
+            return dateB.localeCompare(dateA);
+        });
+        
+        tempDocs.forEach(docSnap => {
             const data = docSnap.data();
             data.id = docSnap.id;
             currentWsAgencies.push(data);
@@ -1673,7 +1681,17 @@ function initWhaleSharkAdmin() {
 
 function renderWsAgencies() {
     const grid = document.getElementById('ws-agency-grid');
-    if (!grid) return;
+    if (!grid) {
+        Swal.fire({
+            title: '업데이트 적용 중',
+            text: '최신 디자인(카드형)을 불러오기 위해 브라우저 캐시를 초기화합니다.',
+            icon: 'info',
+            confirmButtonText: '확인'
+        }).then(() => {
+            window.location.href = window.location.pathname + '?bust=' + new Date().getTime();
+        });
+        return;
+    }
     
     if (!currentWsAgencies.length) {
         grid.innerHTML = '<div style="padding:30px; text-align:center; color:#aaa; grid-column: 1 / -1;">등록된 판매처가 없습니다.</div>';

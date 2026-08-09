@@ -1825,17 +1825,69 @@ function renderWsAgencies() {
             <div style="font-size: 15px; color:#111; margin-bottom: 15px; font-weight:800; padding-top:10px; border-top:1px dashed #eee;">
                 <strong>총 잔여티켓:</strong> <span style="float:right; color:#007aff; font-size:18px;">${(a.remainCount || 0).toLocaleString()}장</span>
             </div>
-            <div style="display:flex; justify-content:space-between; gap:10px;">
+            <div style="display:flex; gap:10px; margin-bottom:8px;">
                 <button class="btn-sm" style="flex:1;" onclick="showWsQr('${a.id}', '${a.name}', '${a.token}')">QR 보기</button>
-                <button class="btn-sm" style="flex:1; color:#007aff; border-color:#007aff;" onclick="openAddAgencyModal('${a.id}')">티켓 추가</button>
             </div>
-            <div style="display:flex; justify-content:space-between; gap:10px; margin-top: 10px;">
-                <button class="btn-sm" style="flex:1;" onclick="toggleWsStatus('${a.id}', ${isActive})">${isActive ? '정지' : '활성화'}</button>
-                <button class="btn-sm" style="flex:1; color:#ff2d55; border-color:#ff2d55;" onclick="deleteWsAgency('${a.id}', '${a.name}')">삭제</button>
+            <div style="display:flex; gap:10px; margin-bottom:8px;">
+                <button class="btn-sm" style="flex:1; color:#007aff; border-color:#007aff; font-weight:900; font-size:14px;" onclick="openAddAgencyModal('${a.id}')">+ 티켓+</button>
+                <button class="btn-sm" style="flex:1; color:#ff9500; border-color:#ff9500; font-weight:900; font-size:14px;" onclick="deductWsTickets('${a.id}', '${a.name}')">− 티켓-</button>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-sm" style="flex:1; color:#ff2d55; border-color:#ff2d55;" onclick="deleteWsAgency('${a.id}', '${a.name}')">&#128465; 삭제</button>
             </div>
         </div>`;
     }).join('');
 }
+
+window.deductWsTickets = async function(id, name) {
+    const agency = currentWsAgencies.find(a => a.id === id);
+    if (!agency) return;
+
+    const { value: deductCount } = await Swal.fire({
+        title: `${name} - 티켓 차감`,
+        input: 'number',
+        inputLabel: `현재 잔여: ${agency.remainCount || 0}장 / 차감할 수량을 입력하세요`,
+        inputAttributes: { min: 1, max: agency.remainCount || 0 },
+        showCancelButton: true,
+        confirmButtonText: '차감',
+        cancelButtonText: '취소',
+        inputValidator: (v) => {
+            if (!v || v <= 0) return '수량을 입력하세요';
+            if (parseInt(v) > (agency.remainCount || 0)) return `잔여티켓(${agency.remainCount}장)보다 많습니다`;
+        }
+    });
+    if (!deductCount) return;
+
+    try {
+        const today = new Date();
+        const currentMonthStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+        const newRemain = (agency.remainCount || 0) - parseInt(deductCount);
+        const newTotalUsed = (agency.totalUsed || 0) + parseInt(deductCount);
+        let newMonthlyUsed = agency.monthlyUsed || 0;
+        if (agency.currentMonth === currentMonthStr) {
+            newMonthlyUsed += parseInt(deductCount);
+        } else {
+            newMonthlyUsed = parseInt(deductCount);
+        }
+        await updateDoc(doc(db, 'whale_agencies', id), {
+            remainCount: newRemain,
+            totalUsed: newTotalUsed,
+            monthlyUsed: newMonthlyUsed,
+            currentMonth: currentMonthStr,
+            updatedAt: today.toISOString()
+        });
+        await addDoc(collection(db, 'whale_transactions'), {
+            agencyId: id,
+            type: 'USE',
+            amount: parseInt(deductCount),
+            createdAt: today.toISOString()
+        });
+        Swal.fire('차감 완료', `${name}에서 ${deductCount}장 차감했습니다.\n잔여: ${newRemain}장`, 'success');
+    } catch(e) {
+        console.error(e);
+        Swal.fire('오류', '차감 중 문제가 발생했습니다.', 'error');
+    }
+};
 
 window.openAddAgencyModal = function(id = null) {
     document.getElementById('ws-agency-id').value = id || '';

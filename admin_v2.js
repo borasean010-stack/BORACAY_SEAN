@@ -1606,6 +1606,8 @@ window.copyLinkImage = async () => {
 
 let wsUnsubscribe = null;
 let currentWsAgencies = [];
+let yesterdayUsageByAgency = {};
+let yesterdayDateStr = '';
 
 // 난수 생성 함수 (보안 토큰용)
 function generateWsToken() {
@@ -1633,7 +1635,27 @@ window.switchDashboard = function(tab) {
 
 function initWhaleSharkAdmin() {
     if (wsUnsubscribe) wsUnsubscribe();
-    
+
+    // 어제 날짜 계산 및 어제 사용량 로드
+    (async () => {
+        const todayD = new Date();
+        const yesterday = new Date(todayD);
+        yesterday.setDate(yesterday.getDate() - 1);
+        yesterdayDateStr = `${yesterday.getMonth() + 1}월 ${yesterday.getDate()}일`;
+        const yStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth()+1).padStart(2,'0')}-${String(yesterday.getDate()).padStart(2,'0')}`;
+        try {
+            const { query: q2, where, getDocs, collection: col } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+            const yq = q2(col(db, "whale_transactions"), where("type", "==", "USE"), where("createdAt", ">=", yStr + "T00:00:00"), where("createdAt", "<=", yStr + "T23:59:59"));
+            const snap = await getDocs(yq);
+            yesterdayUsageByAgency = {};
+            snap.forEach(docSnap => {
+                const d = docSnap.data();
+                if (d.agencyId) yesterdayUsageByAgency[d.agencyId] = (yesterdayUsageByAgency[d.agencyId] || 0) + (d.amount || 0);
+            });
+            if (currentWsAgencies.length > 0) renderWsAgencies();
+        } catch(e) { console.error("어제 트랜잭션 로드 실패:", e); }
+    })();
+
     // 판매처 목록 리스닝
     const q = query(collection(db, "whale_agencies"));
     wsUnsubscribe = onSnapshot(q, (snapshot) => {
@@ -1747,19 +1769,53 @@ function renderWsAgencies() {
             ? `<span class="badge badge-active" style="float:right; font-size:11px;">활성</span>`
             : `<span class="badge badge-inactive" style="float:right; font-size:11px;">정지됨</span>`;
         
+        const currentMonthNum = new Date().getMonth() + 1;
+        const currentMonthStr = `${new Date().getFullYear()}-${String(currentMonthNum).padStart(2,'0')}`;
+        const mBought = a.currentMonth === currentMonthStr ? (a.monthlyBought || 0) : 0;
+        const mUsed = a.currentMonth === currentMonthStr ? (a.monthlyUsed || 0) : 0;
+
+        const totalAmount = mBought * 1920;
+        const totalBenefit = mBought * 250;
+        const totalCost = mBought * 1670;
+
+        const yUsed = yesterdayUsageByAgency[a.id] || 0;
+        const ySettlement = yUsed * 1670;
+
         return `<div class="db-card" style="padding: 20px; position:relative; border-top: 4px solid ${agencyColor};">
             <div style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
                 ${statusBadge}
                 <h3 style="margin:0; font-size: 18px; color:${agencyColor}; font-weight: 800;">${a.name}</h3>
             </div>
             <div style="font-size: 14px; color:#555; margin-bottom: 8px;">
-                <strong>${new Date().getMonth() + 1}월 구매티켓:</strong> <span style="float:right;">${(a.currentMonth === `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}`) ? (a.monthlyBought || 0) : 0}</span>
+                <strong>${currentMonthNum}월 구매티켓:</strong> <span style="float:right; font-weight:700;">${mBought.toLocaleString()}장</span>
             </div>
+
+            <div style="border-top: 1px dashed #ccc; margin: 12px 0;"></div>
+
+            <div style="font-size: 13px; color:#555; margin-bottom: 6px;">
+                <span>${currentMonthNum}월 구매티켓 총금액 (×1920):</span> <span style="float:right;">${totalAmount.toLocaleString()} ₱</span>
+            </div>
+            <div style="font-size: 13px; color:#555; margin-bottom: 6px;">
+                <span>${currentMonthNum}월 베네핏 금액 (×250):</span> <span style="float:right; color:#ff9500;">${totalBenefit.toLocaleString()} ₱</span>
+            </div>
+            <div style="font-size: 13px; color:#555; margin-bottom: 6px;">
+                <span>${currentMonthNum}월 티켓비용 (×1670):</span> <span style="float:right; color:#007aff; font-weight:700;">${totalCost.toLocaleString()} ₱</span>
+            </div>
+
+            <div style="background:#f0f6ff; padding:12px 14px; border-radius:10px; margin: 12px 0; border-left: 3px solid #007aff;">
+                <div style="font-size:12px; color:#555; margin-bottom:4px;">📅 금일 정산 (${yesterdayDateStr} 사용량 기준)</div>
+                <div style="font-size:15px; font-weight:900; color:#111; text-align:right;">
+                    ${yUsed}장 × 1,670 = <span style="color:#007aff;">${ySettlement.toLocaleString()} ₱</span>
+                </div>
+            </div>
+
+            <div style="border-top: 1px dashed #ccc; margin: 12px 0;"></div>
+
             <div style="font-size: 14px; color:#555; margin-bottom: 8px;">
-                <strong>${new Date().getMonth() + 1}월 사용티켓:</strong> <span style="float:right;">${(a.currentMonth === `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}`) ? (a.monthlyUsed || 0) : 0}</span>
+                <strong>${currentMonthNum}월 사용티켓:</strong> <span style="float:right;">${mUsed.toLocaleString()}장</span>
             </div>
             <div style="font-size: 15px; color:#111; margin-bottom: 15px; font-weight:800;">
-                <strong>총 잔여티켓:</strong> <span style="float:right; color:#007aff; font-size:18px;">${a.remainCount || 0}</span>
+                <strong>총 잔여티켓:</strong> <span style="float:right; color:#007aff; font-size:18px;">${(a.remainCount || 0).toLocaleString()}장</span>
             </div>
             <div style="display:flex; justify-content:space-between; gap:10px;">
                 <button class="btn-sm" style="flex:1;" onclick="showWsQr('${a.id}', '${a.name}', '${a.token}')">QR 보기</button>

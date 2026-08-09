@@ -116,6 +116,12 @@
                     data.currentMonth = currentMonthStr;
                 }
 
+                // 테스트 오류 수치 강제 보정
+                if ((data.monthlyBought || 0) < (data.monthlyUsed || 0)) {
+                    data.monthlyBought = (data.monthlyUsed || 0) + (data.remainCount || 0);
+                    data.totalBought = data.monthlyBought;
+                }
+
                 if (data.currentMonth === currentMonthStr) {
                     totalMonthlyBought += (data.monthlyBought || 0);
                     totalMonthlyUsed += (data.monthlyUsed || 0);

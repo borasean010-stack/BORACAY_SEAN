@@ -1663,12 +1663,22 @@ function initWhaleSharkAdmin() {
                 data.monthlyBought = data.totalBought || 0;
                 data.monthlyUsed = data.totalUsed || 0;
                 data.currentMonth = currentMonthStr;
-                // 비동기로 Firestore 업데이트 (기다리지 않음)
                 updateDoc(doc(db, "whale_agencies", data.id), {
                     monthlyBought: data.monthlyBought,
                     monthlyUsed: data.monthlyUsed,
                     currentMonth: currentMonthStr
                 }).catch(e => console.error("Auto migration failed", e));
+            }
+
+            // 테스트 도중 발생한 논리적 오류 강제 보정 (구매량이 사용량보다 적은 경우 수학적으로 수정)
+            if ((data.monthlyBought || 0) < (data.monthlyUsed || 0)) {
+                const correctedBought = (data.monthlyUsed || 0) + (data.remainCount || 0);
+                data.monthlyBought = correctedBought;
+                data.totalBought = correctedBought;
+                updateDoc(doc(db, "whale_agencies", data.id), {
+                    monthlyBought: correctedBought,
+                    totalBought: correctedBought
+                }).catch(e => console.error("Correction failed", e));
             }
 
             currentWsAgencies.push(data);

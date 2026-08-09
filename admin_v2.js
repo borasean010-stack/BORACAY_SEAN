@@ -2091,21 +2091,38 @@ window.closeWsQrModal = function() {
     document.getElementById('ws-qr-modal').style.display = 'none';
 };
 
-window.downloadWsQr = function() {
-    const container = document.getElementById('ws-qrcode-container');
-    const img = container.querySelector('img');
-    if (!img || !img.src) {
-        alert('QR 코드가 아직 생성되지 않았습니다.');
-        return;
-    }
-    
+window.downloadWsQr = async function() {
+    const captureArea = document.getElementById('ws-qr-capture-area');
     const name = document.getElementById('ws-qr-agency-name').innerText;
-    const link = document.createElement('a');
-    link.href = img.src;
-    link.download = `고래상어_QR_${name}.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    
+    if (!captureArea) return;
+    
+    // 다운로드 중 버튼 비활성화
+    const btn = event.target;
+    const originalText = btn.innerText;
+    btn.innerText = '저장 중...';
+    btn.disabled = true;
+
+    try {
+        const canvas = await html2canvas(captureArea, {
+            scale: 3, // 고해상도
+            useCORS: true,
+            backgroundColor: '#ffffff'
+        });
+        
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL("image/png");
+        link.download = `고래상어_티켓QR_${name}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } catch(e) {
+        console.error('QR 캡처 실패:', e);
+        alert('저장에 실패했습니다.');
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
 };
 
 // ========== 정산 기록 모달 ==========

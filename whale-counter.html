@@ -200,6 +200,9 @@
                     throw `잔여 티켓이 부족합니다. (현재: ${currentRemain}장)`;
                 }
 
+                // [중요] Firestore 트랜잭션 규칙: 모든 GET(읽기)는 UPDATE/SET(쓰기) 전에 수행되어야 함!
+                const dailyDoc = await transaction.get(dailyCountRef);
+
                 // 판매처 잔여량/사용량 갱신
                 const newRemain = currentRemain - deductCount;
                 const newTotalUsed = (agencyData.totalUsed || 0) + deductCount;
@@ -211,7 +214,6 @@
                 });
 
                 // 일일 방문자 카운트 갱신
-                const dailyDoc = await transaction.get(dailyCountRef);
                 let newDailyCount = deductCount;
                 if (dailyDoc.exists()) {
                     newDailyCount += (dailyDoc.data().count || 0);

@@ -735,11 +735,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = "루나스파";
                         else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = "보라스파";
+                        else if (lowerLine.includes('maris') || lowerLine.includes('마리스') || lowerLine.includes('marisspa')) itemName = "마리스스파";
                         else if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = "에스파(SSPA)";
                         else if (lowerLine.includes('kabayan') || lowerLine.includes('카바얀')) itemName = "카바얀";
                         else if (lowerLine.includes('hilot') || lowerLine.includes('힐롯')) itemName = "힐롯마사지";
                         else if (lowerLine.includes('poseidon') || lowerLine.includes('포세이돈')) itemName = "포세이돈";
-                        else if (lowerLine.includes('maris') || lowerLine.includes('마리스') || lowerLine.includes('marisspa')) itemName = "마리스스파";
                         else if (lowerLine.includes('diving') || lowerLine.includes('다이빙')) itemName = "체험다이빙";
                         else if (lowerLine.includes('jumbo') || lowerLine.includes('점보')) itemName = "점보크랩";
                         else if (lowerLine.includes('golf') || lowerLine.includes('골프')) itemName = "골프";
@@ -1007,13 +1007,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     const actualTimeMatch = line.match(/(\d{1,2}):(\d{2})/); if (actualTimeMatch) itemTime = `${actualTimeMatch[1].padStart(2,'0')}:${actualTimeMatch[2]}`;
                     const lowerLine = line.toLowerCase();
                     
-                    if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = '에스파(S-SPA)';
+                    if (lowerLine.includes('maris') || lowerLine.includes('마리스') || lowerLine.includes('marisspa')) itemName = '마리스스파';
+                    else if (lowerLine.includes('sspa') || lowerLine.includes('에스파')) itemName = '에스파(S-SPA)';
                     else if (lowerLine.includes('luna') || lowerLine.includes('루나')) itemName = '루나스파';
                     else if (lowerLine.includes('bora') || lowerLine.includes('보라')) itemName = '보라스파';
                     else if (lowerLine.includes('kabayan') || lowerLine.includes('카바얀')) itemName = '카바얀스파';
                     else if (lowerLine.includes('hilot') || lowerLine.includes('힐롯')) itemName = '힐롯마사지';
                     else if (lowerLine.includes('poseidon') || lowerLine.includes('포세이돈')) itemName = '포세이돈 스파';
-                    else if (lowerLine.includes('maris') || lowerLine.includes('마리스') || lowerLine.includes('marisspa')) itemName = '마리스스파';
                     else if (lowerLine.includes('helios') || lowerLine.includes('헬리오스')) itemName = '헬리오스 스파';
                     else if (lowerLine.includes('meeting') || lowerLine.includes('pickup') || lowerLine.includes('픽업')) itemName = '✈️ 공항 픽업';
                     else if (lowerLine.includes('sending') || lowerLine.includes('샌딩')) {

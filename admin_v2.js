@@ -739,7 +739,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         else if (lowerLine.includes('kabayan') || lowerLine.includes('카바얀')) itemName = "카바얀";
                         else if (lowerLine.includes('hilot') || lowerLine.includes('힐롯')) itemName = "힐롯마사지";
                         else if (lowerLine.includes('poseidon') || lowerLine.includes('포세이돈')) itemName = "포세이돈";
-                        else if (lowerLine.includes('maris') || lowerLine.includes('마리스')) itemName = "마리스스파";
+                        else if (lowerLine.includes('maris') || lowerLine.includes('마리스') || lowerLine.includes('marisspa')) itemName = "마리스 스파";
                         else if (lowerLine.includes('diving') || lowerLine.includes('다이빙')) itemName = "체험다이빙";
                         else if (lowerLine.includes('jumbo') || lowerLine.includes('점보')) itemName = "점보크랩";
                         else if (lowerLine.includes('golf') || lowerLine.includes('골프')) itemName = "골프";
@@ -1013,7 +1013,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     else if (lowerLine.includes('kabayan') || lowerLine.includes('카바얀')) itemName = '카바얀스파';
                     else if (lowerLine.includes('hilot') || lowerLine.includes('힐롯')) itemName = '힐롯마사지';
                     else if (lowerLine.includes('poseidon') || lowerLine.includes('포세이돈')) itemName = '포세이돈 스파';
-                    else if (lowerLine.includes('maris') || lowerLine.includes('마리스')) itemName = '마리스스파';
+                    else if (lowerLine.includes('maris') || lowerLine.includes('마리스') || lowerLine.includes('marisspa')) itemName = '마리스 스파';
                     else if (lowerLine.includes('helios') || lowerLine.includes('헬리오스')) itemName = '헬리오스 스파';
                     else if (lowerLine.includes('meeting') || lowerLine.includes('pickup') || lowerLine.includes('픽업')) itemName = '✈️ 공항 픽업';
                     else if (lowerLine.includes('sending') || lowerLine.includes('샌딩')) {

@@ -188,7 +188,7 @@
 </div>
 <div class="tour-detail-container">
     <div class="tour-content">
-        <h1>보라카이 고래상어 투어 (리버타드)</h1>
+        <h1>보라카이 고래상어 투어 (리버타드 패스트트랙)</h1>
         <img src="w1.png?v=1" alt="리버타드 고래상어 투어 상세 안내" style="width:100%; border-radius:20px; margin-bottom: 12px; display:block;">
         <img src="w2.png?v=1" alt="리버타드 고래상어 이용 안내사항 및 환불 규정" style="width:100%; border-radius:20px; display:block;">
     </div>
@@ -321,13 +321,13 @@
     
     function handleBuy() {
         const total = adultCount * ADULT_PRICE;
-        const item = { name: "리버타드 고래상어", price: ADULT_PRICE, count: adultCount, totalPrice: total, date: selectedDate, details: `성인 ${adultCount}` };
+        const item = { name: "리버타드 고래상어 패스트트랙", price: ADULT_PRICE, count: adultCount, totalPrice: total, date: selectedDate, details: `성인 ${adultCount}` };
         BSUtils.buyNow(item);
     }
 
     function addToCart() {
         const total = adultCount * ADULT_PRICE;
-        const item = { name: "리버타드 고래상어", price: ADULT_PRICE, count: adultCount, totalPrice: total, date: selectedDate, details: `성인 ${adultCount}` };
+        const item = { name: "리버타드 고래상어 패스트트랙", price: ADULT_PRICE, count: adultCount, totalPrice: total, date: selectedDate, details: `성인 ${adultCount}` };
         BSUtils.saveToCart(item);
     }
 

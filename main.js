@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: "보라아재 호핑투어", img: "bora1.jpg", url: "/bora-ajae-hopping", desc: "카라바오 섬에서 즐기는 호핑투어", price: 180000 },
             { title: "파라세일링", img: "para1.jpg", url: "/parasailing", desc: "하늘 높이 날아올라 보라카이 전경을 한눈에 담아보세요.", price: 55000 },
             { title: "리버타드 고래상어 패스트트랙", img: "whale-shark-thumb.png", url: "/whale-shark-tour", mdBadge: true, desc: "리버타드에서 만나는 거대하고 온순한 고래상어와의 신비로운 만남.", price: 95000 },
+            { title: "보라카이 고래상어 티켓 패스트트랙", img: "WT.png", url: "/whale-shark-ticket", badge: "NEW", desc: "고래상어 티켓 패스트트랙 / VIP 패스트트랙 전용", price: 49900 },
             { title: "체험 다이빙", img: "diving1.jpg", url: "/scuba-diving", desc: "전문 강사와 함께하는 환상적인 수중 세계 탐험.", price: 55000 },
             { title: "헬멧 다이빙", img: "he1.jpg", url: "/helmet-diving", desc: "머리 젖지 않고 바다 속을 걷는 신비로운 경험.", price: 44000 },
             { title: "제트스키", img: "ze1.jpg", url: "/jetski", desc: "보라카이 바다 위를 시원하게 질주하는 짜릿한 속도감.", price: 55000 },

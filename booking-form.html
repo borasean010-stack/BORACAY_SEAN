@@ -1171,21 +1171,6 @@
         optionsList.forEach(opt => {
             const check = document.getElementById(`opt-${opt.id}-check`);
             if (check && check.checked) {
-                const qtyEl = document.getElementById(`opt-${opt.id}-qty`);
-                const qty = qtyEl ? parseInt(qtyEl.value, 10) : 1;
-                
-                let price = opt.price;
-                let displayName = opt.name;
-                const typeEl = document.getElementById(`opt-${opt.id}-type`);
-                if (typeEl) {
-                    const selectedOpt = typeEl.options[typeEl.selectedIndex];
-                    price = parseInt(selectedOpt.getAttribute('data-price'), 10);
-                    displayName = `${opt.name} (${selectedOpt.value})`;
-                }
-                
-                const cost = price * qty;
-                optSum += cost;
-                
                 const dateEl = document.getElementById(`opt-${opt.id}-date`);
                 const dateVal = dateEl ? dateEl.value : '';
                 const timeEl = document.getElementById(`opt-${opt.id}-time`);
@@ -1193,15 +1178,58 @@
                 const resortEl = document.getElementById(`opt-${opt.id}-resort`);
                 const resortVal = resortEl ? resortEl.value : '';
 
-                optItems.push({
-                    name: `[옵션] ${displayName}`,
-                    price: price,
-                    count: qty,
-                    totalPrice: cost,
-                    date: dateVal,
-                    time: timeVal,
-                    resort: resortVal
-                });
+                const typeCheckboxes = document.querySelectorAll(`input[data-spa="${opt.id}"]`);
+
+                if (typeCheckboxes.length > 0) {
+                    // 마사지 종류별 다중 선택 + 종류별 인원수 반영
+                    typeCheckboxes.forEach(cb => {
+                        if (!cb.checked) return;
+                        const price = parseInt(cb.getAttribute('data-price'), 10);
+                        const typeName = cb.getAttribute('data-name');
+                        const row = cb.closest('.type-check-row');
+                        const qtyWrap = row ? row.nextElementSibling : null;
+                        const qtySelect = (qtyWrap && qtyWrap.classList.contains('type-qty-wrap')) ? qtyWrap.querySelector('select') : null;
+                        const qty = qtySelect ? (qtySelect.selectedIndex + 1) : 1;
+
+                        const cost = price * qty;
+                        optSum += cost;
+
+                        optItems.push({
+                            name: `[옵션] ${opt.name} (${typeName})`,
+                            price: price,
+                            count: qty,
+                            totalPrice: cost,
+                            date: dateVal,
+                            time: timeVal,
+                            resort: resortVal
+                        });
+                    });
+                } else {
+                    const qtyEl = document.getElementById(`opt-${opt.id}-qty`);
+                    const qty = qtyEl ? parseInt(qtyEl.value, 10) : 1;
+
+                    let price = opt.price;
+                    let displayName = opt.name;
+                    const typeEl = document.getElementById(`opt-${opt.id}-type`);
+                    if (typeEl) {
+                        const selectedOpt = typeEl.options[typeEl.selectedIndex];
+                        price = parseInt(selectedOpt.getAttribute('data-price'), 10);
+                        displayName = `${opt.name} (${selectedOpt.value})`;
+                    }
+
+                    const cost = price * qty;
+                    optSum += cost;
+
+                    optItems.push({
+                        name: `[옵션] ${displayName}`,
+                        price: price,
+                        count: qty,
+                        totalPrice: cost,
+                        date: dateVal,
+                        time: timeVal,
+                        resort: resortVal
+                    });
+                }
             }
         });
 

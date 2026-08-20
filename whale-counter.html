@@ -13,9 +13,11 @@
     <style>
         body { margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; background: #f4f7f6; color: #111; }
         .container { max-width: 500px; margin: 0 auto; min-height: 100vh; background: #fff; display: flex; flex-direction: column; }
-        .header { background: #007aff; padding: 20px; text-align: center; color: #fff; }
+        .header { background: #007aff; padding: 20px; text-align: center; color: #fff; position: relative; }
         .header h1 { margin: 0; font-size: 22px; font-weight: 900; }
         .header p { margin: 5px 0 0 0; font-size: 13px; opacity: 0.8; }
+        .header .dashboard-link { position: absolute; top: 16px; right: 16px; display: flex; align-items: center; gap: 4px; padding: 8px 14px; background: rgba(255,255,255,0.15); border-radius: 20px; color: #fff; text-decoration: none; font-size: 13px; font-weight: 700; }
+        .header .dashboard-link:active { background: rgba(255,255,255,0.3); }
         
         .content { padding: 30px 20px; flex: 1; display: flex; flex-direction: column; align-items: center; }
         
@@ -51,6 +53,9 @@
 
 <div class="container">
     <div class="header">
+        <a class="dashboard-link" href="whale-dashboard.html">
+            <span class="material-icons" style="font-size:16px;">dashboard</span> 대시보드
+        </a>
         <h1>고래상어 현장 카운터</h1>
         <p>리버타드 전용</p>
     </div>

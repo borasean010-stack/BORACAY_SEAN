@@ -53,7 +53,6 @@
             box-shadow: var(--shadow); position: relative; overflow: hidden;
             border-top: 4px solid var(--stat-color, var(--navy));
         }
-        .stat-card .stat-icon { font-size: 20px; margin-bottom: 10px; display: block; }
         .stat-card p { margin: 0 0 8px 0; color: var(--muted); font-size: 13px; font-weight: 700; }
         .stat-card h2 { margin: 0; font-size: 30px; font-weight: 900; letter-spacing: -0.5px; }
 
@@ -105,7 +104,6 @@
             .container { padding: 24px 12px 60px; }
             .stat-grid { gap: 8px; }
             .stat-card { padding: 12px 8px; border-radius: 12px; text-align: center; }
-            .stat-card .stat-icon { font-size: 15px; margin-bottom: 4px; }
             .stat-card p { font-size: 10px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .stat-card h2 { font-size: 18px; }
         }
@@ -127,7 +125,7 @@
             </div>
         </div>
         <div style="display:flex; align-items:center; gap:14px;">
-            <a href="whale-counter.html" class="header-link">📷 QR 카운터로 이동</a>
+            <a href="whale-counter.html" class="header-link">QR 카운터로 이동</a>
             <div class="header-clock" id="current-time"></div>
         </div>
     </div>
@@ -136,24 +134,45 @@
         <p class="section-label">오늘의 현황</p>
         <div class="stat-grid">
             <div class="stat-card" style="--stat-color:#0f2a4a;">
-                <span class="stat-icon">🎫</span>
                 <p id="lbl-total-bought">월 구매 티켓</p>
                 <h2 id="total-bought" style="color:#0f2a4a;">0</h2>
             </div>
             <div class="stat-card" style="--stat-color:#ff2d55;">
-                <span class="stat-icon">✅</span>
                 <p id="lbl-total-used">월 사용 티켓</p>
                 <h2 id="total-used" style="color:#ff2d55;">0</h2>
             </div>
             <div class="stat-card" style="--stat-color:#007aff;">
-                <span class="stat-icon">📦</span>
                 <p>총 잔여 티켓</p>
                 <h2 id="total-remain" style="color:#007aff;">0</h2>
             </div>
             <div class="stat-card" style="--stat-color:#34c759;">
-                <span class="stat-icon">🐋</span>
                 <p>오늘 현장 방문 (리버타드)</p>
                 <h2 id="today-count" style="color:#34c759;">0</h2>
+            </div>
+        </div>
+
+        <p class="section-label" style="margin-top:4px;">정산</p>
+        <div class="stat-grid" style="grid-template-columns: 1fr 1fr; margin-bottom:44px;">
+            <div class="stat-card" style="--stat-color:#ff6a00;">
+                <p id="today-settle-label">오늘 정산</p>
+                <h2 id="today-settle-amount" style="color:#ff6a00;">₱0</h2>
+            </div>
+            <div class="stat-card" style="--stat-color:var(--navy); cursor:pointer;" onclick="openSettlementModal()">
+                <p>정산 내역</p>
+                <h2 style="color:var(--navy); font-size:18px;">날짜·판매처별 보기 →</h2>
+            </div>
+        </div>
+
+        <!-- 정산 기록 모달 -->
+        <div id="ws-settlement-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
+            <div style="background:#fff; border-radius:20px; width:700px; max-width:95vw; max-height:85vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+                <div style="padding:24px 28px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+                    <h2 style="margin:0; font-size:20px; font-weight:900;">정산 기록</h2>
+                    <button onclick="closeSettlementModal()" style="background:none; border:none; font-size:24px; cursor:pointer; color:#888;">&times;</button>
+                </div>
+                <div style="padding:20px 28px; overflow-y:auto; flex:1;">
+                    <div id="ws-settlement-list"><div style="text-align:center; color:#aaa; padding:40px;">불러오는 중...</div></div>
+                </div>
             </div>
         </div>
 
@@ -164,35 +183,8 @@
             </div>
         </div>
 
-        <p class="section-label" style="margin-top:4px;">정산</p>
-        <div class="stat-grid" style="grid-template-columns: 1fr 1fr; margin-bottom:44px;">
-            <div class="stat-card" style="--stat-color:#ff6a00;">
-                <span class="stat-icon">💰</span>
-                <p id="today-settle-label">오늘 정산</p>
-                <h2 id="today-settle-amount" style="color:#ff6a00;">₱0</h2>
-            </div>
-            <div class="stat-card" style="--stat-color:var(--navy); cursor:pointer;" onclick="openSettlementModal()">
-                <span class="stat-icon">📋</span>
-                <p>정산 내역</p>
-                <h2 style="color:var(--navy); font-size:18px;">날짜·판매처별 보기 →</h2>
-            </div>
-        </div>
-
-        <!-- 정산 기록 모달 -->
-        <div id="ws-settlement-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
-            <div style="background:#fff; border-radius:20px; width:700px; max-width:95vw; max-height:85vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.2);">
-                <div style="padding:24px 28px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
-                    <h2 style="margin:0; font-size:20px; font-weight:900;">💰 정산 기록</h2>
-                    <button onclick="closeSettlementModal()" style="background:none; border:none; font-size:24px; cursor:pointer; color:#888;">&times;</button>
-                </div>
-                <div style="padding:20px 28px; overflow-y:auto; flex:1;">
-                    <div id="ws-settlement-list"><div style="text-align:center; color:#aaa; padding:40px;">불러오는 중...</div></div>
-                </div>
-            </div>
-        </div>
-
         <p class="section-label" style="margin-top:4px;">등록된 판매처</p>
-        <h2 style="margin:0 0 20px; font-size:22px; font-weight:900; color:var(--navy);">🏢 판매처 현황</h2>
+        <h2 style="margin:0 0 20px; font-size:22px; font-weight:900; color:var(--navy);">판매처 현황</h2>
         <div class="agency-grid" id="agency-grid">
             <!-- 업체 카드가 여기에 렌더링 됩니다. -->
         </div>
@@ -477,7 +469,7 @@
                     const totalUsed = Object.values(agcs).reduce((a, b) => a + b, 0);
                     const totalAmount = totalUsed * 1670;
                     html += `<div style="background:#f4f7f6; padding:12px 16px; border-radius:10px; margin-bottom:8px; font-weight:800; color:#333;">
-                        📅 ${date} &nbsp; <span style="color:#007aff;">${totalUsed}장</span> &nbsp; <span style="color:#34c759; font-size:16px;">= ${totalAmount.toLocaleString()} ₱</span>
+                        ${date} &nbsp; <span style="color:#007aff;">${totalUsed}장</span> &nbsp; <span style="color:#34c759; font-size:16px;">= ${totalAmount.toLocaleString()} ₱</span>
                     </div>`;
                     Object.entries(agcs).forEach(([agencyId, usedCount]) => {
                         const agencyName = agencyMap[agencyId] || '알 수 없는 업체';
@@ -491,9 +483,9 @@
                                 style="width:18px; height:18px; cursor:pointer; margin-right:14px; accent-color:#34c759;">
                             <div style="flex:1;">
                                 <div style="font-weight:700; color:#111;">${agencyName}</div>
-                                <div style="font-size:12px; color:#888; margin-top:2px;">${usedCount}장 × 1,670 = <strong style="color:#007aff;">${amount.toLocaleString()} ₱</strong>${isPaid ? ` ✅ ${paidAt ? paidAt.substring(0,10) + ' 정산완료' : '정산완료'}` : ''}</div>
+                                <div style="font-size:12px; color:#888; margin-top:2px;">${usedCount}장 × 1,670 = <strong style="color:#007aff;">${amount.toLocaleString()} ₱</strong>${isPaid ? ` ${paidAt ? paidAt.substring(0,10) + ' 정산완료' : '정산완료'}` : ''}</div>
                             </div>
-                            <div style="font-size:13px; font-weight:800; color:${isPaid ? '#34c759' : '#ff9500'};">${isPaid ? '✅ 완료' : '⏳ 미정산'}</div>
+                            <div style="font-size:13px; font-weight:800; color:${isPaid ? '#34c759' : '#ff9500'};">${isPaid ? '완료' : '미정산'}</div>
                         </div>`;
                     });
                     html += '<div style="margin-bottom:16px;"></div>';

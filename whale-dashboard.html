@@ -99,11 +99,15 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         @media (max-width: 900px) {
-            .stat-grid { grid-template-columns: repeat(2, 1fr); }
             .header { padding: 16px 20px; flex-wrap: wrap; gap: 10px; }
         }
-        @media (max-width: 480px) {
-            .stat-grid { grid-template-columns: 1fr; }
+        @media (max-width: 640px) {
+            .container { padding: 24px 12px 60px; }
+            .stat-grid { gap: 8px; }
+            .stat-card { padding: 12px 8px; border-radius: 12px; text-align: center; }
+            .stat-card .stat-icon { font-size: 15px; margin-bottom: 4px; }
+            .stat-card p { font-size: 10px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .stat-card h2 { font-size: 18px; }
         }
     </style>
 </head>

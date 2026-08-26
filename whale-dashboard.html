@@ -7,64 +7,141 @@
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        body { margin: 0; font-family: 'Pretendard', sans-serif; background: #f4f7f6; color: #333; }
-        .header { background: #fff; padding: 20px 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
-        .header h1 { margin: 0; font-size: 24px; color: #111; font-weight: 900; }
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-        
-        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 40px; }
-        .stat-card { background: #fff; padding: 25px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); text-align: center; }
-        .stat-card p { margin: 0 0 10px 0; color: #888; font-size: 14px; font-weight: 600; }
-        .stat-card h2 { margin: 0; font-size: 32px; font-weight: 900; }
+        :root {
+            --navy: #0f2a4a;
+            --navy-soft: #2c4870;
+            --sand: #c9a876;
+            --orange: #ff6a00;
+            --bg: #f6f3ec;
+            --ink: #1c2b3a;
+            --muted: #8a8f98;
+            --line: #ececec;
+            --radius: 18px;
+            --shadow: 0 10px 30px rgba(15,42,74,0.06);
+            --shadow-hover: 0 16px 40px rgba(15,42,74,0.12);
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Pretendard', sans-serif; background: var(--bg); color: var(--ink); }
 
-        .agency-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .agency-card { background: #fff; border-radius: 16px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); position: relative; }
-        .agency-card h3 { margin: 0 0 20px 0; font-size: 20px; font-weight: 900; border-bottom: 1px solid #eee; padding-bottom: 15px; }
-        .agency-card .row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 15px; }
-        .agency-card .row strong { color: #555; }
-        
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; position: absolute; top: 25px; right: 25px; }
-        .badge-active { background: #e8f5e9; color: #2e7d32; }
-        .badge-inactive { background: #ffebee; color: #c62828; }
-        
-        #loader { display: flex; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:9999; justify-content:center; align-items:center; flex-direction:column; }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #007aff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        .header {
+            background: #fff;
+            padding: 22px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 3px solid var(--navy);
+            position: sticky; top: 0; z-index: 10;
+        }
+        .header h1 { margin: 0; font-size: 22px; color: var(--navy); font-weight: 900; letter-spacing: -0.3px; }
+        .header .subtitle { margin: 2px 0 0; font-size: 12px; color: var(--muted); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+        .header-link {
+            color: var(--navy); font-size: 13px; font-weight: 800; text-decoration: none;
+            background: #eef2f7; padding: 9px 16px; border-radius: 999px;
+            display: inline-flex; align-items: center; gap: 6px; transition: 0.2s;
+        }
+        .header-link:hover { background: var(--navy); color: #fff; }
+        .header-clock { color: var(--muted); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 36px 24px 80px; }
+
+        .section-label {
+            font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+            color: var(--sand); margin: 0 0 14px 4px;
+        }
+
+        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 44px; }
+        .stat-card {
+            background: #fff; padding: 22px 24px; border-radius: var(--radius);
+            box-shadow: var(--shadow); position: relative; overflow: hidden;
+            border-top: 4px solid var(--stat-color, var(--navy));
+        }
+        .stat-card .stat-icon { font-size: 20px; margin-bottom: 10px; display: block; }
+        .stat-card p { margin: 0 0 8px 0; color: var(--muted); font-size: 13px; font-weight: 700; }
+        .stat-card h2 { margin: 0; font-size: 30px; font-weight: 900; letter-spacing: -0.5px; }
+
+        .agency-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; }
+        .agency-card {
+            background: #fff; border-radius: var(--radius); padding: 24px;
+            box-shadow: var(--shadow); position: relative;
+            border-top: 5px solid var(--agency-color, var(--navy));
+            cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .agency-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+        .agency-card .agency-head { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+        .agency-avatar {
+            width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-weight: 900; font-size: 16px;
+            background: var(--agency-color, var(--navy));
+        }
+        .agency-card h3 { margin: 0; font-size: 18px; font-weight: 900; color: var(--ink); }
+        .agency-card .row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 14px; }
+        .agency-card .row strong { color: var(--muted); font-weight: 600; }
+        .agency-card .remain-chip {
+            margin-top: 16px; padding: 12px 16px; border-radius: 12px;
+            background: #f6f3ec;
+            background: color-mix(in srgb, var(--agency-color, var(--navy)) 8%, #fff);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .agency-card .remain-chip strong { color: var(--ink); font-weight: 800; font-size: 14px; }
+        .agency-card .remain-chip span { font-weight: 900; font-size: 22px; color: var(--agency-color, var(--navy)); }
+
+        .badge { padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 800; }
+        .badge-active { background: #e6f7ed; color: #1e8a4c; }
+        .badge-inactive { background: #fdeaea; color: #c62828; }
+
+        #loader { display: flex; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(246,243,236,0.92); z-index:9999; justify-content:center; align-items:center; flex-direction:column; }
+        .spinner { border: 4px solid #e8e2d5; border-top: 4px solid var(--orange); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @media (max-width: 900px) {
+            .stat-grid { grid-template-columns: repeat(2, 1fr); }
+            .header { padding: 16px 20px; flex-wrap: wrap; gap: 10px; }
+        }
+        @media (max-width: 480px) {
+            .stat-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
     <div id="loader">
         <div class="spinner"></div>
-        <p style="margin-top:20px; font-weight:bold; color:#007aff;">데이터를 불러오는 중입니다...</p>
+        <p style="margin-top:20px; font-weight:800; color:var(--navy);">데이터를 불러오는 중입니다...</p>
     </div>
 
     <div class="header">
         <div style="display:flex; align-items:center; gap:14px;">
             <img src="libertad.png" alt="Libertad Whale Shark" style="width:44px; height:44px; object-fit:contain;">
-            <h1>고래상어 리버타드 통합 대시보드</h1>
+            <div>
+                <h1>고래상어 리버타드 통합 대시보드</h1>
+                <p class="subtitle">Whale Shark · Libertad Partner Console</p>
+            </div>
         </div>
-        <div style="display:flex; align-items:center; gap:16px;">
-            <a href="whale-counter.html" style="color:#007aff; font-size:14px; font-weight:700; text-decoration:none;">📷 QR 카운터로 이동</a>
-            <div style="color:#888; font-size:14px;" id="current-time"></div>
+        <div style="display:flex; align-items:center; gap:14px;">
+            <a href="whale-counter.html" class="header-link">📷 QR 카운터로 이동</a>
+            <div class="header-clock" id="current-time"></div>
         </div>
     </div>
 
     <div class="container">
+        <p class="section-label">오늘의 현황</p>
         <div class="stat-grid">
-            <div class="stat-card">
+            <div class="stat-card" style="--stat-color:#0f2a4a;">
+                <span class="stat-icon">🎫</span>
                 <p id="lbl-total-bought">월 구매 티켓</p>
-                <h2 id="total-bought" style="color:#111;">0</h2>
+                <h2 id="total-bought" style="color:#0f2a4a;">0</h2>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" style="--stat-color:#ff2d55;">
+                <span class="stat-icon">✅</span>
                 <p id="lbl-total-used">월 사용 티켓</p>
                 <h2 id="total-used" style="color:#ff2d55;">0</h2>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" style="--stat-color:#007aff;">
+                <span class="stat-icon">📦</span>
                 <p>총 잔여 티켓</p>
                 <h2 id="total-remain" style="color:#007aff;">0</h2>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" style="--stat-color:#34c759;">
+                <span class="stat-icon">🐋</span>
                 <p>오늘 현장 방문 (리버타드)</p>
                 <h2 id="today-count" style="color:#34c759;">0</h2>
             </div>
@@ -83,7 +160,8 @@
             </div>
         </div>
 
-        <h2 style="margin-bottom: 20px; font-size:22px; font-weight:800; color:#111;">🏢 등록된 판매처 현황</h2>
+        <p class="section-label" style="margin-top:4px;">등록된 판매처</p>
+        <h2 style="margin:0 0 20px; font-size:22px; font-weight:900; color:var(--navy);">🏢 판매처 현황</h2>
         <div class="agency-grid" id="agency-grid">
             <!-- 업체 카드가 여기에 렌더링 됩니다. -->
         </div>
@@ -233,22 +311,29 @@
                     const color = a.agencyColor || '#007aff';
                     const mBought = a.currentMonth === currentMonthStr ? (a.monthlyBought || 0) : 0;
                     const mUsed = a.currentMonth === currentMonthStr ? (a.monthlyUsed || 0) : 0;
-                    
+                    const initial = (a.name || '?').trim().charAt(0);
+
                     return `
-                        <div class="agency-card" style="border-top: 5px solid ${color}; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" onclick="showDailyUsage('${a.id}', '${a.name}')">
-                            <span class="badge ${isActive ? 'badge-active' : 'badge-inactive'}">${isActive ? '활성' : '정지됨'}</span>
-                            <h3 style="color:${color};">${a.name}</h3>
+                        <div class="agency-card" style="--agency-color:${color};" onclick="showDailyUsage('${a.id}', '${a.name}')">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:2px;">
+                                <div class="agency-head" style="border-bottom:none; margin-bottom:0; padding-bottom:0;">
+                                    <div class="agency-avatar">${initial}</div>
+                                    <h3>${a.name}</h3>
+                                </div>
+                                <span class="badge ${isActive ? 'badge-active' : 'badge-inactive'}">${isActive ? '활성' : '정지됨'}</span>
+                            </div>
+                            <div style="height:16px; border-bottom:1px solid var(--line); margin-bottom:16px;"></div>
                             <div class="row">
-                                <strong>${currentMonthNum}월 구매티켓:</strong>
+                                <strong>${currentMonthNum}월 구매티켓</strong>
                                 <span>${mBought.toLocaleString()}</span>
                             </div>
                             <div class="row">
-                                <strong>${currentMonthNum}월 사용티켓:</strong>
+                                <strong>${currentMonthNum}월 사용티켓</strong>
                                 <span>${mUsed.toLocaleString()}</span>
                             </div>
-                            <div class="row" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #eee; font-size: 16px;">
-                                <strong style="color:#111;">총 잔여티켓:</strong>
-                                <span style="font-weight:900; color:${color}; font-size:20px;">${(a.remainCount || 0).toLocaleString()}</span>
+                            <div class="remain-chip">
+                                <strong>총 잔여티켓</strong>
+                                <span>${(a.remainCount || 0).toLocaleString()}</span>
                             </div>
                         </div>
                     `;

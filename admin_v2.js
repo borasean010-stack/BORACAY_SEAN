@@ -2153,7 +2153,7 @@ window.openSettlementModal = async function() {
         const paidMap = {}; // { 'YYYY-MM-DD_agencyId': true/false }
         settlementSnap.forEach(d => {
             const data = d.data();
-            paidMap[d.id] = { isPaid: data.isPaid, paidAt: data.paidAt };
+            paidMap[d.id] = { isPaid: data.isPaid, paidAt: data.paidAt, confirmedByLibertad: data.confirmedByLibertad };
         });
 
         const agencyMap = {};
@@ -2184,16 +2184,20 @@ window.openSettlementModal = async function() {
                 const key = `${date}_${agencyId}`;
                 const isPaid = paidMap[key]?.isPaid || false;
                 const paidAt = paidMap[key]?.paidAt || '';
+                const libertadConfirmed = paidMap[key]?.confirmedByLibertad || false;
 
-                html += `<div style="display:flex; align-items:center; padding:12px 16px; border:1px solid #eee; border-radius:10px; margin-bottom:6px; background:${isPaid ? '#f0fff4' : '#fff'};">
-                    <input type="checkbox" id="chk_${key}" ${isPaid ? 'checked' : ''} 
-                        onchange="toggleSettlement('${key}', '${agencyId}', '${agencyName}', '${date}', ${usedCount}, ${amount}, this.checked)"
-                        style="width:18px; height:18px; cursor:pointer; margin-right:14px; accent-color:#34c759;">
-                    <div style="flex:1;">
-                        <div style="font-weight:700; color:#111;">${agencyName}</div>
-                        <div style="font-size:12px; color:#888; margin-top:2px;">${usedCount}장 × 1,670 = <strong style="color:#007aff;">${amount.toLocaleString()} ₱</strong>${isPaid ? ` &nbsp;✅ ${paidAt ? paidAt.substring(0,10) + ' 정산완료' : '정산완료'}` : ''}</div>
+                html += `<div style="padding:12px 16px; border:1px solid #eee; border-radius:10px; margin-bottom:6px; background:${isPaid ? '#f0fff4' : '#fff'};">
+                    <div style="display:flex; align-items:center;">
+                        <input type="checkbox" id="chk_${key}" ${isPaid ? 'checked' : ''}
+                            onchange="toggleSettlement('${key}', '${agencyId}', '${agencyName}', '${date}', ${usedCount}, ${amount}, this.checked)"
+                            style="width:18px; height:18px; cursor:pointer; margin-right:14px; accent-color:#34c759;">
+                        <div style="flex:1;">
+                            <div style="font-weight:700; color:#111;">${agencyName}</div>
+                            <div style="font-size:12px; color:#888; margin-top:2px;">${usedCount}장 × 1,670 = <strong style="color:#007aff;">${amount.toLocaleString()} ₱</strong>${isPaid ? ` &nbsp;✅ ${paidAt ? paidAt.substring(0,10) + ' 정산완료' : '정산완료'}` : ''}</div>
+                        </div>
+                        <div style="font-size:13px; font-weight:800; color:${isPaid ? '#34c759' : '#ff9500'};">${isPaid ? '✅ 완료' : '⏳ 미정산'}</div>
                     </div>
-                    <div style="font-size:13px; font-weight:800; color:${isPaid ? '#34c759' : '#ff9500'};">${isPaid ? '✅ 완료' : '⏳ 미정산'}</div>
+                    <div style="font-size:11px; color:${libertadConfirmed ? '#34c759' : '#aaa'}; font-weight:700; margin-top:8px; padding-top:8px; border-top:1px dashed #eee; margin-left:32px;">리버타드 확인 ${libertadConfirmed ? '완료' : '대기'}</div>
                 </div>`;
             });
             html += '<div style="margin-bottom:16px;"></div>';
@@ -2218,15 +2222,8 @@ window.toggleSettlement = async function(key, agencyId, agencyName, date, usedCo
             isPaid,
             paidAt: isPaid ? new Date().toISOString() : null,
             updatedAt: new Date().toISOString()
-        });
-        // UI 즉시 반영
-        const row = document.getElementById('chk_' + key)?.closest('div[style]');
-        if (row) {
-            row.style.background = isPaid ? '#f0fff4' : '#fff';
-            const statusEl = row.querySelector('div:last-child');
-            if (statusEl) statusEl.innerHTML = isPaid ? '✅ 완료' : '⏳ 미정산';
-            statusEl.style.color = isPaid ? '#34c759' : '#ff9500';
-        }
+        }, { merge: true });
+        openSettlementModal();
     } catch(e) {
         console.error(e);
         Swal.fire('오류', '저장 중 문제가 발생했습니다.', 'error');

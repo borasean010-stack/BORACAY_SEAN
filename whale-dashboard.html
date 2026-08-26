@@ -475,14 +475,24 @@
                         const agencyName = agencyMap[agencyId] || '알 수 없는 업체';
                         const amount = usedCount * 1670;
                         const key = `${date}_${agencyId}`;
-                        const isPaid = paidMap[key]?.isPaid || false;
-                        const paidAt = paidMap[key]?.paidAt || '';
-                        html += `<div style="display:flex; align-items:center; padding:12px 16px; border:1px solid #eee; border-radius:10px; margin-bottom:6px; background:${isPaid ? '#f0fff4' : '#fff'};">
-                            <div style="flex:1;">
-                                <div style="font-weight:700; color:#111;">${agencyName}</div>
-                                <div style="font-size:12px; color:#888; margin-top:2px;">${usedCount}장 × 1,670 = <strong style="color:#007aff;">${amount.toLocaleString()} ₱</strong>${isPaid ? ` ${paidAt ? paidAt.substring(0,10) + ' 정산완료' : '정산완료'}` : ''}</div>
+                        const boracayConfirmed = paidMap[key]?.isPaid || false;
+                        const libertadConfirmed = paidMap[key]?.confirmedByLibertad || false;
+                        html += `<div style="padding:12px 16px; border:1px solid #eee; border-radius:10px; margin-bottom:6px; background:${libertadConfirmed ? '#f0fff4' : '#fff'};">
+                            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                                <div>
+                                    <div style="font-weight:700; color:#111;">${agencyName}</div>
+                                    <div style="font-size:12px; color:#888; margin-top:2px;">${usedCount}장 × 1,670 = <strong style="color:#007aff;">${amount.toLocaleString()} ₱</strong></div>
+                                </div>
                             </div>
-                            <div style="font-size:13px; font-weight:800; color:${isPaid ? '#34c759' : '#ff9500'};">${isPaid ? '완료' : '미정산'}</div>
+                            <div style="display:flex; gap:16px; padding-top:8px; border-top:1px dashed #eee; font-size:12px;">
+                                <div style="color:${boracayConfirmed ? '#34c759' : '#999'}; font-weight:700;">보라카이션 확인 ${boracayConfirmed ? '완료' : '대기'}</div>
+                                <label style="display:flex; align-items:center; gap:6px; cursor:pointer; color:${libertadConfirmed ? '#34c759' : '#999'}; font-weight:700;">
+                                    <input type="checkbox" ${libertadConfirmed ? 'checked' : ''}
+                                        onchange="toggleLibertadConfirm('${key}', '${agencyId}', '${agencyName}', '${date}', ${usedCount}, ${amount}, this.checked)"
+                                        style="width:16px; height:16px; cursor:pointer; accent-color:#34c759;">
+                                    리버타드 확인 ${libertadConfirmed ? '완료' : '대기'}
+                                </label>
+                            </div>
                         </div>`;
                     });
                     html += '<div style="margin-bottom:16px;"></div>';
@@ -491,6 +501,20 @@
             } catch(e) {
                 console.error(e);
                 listEl.innerHTML = '<div style="text-align:center; color:#ff2d55; padding:40px;">데이터 로드 실패</div>';
+            }
+        };
+
+        window.toggleLibertadConfirm = async function(key, agencyId, agencyName, date, usedCount, amount, checked) {
+            try {
+                await setDoc(doc(db, 'whale_settlements', key), {
+                    agencyId, agencyName, date, usedCount, amount,
+                    confirmedByLibertad: checked,
+                    libertadConfirmedAt: checked ? new Date().toISOString() : null,
+                }, { merge: true });
+                openSettlementModal();
+            } catch(e) {
+                console.error(e);
+                Swal.fire('오류', '저장 실패', 'error');
             }
         };
 

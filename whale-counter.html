@@ -249,9 +249,22 @@
                 });
             });
 
-            Swal.fire('성공', '티켓이 정상적으로 차감되었습니다.', 'success').then(() => {
-                resetToScan();
+            const result = await Swal.fire({
+                icon: 'success',
+                title: '처리 완료',
+                text: `${deductCount}명 차감했습니다.`,
+                confirmButtonText: '완료',
+                showCancelButton: true,
+                cancelButtonText: '잘못 입력했어요 (취소)',
+                cancelButtonColor: '#ff3b30',
+                reverseButtons: true
             });
+
+            if (result.dismiss === Swal.DismissReason.cancel) {
+                await undoTransaction(currentAgencyId, newTransactionRef.id, deductCount);
+            } else {
+                resetToScan();
+            }
 
         } catch (e) {
             console.error(e);
@@ -260,6 +273,53 @@
             showLoader(false);
         }
     });
+
+    // 방금 처리한 차감을 되돌림 (반대 부호 트랜잭션으로 상쇄 — 기존 정산/통계 집계 로직을 그대로 재사용)
+    async function undoTransaction(agencyId, originalTransactionId, amount) {
+        showLoader(true);
+        const agencyRef = doc(db, "whale_agencies", agencyId);
+        const today = new Date();
+        const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+        const dailyCountRef = doc(db, "whale_daily_counts", todayStr);
+        const cancelRef = doc(collection(db, "whale_transactions"));
+
+        try {
+            await runTransaction(db, async (transaction) => {
+                const agencyDoc = await transaction.get(agencyRef);
+                if (!agencyDoc.exists()) throw "판매처 데이터를 찾을 수 없습니다.";
+                const agencyData = agencyDoc.data();
+
+                const dailyDoc = await transaction.get(dailyCountRef);
+
+                transaction.update(agencyRef, {
+                    remainCount: (agencyData.remainCount || 0) + amount,
+                    totalUsed: Math.max(0, (agencyData.totalUsed || 0) - amount),
+                    monthlyUsed: Math.max(0, (agencyData.monthlyUsed || 0) - amount),
+                    updatedAt: new Date().toISOString()
+                });
+
+                if (dailyDoc.exists()) {
+                    transaction.update(dailyCountRef, { count: Math.max(0, (dailyDoc.data().count || 0) - amount) });
+                }
+
+                transaction.set(cancelRef, {
+                    agencyId,
+                    type: 'USE',
+                    amount: -amount,
+                    createdAt: new Date().toISOString(),
+                    isCancellation: true,
+                    cancelsTransactionId: originalTransactionId
+                });
+            });
+
+            Swal.fire('취소 완료', '차감을 되돌렸습니다.', 'success').then(() => resetToScan());
+        } catch (e) {
+            console.error(e);
+            Swal.fire('오류', '취소 처리 중 문제가 발생했습니다: ' + e.toString(), 'error');
+        } finally {
+            showLoader(false);
+        }
+    }
 
     // 4. QR 스캐너 초기화 및 시작 (html5-qrcode)
     window.startScanner = function() {

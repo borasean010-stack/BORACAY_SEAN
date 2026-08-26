@@ -88,6 +88,12 @@
         .badge-active { background: #e6f7ed; color: #1e8a4c; }
         .badge-inactive { background: #fdeaea; color: #c62828; }
 
+        .visit-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 4px; border-bottom: 1px solid var(--line); }
+        .visit-row:last-child { border-bottom: none; }
+        .visit-row .name { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; color: var(--ink); }
+        .visit-row .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--agency-color, var(--navy)); flex-shrink: 0; }
+        .visit-row .count { font-size: 16px; font-weight: 900; color: var(--agency-color, var(--navy)); }
+
         #loader { display: flex; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(246,243,236,0.92); z-index:9999; justify-content:center; align-items:center; flex-direction:column; }
         .spinner { border: 4px solid #e8e2d5; border-top: 4px solid var(--orange); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -147,6 +153,27 @@
             </div>
         </div>
 
+        <div style="background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); padding:22px 24px; margin-bottom:44px;">
+            <p style="margin:0 0 16px; font-size:14px; font-weight:800; color:var(--ink);">오늘 방문 판매처별 내역</p>
+            <div id="today-visit-breakdown">
+                <div style="text-align:center; color:#aaa; padding:20px; font-size:13px;">불러오는 중...</div>
+            </div>
+        </div>
+
+        <p class="section-label" style="margin-top:4px;">정산</p>
+        <div class="stat-grid" style="grid-template-columns: 1fr 1fr; margin-bottom:44px;">
+            <div class="stat-card" style="--stat-color:#ff6a00;">
+                <span class="stat-icon">💰</span>
+                <p id="today-settle-label">오늘 정산</p>
+                <h2 id="today-settle-amount" style="color:#ff6a00;">₱0</h2>
+            </div>
+            <div class="stat-card" style="--stat-color:var(--navy); cursor:pointer;" onclick="openSettlementModal()">
+                <span class="stat-icon">📋</span>
+                <p>정산 내역</p>
+                <h2 style="color:var(--navy); font-size:18px;">날짜·판매처별 보기 →</h2>
+            </div>
+        </div>
+
         <!-- 정산 기록 모달 -->
         <div id="ws-settlement-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
             <div style="background:#fff; border-radius:20px; width:700px; max-width:95vw; max-height:85vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.2);">
@@ -182,6 +209,7 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        let dashboardAgencies = [];
 
         // 시계 업데이트
         setInterval(() => {
@@ -279,6 +307,8 @@
 
             // 정렬: 생성일 역순
             agencies.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+            dashboardAgencies = agencies;
+            if (window.loadTodayBreakdown) window.loadTodayBreakdown();
 
             // 재무 카드 업데이트
             const finTotal = document.getElementById('ws-fin-total');
@@ -354,33 +384,57 @@
         });
 
 
-        // 오늘 사용량 집계 (내일 정산금액)
-        (async () => {
+        // 오늘 판매처별 방문/사용 집계 + 오늘 정산 금액
+        window.loadTodayBreakdown = async function() {
             const phOffset = 8 * 60 * 60 * 1000;
             const phToday = new Date(new Date().getTime() + phOffset);
-            const todayStr = `${phToday.getUTCFullYear()}-${String(phToday.getUTCMonth()+1).padStart(2,'0')}-${String(phToday.getUTCDate()).padStart(2,'0')}`;
+            const phTodayStr = `${phToday.getUTCFullYear()}-${String(phToday.getUTCMonth()+1).padStart(2,'0')}-${String(phToday.getUTCDate()).padStart(2,'0')}`;
             const todayLabel = `${phToday.getUTCMonth() + 1}월 ${phToday.getUTCDate()}일`;
-            const tomorrow = new Date(phToday.getTime() + 86400000);
-            const tomorrowLabel = `${tomorrow.getUTCMonth() + 1}월 ${tomorrow.getUTCDate()}일`;
+
+            const settleAmountEl = document.getElementById('today-settle-amount');
+            const settleLabelEl = document.getElementById('today-settle-label');
+            const breakdownEl = document.getElementById('today-visit-breakdown');
 
             try {
-                const txQ = query(collection(db, 'whale_transactions'), where('createdAt', '>=', todayStr + 'T00:00:00'), where('createdAt', '<=', todayStr + 'T23:59:59'));
+                const txQ = query(collection(db, 'whale_transactions'), where('createdAt', '>=', phTodayStr + 'T00:00:00'), where('createdAt', '<=', phTodayStr + 'T23:59:59'));
                 const snap = await getDocs(txQ);
+                const byAgency = {};
                 let totalToday = 0;
                 snap.forEach(d => {
                     const data = d.data();
-                    if (data.type === 'USE') totalToday += (data.amount || 0);
+                    if (data.type !== 'USE') return;
+                    const amt = data.amount || 0;
+                    totalToday += amt;
+                    byAgency[data.agencyId] = (byAgency[data.agencyId] || 0) + amt;
                 });
-                const finSettlement = document.getElementById('ws-fin-settlement');
-                const finSettlementLabel = document.getElementById('ws-fin-settlement-label');
-                const lblFinSettlement = document.getElementById('lbl-fin-settlement');
-                if (finSettlement) finSettlement.innerText = (totalToday * 1670).toLocaleString() + ' ₱';
-                if (finSettlementLabel) finSettlementLabel.innerText = `오늘(${todayLabel}) 사용 ${totalToday}장 × 1,670`;
-                if (lblFinSettlement) lblFinSettlement.innerHTML = `${tomorrowLabel} 정산금액 (내일) <span style="font-size:10px; background:#34c759; color:#fff; border-radius:4px; padding:1px 5px;">클릭</span>`;
-            } catch(e) { console.error('오늘 정산 로드 실패', e); }
-        })();
 
-        let dashboardAgencies = [];
+                if (settleAmountEl) settleAmountEl.innerText = `₱${(totalToday * 1670).toLocaleString()}`;
+                if (settleLabelEl) settleLabelEl.innerText = `오늘(${todayLabel}) 정산 · ${totalToday}장 × ₱1,670`;
+
+                if (breakdownEl) {
+                    const agencyMap = {};
+                    dashboardAgencies.forEach(a => { agencyMap[a.id] = a; });
+                    const entries = Object.entries(byAgency).sort((a, b) => b[1] - a[1]);
+
+                    if (entries.length === 0) {
+                        breakdownEl.innerHTML = '<div style="text-align:center; color:#aaa; padding:20px; font-size:13px;">오늘 방문 기록이 없습니다.</div>';
+                    } else {
+                        breakdownEl.innerHTML = entries.map(([agencyId, count]) => {
+                            const agency = agencyMap[agencyId];
+                            const name = agency ? agency.name : '알 수 없는 업체';
+                            const color = agency ? (agency.agencyColor || '#007aff') : '#999';
+                            return `
+                                <div class="visit-row" style="--agency-color:${color};">
+                                    <div class="name"><span class="dot"></span>${name}</div>
+                                    <div class="count">${count.toLocaleString()}명</div>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                }
+            } catch(e) { console.error('오늘 방문/정산 집계 로드 실패', e); }
+        };
+        loadTodayBreakdown();
 
         window.openSettlementModal = async function() {
             document.getElementById('ws-settlement-modal').style.display = 'flex';

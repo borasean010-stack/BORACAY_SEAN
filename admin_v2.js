@@ -2044,7 +2044,9 @@ window.deleteWsAgency = async function(id, name) {
 // QR 코드 생성 및 표시
 let wsQrCodeInstance = null;
 window.showWsQr = function(id, name, token, color) {
-    document.getElementById('ws-qr-agency-name').innerText = name;
+    const nameEl = document.getElementById('ws-qr-agency-name');
+    nameEl.innerText = name;
+    nameEl.style.color = color || '#007aff';
     const container = document.getElementById('ws-qrcode-container');
     container.innerHTML = ''; // 초기화
     

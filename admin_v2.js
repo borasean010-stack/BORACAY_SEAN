@@ -2197,7 +2197,10 @@ window.openSettlementModal = async function() {
                         </div>
                         <div style="font-size:13px; font-weight:800; color:${isPaid ? '#34c759' : '#ff9500'};">${isPaid ? '✅ 완료' : '⏳ 미정산'}</div>
                     </div>
-                    <div style="font-size:11px; color:${libertadConfirmed ? '#34c759' : '#aaa'}; font-weight:700; margin-top:8px; padding-top:8px; border-top:1px dashed #eee; margin-left:32px;">리버타드 확인 ${libertadConfirmed ? '완료' : '대기'}</div>
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-top:8px; padding-top:8px; border-top:1px dashed #eee; margin-left:32px;">
+                        <div style="font-size:11px; color:${libertadConfirmed ? '#34c759' : '#aaa'}; font-weight:700;">리버타드 확인 ${libertadConfirmed ? '완료' : '대기'}</div>
+                        <span onclick="showTransactionDetail('${agencyId}', '${agencyName}', '${date}')" style="font-size:11px; color:#007aff; font-weight:700; cursor:pointer; text-decoration:underline;">건별 수정</span>
+                    </div>
                 </div>`;
             });
             html += '<div style="margin-bottom:16px;"></div>';
@@ -2227,6 +2230,160 @@ window.toggleSettlement = async function(key, agencyId, agencyName, date, usedCo
     } catch(e) {
         console.error(e);
         Swal.fire('오류', '저장 중 문제가 발생했습니다.', 'error');
+    }
+};
+
+// 특정 판매처의 특정 날짜에 찍힌 QR 체크인 건들을 개별적으로 보여주고 수정/삭제
+window.showTransactionDetail = async function(agencyId, agencyName, date) {
+    if (!agencyName) {
+        const found = currentWsAgencies.find(a => a.id === agencyId);
+        agencyName = found ? found.name : '알 수 없는 업체';
+    }
+    Swal.fire({ title: '불러오는 중...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+    try {
+        const q = query(
+            collection(db, 'whale_transactions'),
+            where('agencyId', '==', agencyId),
+            where('type', '==', 'USE')
+        );
+        const snap = await getDocs(q);
+        const rows = [];
+        snap.forEach(d => {
+            const data = d.data();
+            if ((data.createdAt || '').substring(0, 10) === date) {
+                rows.push({ id: d.id, amount: data.amount || 0, createdAt: data.createdAt || '' });
+            }
+        });
+        rows.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+
+        if (rows.length === 0) {
+            Swal.fire('건 없음', '이 날짜에 남아있는 개별 체크인 기록이 없습니다 (이미 다 취소/수정됐을 수 있어요).', 'info');
+            return;
+        }
+
+        const html = `<div style="max-height:360px; overflow-y:auto; text-align:left;">` +
+            rows.map(r => `
+                <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border:1px solid #eee; border-radius:8px; margin-bottom:6px;">
+                    <div>
+                        <div style="font-weight:700; color:#111;">${r.amount}명</div>
+                        <div style="font-size:11px; color:#888;">${r.createdAt.replace('T', ' ').substring(0, 19)}</div>
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <button onclick="correctTransactionAmount('${r.id}', '${agencyId}', '${date}', ${r.amount})" style="padding:6px 10px; font-size:12px; font-weight:700; background:#eef2f7; color:#0f2a4a; border:none; border-radius:6px; cursor:pointer;">수정</button>
+                        <button onclick="deleteTransactionEntry('${r.id}', '${agencyId}', '${date}', ${r.amount})" style="padding:6px 10px; font-size:12px; font-weight:700; background:#fdeaea; color:#c62828; border:none; border-radius:6px; cursor:pointer;">삭제</button>
+                    </div>
+                </div>
+            `).join('') + `</div>`;
+
+        Swal.fire({
+            title: `${agencyName} · ${date}`,
+            html,
+            confirmButtonText: '닫기'
+        }).then(() => openSettlementModal());
+    } catch (e) {
+        console.error(e);
+        Swal.fire('오류', '불러오는 중 문제가 발생했습니다.', 'error');
+    }
+};
+
+// 개별 체크인 건의 인원수를 정정 (판매처 잔여/사용량, 해당 날짜 방문자 수를 차액만큼 보정)
+window.correctTransactionAmount = async function(transactionId, agencyId, date, oldAmount) {
+    const { value: newAmountStr } = await Swal.fire({
+        title: '인원수 수정',
+        input: 'number',
+        inputValue: oldAmount,
+        inputAttributes: { min: 0, step: 1 },
+        showCancelButton: true,
+        confirmButtonText: '저장',
+        cancelButtonText: '취소'
+    });
+    if (newAmountStr === undefined || newAmountStr === '') return;
+    const newAmount = parseInt(newAmountStr, 10);
+    if (isNaN(newAmount) || newAmount < 0) return;
+    const diff = newAmount - oldAmount; // 양수면 더 차감, 음수면 되돌려줌
+
+    try {
+        const { runTransaction, doc: fdoc, updateDoc: fupdateDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+        const agencyRef = fdoc(db, 'whale_agencies', agencyId);
+        const dailyCountRef = fdoc(db, 'whale_daily_counts', date);
+        const txRef = fdoc(db, 'whale_transactions', transactionId);
+
+        await runTransaction(db, async (transaction) => {
+            const agencyDoc = await transaction.get(agencyRef);
+            if (!agencyDoc.exists()) throw '판매처를 찾을 수 없습니다.';
+            const agencyData = agencyDoc.data();
+            const dailyDoc = await transaction.get(dailyCountRef);
+
+            const currentMonthStr = date.substring(0, 7);
+            const monthlyAdjust = agencyData.currentMonth === currentMonthStr ? diff : 0;
+
+            transaction.update(agencyRef, {
+                remainCount: Math.max(0, (agencyData.remainCount || 0) - diff),
+                totalUsed: Math.max(0, (agencyData.totalUsed || 0) + diff),
+                monthlyUsed: Math.max(0, (agencyData.monthlyUsed || 0) + monthlyAdjust),
+                updatedAt: new Date().toISOString()
+            });
+
+            if (dailyDoc.exists()) {
+                transaction.update(dailyCountRef, { count: Math.max(0, (dailyDoc.data().count || 0) + diff) });
+            }
+
+            transaction.update(txRef, { amount: newAmount, correctedAt: new Date().toISOString() });
+        });
+
+        Swal.fire('저장됨', '인원수가 수정되었습니다.', 'success').then(() => showTransactionDetail(agencyId, '', date));
+    } catch (e) {
+        console.error(e);
+        Swal.fire('오류', '수정 중 문제가 발생했습니다: ' + e.toString(), 'error');
+    }
+};
+
+// 개별 체크인 건을 완전히 삭제 (판매처 잔여/사용량, 해당 날짜 방문자 수 원상 복구)
+window.deleteTransactionEntry = async function(transactionId, agencyId, date, amount) {
+    const confirmResult = await Swal.fire({
+        title: '이 건을 삭제할까요?',
+        text: `${amount}명 체크인 기록이 완전히 삭제되고, 잔여 티켓/방문자 수가 원상 복구됩니다.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '삭제',
+        confirmButtonColor: '#c62828',
+        cancelButtonText: '취소'
+    });
+    if (!confirmResult.isConfirmed) return;
+
+    try {
+        const { runTransaction, doc: fdoc, deleteDoc: fdeleteDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+        const agencyRef = fdoc(db, 'whale_agencies', agencyId);
+        const dailyCountRef = fdoc(db, 'whale_daily_counts', date);
+        const txRef = fdoc(db, 'whale_transactions', transactionId);
+
+        await runTransaction(db, async (transaction) => {
+            const agencyDoc = await transaction.get(agencyRef);
+            if (!agencyDoc.exists()) throw '판매처를 찾을 수 없습니다.';
+            const agencyData = agencyDoc.data();
+            const dailyDoc = await transaction.get(dailyCountRef);
+
+            const currentMonthStr = date.substring(0, 7);
+            const monthlyAdjust = agencyData.currentMonth === currentMonthStr ? amount : 0;
+
+            transaction.update(agencyRef, {
+                remainCount: (agencyData.remainCount || 0) + amount,
+                totalUsed: Math.max(0, (agencyData.totalUsed || 0) - amount),
+                monthlyUsed: Math.max(0, (agencyData.monthlyUsed || 0) - monthlyAdjust),
+                updatedAt: new Date().toISOString()
+            });
+
+            if (dailyDoc.exists()) {
+                transaction.update(dailyCountRef, { count: Math.max(0, (dailyDoc.data().count || 0) - amount) });
+            }
+
+            transaction.delete(txRef);
+        });
+
+        Swal.fire('삭제됨', '기록이 삭제되고 수치가 복구되었습니다.', 'success').then(() => showTransactionDetail(agencyId, '', date));
+    } catch (e) {
+        console.error(e);
+        Swal.fire('오류', '삭제 중 문제가 발생했습니다: ' + e.toString(), 'error');
     }
 };
 

@@ -155,14 +155,10 @@
         </div>
 
         <p class="section-label" style="margin-top:4px;">보라카이션 정산</p>
-        <div class="stat-grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:44px;">
+        <div class="stat-grid" style="grid-template-columns: 1fr 1fr; margin-bottom:44px;">
             <div class="stat-card" style="--stat-color:#ff6a00;">
                 <p id="today-settle-label">오늘 정산</p>
                 <h2 id="today-settle-amount" style="color:#ff6a00;">₱0</h2>
-            </div>
-            <div class="stat-card" style="--stat-color:#8a4fff; cursor:pointer;" onclick="openMonthlySettlementModal()">
-                <p>월 정산</p>
-                <h2 style="color:#8a4fff; font-size:18px;">업체별 총액 보기 →</h2>
             </div>
             <div class="stat-card" style="--stat-color:var(--navy); cursor:pointer;" onclick="openSettlementModal()">
                 <p>정산 내역</p>
@@ -683,76 +679,6 @@
             } catch(e) {
                 console.error(e);
                 listEl.innerHTML = '<div style="text-align:center; color:#ff2d55; padding:40px;">데이터 로드 실패</div>';
-            }
-        };
-
-        window.openMonthlySettlementModal = async function() {
-            Swal.fire({
-                title: '데이터를 불러오는 중...',
-                allowOutsideClick: false,
-                didOpen: () => { Swal.showLoading(); }
-            });
-            try {
-                const today = new Date();
-                const currentMonthStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
-                const currentMonthNum = today.getMonth() + 1;
-
-                const agencyInfoMap = {};
-                dashboardAgencies.forEach(a => { agencyInfoMap[a.id] = a; });
-
-                const q = query(collection(db, 'whale_transactions'), where('type', '==', 'USE'));
-                const snap = await getDocs(q);
-
-                const agencyTotals = {};
-                let grandTotal = 0;
-                snap.forEach(d => {
-                    const data = d.data();
-                    const createdAt = data.createdAt || '';
-                    if (!createdAt.startsWith(currentMonthStr)) return;
-                    if (agencyInfoMap[data.agencyId]?.registeredBy === 'libertad') return; // 보라카이션 발급 QR만 집계
-                    const amt = data.amount || 0;
-                    agencyTotals[data.agencyId] = (agencyTotals[data.agencyId] || 0) + amt;
-                    grandTotal += amt;
-                });
-
-                const sortedAgencyIds = Object.keys(agencyTotals).sort((a, b) => agencyTotals[b] - agencyTotals[a]);
-
-                let html = '<div style="max-height: 400px; overflow-y: auto; text-align: left;">';
-                if (sortedAgencyIds.length === 0) {
-                    html += '<p style="text-align:center; color:#888; margin-top:20px;">이번 달 정산 내역이 없습니다.</p>';
-                } else {
-                    html += `<div style="background:#f4f7f6; padding:12px 16px; border-radius:10px; margin-bottom:12px; font-weight:800; color:#333;">
-                        전체 합계 &nbsp; <span style="color:#007aff;">${grandTotal.toLocaleString()}장</span> &nbsp; <span style="color:#34c759; font-size:16px;">= ${(grandTotal * 1670).toLocaleString()} ₱</span>
-                    </div>`;
-                    html += '<table style="width:100%; border-collapse: collapse; font-size:13px;">';
-                    html += '<thead><tr>' +
-                        '<th style="padding:10px; border-bottom:2px solid #ddd; text-align:left;">판매처</th>' +
-                        '<th style="padding:10px; border-bottom:2px solid #ddd; text-align:right;">사용티켓</th>' +
-                        '<th style="padding:10px; border-bottom:2px solid #ddd; text-align:right;">금액</th>' +
-                        '</tr></thead><tbody>';
-                    sortedAgencyIds.forEach(agencyId => {
-                        const name = agencyInfoMap[agencyId]?.name || '알 수 없는 업체';
-                        const count = agencyTotals[agencyId];
-                        const amount = count * 1670;
-                        html += `<tr>
-                            <td style="padding:10px; border-bottom:1px solid #eee; font-weight:700;">${name}</td>
-                            <td style="padding:10px; border-bottom:1px solid #eee; text-align:right;">${count.toLocaleString()}장</td>
-                            <td style="padding:10px; border-bottom:1px solid #eee; text-align:right; font-weight:bold; color:#34c759;">${amount.toLocaleString()} ₱</td>
-                        </tr>`;
-                    });
-                    html += '</tbody></table>';
-                }
-                html += '</div>';
-
-                Swal.fire({
-                    title: `${currentMonthNum}월 정산 · 업체별 총액`,
-                    html: html,
-                    width: 600,
-                    confirmButtonText: '닫기'
-                });
-            } catch (e) {
-                console.error(e);
-                Swal.fire('오류', '데이터를 불러오는데 실패했습니다.', 'error');
             }
         };
 

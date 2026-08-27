@@ -442,6 +442,9 @@
             const settleLabelEl = document.getElementById('today-settle-label');
 
             try {
+                const agencyMap = {};
+                dashboardAgencies.forEach(a => { agencyMap[a.id] = a; });
+
                 const txQ = query(collection(db, 'whale_transactions'), where('createdAt', '>=', phTodayStr + 'T00:00:00'), where('createdAt', '<=', phTodayStr + 'T23:59:59'));
                 const snap = await getDocs(txQ);
                 let totalToday = 0;
@@ -450,8 +453,9 @@
                     const data = d.data();
                     if (data.type !== 'USE') return;
                     const amt = data.amount || 0;
-                    totalToday += amt;
-                    rows.push({ agencyId: data.agencyId, count: amt, guide: data.remark || '', createdAt: data.createdAt || '' });
+                    const isLibertad = agencyMap[data.agencyId]?.registeredBy === 'libertad';
+                    if (!isLibertad) totalToday += amt; // 보라카이션 정산은 보라카이션 발급 QR만 집계
+                    rows.push({ agencyId: data.agencyId, count: amt, guide: data.remark || '', createdAt: data.createdAt || '', isLibertad });
                 });
                 rows.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
                 todayTransactionsCache = rows;
@@ -474,40 +478,57 @@
             const filterText = (filterInput ? filterInput.value : '').trim().toLowerCase();
 
             if (!filterText) {
-                // 필터 없음: 오늘 방문 내역 (판매처 / 가이드 / 인원)
+                // 필터 없음: 오늘 방문 내역 (보라카이션 발급 QR / 리버타드 발급 QR 로 구분)
                 const agencyMap = {};
                 dashboardAgencies.forEach(a => { agencyMap[a.id] = a; });
 
                 if (todayTransactionsCache.length === 0) {
                     breakdownEl.innerHTML = '<div style="text-align:center; color:#aaa; padding:20px; font-size:13px;">오늘 방문 기록이 없습니다.</div>';
+                    lastVisitTableExport = { headers: ['구분', '판매처', '가이드', '인원'], rows: [] };
                     return;
                 }
 
-                let html = '<table style="width:100%; border-collapse:collapse; font-size:13px;">';
-                html += '<thead><tr>' +
-                    '<th style="padding:8px 6px; border-bottom:2px solid var(--line); text-align:left; color:#888; font-weight:700;">판매처</th>' +
-                    '<th style="padding:8px 6px; border-bottom:2px solid var(--line); text-align:left; color:#888; font-weight:700;">가이드</th>' +
-                    '<th style="padding:8px 6px; border-bottom:2px solid var(--line); text-align:right; color:#888; font-weight:700;">인원</th>' +
-                    '</tr></thead><tbody>';
-                html += todayTransactionsCache.map(r => {
-                    const agency = agencyMap[r.agencyId];
-                    const name = agency ? agency.name : '알 수 없는 업체';
-                    const guide = r.guide || '-';
-                    return `
-                        <tr>
-                            <td style="padding:10px 6px; border-bottom:1px solid var(--line); font-weight:700; color:var(--ink);">${name}</td>
-                            <td style="padding:10px 6px; border-bottom:1px solid var(--line); color:#555;">${guide}</td>
-                            <td style="padding:10px 6px; border-bottom:1px solid var(--line); text-align:right; font-weight:800; color:#0f2a4a;">${r.count.toLocaleString()}명</td>
-                        </tr>
-                    `;
-                }).join('');
-                html += '</tbody></table>';
-                breakdownEl.innerHTML = html;
-                lastVisitTableExport = {
-                    headers: ['판매처', '가이드', '인원'],
-                    rows: todayTransactionsCache.map(r => {
+                const buildTable = (list) => {
+                    if (list.length === 0) {
+                        return '<div style="text-align:center; color:#aaa; padding:14px; font-size:12px;">방문 기록이 없습니다.</div>';
+                    }
+                    let html = '<table style="width:100%; border-collapse:collapse; font-size:13px;">';
+                    html += '<thead><tr>' +
+                        '<th style="padding:8px 6px; border-bottom:2px solid var(--line); text-align:left; color:#888; font-weight:700;">판매처</th>' +
+                        '<th style="padding:8px 6px; border-bottom:2px solid var(--line); text-align:left; color:#888; font-weight:700;">가이드</th>' +
+                        '<th style="padding:8px 6px; border-bottom:2px solid var(--line); text-align:right; color:#888; font-weight:700;">인원</th>' +
+                        '</tr></thead><tbody>';
+                    html += list.map(r => {
                         const agency = agencyMap[r.agencyId];
-                        return [agency ? agency.name : '알 수 없는 업체', r.guide || '-', r.count];
+                        const name = agency ? agency.name : '알 수 없는 업체';
+                        const guide = r.guide || '-';
+                        return `
+                            <tr>
+                                <td style="padding:10px 6px; border-bottom:1px solid var(--line); font-weight:700; color:var(--ink);">${name}</td>
+                                <td style="padding:10px 6px; border-bottom:1px solid var(--line); color:#555;">${guide}</td>
+                                <td style="padding:10px 6px; border-bottom:1px solid var(--line); text-align:right; font-weight:800; color:#0f2a4a;">${r.count.toLocaleString()}명</td>
+                            </tr>
+                        `;
+                    }).join('');
+                    html += '</tbody></table>';
+                    return html;
+                };
+
+                const boracayRows = todayTransactionsCache.filter(r => !r.isLibertad);
+                const libertadRows = todayTransactionsCache.filter(r => r.isLibertad);
+
+                breakdownEl.innerHTML = `
+                    <div style="margin-bottom:8px; font-weight:800; font-size:13px; color:var(--navy);">보라카이션 발급 QR</div>
+                    ${buildTable(boracayRows)}
+                    <div style="margin-top:18px; margin-bottom:8px; font-weight:800; font-size:13px; color:var(--navy);">리버타드 발급 QR</div>
+                    ${buildTable(libertadRows)}
+                `;
+
+                lastVisitTableExport = {
+                    headers: ['구분', '판매처', '가이드', '인원'],
+                    rows: [...boracayRows, ...libertadRows].map(r => {
+                        const agency = agencyMap[r.agencyId];
+                        return [r.isLibertad ? '리버타드' : '보라카이션', agency ? agency.name : '알 수 없는 업체', r.guide || '-', r.count];
                     }),
                 };
                 return;
@@ -588,11 +609,15 @@
             listEl.innerHTML = '<div style="text-align:center; color:#aaa; padding:40px;">불러오는 중...</div>';
 
             try {
+                const agencyInfoMap = {};
+                dashboardAgencies.forEach(a => { agencyInfoMap[a.id] = a; });
+
                 const txSnap = await getDocs(collection(db, 'whale_transactions'));
                 const dailyMap = {};
                 txSnap.forEach(d => {
                     const data = d.data();
                     if (data.type !== 'USE') return;
+                    if (agencyInfoMap[data.agencyId]?.registeredBy === 'libertad') return; // 보라카이션 정산은 보라카이션 발급 QR만 대상
                     const date = (data.createdAt || '').substring(0, 10);
                     if (!date) return;
                     if (!dailyMap[date]) dailyMap[date] = {};

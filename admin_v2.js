@@ -1703,7 +1703,10 @@ function initWhaleSharkAdmin() {
         tempDocs.forEach(docSnap => {
             const data = docSnap.data();
             data.id = docSnap.id;
-            
+
+            // 리버타드 자체 대시보드에서 등록한 판매처는 보라카이션 admin에 노출하지 않음
+            if (data.registeredBy === 'libertad') return;
+
             // 과거 테스트 데이터 자동 마이그레이션
             if (data.monthlyBought === undefined || data.monthlyUsed === undefined) {
                 data.monthlyBought = data.totalBought || 0;

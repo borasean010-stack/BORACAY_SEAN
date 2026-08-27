@@ -458,6 +458,8 @@
         </div>
 
     <style>
+        /* SweetAlert2 팝업이 정산/QR 등 커스텀 모달(z-index:9999) 뒤에 깔리지 않도록 항상 최상단에 표시 */
+        .swal2-container { z-index: 20000 !important; }
         .db-card { background:#fff; border-radius:16px; padding:24px; box-shadow:0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f0f0f0; transition: transform 0.2s; }
         .db-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.06); }
         .db-card h3 { margin:0 0 10px; font-size:16px; color:#111; font-weight:800; }

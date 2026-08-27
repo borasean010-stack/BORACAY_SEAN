@@ -1648,6 +1648,12 @@ function initWhaleSharkAdmin() {
         yesterdayDateStr = `${phToday.getUTCMonth() + 1}월 ${phToday.getUTCDate()}일`;
         try {
             const { query: q2, where, getDocs, collection: col } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+
+            // 리버타드 자체 등록 업체 판별용 (재무 집계에서 제외하기 위해 전체 업체를 별도 조회)
+            const allAgenciesSnap = await getDocs(col(db, 'whale_agencies'));
+            const agencyRegisteredByMap = {};
+            allAgenciesSnap.forEach(d => { agencyRegisteredByMap[d.id] = d.data().registeredBy; });
+
             // type 없이 날짜 범위만 쿼리 (composite index 불필요)
             const yq = q2(col(db, "whale_transactions"), where("createdAt", ">=", yStr + "T00:00:00"), where("createdAt", "<=", yStr + "T23:59:59"));
             const snap = await getDocs(yq);
@@ -1655,6 +1661,7 @@ function initWhaleSharkAdmin() {
             let totalYesterdayUsed = 0;
             snap.forEach(docSnap => {
                 const d = docSnap.data();
+                if (agencyRegisteredByMap[d.agencyId] === 'libertad') return; // 리버타드 자체 등록 업체 제외
                 // JS에서 USE 타입만 필터링
                 if (d.type === 'USE' && d.agencyId) {
                     yesterdayUsageByAgency[d.agencyId] = (yesterdayUsageByAgency[d.agencyId] || 0) + (d.amount || 0);
@@ -1681,6 +1688,7 @@ function initWhaleSharkAdmin() {
             let totalTodayBought = 0;
             addSnap.forEach(docSnap => {
                 const d = docSnap.data();
+                if (agencyRegisteredByMap[d.agencyId] === 'libertad') return; // 리버타드 자체 등록 업체 제외
                 if (d.type === 'ADD') totalTodayBought += (d.amount || 0);
             });
             const todayTotalEl = document.getElementById('ws-fin-total-today');
@@ -2139,14 +2147,20 @@ window.openSettlementModal = async function() {
     listEl.innerHTML = '<div style="text-align:center; color:#aaa; padding:40px;">불러오는 중...</div>';
 
     try {
+        // 리버타드 자체 등록 업체 판별용 (정산 집계에서 제외하기 위해 전체 업체를 별도 조회)
+        const allAgenciesSnap = await getDocs(collection(db, 'whale_agencies'));
+        const agencyRegisteredByMap = {};
+        allAgenciesSnap.forEach(d => { agencyRegisteredByMap[d.id] = d.data().registeredBy; });
+
         // 모든 트랜잭션 가져오기 (USE 타입)
         const txSnap = await getDocs(query(collection(db, 'whale_transactions')));
-        
-        // 날짜별, 업체별 집계
+
+        // 날짜별, 업체별 집계 (보라카이션이 발급한 업체만 - 리버타드 자체 등록 업체 제외)
         const dailyMap = {}; // { 'YYYY-MM-DD': { agencyId: count } }
         txSnap.forEach(d => {
             const data = d.data();
             if (data.type !== 'USE') return;
+            if (agencyRegisteredByMap[data.agencyId] === 'libertad') return;
             const date = (data.createdAt || '').substring(0, 10);
             if (!date) return;
             if (!dailyMap[date]) dailyMap[date] = {};

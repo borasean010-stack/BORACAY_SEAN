@@ -1661,14 +1661,12 @@ function initWhaleSharkAdmin() {
                     totalYesterdayUsed += (d.amount || 0);
                 }
             });
-            // 금일 정산 카드 업데이트
+            // 오늘 정산 카드 업데이트
             const finSettlement = document.getElementById('ws-fin-settlement');
             const finSettlementLabel = document.getElementById('ws-fin-settlement-label');
             if (finSettlement) finSettlement.innerText = (totalYesterdayUsed * 1670).toLocaleString() + ' ₱';
-            const tomorrow = new Date(todayD); tomorrow.setDate(tomorrow.getDate() + 1);
-            const tomorrowStr = `${tomorrow.getMonth() + 1}월 ${tomorrow.getDate()}일`;
             const lblFinSettlement = document.getElementById('lbl-fin-settlement');
-            if (lblFinSettlement) lblFinSettlement.innerText = `${tomorrowStr} 정산금액 (내일)`;
+            if (lblFinSettlement) lblFinSettlement.innerText = `${yesterdayDateStr} 정산금액 (오늘)`;
             // 정산 카드 클릭 이벤트 등록
             const settlementCard = document.getElementById('ws-fin-settlement')?.closest('.db-card');
             if (settlementCard) {
@@ -1676,6 +1674,22 @@ function initWhaleSharkAdmin() {
                 settlementCard.onclick = () => openSettlementModal();
             }
             if (finSettlementLabel) finSettlementLabel.innerText = `오늘(${yesterdayDateStr}) 사용 ${totalYesterdayUsed}장 × 1,670`;
+
+            // 오늘 구매(충전)된 티켓 기준 총금액/베네핏/티켓비용 (일별 카운팅)
+            const aq = q2(col(db, "whale_transactions"), where("createdAt", ">=", yStr + "T00:00:00"), where("createdAt", "<=", yStr + "T23:59:59"));
+            const addSnap = await getDocs(aq);
+            let totalTodayBought = 0;
+            addSnap.forEach(docSnap => {
+                const d = docSnap.data();
+                if (d.type === 'ADD') totalTodayBought += (d.amount || 0);
+            });
+            const todayTotalEl = document.getElementById('ws-fin-total-today');
+            const todayBenefitEl = document.getElementById('ws-fin-benefit-today');
+            const todayCostEl = document.getElementById('ws-fin-cost-today');
+            if (todayTotalEl) todayTotalEl.innerText = `오늘 구매 ${totalTodayBought}장 · ${(totalTodayBought * 1920).toLocaleString()} ₱`;
+            if (todayBenefitEl) todayBenefitEl.innerText = `오늘 구매 ${totalTodayBought}장 · ${(totalTodayBought * 250).toLocaleString()} ₱`;
+            if (todayCostEl) todayCostEl.innerText = `오늘 구매 ${totalTodayBought}장 · ${(totalTodayBought * 1670).toLocaleString()} ₱`;
+
             if (currentWsAgencies.length > 0) renderWsAgencies();
         } catch(e) { console.error("어제 트랜잭션 로드 실패:", e); }
     })();
@@ -2036,6 +2050,8 @@ window.showWsQr = function(id, name, token, color) {
     const nameEl = document.getElementById('ws-qr-agency-name');
     nameEl.innerText = name;
     nameEl.style.color = color || '#007aff';
+    const footerTag = document.getElementById('ws-qr-footer-tag');
+    if (footerTag) footerTag.innerText = `${name} × WHALE SHARK`;
     const container = document.getElementById('ws-qrcode-container');
     container.innerHTML = ''; // 초기화
     

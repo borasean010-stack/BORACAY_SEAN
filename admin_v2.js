@@ -1803,7 +1803,7 @@ function renderWsAgencies() {
 
     grid.innerHTML = currentWsAgencies.map(a => {
         const isActive = a.status !== 'INACTIVE';
-        const agencyColor = a.agencyColor || '#007aff';
+        const agencyColor = '#0f2a4a';
         const statusBadge = isActive 
             ? `<span class="badge badge-active" style="float:right; font-size:11px;">활성</span>`
             : `<span class="badge badge-inactive" style="float:right; font-size:11px;">정지됨</span>`;
@@ -1899,7 +1899,6 @@ window.openAddAgencyModal = function(id = null) {
     document.getElementById('ws-agency-id').value = id || '';
     document.getElementById('ws-agency-name').value = '';
     document.getElementById('ws-agency-add-count').value = '';
-    document.getElementById('ws-agency-color').value = '#007aff';
 
     if (id) {
         const agency = currentWsAgencies.find(a => a.id === id);
@@ -1907,7 +1906,6 @@ window.openAddAgencyModal = function(id = null) {
             document.getElementById('ws-modal-title').innerText = '판매처 설정 및 충전';
             document.getElementById('ws-agency-name').value = agency.name;
             document.getElementById('ws-agency-name').readOnly = true;
-            document.getElementById('ws-agency-color').value = agency.agencyColor || '#007aff';
             document.getElementById('ws-add-ticket-section').style.display = 'block';
         }
     } else {
@@ -1927,7 +1925,6 @@ window.saveWsAgency = async function() {
     const id = document.getElementById('ws-agency-id').value;
     const name = document.getElementById('ws-agency-name').value.trim();
     const addCount = parseInt(document.getElementById('ws-agency-add-count').value) || 0;
-    const color = document.getElementById('ws-agency-color').value || '#007aff';
 
     if (!name) { Swal.fire('알림', '판매처명을 입력해주세요.', 'warning'); return; }
     
@@ -1956,7 +1953,6 @@ window.saveWsAgency = async function() {
                     totalBought: newTotal,
                     monthlyBought: newMonthlyBought,
                     currentMonth: currentMonthStr,
-                    agencyColor: color,
                     updatedAt: new Date().toISOString()
                 });
 
@@ -1966,14 +1962,10 @@ window.saveWsAgency = async function() {
                     amount: addCount,
                     createdAt: new Date().toISOString()
                 });
-                Swal.fire('성공', `티켓 ${addCount}장이 충전되었습니다. (색상 업데이트 됨)`, 'success');
+                Swal.fire('성공', `티켓 ${addCount}장이 충전되었습니다.`, 'success');
             } else {
-                // 수량 증가 없이 색상만 변경
-                await updateDoc(doc(db, "whale_agencies", id), {
-                    agencyColor: color,
-                    updatedAt: new Date().toISOString()
-                });
-                Swal.fire('성공', '설정이 변경되었습니다.', 'success');
+                Swal.fire('알림', '추가할 티켓 수량을 입력해주세요.', 'info');
+                return;
             }
         } else {
             // 새 판매처 등록
@@ -1981,18 +1973,12 @@ window.saveWsAgency = async function() {
             await addDoc(collection(db, "whale_agencies"), {
                 name: name,
                 token: token,
-                agencyColor: color,
                 remainCount: 0,
                 totalBought: 0,
                 totalUsed: 0,
                 monthlyBought: 0,
                 monthlyUsed: 0,
                 currentMonth: currentMonthStr,
-                status: 'ACTIVE',
-                remainCount: 0,
-                monthlyBought: 0,
-                currentMonth: currentMonthStr,
-                token: token,
                 status: 'ACTIVE',
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()

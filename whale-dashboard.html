@@ -337,7 +337,7 @@
             } else {
                 grid.innerHTML = agencies.map(a => {
                     const isActive = a.status !== 'INACTIVE';
-                    const color = a.agencyColor || '#007aff';
+                    const color = '#0f2a4a';
                     const mBought = a.currentMonth === currentMonthStr ? (a.monthlyBought || 0) : 0;
                     const mUsed = a.currentMonth === currentMonthStr ? (a.monthlyUsed || 0) : 0;
                     const initial = (a.name || '?').trim().charAt(0);
@@ -398,6 +398,7 @@
                 const txQ = query(collection(db, 'whale_transactions'), where('createdAt', '>=', phTodayStr + 'T00:00:00'), where('createdAt', '<=', phTodayStr + 'T23:59:59'));
                 const snap = await getDocs(txQ);
                 const byAgency = {};
+                const remarksByAgency = {};
                 let totalToday = 0;
                 snap.forEach(d => {
                     const data = d.data();
@@ -405,6 +406,10 @@
                     const amt = data.amount || 0;
                     totalToday += amt;
                     byAgency[data.agencyId] = (byAgency[data.agencyId] || 0) + amt;
+                    if (data.remark) {
+                        if (!remarksByAgency[data.agencyId]) remarksByAgency[data.agencyId] = [];
+                        remarksByAgency[data.agencyId].push(data.remark);
+                    }
                 });
 
                 if (settleAmountEl) settleAmountEl.innerText = `₱${(totalToday * 1670).toLocaleString()}`;
@@ -421,11 +426,16 @@
                         breakdownEl.innerHTML = entries.map(([agencyId, count]) => {
                             const agency = agencyMap[agencyId];
                             const name = agency ? agency.name : '알 수 없는 업체';
-                            const color = agency ? (agency.agencyColor || '#007aff') : '#999';
+                            const color = '#0f2a4a';
+                            const remarks = remarksByAgency[agencyId];
+                            const remarkHtml = remarks ? `<div style="font-size:11px; color:#999; margin-top:2px; margin-left:18px;">${remarks.join(' · ')}</div>` : '';
                             return `
-                                <div class="visit-row" style="--agency-color:${color};">
-                                    <div class="name"><span class="dot"></span>${name}</div>
-                                    <div class="count">${count.toLocaleString()}명</div>
+                                <div class="visit-row" style="--agency-color:${color}; flex-direction:column; align-items:stretch;">
+                                    <div style="display:flex; align-items:center; justify-content:space-between;">
+                                        <div class="name"><span class="dot"></span>${name}</div>
+                                        <div class="count">${count.toLocaleString()}명</div>
+                                    </div>
+                                    ${remarkHtml}
                                 </div>
                             `;
                         }).join('');
@@ -530,19 +540,23 @@
                 title: '새 판매처 등록',
                 html:
                     '<input id="swal-agency-name" class="swal2-input" placeholder="판매처명 (예: 보자무싸)">' +
-                    '<input id="swal-agency-color" type="color" value="#007aff" style="width:100%; height:40px; margin-top:10px; border:1px solid #ddd; border-radius:8px; cursor:pointer;">',
+                    '<input id="swal-agency-count" type="number" min="0" class="swal2-input" placeholder="지급할 티켓 수량 (선택, 예: 50)">',
                 focusConfirm: false,
                 showCancelButton: true,
                 confirmButtonText: '등록',
                 cancelButtonText: '취소',
                 preConfirm: () => {
                     const name = document.getElementById('swal-agency-name').value.trim();
-                    const color = document.getElementById('swal-agency-color').value;
+                    const count = parseInt(document.getElementById('swal-agency-count').value) || 0;
                     if (!name) {
                         Swal.showValidationMessage('판매처명을 입력해주세요.');
                         return false;
                     }
-                    return { name, color };
+                    if (count < 0) {
+                        Swal.showValidationMessage('티켓 수량은 0 이상이어야 합니다.');
+                        return false;
+                    }
+                    return { name, count };
                 }
             });
             if (!formValues) return;
@@ -554,18 +568,17 @@
                 await addDoc(collection(db, 'whale_agencies'), {
                     name: formValues.name,
                     token,
-                    agencyColor: formValues.color || '#007aff',
-                    remainCount: 0,
-                    totalBought: 0,
+                    remainCount: formValues.count,
+                    totalBought: formValues.count,
                     totalUsed: 0,
-                    monthlyBought: 0,
+                    monthlyBought: formValues.count,
                     monthlyUsed: 0,
                     currentMonth: currentMonthStr,
                     status: 'ACTIVE',
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString()
                 });
-                Swal.fire('등록 완료', `${formValues.name} 판매처가 등록되었습니다. QR 발급 및 티켓 충전은 보라카이션 admin에서 진행합니다.`, 'success');
+                Swal.fire('등록 완료', `${formValues.name} 판매처가 티켓 ${formValues.count}장으로 등록되었습니다. QR 발급은 보라카이션 admin에서 진행합니다.`, 'success');
             } catch (e) {
                 console.error(e);
                 Swal.fire('오류', '등록 중 문제가 발생했습니다.', 'error');

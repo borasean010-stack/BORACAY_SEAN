@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>고래상어 리버타드 카운터</title>
-    
+    <title>Whale Shark Libertad Counter</title>
+
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -63,16 +63,16 @@
 
 <div class="overlay-loader" id="loader">
     <div class="spinner"></div>
-    <div style="font-weight:bold; color:#555;">처리 중입니다...</div>
+    <div style="font-weight:bold; color:#555;">Processing...</div>
 </div>
 
 <div class="container">
     <div class="header">
         <a class="dashboard-link" href="whale-dashboard.html">
-            <span class="material-icons" style="font-size:16px;">dashboard</span> 대시보드
+            <span class="material-icons" style="font-size:16px;">dashboard</span> Dashboard
         </a>
         <img src="libertad.png" alt="Libertad Whale Shark" style="width:56px; height:56px; object-fit:contain; margin-bottom:8px; position:relative; z-index:1;">
-        <h1>고래상어 현장 카운터</h1>
+        <h1>Whale Shark Field Counter</h1>
         <p>Libertad Only</p>
         <div class="header-wave">
             <svg viewBox="0 0 500 24" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
@@ -81,44 +81,44 @@
         </div>
     </div>
 
-    <!-- 스캔 화면 -->
+    <!-- Scan screen -->
     <div class="content" id="view-scan" style="display: none; justify-content: center;">
         <div style="text-align:center; width:100%;">
             <div class="scan-icon-badge">
                 <span class="material-icons" style="font-size:44px; color:var(--orange);">qr_code_scanner</span>
             </div>
-            <h2 style="margin-top:0; color:var(--navy);">QR 코드를 스캔하세요</h2>
-            <p style="color:var(--muted); font-size:14px; margin-bottom:30px;">방문객이 제시한 QR코드를 스캔하여<br>잔여 티켓을 확인합니다.</p>
+            <h2 style="margin-top:0; color:var(--navy);">Scan the QR Code</h2>
+            <p style="color:var(--muted); font-size:14px; margin-bottom:30px;">Scan the visitor's QR code<br>to check remaining tickets.</p>
             <div id="reader"></div>
-            <button class="btn-primary" onclick="startScanner()" id="btn-start-scan" style="margin-bottom:15px;">카메라로 스캔하기</button>
+            <button class="btn-primary" onclick="startScanner()" id="btn-start-scan" style="margin-bottom:15px;">Scan with Camera</button>
         </div>
     </div>
 
-    <!-- 카운터 (차감) 화면 -->
+    <!-- Counter (deduction) screen -->
     <div class="content" id="view-counter" style="display: none;">
         <div class="card">
-            <div class="stat-label">사용 가능 티켓</div>
+            <div class="stat-label">Available Tickets</div>
             <div class="stat-value" id="display-remain">0</div>
         </div>
 
         <div class="card" style="border: 2px solid var(--orange);">
             <div class="input-group" style="margin: 0;">
-                <label style="text-align:center; color:var(--orange); font-size:16px;">방문 인원 입력</label>
+                <label style="text-align:center; color:var(--orange); font-size:16px;">Enter Number of Visitors</label>
                 <input type="number" id="input-count" placeholder="0" min="1" pattern="[0-9]*" inputmode="numeric">
             </div>
         </div>
 
         <div class="card">
             <div class="input-group" style="margin: 0;">
-                <label style="text-align:center; font-size:14px;">가이드명 (QR리마크)</label>
-                <input type="text" id="input-remark" placeholder="예: 홍길동 가이드" style="font-size:15px; font-weight:600; text-align:left;">
+                <label style="text-align:center; font-size:14px;">Guide Name (QR Remark)</label>
+                <input type="text" id="input-remark" placeholder="e.g. Guide John" style="font-size:15px; font-weight:600; text-align:left;">
             </div>
         </div>
 
-        <button class="btn-primary" id="btn-deduct">티켓 차감 승인</button>
-        
+        <button class="btn-primary" id="btn-deduct">Confirm Ticket Deduction</button>
+
         <div style="margin-top:30px;">
-            <button class="btn-secondary" onclick="resetToScan()"><span class="material-icons">refresh</span> 다시 스캔하기</button>
+            <button class="btn-secondary" onclick="resetToScan()"><span class="material-icons">refresh</span> Scan Again</button>
         </div>
     </div>
 </div>
@@ -146,11 +146,11 @@
         document.getElementById('loader').style.display = show ? 'flex' : 'none';
     }
 
-    // 1. URL에서 Token 파싱 및 화면 전환
+    // 1. Parse token from URL and switch screens
     async function init() {
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get('token');
-        
+
         if (token) {
             await loadAgencyByToken(token);
         } else {
@@ -158,32 +158,32 @@
         }
     }
 
-    // 2. 토큰으로 판매처 검증
+    // 2. Verify agency by token
     async function loadAgencyByToken(token) {
         showLoader(true);
         try {
             const q = query(collection(db, "whale_agencies"), where("token", "==", token));
             const querySnapshot = await getDocs(q);
-            
+
             if (querySnapshot.empty) {
-                Swal.fire('오류', '유효하지 않은 QR 코드입니다.', 'error').then(() => {
+                Swal.fire('Error', 'Invalid QR code.', 'error').then(() => {
                     resetToScan();
                 });
                 return;
             }
-            
+
             const agencyDoc = querySnapshot.docs[0];
             const agency = agencyDoc.data();
-            
+
             if (agency.status !== 'ACTIVE') {
-                Swal.fire('정지됨', '해당 판매처는 현재 정지 상태입니다. 관리자에게 문의하세요.', 'warning').then(() => {
+                Swal.fire('Suspended', 'This agency is currently suspended. Please contact the administrator.', 'warning').then(() => {
                     resetToScan();
                 });
                 return;
             }
-            
+
             currentAgencyId = agencyDoc.id;
-            
+
             document.getElementById('view-scan').style.display = 'none';
             document.getElementById('view-counter').style.display = 'flex';
             document.getElementById('display-remain').innerText = agency.remainCount || 0;
@@ -192,62 +192,62 @@
 
         } catch (e) {
             console.error(e);
-            Swal.fire('오류', '데이터를 불러오는 중 오류가 발생했습니다.', 'error');
+            Swal.fire('Error', 'An error occurred while loading data.', 'error');
         } finally {
             showLoader(false);
         }
     }
 
-    // 3. 트랜잭션을 통한 원자적 차감
+    // 3. Atomic deduction via transaction
     document.getElementById('btn-deduct').addEventListener('click', async () => {
         if (!currentAgencyId) return;
-        
+
         const deductCountStr = document.getElementById('input-count').value;
         const deductCount = parseInt(deductCountStr);
         const remark = document.getElementById('input-remark').value.trim();
 
         if (isNaN(deductCount) || deductCount <= 0) {
-            Swal.fire('오류', '차감할 올바른 인원수를 입력해주세요.', 'warning');
+            Swal.fire('Error', 'Please enter a valid number of visitors to deduct.', 'warning');
             return;
         }
 
-        const confirmMsg = `총 ${deductCount}장의 티켓을 사용 처리하시겠습니까?`;
+        const confirmMsg = `Process ${deductCount} ticket(s) as used?`;
         if (!confirm(confirmMsg)) return;
 
         showLoader(true);
         const agencyRef = doc(db, "whale_agencies", currentAgencyId);
-        
+
         const today = new Date();
         const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
         const dailyCountRef = doc(db, "whale_daily_counts", todayStr);
-        
-        const newTransactionRef = doc(collection(db, "whale_transactions")); // 자동 ID 생성
+
+        const newTransactionRef = doc(collection(db, "whale_transactions")); // auto-generated ID
 
         try {
             await runTransaction(db, async (transaction) => {
                 const agencyDoc = await transaction.get(agencyRef);
                 if (!agencyDoc.exists()) {
-                    throw "판매처 데이터를 찾을 수 없습니다.";
+                    throw "Agency data not found.";
                 }
-                
+
                 const agencyData = agencyDoc.data();
                 const currentRemain = agencyData.remainCount || 0;
-                
+
                 if (currentRemain < deductCount) {
-                    throw `잔여 티켓이 부족합니다. (현재: ${currentRemain}장)`;
+                    throw `Not enough remaining tickets. (Current: ${currentRemain})`;
                 }
 
-                // [중요] Firestore 트랜잭션 규칙: 모든 GET(읽기)는 UPDATE/SET(쓰기) 전에 수행되어야 함!
+                // [Important] Firestore transaction rule: all GETs must happen before any UPDATE/SET!
                 const dailyDoc = await transaction.get(dailyCountRef);
 
-                // 판매처 잔여량/사용량 갱신
+                // Update agency's remaining/used counts
                 const newRemain = currentRemain - deductCount;
                 const newTotalUsed = (agencyData.totalUsed || 0) + deductCount;
-                
+
                 let newMonthlyUsed = agencyData.monthlyUsed || 0;
                 const todayForTx = new Date();
                 const currentMonthStr = `${todayForTx.getFullYear()}-${String(todayForTx.getMonth() + 1).padStart(2, '0')}`;
-                
+
                 if (agencyData.currentMonth === currentMonthStr) {
                     newMonthlyUsed += deductCount;
                 } else {
@@ -262,7 +262,7 @@
                     updatedAt: new Date().toISOString()
                 });
 
-                // 일일 방문자 카운트 갱신
+                // Update daily visitor count
                 let newDailyCount = deductCount;
                 if (dailyDoc.exists()) {
                     newDailyCount += (dailyDoc.data().count || 0);
@@ -271,7 +271,7 @@
                     transaction.set(dailyCountRef, { count: newDailyCount, date: todayStr });
                 }
 
-                // 트랜잭션 로그 기록
+                // Log the transaction
                 transaction.set(newTransactionRef, {
                     agencyId: currentAgencyId,
                     type: 'USE',
@@ -283,11 +283,11 @@
 
             const result = await Swal.fire({
                 icon: 'success',
-                title: '처리 완료',
-                text: `${deductCount}명 차감했습니다.`,
-                confirmButtonText: '완료',
+                title: 'Completed',
+                text: `${deductCount} deducted.`,
+                confirmButtonText: 'Done',
                 showCancelButton: true,
-                cancelButtonText: '잘못 입력했어요 (취소)',
+                cancelButtonText: 'Entered by mistake (Undo)',
                 cancelButtonColor: '#ff3b30',
                 reverseButtons: true
             });
@@ -300,13 +300,13 @@
 
         } catch (e) {
             console.error(e);
-            Swal.fire('오류', e.toString(), 'error');
+            Swal.fire('Error', e.toString(), 'error');
         } finally {
             showLoader(false);
         }
     });
 
-    // 방금 처리한 차감을 되돌림 (반대 부호 트랜잭션으로 상쇄 — 기존 정산/통계 집계 로직을 그대로 재사용)
+    // Undo the deduction just made (offsetting transaction — reuses existing settlement/stat aggregation logic)
     async function undoTransaction(agencyId, originalTransactionId, amount) {
         showLoader(true);
         const agencyRef = doc(db, "whale_agencies", agencyId);
@@ -318,7 +318,7 @@
         try {
             await runTransaction(db, async (transaction) => {
                 const agencyDoc = await transaction.get(agencyRef);
-                if (!agencyDoc.exists()) throw "판매처 데이터를 찾을 수 없습니다.";
+                if (!agencyDoc.exists()) throw "Agency data not found.";
                 const agencyData = agencyDoc.data();
 
                 const dailyDoc = await transaction.get(dailyCountRef);
@@ -344,25 +344,25 @@
                 });
             });
 
-            Swal.fire('취소 완료', '차감을 되돌렸습니다.', 'success').then(() => resetToScan());
+            Swal.fire('Undo Complete', 'The deduction has been reversed.', 'success').then(() => resetToScan());
         } catch (e) {
             console.error(e);
-            Swal.fire('오류', '취소 처리 중 문제가 발생했습니다: ' + e.toString(), 'error');
+            Swal.fire('Error', 'An error occurred while undoing: ' + e.toString(), 'error');
         } finally {
             showLoader(false);
         }
     }
 
-    // 4. QR 스캐너 초기화 및 시작 (html5-qrcode)
+    // 4. Initialize and start the QR scanner (html5-qrcode)
     window.startScanner = function() {
         document.getElementById('btn-start-scan').style.display = 'none';
         document.getElementById('reader').style.display = 'block';
-        
+
         html5QrcodeScanner = new Html5Qrcode("reader");
         const config = {
             fps: 15,
-            // 스캔 박스를 화면(뷰파인더) 크기에 비례하게 잡아서, 고정 250px 박스에 QR을
-            // 딱 맞춰야만 인식되던 문제를 해결 (뷰파인더의 75%, 최대 280px)
+            // Size the scan box relative to the viewfinder (75%, capped at 280px) instead of a
+            // fixed 250px box, which used to require lining the QR up exactly to be recognized.
             qrbox: (viewfinderWidth, viewfinderHeight) => {
                 const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
                 const size = Math.min(Math.floor(minEdge * 0.75), 280);
@@ -378,38 +378,38 @@
 
         html5QrcodeScanner.start({ facingMode: "environment" }, config,
             (decodedText, decodedResult) => {
-                // 성공 시 스캐너 중지
+                // Stop the scanner on success
                 html5QrcodeScanner.stop().then(() => {
                     document.getElementById('reader').style.display = 'none';
                     document.getElementById('btn-start-scan').style.display = 'block';
-                    
-                    // URL 파싱해서 토큰 추출
+
+                    // Parse the URL to extract the token
                     try {
                         const parsedUrl = new URL(decodedText);
                         const token = parsedUrl.searchParams.get('token');
                         if (token) {
                             loadAgencyByToken(token);
                         } else {
-                            Swal.fire('오류', '유효하지 않은 QR 코드입니다.', 'error');
+                            Swal.fire('Error', 'Invalid QR code.', 'error');
                         }
                     } catch(e) {
-                        // URL 형식이 아닌 경우 (직접 토큰만 담긴 경우 대비)
+                        // Not a URL format (in case it's just the raw token)
                         if (decodedText.startsWith('ws_')) {
                             loadAgencyByToken(decodedText);
                         } else {
-                            Swal.fire('오류', '잘못된 형식의 QR 코드입니다.', 'error');
+                            Swal.fire('Error', 'Invalid QR code format.', 'error');
                         }
                     }
                 }).catch(err => {
-                    console.error("스캐너 중지 실패", err);
+                    console.error("Failed to stop scanner", err);
                 });
             },
             (errorMessage) => {
-                // 스캔 중 (무시)
+                // Scanning in progress (ignore)
             })
         .catch(err => {
             console.error(err);
-            Swal.fire('카메라 오류', '카메라 권한을 허용해주세요.', 'error');
+            Swal.fire('Camera Error', 'Please allow camera access.', 'error');
             document.getElementById('btn-start-scan').style.display = 'block';
             document.getElementById('reader').style.display = 'none';
         });
@@ -420,8 +420,8 @@
         if (html5QrcodeScanner && html5QrcodeScanner.isScanning) {
             html5QrcodeScanner.stop().catch(console.error);
         }
-        
-        // URL의 토큰 제거
+
+        // Remove the token from the URL
         const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
         window.history.pushState({path:newUrl}, '', newUrl);
 
@@ -431,7 +431,7 @@
         document.getElementById('btn-start-scan').style.display = 'block';
     };
 
-    // 초기화 실행
+    // Run initialization
     document.addEventListener('DOMContentLoaded', init);
 </script>
 

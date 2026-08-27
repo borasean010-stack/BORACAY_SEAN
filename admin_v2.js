@@ -2051,7 +2051,7 @@ window.showWsQr = function(id, name, token, color) {
     nameEl.innerText = name;
     nameEl.style.color = color || '#007aff';
     const footerTag = document.getElementById('ws-qr-footer-tag');
-    if (footerTag) footerTag.innerText = `${name} × WHALE SHARK`;
+    if (footerTag) footerTag.innerText = `${name} × 고래상어`;
     const container = document.getElementById('ws-qrcode-container');
     container.innerHTML = ''; // 초기화
     

@@ -327,9 +327,24 @@
         document.getElementById('reader').style.display = 'block';
         
         html5QrcodeScanner = new Html5Qrcode("reader");
-        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-        
-        html5QrcodeScanner.start({ facingMode: "environment" }, config, 
+        const config = {
+            fps: 15,
+            // 스캔 박스를 화면(뷰파인더) 크기에 비례하게 잡아서, 고정 250px 박스에 QR을
+            // 딱 맞춰야만 인식되던 문제를 해결 (뷰파인더의 75%, 최대 280px)
+            qrbox: (viewfinderWidth, viewfinderHeight) => {
+                const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+                const size = Math.min(Math.floor(minEdge * 0.75), 280);
+                return { width: size, height: size };
+            },
+            aspectRatio: 1.0,
+            videoConstraints: {
+                facingMode: "environment",
+                width: { ideal: 1920 },
+                height: { ideal: 1080 }
+            }
+        };
+
+        html5QrcodeScanner.start({ facingMode: "environment" }, config,
             (decodedText, decodedResult) => {
                 // 성공 시 스캐너 중지
                 html5QrcodeScanner.stop().then(() => {

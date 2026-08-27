@@ -151,7 +151,7 @@
             </div>
         </div>
 
-        <p class="section-label" style="margin-top:4px;">정산</p>
+        <p class="section-label" style="margin-top:4px;">보라카이션 정산</p>
         <div class="stat-grid" style="grid-template-columns: 1fr 1fr; margin-bottom:44px;">
             <div class="stat-card" style="--stat-color:#ff6a00;">
                 <p id="today-settle-label">오늘 정산</p>
@@ -184,7 +184,10 @@
         </div>
 
         <p class="section-label" style="margin-top:4px;">등록된 판매처</p>
-        <h2 style="margin:0 0 20px; font-size:22px; font-weight:900; color:var(--navy);">판매처 현황</h2>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 style="margin:0; font-size:22px; font-weight:900; color:var(--navy);">판매처 현황</h2>
+            <button onclick="openAddAgencyModal()" style="background:var(--navy); color:#fff; border:none; padding:10px 18px; border-radius:999px; font-size:13px; font-weight:800; cursor:pointer;">+ 새 판매처 등록</button>
+        </div>
         <div class="agency-grid" id="agency-grid">
             <!-- 업체 카드가 여기에 렌더링 됩니다. -->
         </div>
@@ -192,7 +195,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, doc, query, where, getDocs, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, query, where, getDocs, setDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDkDjmGKQDF-0Vu2S_qtI6W5Hf2-j4tKcM",
@@ -520,6 +523,53 @@
 
         window.closeSettlementModal = function() {
             document.getElementById('ws-settlement-modal').style.display = 'none';
+        };
+
+        window.openAddAgencyModal = async function() {
+            const { value: formValues } = await Swal.fire({
+                title: '새 판매처 등록',
+                html:
+                    '<input id="swal-agency-name" class="swal2-input" placeholder="판매처명 (예: 보자무싸)">' +
+                    '<input id="swal-agency-color" type="color" value="#007aff" style="width:100%; height:40px; margin-top:10px; border:1px solid #ddd; border-radius:8px; cursor:pointer;">',
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: '등록',
+                cancelButtonText: '취소',
+                preConfirm: () => {
+                    const name = document.getElementById('swal-agency-name').value.trim();
+                    const color = document.getElementById('swal-agency-color').value;
+                    if (!name) {
+                        Swal.showValidationMessage('판매처명을 입력해주세요.');
+                        return false;
+                    }
+                    return { name, color };
+                }
+            });
+            if (!formValues) return;
+
+            try {
+                const today = new Date();
+                const currentMonthStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+                const token = 'ws_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+                await addDoc(collection(db, 'whale_agencies'), {
+                    name: formValues.name,
+                    token,
+                    agencyColor: formValues.color || '#007aff',
+                    remainCount: 0,
+                    totalBought: 0,
+                    totalUsed: 0,
+                    monthlyBought: 0,
+                    monthlyUsed: 0,
+                    currentMonth: currentMonthStr,
+                    status: 'ACTIVE',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                });
+                Swal.fire('등록 완료', `${formValues.name} 판매처가 등록되었습니다. QR 발급 및 티켓 충전은 보라카이션 admin에서 진행합니다.`, 'success');
+            } catch (e) {
+                console.error(e);
+                Swal.fire('오류', '등록 중 문제가 발생했습니다.', 'error');
+            }
         };
 
     </script>

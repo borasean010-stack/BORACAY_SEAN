@@ -200,9 +200,12 @@
         </div>
 
         <div style="background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); padding:22px 24px; margin-bottom:44px;">
-            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; flex-wrap:wrap;">
                 <p style="margin:0; font-size:14px; font-weight:800; color:var(--ink);">오늘 방문 판매처별 내역</p>
-                <input id="guide-filter-input" type="text" placeholder="가이드명으로 검색" oninput="renderTodayVisitBreakdown()" style="font-size:13px; padding:8px 12px; border:1px solid var(--line); border-radius:8px; width:160px;">
+                <div style="display:flex; gap:8px;">
+                    <input id="guide-filter-input" type="text" placeholder="가이드명으로 검색" oninput="renderTodayVisitBreakdown()" style="font-size:13px; padding:8px 12px; border:1px solid var(--line); border-radius:8px; width:160px;">
+                    <button onclick="downloadVisitCSV()" style="font-size:13px; padding:8px 14px; border:1px solid var(--line); border-radius:8px; background:#fff; color:var(--navy); font-weight:700; cursor:pointer; white-space:nowrap;">엑셀 다운로드</button>
+                </div>
             </div>
             <div id="today-visit-breakdown">
                 <div style="text-align:center; color:#aaa; padding:20px; font-size:13px;">불러오는 중...</div>
@@ -456,6 +459,7 @@
         };
 
         let guideSearchToken = 0;
+        let lastVisitTableExport = { headers: ['판매처', '가이드', '인원'], rows: [] };
 
         window.renderTodayVisitBreakdown = async function() {
             const breakdownEl = document.getElementById('today-visit-breakdown');
@@ -494,6 +498,13 @@
                 }).join('');
                 html += '</tbody></table>';
                 breakdownEl.innerHTML = html;
+                lastVisitTableExport = {
+                    headers: ['판매처', '가이드', '인원'],
+                    rows: todayTransactionsCache.map(r => {
+                        const agency = agencyMap[r.agencyId];
+                        return [agency ? agency.name : '알 수 없는 업체', r.guide || '-', r.count];
+                    }),
+                };
                 return;
             }
 
@@ -535,12 +546,43 @@
                 `).join('');
                 html += '</tbody></table>';
                 breakdownEl.innerHTML = html;
+                lastVisitTableExport = {
+                    headers: ['날짜', '가이드', '인원'],
+                    rows: rows.map(r => [r.date, r.guide, r.count]),
+                };
             } catch (e) {
                 console.error('가이드 검색 실패', e);
                 breakdownEl.innerHTML = '<div style="text-align:center; color:#ff2d55; padding:20px; font-size:13px;">검색 중 오류가 발생했습니다.</div>';
             }
         };
         loadTodayBreakdown();
+
+        window.downloadVisitCSV = function() {
+            const { headers, rows } = lastVisitTableExport;
+            if (rows.length === 0) {
+                Swal.fire('알림', '다운로드할 데이터가 없습니다.', 'info');
+                return;
+            }
+            const escapeCsv = (val) => {
+                const s = String(val);
+                return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+            };
+            const lines = [headers.map(escapeCsv).join(',')];
+            rows.forEach(row => lines.push(row.map(escapeCsv).join(',')));
+            const csvContent = '﻿' + lines.join('\r\n'); // UTF-8 BOM (엑셀 한글 깨짐 방지)
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const today = new Date();
+            const dateStr = `${today.getFullYear()}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}`;
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `방문내역_${dateStr}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        };
 
         window.openSettlementModal = async function() {
             document.getElementById('ws-settlement-modal').style.display = 'flex';

@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
             --navy: #0f2a4a;
@@ -224,7 +225,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, doc, query, where, getDocs, setDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, query, where, getDocs, setDoc, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDkDjmGKQDF-0Vu2S_qtI6W5Hf2-j4tKcM",
@@ -405,6 +406,10 @@
                                 <span>${(a.remainCount || 0).toLocaleString()}</span>
                             </div>
                             <button onclick="event.stopPropagation(); showWsQr('${a.name}', '${a.token}')" style="width:100%; margin-top:10px; padding:10px; background:#eef2f7; color:var(--navy); border:none; border-radius:10px; font-weight:800; font-size:13px; cursor:pointer;">QR 보기</button>
+                            <div style="display:flex; gap:8px; margin-top:8px;">
+                                <button onclick="event.stopPropagation(); addWsTickets('${a.id}', '${a.name}')" style="flex:1; padding:10px; background:#eaf3ff; color:#0a5fd6; border:none; border-radius:10px; font-weight:800; font-size:13px; cursor:pointer;">＋ 티켓 추가</button>
+                                <button onclick="event.stopPropagation(); deductWsTickets('${a.id}', '${a.name}')" style="flex:1; padding:10px; background:#fff2ea; color:#c9600a; border:none; border-radius:10px; font-weight:800; font-size:13px; cursor:pointer;">－ 티켓 차감</button>
+                            </div>
                         </div>
                     `;
                 }).join('');
@@ -563,25 +568,18 @@
                 Swal.fire('알림', '다운로드할 데이터가 없습니다.', 'info');
                 return;
             }
-            const escapeCsv = (val) => {
-                const s = String(val);
-                return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-            };
-            const lines = [headers.map(escapeCsv).join(',')];
-            rows.forEach(row => lines.push(row.map(escapeCsv).join(',')));
-            const csvContent = '﻿' + lines.join('\r\n'); // UTF-8 BOM (엑셀 한글 깨짐 방지)
 
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
+            const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+            worksheet['!cols'] = headers.map((h, i) => {
+                const maxLen = Math.max(h.length, ...rows.map(r => String(r[i] ?? '').length));
+                return { wch: Math.min(Math.max(maxLen + 2, 8), 40) };
+            });
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, '방문내역');
+
             const today = new Date();
             const dateStr = `${today.getFullYear()}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}`;
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `방문내역_${dateStr}.csv`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+            XLSX.writeFile(workbook, `방문내역_${dateStr}.xlsx`);
         };
 
         window.openSettlementModal = async function() {
@@ -800,6 +798,101 @@
             } catch (e) {
                 console.error(e);
                 Swal.fire('오류', '등록 중 문제가 발생했습니다.', 'error');
+            }
+        };
+
+        window.addWsTickets = async function(id, name) {
+            const agency = dashboardAgencies.find(a => a.id === id);
+            if (!agency) return;
+
+            const { value: addCount } = await Swal.fire({
+                title: `${name} - 티켓 추가`,
+                input: 'number',
+                inputLabel: `현재 잔여: ${agency.remainCount || 0}장 / 추가할 수량을 입력하세요`,
+                inputAttributes: { min: 1 },
+                showCancelButton: true,
+                confirmButtonText: '추가',
+                cancelButtonText: '취소',
+                inputValidator: (v) => {
+                    if (!v || v <= 0) return '수량을 입력하세요';
+                }
+            });
+            if (!addCount) return;
+
+            try {
+                const today = new Date();
+                const currentMonthStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+                const count = parseInt(addCount);
+                const newRemain = (agency.remainCount || 0) + count;
+                const newTotal = (agency.totalBought || 0) + count;
+                let newMonthlyBought = agency.monthlyBought || 0;
+                newMonthlyBought = agency.currentMonth === currentMonthStr ? newMonthlyBought + count : count;
+
+                await updateDoc(doc(db, 'whale_agencies', id), {
+                    remainCount: newRemain,
+                    totalBought: newTotal,
+                    monthlyBought: newMonthlyBought,
+                    currentMonth: currentMonthStr,
+                    updatedAt: new Date().toISOString()
+                });
+                await addDoc(collection(db, 'whale_transactions'), {
+                    agencyId: id,
+                    type: 'ADD',
+                    amount: count,
+                    createdAt: new Date().toISOString()
+                });
+                Swal.fire('추가 완료', `${name}에 ${count}장이 추가되었습니다.\n잔여: ${newRemain}장`, 'success');
+            } catch (e) {
+                console.error(e);
+                Swal.fire('오류', '추가 중 문제가 발생했습니다.', 'error');
+            }
+        };
+
+        window.deductWsTickets = async function(id, name) {
+            const agency = dashboardAgencies.find(a => a.id === id);
+            if (!agency) return;
+
+            const { value: deductCount } = await Swal.fire({
+                title: `${name} - 티켓 차감`,
+                input: 'number',
+                inputLabel: `현재 잔여: ${agency.remainCount || 0}장 / 차감할 수량을 입력하세요`,
+                inputAttributes: { min: 1, max: agency.remainCount || 0 },
+                showCancelButton: true,
+                confirmButtonText: '차감',
+                cancelButtonText: '취소',
+                inputValidator: (v) => {
+                    if (!v || v <= 0) return '수량을 입력하세요';
+                    if (parseInt(v) > (agency.remainCount || 0)) return `잔여티켓(${agency.remainCount}장)보다 많습니다`;
+                }
+            });
+            if (!deductCount) return;
+
+            try {
+                const today = new Date();
+                const currentMonthStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+                const count = parseInt(deductCount);
+                const newRemain = (agency.remainCount || 0) - count;
+                const newTotalUsed = (agency.totalUsed || 0) + count;
+                let newMonthlyUsed = agency.monthlyUsed || 0;
+                newMonthlyUsed = agency.currentMonth === currentMonthStr ? newMonthlyUsed + count : count;
+
+                await updateDoc(doc(db, 'whale_agencies', id), {
+                    remainCount: newRemain,
+                    totalUsed: newTotalUsed,
+                    monthlyUsed: newMonthlyUsed,
+                    currentMonth: currentMonthStr,
+                    updatedAt: new Date().toISOString()
+                });
+                await addDoc(collection(db, 'whale_transactions'), {
+                    agencyId: id,
+                    type: 'USE',
+                    amount: count,
+                    createdAt: new Date().toISOString()
+                });
+                Swal.fire('차감 완료', `${name}에서 ${count}장 차감했습니다.\n잔여: ${newRemain}장`, 'success');
+            } catch (e) {
+                console.error(e);
+                Swal.fire('오류', '차감 중 문제가 발생했습니다.', 'error');
             }
         };
 

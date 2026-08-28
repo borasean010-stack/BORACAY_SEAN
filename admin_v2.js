@@ -1682,21 +1682,13 @@ function initWhaleSharkAdmin() {
             }
             if (finSettlementLabel) finSettlementLabel.innerText = `오늘(${yesterdayDateStr}) 사용 ${totalYesterdayUsed}장 × 1,670`;
 
-            // 오늘 구매(충전)된 티켓 기준 총금액/베네핏/티켓비용 (일별 카운팅)
-            const aq = q2(col(db, "whale_transactions"), where("createdAt", ">=", yStr + "T00:00:00"), where("createdAt", "<=", yStr + "T23:59:59"));
-            const addSnap = await getDocs(aq);
-            let totalTodayBought = 0;
-            addSnap.forEach(docSnap => {
-                const d = docSnap.data();
-                if (agencyRegisteredByMap[d.agencyId] === 'libertad') return; // 리버타드 자체 등록 업체 제외
-                if (d.type === 'ADD') totalTodayBought += (d.amount || 0);
-            });
+            // 오늘 사용된 티켓 기준 총금액/베네핏/티켓비용 (일별 카운팅) - 위에서 이미 집계한 totalYesterdayUsed(오늘 사용량) 재사용
             const todayTotalEl = document.getElementById('ws-fin-total-today');
             const todayBenefitEl = document.getElementById('ws-fin-benefit-today');
             const todayCostEl = document.getElementById('ws-fin-cost-today');
-            if (todayTotalEl) todayTotalEl.innerText = `오늘 구매 ${totalTodayBought}장 · ${(totalTodayBought * 1920).toLocaleString()} ₱`;
-            if (todayBenefitEl) todayBenefitEl.innerText = `오늘 구매 ${totalTodayBought}장 · ${(totalTodayBought * 250).toLocaleString()} ₱`;
-            if (todayCostEl) todayCostEl.innerText = `오늘 구매 ${totalTodayBought}장 · ${(totalTodayBought * 1670).toLocaleString()} ₱`;
+            if (todayTotalEl) todayTotalEl.innerText = `오늘 사용 ${totalYesterdayUsed}장 · ${(totalYesterdayUsed * 1920).toLocaleString()} ₱`;
+            if (todayBenefitEl) todayBenefitEl.innerText = `오늘 사용 ${totalYesterdayUsed}장 · ${(totalYesterdayUsed * 250).toLocaleString()} ₱`;
+            if (todayCostEl) todayCostEl.innerText = `오늘 사용 ${totalYesterdayUsed}장 · ${(totalYesterdayUsed * 1670).toLocaleString()} ₱`;
 
             if (currentWsAgencies.length > 0) renderWsAgencies();
         } catch(e) { console.error("어제 트랜잭션 로드 실패:", e); }
@@ -1776,14 +1768,14 @@ function initWhaleSharkAdmin() {
         const finTotal = document.getElementById('ws-fin-total');
         const finBenefit = document.getElementById('ws-fin-benefit');
         const finCost = document.getElementById('ws-fin-cost');
-        if (finTotal) finTotal.innerText = (totalMonthlyBought * 1920).toLocaleString() + ' ₱';
-        if (finBenefit) finBenefit.innerText = (totalMonthlyBought * 250).toLocaleString() + ' ₱';
-        if (finCost) finCost.innerText = (totalMonthlyBought * 1670).toLocaleString() + ' ₱';
+        if (finTotal) finTotal.innerText = (totalMonthlyUsed * 1920).toLocaleString() + ' ₱';
+        if (finBenefit) finBenefit.innerText = (totalMonthlyUsed * 250).toLocaleString() + ' ₱';
+        if (finCost) finCost.innerText = (totalMonthlyUsed * 1670).toLocaleString() + ' ₱';
         // 라벨도 월 이름으로 동적 업데이트
         const lblFinTotal = document.getElementById('lbl-fin-total');
         const lblFinBenefit = document.getElementById('lbl-fin-benefit');
         const lblFinCost = document.getElementById('lbl-fin-cost');
-        if (lblFinTotal) lblFinTotal.innerText = `${currentMonthNum}월 구매티켓 총금액`;
+        if (lblFinTotal) lblFinTotal.innerText = `${currentMonthNum}월 사용티켓 총금액`;
         if (lblFinBenefit) lblFinBenefit.innerText = `${currentMonthNum}월 베네핏 금액`;
         if (lblFinCost) lblFinCost.innerText = `${currentMonthNum}월 티켓비용`;
 

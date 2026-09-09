@@ -26,7 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let allSchedules = [];
     let activeTab = 'new'; 
     let currentScheduleFilter = 'all';
-    let currentScheduleDay = 'today'; 
+    let currentScheduleDay = 'today';
+    let allScheduleSearchTerm = '';
+    let allScheduleEditingId = null;
 
     // 🚀 리조트 번역기 (한글 우선)
     function translateResort(name) {
@@ -89,6 +91,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         return fallbackCount;
+    }
+
+    // M/D로만 적힌 날짜의 연도를 추정: 입력된 월이 현재 월보다 이전이면 연도가 넘어간 것(내년)으로 처리
+    // (예: 12월에 "1/5" 예약을 입력하면 올해가 아니라 내년 1월 5일로 인식)
+    function resolveYearForMonth(month) {
+        const now = new Date();
+        const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+        const kst = new Date(utc + 9 * 3600000); // 한국/필리핀 시간 기준
+        const currentYear = kst.getFullYear();
+        const currentMonth = kst.getMonth() + 1;
+        return month < currentMonth ? currentYear + 1 : currentYear;
     }
 
     function showAdminPanel() {
@@ -160,6 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderDateBoxes();
         renderSchedule();
         renderTable();
+        renderAllSchedulePanel();
     }
 
     function updateSummaryCounts() {
@@ -344,6 +358,154 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>`;
         }).join('');
     }
+
+    // 📋 전체 스케줄 관리 (날짜 제한 없이 전체 조회 + 검색 + 인라인 수정 + 인쇄)
+    const AS_COLS = 9;
+    const AS_DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'];
+
+    function getSortedFilteredSchedules() {
+        let items = [...allSchedules];
+        const term = allScheduleSearchTerm.trim().toLowerCase();
+        if (term) {
+            items = items.filter(s => [s.customerName, s.name, s.resort, s.flight, s.details]
+                .some(v => (v || '').toLowerCase().includes(term)));
+        }
+        items.sort((a, b) => `${a.date || ''}${a.time || ''}`.localeCompare(`${b.date || ''}${b.time || ''}`));
+        return items;
+    }
+
+    function escAttr(str) { return (str || '').toString().replace(/"/g, '&quot;'); }
+    function escHtml(str) { return (str || '').toString().replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+    function renderScheduleEditRow(s) {
+        return `<tr class="as-edit-row">
+            <td><input type="date" id="as-edit-date" value="${escAttr(s.date)}"></td>
+            <td><input type="time" id="as-edit-time" value="${escAttr(s.time)}"></td>
+            <td><input type="text" id="as-edit-name" value="${escAttr(s.name)}"></td>
+            <td><input type="text" id="as-edit-customer" value="${escAttr(s.customerName)}"></td>
+            <td><input type="number" id="as-edit-count" value="${s.count ?? 0}" style="width:55px;"></td>
+            <td><input type="text" id="as-edit-resort" value="${escAttr(s.resort)}"></td>
+            <td><input type="text" id="as-edit-flight" value="${escAttr(s.flight)}"></td>
+            <td><input type="text" id="as-edit-details" value="${escAttr(s.details)}"></td>
+            <td class="as-actions">
+                <button class="btn-sm" style="background:#00c73c; color:#fff; border-color:#00c73c;" onclick="saveScheduleEdit('${s.id}')">저장</button>
+                <button class="btn-sm" onclick="cancelEditSchedule()">취소</button>
+            </td>
+        </tr>`;
+    }
+
+    function renderAllSchedulePanel() {
+        const body = document.getElementById('all-schedule-table-body');
+        if (!body) return;
+        const items = getSortedFilteredSchedules();
+        const countEl = document.getElementById('all-schedule-count');
+        if (countEl) countEl.innerText = `총 ${items.length}건`;
+
+        if (items.length === 0) {
+            body.innerHTML = `<tr><td colspan="${AS_COLS}" style="text-align:center; padding:40px; color:#999;">등록된 일정이 없습니다.</td></tr>`;
+            return;
+        }
+
+        body.innerHTML = items.map(s => {
+            if (allScheduleEditingId === s.id) return renderScheduleEditRow(s);
+            const d = new Date(`${s.date}T00:00:00`);
+            const dayLabel = isNaN(d.getTime()) ? '' : ` (${AS_DAY_NAMES[d.getDay()]})`;
+            return `<tr>
+                <td>${s.date || '-'}${dayLabel}</td>
+                <td>${s.time || '-'}</td>
+                <td>${escHtml(s.name) || '-'}</td>
+                <td>${escHtml(s.customerName) || '-'}</td>
+                <td style="text-align:center;">${s.count ?? '-'}</td>
+                <td>${escHtml(s.resort) || '-'}</td>
+                <td>${escHtml(s.flight) || '-'}</td>
+                <td style="white-space:pre-wrap; max-width:220px;">${escHtml(s.details) || '-'}</td>
+                <td class="as-actions">
+                    <button class="btn-sm" onclick="startEditSchedule('${s.id}')" title="수정"><span class="material-icons" style="font-size:14px;">edit</span></button>
+                    <button class="btn-sm" style="color:#ff2d55; border-color:#ffd0d8;" onclick="deleteScheduleItem('${s.id}')" title="삭제"><span class="material-icons" style="font-size:14px;">delete</span></button>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    window.filterAllSchedule = (val) => { allScheduleSearchTerm = val || ''; renderAllSchedulePanel(); };
+
+    window.startEditSchedule = (id) => { allScheduleEditingId = id; renderAllSchedulePanel(); };
+    window.cancelEditSchedule = () => { allScheduleEditingId = null; renderAllSchedulePanel(); };
+
+    window.saveScheduleEdit = async (id) => {
+        const newData = {
+            date: document.getElementById('as-edit-date').value.trim(),
+            time: document.getElementById('as-edit-time').value.trim(),
+            name: document.getElementById('as-edit-name').value.trim(),
+            customerName: document.getElementById('as-edit-customer').value.trim(),
+            count: parseInt(document.getElementById('as-edit-count').value) || 0,
+            resort: document.getElementById('as-edit-resort').value.trim(),
+            flight: document.getElementById('as-edit-flight').value.trim(),
+            details: document.getElementById('as-edit-details').value.trim(),
+        };
+        if (!newData.date || !newData.time) { alert('날짜와 시간은 필수입니다.'); return; }
+        try {
+            await updateDoc(doc(db, "schedules", id), newData);
+            allScheduleEditingId = null;
+        } catch (e) { console.error("Schedule save error:", e); alert('저장 중 오류가 발생했습니다.'); }
+    };
+
+    window.deleteScheduleItem = async (id) => {
+        if (!confirm('이 일정을 삭제하시겠습니까?')) return;
+        try { await deleteDoc(doc(db, "schedules", id)); }
+        catch (e) { console.error("Schedule delete error:", e); alert('삭제 중 오류가 발생했습니다.'); }
+    };
+
+    window.printAllSchedule = () => {
+        const items = getSortedFilteredSchedules();
+        if (items.length === 0) { alert('인쇄할 일정이 없습니다.'); return; }
+
+        let rowsHtml = '';
+        let lastDate = null;
+        items.forEach(s => {
+            if (s.date !== lastDate) {
+                lastDate = s.date;
+                const d = new Date(`${s.date}T00:00:00`);
+                const dayLabel = isNaN(d.getTime()) ? '' : ` (${AS_DAY_NAMES[d.getDay()]})`;
+                rowsHtml += `<tr class="p-date-row"><td colspan="7">${s.date}${dayLabel}</td></tr>`;
+            }
+            rowsHtml += `<tr>
+                <td>${s.time || '-'}</td>
+                <td>${escHtml(s.name) || '-'}</td>
+                <td>${escHtml(s.customerName) || '-'}</td>
+                <td>${s.count ?? '-'}</td>
+                <td>${escHtml(s.resort) || '-'}</td>
+                <td>${escHtml(s.flight) || '-'}</td>
+                <td>${escHtml(s.details) || '-'}</td>
+            </tr>`;
+        });
+
+        const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>보라카이션 전체 일정</title>
+            <style>
+                body { font-family: 'Pretendard', 'Malgun Gothic', sans-serif; padding: 24px; color: #111; }
+                h1 { font-size: 20px; margin: 0 0 4px; }
+                p.meta { color: #888; font-size: 12px; margin: 0 0 20px; }
+                table { width: 100%; border-collapse: collapse; font-size: 12px; }
+                th, td { border: 1px solid #ddd; padding: 6px 8px; text-align: left; }
+                th { background: #f4f4f4; }
+                tr.p-date-row td { background: #ff6a00; color: #fff; font-weight: 800; padding: 8px; }
+                @media print { tr { break-inside: avoid; } }
+            </style></head><body>
+            <h1>BORACAY SEAN 전체 일정</h1>
+            <p class="meta">출력일시: ${new Date().toLocaleString('ko-KR')} · 총 ${items.length}건</p>
+            <table>
+                <thead><tr><th>시간</th><th>상품명</th><th>고객명</th><th>인원</th><th>리조트</th><th>항공편</th><th>비고</th></tr></thead>
+                <tbody>${rowsHtml}</tbody>
+            </table>
+        </body></html>`;
+
+        const win = window.open('', '_blank', 'width=900,height=700');
+        if (!win) { alert('팝업이 차단되었습니다. 팝업 차단을 해제해주세요.'); return; }
+        win.document.write(html);
+        win.document.close();
+        win.focus();
+        setTimeout(() => win.print(), 300);
+    };
 
     window.switchMainView = () => {
         document.querySelectorAll('.ss-nav-item').forEach(el => el.classList.remove('active'));
@@ -629,7 +791,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const rows = parseRobustTSV(input);
             const batch = writeBatch(db);
             let count = 0;
-            const currentYear = new Date().getFullYear();
 
             for (const row of rows) {
                 if (row.length < 10) continue; // 유효하지 않은 행 스킵
@@ -657,7 +818,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const parts = raw.split('/');
                     const m = parts[0].trim().padStart(2, '0');
                     const d = parts[1].trim().replace(/[^0-9]/g, '').padStart(2, '0');
-                    return `${currentYear}-${m}-${d}`;
+                    return `${resolveYearForMonth(parseInt(parts[0], 10))}-${m}-${d}`;
                 };
 
                 // 1. 공항 픽업 등록
@@ -706,7 +867,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const dateMatch = line.match(/(\d{1,2})\/(\d{1,2})/);
                         if (!dateMatch) continue;
 
-                        const itemDate = `${currentYear}-${dateMatch[1].padStart(2, '0')}-${dateMatch[2].padStart(2, '0')}`;
+                        const itemDate = `${resolveYearForMonth(parseInt(dateMatch[1], 10))}-${dateMatch[1].padStart(2, '0')}-${dateMatch[2].padStart(2, '0')}`;
                         let itemTime = "09:00";
                         let itemName = "기타 일정";
                         const lowerLine = line.toLowerCase();
@@ -910,8 +1071,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const rows = parseRobustTSV(inputVal);
-        const currentYear = new Date().getFullYear();
-        
+
         let combinedKorNames = [];
         let totalAdults = 0, totalChildren = 0, totalInfants = 0;
         let allItems = [];
@@ -952,7 +1112,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!firstExVal) firstExVal = exVal;
 
             const totalPax = (parseInt(row[11]) || 0) + (parseInt(row[12]) || 0) + (parseInt(row[13]) || 0);
-            const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${currentYear}-${m}-${d}`; };
+            const formatDate = (raw) => { if (!raw || !raw.includes('/')) return null; const [m, d] = raw.split('/').map(v => v.trim().padStart(2,'0')); return `${resolveYearForMonth(parseInt(m, 10))}-${m}-${d}`; };
             
             const fl2 = (row[2] || '').trim().toUpperCase().replace(/\s/g, '');
             if (fl2 && (fl2.match(/[A-Z0-9]{2}\d+/) || fl2.includes('KLO') || fl2.includes('MPH'))) {

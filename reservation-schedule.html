@@ -207,7 +207,9 @@
         const details = (item.details || "").toLowerCase();
         const lowerName = name.toLowerCase();
         const tourMonth = item.date ? parseInt(item.date.split('-')[1]) : new Date().getMonth() + 1;
-        const isDrySeason = tourMonth <= 5 || tourMonth >= 11;
+        // 올해는 시즌 전환이 앞당겨져 2026-10-08부터 8 Eight 안내 (이후 해는 11~5월 규칙)
+        const isEarlyDry2026 = item.date && item.date >= '2026-10-08' && item.date <= '2026-10-31';
+        const isDrySeason = tourMonth <= 5 || tourMonth >= 11 || isEarlyDry2026;
 
         // 1. 공항 픽업
         if (lowerName.includes('공항 픽업') || lowerName.includes('meeting') || lowerName.includes('pickup')) {

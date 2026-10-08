@@ -385,21 +385,23 @@
     const WHALE_CHAT_URL = 'https://open.kakao.com/o/gdpGzfJi';
     const WHALE_CHAT_BLOCK = `\n\n<b>🐋 고래상어 출현·투어 진행 여부 안내</b>\n당일 고래상어 출현 여부와 투어 진행 여부는 아래 오픈채팅방에서 안내드립니다.\n투어 전날까지 꼭 입장해 주세요!\n<a href="${WHALE_CHAT_URL}" class="kakao-btn" target="_blank" rel="noopener">💬 오픈채팅방 입장하기</a>`;
 
-    // 🗓 10/25부터 변경된 시간표: 고래상어 08:00 / 말룸파티 10:00 / 샌딩 TW126 09:30
+    // 🗓 변경된 시간표: 고래상어 08:00 (2026-10-08부터) / 말룸파티 10:00, 샌딩 TW126 09:30 (2026-10-25부터)
+    const WHALE_NEW_START = '2026-10-08';
     const WINTER_START = '2026-10-25';
     function applyWinterTimes(items) {
         items.forEach(item => {
-            if (!item.date || item.date < WINTER_START) return;
+            if (!item.date) return;
             const name = item.name || '';
             const low = name.toLowerCase();
             const isSendingItem = name.includes('샌딩') || low.includes('sending');
             if (isSendingItem) {
+                if (item.date < WINTER_START) return;
                 const flight = ((item._res && item._res.sendingFlight) || item.flight || '').toUpperCase().trim();
                 if (flight === 'TW126' || name.toUpperCase().includes('TW126')) item.time = '09:30';
             } else if (name.includes('고래상어') || low.includes('shark') || name.includes('고말팩')) {
-                item.time = '08:00';
+                if (item.date >= WHALE_NEW_START) item.time = '08:00';
             } else if ((name.includes('말룸파티') || low.includes('malum')) && !(item.details || '').includes('샌딩')) {
-                item.time = '10:00';
+                if (item.date >= WINTER_START) item.time = '10:00';
             }
         });
     }

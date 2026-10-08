@@ -750,7 +750,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const hasWhaleShark = res.items.some(i => i.name.includes('고래상어') || i.name.toLowerCase().includes('shark')) || res.oneDayDate || res.whaleDate;
         if (hasWhaleShark) {
             const whaleDates = [res.whaleDate, res.oneDayDate, ...res.items.filter(i => i.name.includes('고래상어') || i.name.toLowerCase().includes('shark')).map(i => i.date)].filter(Boolean);
-            const whaleMeetTime = whaleDates.some(d => d >= '2026-10-25') ? '08:00' : '07:30'; // 10/25부터 08:00
+            const whaleMeetTime = whaleDates.some(d => d >= '2026-10-08') ? '08:00' : '07:30'; // 10/08부터 08:00
             msg += `\n\n------------------\n🚨📢 리버타드 고래상어 투어 안내\n미팅 시간: ${whaleMeetTime}\n미팅 장소: 메인로드 졸리비\n구글맵 주소: https://maps.app.goo.gl/xgty5kLRCpBrwzvL7\n\n★★ 주의 사항 및 준비물 ★★\n-편한 물놀이 복장, 비치타올 1인 1장\n-스노클 마스크(보유시)\n- 매너팁 1인 100페소 (성인, 소인 동일)\n- 자외선 차단제 불가능\n\n*미팅시간 5분 이상 늦으실 경우 노쇼 처리 될 수 있습니다\n\n🔴 고래상어 미출현 환불 안내\n고래상어 출현 지점까지 투어가 정상적으로 진행되었으나, 야생동물의 특성 및 현지 기상 상황으로 인해 고래상어를 관찰하지 못한 경우에는 발생한 차량비, 보트 운영비 및 기타 현지 운영 비용 $20(30,000원)을 제외한 나머지 투어비를 환불해 드립니다.`;
         }
         

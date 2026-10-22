@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ],
         massage: [
             { title: "아유르베다 스파", img: "aspa1.jpg", url: "aspa.html", desc: "분위기에 취하고 마사지에 반하는 마사지샵", price: 55000 },
-            { title: "에스파 (S-SPA)", img: "spa1.jpg", url: "/spa", mdBadge: true, desc: "보라카이 최초 포핸드 마사지 런칭", price: 55000 },
+            { title: "에스파 (S-SPA)", img: "spa1.jpg", url: "/spa", mdBadge: true, desc: "보라카이 최초 포핸드 마사지 런칭", price: 33000 },
             { title: "포세이돈 스파", img: "poseidon1.jpg", url: "/poseidon", desc: "연예인이 운영하는 스파 모든 룸 안 개별 수영장 + 자쿠지", price: 105000 },
             { title: "마리스 스파", img: "maris1.jpg", url: "/maris", desc: "로멘틱 마리스 스파,허니문이나 커플 연인들에게 인기만점", price: 91000 },
             { title: "카바얀 스파", img: "kabayan1.jpg", url: "/kabayan", desc: "디몰 버젯마트 근처 마사지샵", price: 49000 },
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { title: "블랙펄 요트호핑투어", img: "블랙펄 썸네일.jpg", url: "/hopping-tour", badge: "HOT", mdBadge: true, desc: "럭셔리 요트위에서 즐기는 선셋 파티 호핑", price: 55000 },
         { title: "시크릿가든 말룸파티", img: "malum1.jpg", url: "/malumpati", badge: "HOT", mdBadge: true, desc: "프라이빗하게 즐기는 블루라군과 튜빙", price: 99000 },
         { title: "리버타드 고래상어 패스트트랙", img: "whale-shark-thumb.png", url: "/whale-shark-tour", badge: "NEW", mdBadge: true, desc: "거대하고 온순한 고래상어와의 만남", price: 95000 },
-        { title: "에스파 마사지", img: "spa1.jpg", url: "/spa", badge: "HOT", mdBadge: true, desc: "보라카이 최초 포핸드 마사지 런칭", price: 55000 }
+        { title: "에스파 마사지", img: "spa1.jpg", url: "/spa", badge: "HOT", mdBadge: true, desc: "보라카이 최초 포핸드 마사지 런칭", price: 33000 }
     ];
 
     const productsContainer = document.querySelector('.products');

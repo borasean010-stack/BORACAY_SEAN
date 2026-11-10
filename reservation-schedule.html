@@ -45,6 +45,17 @@
         .event-card { display: block; aspect-ratio: 1 / 1; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.2s; }
         .event-card:hover { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(0,0,0,0.15); }
         .event-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .member-box { margin-bottom: 40px; }
+        .member-btns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+        .member-col { min-width: 0; }
+        .member-label { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; box-sizing: border-box; width: 100%; height: 54px; margin-top: 8px; padding: 0 6px; background: #fff8f2; border: 1.5px solid #ff6a00; color: #ff6a00; border-radius: 10px; font-family: inherit; font-weight: 800; line-height: 1.2; text-decoration: none; white-space: nowrap; overflow: hidden; cursor: pointer; transition: background .2s, color .2s; }
+        .member-label:hover:not(:disabled) { background: #ff6a00; color: #fff; }
+        .member-label:disabled { opacity: .55; cursor: default; }
+        .member-label .ml-top { display: block; max-width: 100%; height: 16px; font-size: 13px; line-height: 16px; overflow: hidden; text-overflow: ellipsis; }
+        .member-label .ml-bot { display: flex; align-items: center; justify-content: center; gap: 3px; height: 17px; font-size: 13px; line-height: 17px; }
+        .member-label .material-icons { font-size: 16px; }
+        .member-img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; transition: 0.2s; }
+        .member-img:hover { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(0,0,0,0.15); }
 
         .notice-box { background: #fff8e6; border-radius: 20px; padding: 25px; border: 1px solid #ffeeba; margin-top: 40px; }
         .notice-box h4 { margin: 0 0 10px 0; font-size: 15px; font-weight: 800; color: #856404; }
@@ -86,6 +97,27 @@
             <a class="event-card" href="https://cafe.naver.com/jesupblue/78423" target="_blank" rel="noopener"><img src="ev-reporter.jpg" alt="보션투어 특파원 이벤트"></a>
             <a class="event-card" href="https://cafe.naver.com/jesupblue/81879" target="_blank" rel="noopener"><img src="ev-review.jpg" alt="보션투어 후기 이벤트"></a>
             <a class="event-card" href="https://cafe.naver.com/jesupblue/81822" target="_blank" rel="noopener"><img src="ev-mvp.jpg" alt="보션투어 MVP 챌린지"></a>
+        </div>
+
+        <!-- 멤버십 (카드 다운로드 / 지도) : 이미지가 있을 때만 표시 -->
+        <div class="member-box" id="member-box">
+            <div class="section-title">보라카이션 멤버십</div>
+            <div class="member-btns">
+                <div class="member-col">
+                    <img class="member-img" id="member-card-img" src="membership-thumb.jpg" alt="보라카이션 멤버십 할인카드">
+                    <button type="button" class="member-label" id="member-card-btn" disabled>
+                        <span class="ml-top" id="member-card-months">&nbsp;</span>
+                        <span class="ml-bot"><span class="material-icons">download</span>카드 저장하기</span>
+                    </button>
+                </div>
+                <div class="member-col">
+                    <a href="https://cafe.naver.com/jesupblue/72886" target="_blank" rel="noopener"><img class="member-img" src="membership-map-thumb.jpg" alt="보라카이션 멤버십 제휴점, 지도"></a>
+                    <a class="member-label" href="https://cafe.naver.com/jesupblue/72886" target="_blank" rel="noopener">
+                        <span class="ml-top">제휴점,지도</span>
+                        <span class="ml-bot"><span class="material-icons">map</span>보기</span>
+                    </a>
+                </div>
+            </div>
         </div>
 
         <div class="section-title">투어 및 액티비티 일정</div>
@@ -446,6 +478,8 @@
             resList.forEach(r => processResItems(r, allItems)); // ✅ 모든 예약 처리
             applyWinterTimes(allItems);
             allItems.sort((a, b) => (a.date || "").localeCompare(b.date || "") || (a.time || "00:00").localeCompare(b.time || "00:00"));
+            window.__firstDate = (allItems[0] && allItems[0].date) || '';
+            window.__lastDate = (allItems[allItems.length - 1] && allItems[allItems.length - 1].date) || '';
 
             const list = document.getElementById('item-list');
             list.innerHTML = allItems.map(item => {
@@ -479,7 +513,71 @@
             document.getElementById('loading').style.display = 'none';
         } catch (e) { console.error(e); }
     }
-    loadVoucher();
+    loadVoucher().finally(initMembership);
+
+    // ===== 멤버십: 할인카드(월별 자동 선택) 저장 + 제휴 지도 보기 =====
+    // 할인카드: membership-card-YYMM.png (예: membership-card-2611.png) 를 올리면 해당 월 바우처에 자동 적용
+    // 여행 시작월~종료월에 걸친 달마다 카드 버튼이 생김 (파일이 없는 달은 표시 안 함). 지도: 카페 글 링크
+    function probeImage(src) {
+        return new Promise(resolve => { const im = new Image(); im.onload = () => resolve(true); im.onerror = () => resolve(false); im.src = src; });
+    }
+    // 여행 시작월~종료월에 걸친 모든 달의 카드를 찾음 (예: 1월 입국 → 2월 출국이면 1월·2월 카드 둘 다)
+    async function findMemberCards() {
+        const ym = d => /^\d{4}-\d{2}/.test(d || '') ? [+d.slice(0, 4), +d.slice(5, 7)] : null;
+        const k = new Date(Date.now() + 9 * 3600 * 1000);
+        const start = ym(window.__firstDate) || [k.getUTCFullYear(), k.getUTCMonth() + 1];
+        const end = ym(window.__lastDate) || start;
+        const months = [];
+        let [y, m] = start;
+        while ((y < end[0] || (y === end[0] && m <= end[1])) && months.length < 6) {
+            months.push([y, m]);
+            m++; if (m === 13) { m = 1; y++; }
+        }
+        const cards = [];
+        for (const [my, mm] of months) { // 해당 월 카드가 올라와 있는 달만 표시 (다른 달 카드로 대체하지 않음)
+            const src = 'membership-card-' + String(my).slice(2) + String(mm).padStart(2, '0') + '.png';
+            if (await probeImage(src)) cards.push({ src, y: my, m: mm });
+        }
+        return cards;
+    }
+    // 여행 기간에 걸친 모든 달의 카드를 한 번에 저장 (모바일: 공유창 한 번에 여러 장 / PC: 순서대로 다운로드)
+    async function saveMemberCards(cards) {
+        const nameOf = c => '보라카이션_멤버십카드_' + c.y + '-' + String(c.m).padStart(2, '0') + '.png';
+        const triggerDownload = (href, name, blank) => {
+            const a = document.createElement('a'); a.href = href; a.download = name;
+            if (blank) a.target = '_blank';
+            document.body.appendChild(a); a.click(); a.remove();
+        };
+        try {
+            const files = [];
+            for (const c of cards) {
+                const blob = await (await fetch(c.src)).blob();
+                files.push(new File([blob], nameOf(c), { type: blob.type || 'image/png' }));
+            }
+            // 모바일: 공유창의 "이미지 저장"으로 앨범에 바로 저장
+            if (window.matchMedia('(pointer:coarse)').matches && navigator.canShare && navigator.canShare({ files })) {
+                try { await navigator.share({ files, title: '보라카이션 멤버십 할인카드' }); return; }
+                catch (e) { if (e && e.name === 'AbortError') return; }
+            }
+            for (let i = 0; i < files.length; i++) {
+                const url = URL.createObjectURL(files[i]);
+                triggerDownload(url, files[i].name);
+                setTimeout(() => URL.revokeObjectURL(url), 10000);
+                if (i < files.length - 1) await new Promise(r => setTimeout(r, 400));
+            }
+        } catch (e) {
+            cards.forEach(c => triggerDownload(c.src, nameOf(c), true));
+        }
+    }
+    async function initMembership() {
+        const cards = await findMemberCards();
+        const btn = document.getElementById('member-card-btn');
+        if (!cards.length) { document.getElementById('member-card-months').textContent = '준비 중'; return; }
+        document.getElementById('member-card-months').textContent = cards.map(c => c.m + '월').join(',');
+        btn.disabled = false;
+        btn.onclick = () => saveMemberCards(cards);
+        document.getElementById('member-card-img').onclick = () => saveMemberCards(cards);
+    }
 
 </script>
 </body>

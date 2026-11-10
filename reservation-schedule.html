@@ -63,10 +63,14 @@
         
         .print-btn { position: fixed; bottom: 30px; right: 30px; background: #ff6a00; color: #fff; border: none; padding: 15px 30px; border-radius: 50px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 30px rgba(255,106,0,0.3); transition: 0.3s; z-index: 1000; }
         
+        @page { margin: 10mm; }
         @media print {
             body { padding: 0; background: #fff; }
             .print-btn, .no-print { display: none !important; }
-            .item-card { break-inside: avoid; page-break-inside: avoid; }
+            .voucher-container { overflow: visible !important; }
+            .section-title { break-after: avoid; page-break-after: avoid; }
+            .item-header, .item-details { break-inside: avoid; page-break-inside: avoid; }
+            .item-card { break-inside: auto; box-shadow: none !important; }
             .voucher-container { box-shadow: none; border-radius: 0; max-width: 100%; margin: 0; }
         }
     </style>

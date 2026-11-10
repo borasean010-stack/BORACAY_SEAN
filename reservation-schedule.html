@@ -65,7 +65,8 @@
         
         @media print {
             body { padding: 0; background: #fff; }
-            .print-btn { display: none; }
+            .print-btn, .no-print { display: none !important; }
+            .item-card { break-inside: avoid; page-break-inside: avoid; }
             .voucher-container { box-shadow: none; border-radius: 0; max-width: 100%; margin: 0; }
         }
     </style>
@@ -89,8 +90,8 @@
         </div>
 
         <!-- 이벤트 한눈에 보기 (3x2) -->
-        <div class="section-title">보라카이션 이벤트 한눈에 보기</div>
-        <div class="event-grid">
+        <div class="section-title no-print">보라카이션 이벤트 한눈에 보기</div>
+        <div class="event-grid no-print">
             <a class="event-card" href="https://cafe.naver.com/jesupblue/79211" target="_blank" rel="noopener"><img src="ev-whale.jpg" alt="패스트트랙 고래상어 이벤트"></a>
             <a class="event-card" href="https://cafe.naver.com/jesupblue/73341" target="_blank" rel="noopener"><img src="ev-experience.jpg" alt="보라카이션과 함께 하는 보라카이 낭만 체험단"></a>
             <a class="event-card" href="https://cafe.naver.com/jesupblue/78425" target="_blank" rel="noopener"><img src="ev-here.jpg" alt="지금 여기야 이벤트"></a>
@@ -100,7 +101,7 @@
         </div>
 
         <!-- 멤버십 (카드 다운로드 / 지도) : 이미지가 있을 때만 표시 -->
-        <div class="member-box" id="member-box">
+        <div class="member-box no-print" id="member-box">
             <div class="section-title">보라카이션 멤버십</div>
             <div class="member-btns">
                 <div class="member-col">
@@ -125,7 +126,7 @@
             <div id="loading" style="text-align:center; padding:40px; color:#999;">데이터를 불러오는 중...</div>
         </div>
 
-        <div class="notice-box">
+        <div class="notice-box no-print">
             <h4>안내 및 유의사항</h4>
             <ul>
                 <li>모든 일정은 현지 기상 상황 및 업체 사정에 의해 다소 변경될 수 있습니다.</li>

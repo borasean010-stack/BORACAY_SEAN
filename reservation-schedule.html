@@ -41,6 +41,11 @@
         .kakao-btn { display: inline-block; margin: 8px 0; padding: 9px 16px; background: #FEE500; border: 1px solid #FEE500; color: #191919; border-radius: 8px; font-size: 13px; font-weight: 800; text-decoration: none; }
         .kakao-btn:hover { background: #f5db00; }
 
+        .event-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 40px; }
+        .event-card { display: block; aspect-ratio: 1 / 1; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.2s; }
+        .event-card:hover { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(0,0,0,0.15); }
+        .event-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
         .notice-box { background: #fff8e6; border-radius: 20px; padding: 25px; border: 1px solid #ffeeba; margin-top: 40px; }
         .notice-box h4 { margin: 0 0 10px 0; font-size: 15px; font-weight: 800; color: #856404; }
         .notice-box ul { margin: 0; padding-left: 20px; font-size: 13px; color: #856404; }
@@ -72,21 +77,16 @@
             <div class="info-item"><label id="label-pax">인원정보</label><span id="v-pax">-</span></div>
         </div>
 
-        <!-- 이벤트 배너 (Inline Mid Banner) -->
-        <a href="#" onclick="openCafeEvent(); return false;" style="display: block; margin: 20px 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
-            <img src="vv.png" alt="보라카이션 이벤트 한눈에 보기" style="width: 100%; height: auto; display: block;">
-        </a>
-
-        <script>
-            function openCafeEvent() {
-                var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-                if (isMobile) {
-                    window.open("https://m.cafe.naver.com/ca-fe/web/cafes/17953658/menus/57", "_blank");
-                } else {
-                    window.open("https://cafe.naver.com/f-e/cafes/17953658/menus/57?viewType=I", "_blank");
-                }
-            }
-        </script>
+        <!-- 이벤트 한눈에 보기 (3x2) -->
+        <div class="section-title">보라카이션 이벤트 한눈에 보기</div>
+        <div class="event-grid">
+            <a class="event-card" href="https://cafe.naver.com/jesupblue/79211" target="_blank" rel="noopener"><img src="ev-whale.jpg" alt="패스트트랙 고래상어 이벤트"></a>
+            <a class="event-card" href="https://cafe.naver.com/jesupblue/73341" target="_blank" rel="noopener"><img src="ev-experience.jpg" alt="보라카이션과 함께 하는 보라카이 낭만 체험단"></a>
+            <a class="event-card" href="https://cafe.naver.com/jesupblue/78425" target="_blank" rel="noopener"><img src="ev-here.jpg" alt="지금 여기야 이벤트"></a>
+            <a class="event-card" href="https://cafe.naver.com/jesupblue/78423" target="_blank" rel="noopener"><img src="ev-reporter.jpg" alt="보션투어 특파원 이벤트"></a>
+            <a class="event-card" href="https://cafe.naver.com/jesupblue/81879" target="_blank" rel="noopener"><img src="ev-review.jpg" alt="보션투어 후기 이벤트"></a>
+            <a class="event-card" href="https://cafe.naver.com/jesupblue/81822" target="_blank" rel="noopener"><img src="ev-mvp.jpg" alt="보션투어 MVP 챌린지"></a>
+        </div>
 
         <div class="section-title">투어 및 액티비티 일정</div>
         <div id="item-list">

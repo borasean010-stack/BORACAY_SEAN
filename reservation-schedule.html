@@ -54,6 +54,16 @@
         .member-label .ml-top { display: block; max-width: 100%; height: 16px; font-size: 13px; line-height: 16px; overflow: hidden; text-overflow: ellipsis; }
         .member-label .ml-bot { display: flex; align-items: center; justify-content: center; gap: 3px; height: 17px; font-size: 13px; line-height: 17px; }
         .member-label .material-icons { font-size: 16px; }
+        .card-modal { position: fixed; inset: 0; z-index: 9999; background: #111; display: none; flex-direction: column; }
+        .card-modal.open { display: flex; }
+        .card-modal-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; color: #fff; font-weight: 800; font-size: 16px; }
+        .card-modal-bar button { background: none; border: 0; color: #fff; font-size: 30px; line-height: 1; cursor: pointer; padding: 0 4px; }
+        .card-modal-hint { margin: 0 16px 10px; padding: 10px 12px; background: rgba(255,106,0,0.18); border: 1px solid #ff6a00; border-radius: 10px; color: #ffd9bd; font-size: 14px; font-weight: 700; line-height: 1.5; text-align: center; }
+        .card-modal-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 0 16px 16px; }
+        .card-modal-item { margin-bottom: 18px; text-align: center; }
+        .card-modal-item img { width: 100%; max-width: 520px; height: auto; display: block; margin: 0 auto; -webkit-touch-callout: default; -webkit-user-select: auto; user-select: auto; }
+        .card-modal-item span { display: block; margin-top: 8px; color: #fff; font-weight: 800; font-size: 14px; }
+        .card-modal-share { margin: 0 16px 16px; padding: 14px; background: #ff6a00; color: #fff; border: 0; border-radius: 12px; font-size: 15px; font-weight: 800; font-family: inherit; cursor: pointer; }
         .member-img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; transition: 0.2s; }
         .member-img:hover { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(0,0,0,0.15); }
 
@@ -66,7 +76,7 @@
         @page { margin: 10mm; }
         @media print {
             body { padding: 0; background: #fff; }
-            .print-btn, .no-print { display: none !important; }
+            .print-btn, .no-print, .card-modal { display: none !important; }
             .voucher-container { overflow: visible !important; }
             .section-title { break-after: avoid; page-break-after: avoid; }
             .item-header, .item-details { break-inside: avoid; page-break-inside: avoid; }
@@ -545,45 +555,71 @@
         }
         return cards;
     }
-    // 여행 기간에 걸친 모든 달의 카드를 한 번에 저장 (모바일: 공유창 한 번에 여러 장 / PC: 순서대로 다운로드)
-    async function saveMemberCards(cards) {
-        const nameOf = c => '보라카이션_멤버십카드_' + c.y + '-' + String(c.m).padStart(2, '0') + '.png';
-        const triggerDownload = (href, name, blank) => {
-            const a = document.createElement('a'); a.href = href; a.download = name;
-            if (blank) a.target = '_blank';
-            document.body.appendChild(a); a.click(); a.remove();
-        };
-        try {
-            const files = [];
-            for (const c of cards) {
-                const blob = await (await fetch(c.src)).blob();
-                files.push(new File([blob], nameOf(c), { type: blob.type || 'image/png' }));
-            }
-            // 모바일: 공유창의 "이미지 저장"으로 앨범에 바로 저장
-            if (window.matchMedia('(pointer:coarse)').matches && navigator.canShare && navigator.canShare({ files })) {
-                try { await navigator.share({ files, title: '보라카이션 멤버십 할인카드' }); return; }
-                catch (e) { if (e && e.name === 'AbortError') return; }
-            }
-            for (let i = 0; i < files.length; i++) {
-                const url = URL.createObjectURL(files[i]);
-                triggerDownload(url, files[i].name);
-                setTimeout(() => URL.revokeObjectURL(url), 10000);
-                if (i < files.length - 1) await new Promise(r => setTimeout(r, 400));
-            }
-        } catch (e) {
-            cards.forEach(c => triggerDownload(c.src, nameOf(c), true));
+    const cardNameOf = c => '보라카이션_멤버십카드_' + c.y + '-' + String(c.m).padStart(2, '0') + '.png';
+    const UA = navigator.userAgent;
+    const isIOS = /iPhone|iPad|iPod/i.test(UA) || (/Macintosh/i.test(UA) && navigator.maxTouchPoints > 1);
+    const isInApp = /KAKAOTALK|NAVER|Instagram|FBAN|FBAV|Line\//i.test(UA);
+    let preloadedCardFiles = null; // 아이폰 공유(앨범 저장)용: 클릭 즉시 공유하려고 미리 받아둠
+
+    // 모바일(카톡/네이버 인앱 브라우저 포함): 파일 저장이 막히는 경우가 많아서 카드 이미지를 크게 띄우고 "꾹 눌러 저장" 방식 사용
+    function openCardModal(cards) {
+        const modal = document.getElementById('card-modal'), list = document.getElementById('card-modal-list');
+        const shareBtn = document.getElementById('card-modal-share');
+        list.innerHTML = '';
+        cards.forEach(c => {
+            const d = document.createElement('div'); d.className = 'card-modal-item';
+            const im = document.createElement('img'); im.src = c.src; im.alt = c.m + '월 멤버십 할인카드';
+            const t = document.createElement('span'); t.textContent = c.y + '년 ' + c.m + '월 카드';
+            d.appendChild(im); d.appendChild(t); list.appendChild(d);
+        });
+        modal.classList.add('open'); document.body.style.overflow = 'hidden';
+        document.getElementById('card-modal-close').onclick = () => { modal.classList.remove('open'); document.body.style.overflow = ''; };
+        // 공유창으로 앨범에 바로 저장 (지원하는 브라우저에서만 버튼 표시). 파일을 미리 받아둬서 버튼 클릭 즉시 공유 호출
+        shareBtn.style.display = 'none';
+        if (navigator.canShare && navigator.share) {
+            Promise.all(cards.map(async c => new File([await (await fetch(c.src)).blob()], cardNameOf(c), { type: 'image/png' }))).then(files => {
+                if (!navigator.canShare({ files })) return;
+                shareBtn.style.display = '';
+                shareBtn.onclick = () => { navigator.share({ files, title: '보라카이션 멤버십 할인카드' }).catch(() => {}); };
+            }).catch(() => {});
         }
     }
+
+    // 저장하기 버튼
+    //  - 아이폰: 공유창의 "이미지 저장"으로 앨범에 바로 저장 (아이폰은 다운로드가 "파일" 앱으로만 가서)
+    //  - 안드로이드/PC: 이미지 파일을 바로 다운로드 (서버에서 Content-Disposition: attachment 로 내려줌 → 카톡 인앱에서도 다운로드됨)
+    //  - 아이폰 인앱 브라우저처럼 위 방법이 모두 막힌 곳만 "꾹 눌러 저장" 화면으로 대체
+    function saveMemberCards(cards) {
+        if (isIOS) {
+            if (preloadedCardFiles && navigator.canShare && navigator.canShare({ files: preloadedCardFiles })) {
+                navigator.share({ files: preloadedCardFiles, title: '보라카이션 멤버십 할인카드' }).catch(e => { if (!e || e.name !== 'AbortError') openCardModal(cards); });
+                return;
+            }
+            if (isInApp) { openCardModal(cards); return; }
+        }
+        cards.forEach((c, i) => setTimeout(() => {
+            const a = document.createElement('a'); a.href = c.src; a.download = cardNameOf(c);
+            document.body.appendChild(a); a.click(); a.remove();
+        }, i * 600));
+    }
+
     async function initMembership() {
         const cards = await findMemberCards();
         const btn = document.getElementById('member-card-btn');
         if (!cards.length) { document.getElementById('member-card-months').textContent = '준비 중'; return; }
         document.getElementById('member-card-months').textContent = cards.map(c => c.m + '월').join(',');
         btn.disabled = false;
+        if (isIOS && navigator.canShare) Promise.all(cards.map(async c => new File([await (await fetch(c.src)).blob()], cardNameOf(c), { type: 'image/png' }))).then(f => { preloadedCardFiles = f; }).catch(() => {});
         btn.onclick = () => saveMemberCards(cards);
         document.getElementById('member-card-img').onclick = () => saveMemberCards(cards);
     }
 
 </script>
+<div class="card-modal" id="card-modal">
+    <div class="card-modal-bar"><span>멤버십 할인카드</span><button type="button" id="card-modal-close" aria-label="닫기">&times;</button></div>
+    <div class="card-modal-hint">카드 이미지를 <b>꾹 눌러서</b><br>“이미지 저장” 또는 “사진에 추가”를 눌러주세요</div>
+    <div class="card-modal-list" id="card-modal-list"></div>
+    <button type="button" class="card-modal-share" id="card-modal-share" style="display:none">📥 앨범에 한 번에 저장 (공유창)</button>
+</div>
 </body>
 </html>
